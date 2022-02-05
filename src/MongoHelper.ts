@@ -2,9 +2,9 @@ import { MongoClient, Db } from 'mongodb'
 import { logger } from 'utility/logger'
 
 export class MongoHelper {
-  private static instance: MongoHelper;
-  private static client: MongoClient;
-  private static db: Db;
+  private static instance: MongoHelper
+  private static client: MongoClient
+  private static db: Db
   private constructor () {}
 
   /**
@@ -52,12 +52,9 @@ export class MongoHelper {
    */
   public async connect (): Promise<any> {
     const url = `mongodb://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@${process.env.DB_HOST}:${process.env.DB_PORT}/${process.env.DB_NAME}?authSource=admin`
-    const options = {
-      useNewUrlParser: true
-    }
 
     try {
-      const client = await MongoClient.connect(url, options)
+      const client = await MongoClient.connect(url)
       MongoHelper.client = client
       MongoHelper.db = client.db(process.env.DB_NAME)
 
