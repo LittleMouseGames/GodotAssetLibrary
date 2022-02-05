@@ -1,18 +1,14 @@
 FROM node:16-alpine
 
-RUN mkdir -p /home/node/app/node_modules && chown -R node:node /home/node/app
+ENV NODE_ENV=production
 
-WORKDIR /home/node/app
+WORKDIR /app
 
-RUN mkdir ./dist
+COPY ["package.json", "package-lock.json*", "./"]
 
-COPY package*.json ./
+RUN npm ci --prod
 
-USER node
-
-RUN npm install
-
-COPY --chown=node:node . .
+COPY . .
 
 EXPOSE 8080
 
