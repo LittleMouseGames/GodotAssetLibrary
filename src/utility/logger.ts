@@ -16,8 +16,8 @@ export const logger = winston.createLogger({
           const { timestamp, level, message, ...extra } = info
 
           return `${timestamp} [${level}]: ${message} ${
-                Object.keys(extra).length !== 0 ? JSON.stringify(extra, null, 2) : ''
-            }`
+            Object.keys(extra).length !== 0 ? JSON.stringify(extra, null, 2) : ''
+          }`
         })
       )
     })

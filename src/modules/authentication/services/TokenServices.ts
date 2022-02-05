@@ -1,12 +1,12 @@
 import crypto from 'crypto'
 
 export class TokenServices {
-  private static instance: TokenServices;
+  private static instance: TokenServices
 
   /**
    * Return our class for singleton init
    */
-  public static getInstance(): TokenServices {
+  public static getInstance (): TokenServices {
     if (TokenServices.instance == null) {
       TokenServices.instance = new TokenServices()
     }
@@ -20,7 +20,7 @@ export class TokenServices {
    * @param token the token to hash
    * @returns {string} hashed token
    */
-  public hashToken(token: string): string {
+  public hashToken (token: string): string {
     const hash = crypto.createHash('blake2b512')
     hash.update(token)
     return hash.digest('base64')
@@ -31,7 +31,7 @@ export class TokenServices {
    *
    * @returns {string} resume token
    */
-  public generateToken(): string {
+  public generateToken (): string {
     const token = crypto.randomBytes(128).toString('base64')
     return token
   }
@@ -42,7 +42,7 @@ export class TokenServices {
    * @param {number} [date=5] optional param for when token should expires
    * @returns {Date} expiry date
    */
-  public generateExpiry(date: number = 5): Date {
+  public generateExpiry (date: number = 5): Date {
     const expires = new Date()
     expires.setDate(expires.getDate() + date) // get date X days from now
 

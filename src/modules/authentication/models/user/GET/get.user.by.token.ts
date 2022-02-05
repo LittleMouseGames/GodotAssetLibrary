@@ -1,12 +1,12 @@
 import { MongoHelper } from 'MongoHelper'
 
-export async function GetUserByToken(token: string): Promise<any> {
+export async function GetUserByToken (token: string): Promise<any> {
   const mongo = MongoHelper.getDatabase()
   const userObj = await mongo.collection('users').findOne({
     'resumeTokens.token': token
   }, {
     projection: {
-      _id: 1
+      humanId: 1
     }
   })
 
@@ -14,5 +14,5 @@ export async function GetUserByToken(token: string): Promise<any> {
     throw new Error('User not found')
   }
 
-  return userObj._id
+  return userObj.humanId
 }

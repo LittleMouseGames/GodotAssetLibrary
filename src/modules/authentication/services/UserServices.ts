@@ -7,9 +7,8 @@ import { GetPasswordHash } from 'modules/authentication/models/user/GET/get.pass
 import { GetUserByToken } from 'modules/authentication/models/user/GET/get.user.by.token'
 import { TokenServices } from 'modules/authentication/services/TokenServices'
 
-
 export class UserServices {
-  private static instance: UserServices;
+  private static instance: UserServices
   private readonly USERNAME_REGEX: RegExp = /^[a-z0-9_-]{3,16}$/
   private readonly PASSWORD_REGEX: RegExp = /^(((?=.*[a-z])(?=.*[A-Z]))|((?=.*[a-z])(?=.*[0-9]))|((?=.*[A-Z])(?=.*[0-9])))(?=.{6,})/
   private readonly TokenService: TokenServices = TokenServices.getInstance()
@@ -17,7 +16,7 @@ export class UserServices {
   /**
    * Return our class for singleton init
    */
-  public static getInstance(): UserServices {
+  public static getInstance (): UserServices {
     if (UserServices.instance == null) {
       UserServices.instance = new UserServices()
     }
@@ -37,7 +36,7 @@ export class UserServices {
    * @throws {Error} Password match error
    * @throws {Error} Auth token missing error
    */
-  public async register(req: Request): Promise<string> {
+  public async register (req: Request): Promise<string> {
     const username = req.body.username ?? ''
     const password = req.body.password ?? ''
     const passwordConf = req.body.passwordConf ?? ''
@@ -78,7 +77,7 @@ export class UserServices {
    * @throws {Error} param error
    * @throws {Error} mongo insert / find error
    */
-  public async login(req: Request): Promise<string> {
+  public async login (req: Request): Promise<string> {
     const authHeader = req.headers.authorization ?? ''
 
     if (authHeader === '') {
@@ -124,7 +123,7 @@ export class UserServices {
   /**
    * Find user with token
    */
-  public async verify(token: string): Promise<string> {
+  public async verify (token: string): Promise<string> {
     const hashedToken = this.TokenService.hashToken(token)
     const userId = await GetUserByToken(hashedToken)
     return userId
