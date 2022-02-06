@@ -15,7 +15,7 @@
 <meta name="twitter:card" content="summary">
 <!-- STYLESHEET -->
 <link rel="preconnect" href="https://fonts.gstatic.com">
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700&family=Raleway:wght@500&display=swap"
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700&family=Roboto:wght@400&display=swap"
     rel="stylesheet" rel="preload" as="style">
 <link rel="icon" href="/favicon.ico">
 <script src="https://code.iconify.design/2/2.1.2/iconify.min.js"></script>

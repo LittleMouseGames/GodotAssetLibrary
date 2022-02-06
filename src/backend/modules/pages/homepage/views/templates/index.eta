@@ -11,7 +11,6 @@
   <meta name="twitter:title" content="Godot Library">
   <link rel="stylesheet" href="styles/homepage/styles.css">
 </head>
-<%~ includeFile('templates/components/promobar.eta') %>
 <%~ includeFile('templates/components/nav.eta') %>
 
 Hello, World!

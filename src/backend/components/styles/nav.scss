@@ -1,0 +1,133 @@
+.promobar {
+  position: absolute;
+  width: 100%;
+  height: 41px;
+  background: #000000;
+
+  font-weight: 600;
+  font-size: 12px;
+
+  display: flex;
+  align-items: center;
+  text-align: center;
+  justify-items: right;
+  letter-spacing: 0.02em;
+
+  color: #ffffff;
+  position: relative;
+  justify-content: end;
+
+  .text {
+    width: 100%;
+    position: absolute;
+    z-index: 0;
+  }
+
+  .iconify {
+    width: 20px;
+    height: auto;
+    margin-right: 10px;
+    cursor: pointer;
+    z-index: 1;
+  }
+}
+
+nav {
+  height: 75px;
+  background: white;
+  width: 100%;
+
+  .contents {
+    display: flex;
+    align-items: center;
+    max-width: 1555px;
+    margin: auto;
+    height: 100%;
+  }
+
+  .brand {
+    margin-right: 40px;
+
+    .title {
+      font-weight: bold;
+      font-size: 22px;
+      line-height: 25px;
+      color: #060606;
+    }
+
+    .subtitle {
+      font-weight: 500;
+      font-size: 13px;
+      color: #353535;
+
+      .strong {
+        font-weight: 700;
+      }
+    }
+  }
+
+  .links {
+    display: flex;
+    align-items: center;
+    margin-left: 25px;
+
+    .link {
+      font-weight: 600;
+      font-size: 14px;
+      line-height: 16px;
+      margin-right: 20px;
+    }
+
+    select {
+      font-family: "Poppins";
+      border: none;
+      height: 45px;
+      background: #f1f1f1;
+      border-radius: 6px;
+      padding: 0 12px;
+
+      font-weight: 600;
+      font-size: 14px;
+    }
+  }
+
+  .search {
+    position: relative;
+    width: 425px;
+
+    .iconify {
+      position: absolute;
+      left: 14px;
+      top: 12.5px;
+      width: 18px;
+      height: auto;
+      color: #818181;
+    }
+
+    input {
+      height: 45px;
+      background: #f1f1f1;
+      border-radius: 6px;
+      font-family: Roboto;
+      font-weight: normal;
+      font-size: 14px;
+      line-height: 16px;
+      border: none;
+      padding-left: 40px;
+      width: 100%;
+    }
+  }
+
+  .account {
+    margin-left: auto;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+
+    .iconify {
+      width: 30px;
+      height: auto;
+      margin-right: 14px;
+    }
+  }
+}

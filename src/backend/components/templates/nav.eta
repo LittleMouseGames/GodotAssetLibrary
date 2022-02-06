@@ -1,24 +1,37 @@
+<section class="promobar">
+  <div class="text">Promobar and or a place where we can put site news</div>
+  <span class="iconify" data-icon="ant-design:close-circle-filled"></span>
+</section>
+
 <nav>
-  <div class="brand">
-    <div class="title">Godot Library</div>
-    <div class="subtitle">by <span class="strong">LittleMouseGames</span></div>
-  </div>
-  <div class="search"></div>
-  <div class="links">
-    <div class="link">2D Tools</div>
-    <div class="link">3D Tools</div>
-    <div class="link">Editor Tools</div>
-    <div class="link">Shaders</div>
-    <select>
-      <option value="materials">Materials</option>
-      <option value="scripts">Scripts</option>
-      <option value="misc">Misc</option>
-      <option value="templates">Templates</option>
-      <option value="projects">Projects</option>
-      <option value="demos">Demos</option>
-    </select>
-  </div>
-  <div class="account">
-    <span class="icon"></span>
+  <div class="contents">
+
+    <div class="brand">
+      <div class="title">Godot Library</div>
+      <div class="subtitle">by <span class="strong">LittleMouseGames</span></div>
+    </div>
+    <div class="search">
+      <span class="iconify" data-icon="eva:search-outline"></span>
+      <input placeholder="Search...">
+    </div>
+    <div class="links">
+      <div class="link">2D Tools</div>
+      <div class="link">3D Tools</div>
+      <div class="link">Editor Tools</div>
+      <div class="link">Shaders</div>
+      <select>
+        <option value="" selected disabled hidden>More Categories</option>
+        <option value="materials">Materials</option>
+        <option value="scripts">Scripts</option>
+        <option value="misc">Misc</option>
+        <option value="templates">Templates</option>
+        <option value="projects">Projects</option>
+        <option value="demos">Demos</option>
+      </select>
+    </div>
+    <div class="account">
+      <span class="iconify" data-icon="codicon:account"></span>
+      <span>Account / Login</span>
+    </div>
   </div>
 </nav>

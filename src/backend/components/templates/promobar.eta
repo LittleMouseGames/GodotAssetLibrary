@@ -1,8 +1,0 @@
-<head>
-
-</head>
-
-<section class="promobar">
-  <div class="text">Promobar and or a place where we can put site news</div>
-  <span class="iconify" data-icon="ant-design:close-circle-filled"></span>
-</section>
