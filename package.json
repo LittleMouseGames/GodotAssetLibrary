@@ -51,7 +51,7 @@
     "webpack-node-externals": "^3.0.0"
   },
   "scripts": {
-    "devel": "mkdir -p dist/ && cp package.json dist/ && node src/TemplateMover.js && concurrently \"webpack --watch\" \"nodemon dist/bundle.js\"",
+    "devel": "mkdir -p dist/ && cp package.json dist/ && node src/TemplateMover.js && concurrently \"webpack --watch\" \"nodemon dist/bundle.js\" \"nodemon src/TemplateMover.js\"",
     "lint": "eslint . --ext .js,.ts ; exit 0",
     "prod": "webpack && node ./dist/bundle.js"
   },
