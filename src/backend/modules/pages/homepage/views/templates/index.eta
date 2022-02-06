@@ -12,4 +12,6 @@
     <link rel="stylesheet" href="styles/homepage/styles.css">
 </head>
 
+<%~ includeFile('templates/components/nav.eta') %>
+
 Hello, World!
