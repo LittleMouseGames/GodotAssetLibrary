@@ -8,11 +8,15 @@ const pageScss = []
 async function moveTemplates () {
   fs.mkdirSync(path.join(__dirname, '../dist/templates'), { recursive: true })
 
-  await moveComponents()
+  moveComponents()
 
-  fs.watch(path.join(__dirname, '/backend/components/templates'), (eventType) => {
+  fs.watch(path.join(__dirname, '/backend/components/templates'), function (eventType) {
     if (eventType === 'change') {
-      moveComponents()
+      try {
+        moveComponents()
+      } catch (e) {
+        console.log('Error moving template, please try again')
+      }
     }
   })
 
@@ -27,14 +31,14 @@ async function moveTemplates () {
 
   const pageModules = directories(route)
 
-  pageModules.forEach(async function (module) {
+  pageModules.forEach(function (module) {
     if (fs.existsSync(path.join(route, module, 'views', 'templates'))) {
-      await movePages(route, module)
+      movePages(route, module)
 
-      fs.watch(path.join(route, module, 'views', 'templates'), async function (eventType) {
+      fs.watch(path.join(route, module, 'views', 'templates'), function (eventType) {
         if (eventType === 'change') {
           try {
-            await movePages(route, module)
+            movePages(route, module)
           } catch (e) {
             console.log('Error moving page, please try again')
           }
@@ -47,15 +51,16 @@ async function moveTemplates () {
 /**
   * Moves pages to a 'nicer' namespace in dist/
 */
-async function movePages (route, module) {
-  return await fs.copy(path.join(route, module, 'views', 'templates'), path.join(__dirname, '../dist/templates/pages/', module))
+function movePages (route, module) {
+  console.log('yooo')
+  return fs.copySync(path.join(route, module, 'views', 'templates'), path.join(__dirname, '../dist/templates/pages/', module))
 }
 
 /**
   * Moves all components to dist/ folder
 */
-async function moveComponents () {
-  return await fs.copy(path.join(__dirname, '/backend/components/templates'), path.join(__dirname, '../dist/templates/components'))
+function moveComponents () {
+  return fs.copySync(path.join(__dirname, '/backend/components/templates'), path.join(__dirname, '../dist/templates/components/'))
 }
 
 function findScss () {

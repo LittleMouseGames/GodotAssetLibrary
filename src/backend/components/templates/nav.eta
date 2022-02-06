@@ -3,4 +3,20 @@
     <div class="title">Godot Library</div>
     <div class="subtitle">by <span class="strong">LittleMouseGames</span></div>
   </div>
+  <div class="search"></div>
+  <div class="links">
+    <div class="link">2D Tools</div>
+    <div class="link">3D Tools</div>
+    <div class="link">Editor Tools</div>
+    <div class="link">Shaders</div>
+    <select>
+      <option value="materials">Materials</option>
+      <option value="scripts">Scripts</option>
+      <option value="misc">Misc</option>
+      <option value="templates">Templates</option>
+      <option value="projects">Projects</option>
+      <option value="demos">Demos</option>
+    </select>
+  </div>
+  <div class="account"></div>
 </nav>
