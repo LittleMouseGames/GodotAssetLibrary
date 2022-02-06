@@ -22,8 +22,8 @@ services:
     ports:
       - "8080:3000"
     volumes:
-      - .:/home/node/app
-      - node_modules:/home/node/app/node_modules
+      - .:/app
+      - node_modules:/app/node_modules
     networks:
       - app-network
     command: npm run devel
