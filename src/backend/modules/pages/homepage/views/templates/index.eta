@@ -1,3 +1,3 @@
-<%~ includeFile('components/head.eta') %>
+<%~ includeFile('templates/components/head.eta') %>
 
 Hello, World!

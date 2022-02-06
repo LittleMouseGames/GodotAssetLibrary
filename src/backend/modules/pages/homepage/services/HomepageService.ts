@@ -7,6 +7,6 @@ export class HomepageService {
    * @param {Request} req request object
   */
   public render (_req: Request, res: Response): void {
-    return res.render('pages/homepage/index')
+    return res.render('templates/pages/homepage/index')
   }
 }
