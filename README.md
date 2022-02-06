@@ -34,17 +34,20 @@ npm run lint
 ## Folder Structure
 ```
  src
-  │   RouterServer.ts   # Start our router
-  │   MongoHelper.ts    # Our MongoDB helper
-  │   start.ts          # App entry point
-  └───modules           # Each site module (ex, admin area, blog area, etc) 
-    └─── ModuleName     # Module Example
-      │───controllers   # Module controllers
-      │───jobs          # Cron / scheduled jobs
-      │───models        # Database models
-      │───services      # All the business logic
-      │───Views         # Store the Views for the module
-  └───utility           # All our utility classes, like loggers
+  └───backend             # Backend / dynamic 
+    │   RouterServer.ts   # Start our router
+    │   MongoHelper.ts    # Our MongoDB helper
+    │   start.ts          # App entry point
+    └───components        # Reusuable eta.js templates
+    └───modules           # Each site module (ex, admin area, blog area, etc) 
+      └─── ModuleName     # Module Example
+        │───controllers   # Module controllers
+        │───jobs          # Cron / scheduled jobs
+        │───models        # Database models
+        │───services      # All the business logic
+        │───views         # Store the Views for the module (eta.js templates)
+    └───utility           # All our utility classes, like loggers
+  └───frontend            # Frontend assets (ex pre-compiled or static)
 
 ```
 

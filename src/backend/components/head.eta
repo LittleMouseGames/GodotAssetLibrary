@@ -1,0 +1,21 @@
+<!-- GENERAl META -->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- <meta name="theme-color" content="#12141c"> -->
+<meta name="robots" content="index,follow">
+<meta name="googlebot" content="index,follow">
+<meta name="google" content="nositelinkssearchbox">
+<meta name="rating" content="General">
+<meta name="referrer" content="no-referrer">
+<!-- PLATFORM META -->
+<!-- FACEBOOK -->
+<meta property="og:type" content="website">
+<meta property="og:locale" content="en_US">
+<!-- TWITTER -->
+<meta name="twitter:card" content="summary">
+<!-- STYLESHEET -->
+<link rel="stylesheet" href="/styles/styles.css">
+<link rel="preconnect" href="https://fonts.gstatic.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700&family=Raleway:wght@500&display=swap"
+    rel="stylesheet" rel="preload" as="style">
+<link rel="icon" href="/favicon.ico">
