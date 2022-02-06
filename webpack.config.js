@@ -1,9 +1,9 @@
-var nodeExternals = require('webpack-node-externals')
+const nodeExternals = require('webpack-node-externals')
 const path = require('path')
 
 module.exports = {
   mode: 'development',
-  entry: './src/start.ts',
+  entry: './src/backend/start.ts',
   module: {
     rules: [
       {
@@ -15,7 +15,7 @@ module.exports = {
   },
   resolve: {
     extensions: ['.tsx', '.ts', '.js'],
-    modules: ['node_modules', path.join(__dirname, './src')]
+    modules: ['node_modules', path.join(__dirname, './src/backend')]
   },
   output: {
     filename: 'bundle.js',

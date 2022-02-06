@@ -6,7 +6,7 @@ import { logger } from 'utility/logger'
  * Starts the server
  */
 class RouterServer extends Server {
-  private readonly FRONT_END_MSG = 'Unable to find API route'
+  private readonly FRONT_END_MSG = 'Unable to route. You seeing this message is almost definitely a mistake, so please reach out if you are seeing this (consistently)'
 
   /**
    * Sets up our dependencies
@@ -14,7 +14,7 @@ class RouterServer extends Server {
   constructor () {
     super(true)
     this.app.use(function (_req, res, next) {
-      res.setHeader('X-Powered-By', '☕')
+      res.setHeader('X-Powered-By', 'LittleMouseGames')
       next()
     })
     this.setupControllers()

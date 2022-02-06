@@ -35,6 +35,7 @@
     "eslint-plugin-promise": "^5.1.1",
     "jsdoc": "^3.6.10",
     "nodemon": "^2.0.15",
+    "sass": "^1.49.7",
     "standardx": "^7.0.0",
     "ts-loader": "^9.2.6",
     "ts-node": "^10.4.0",
