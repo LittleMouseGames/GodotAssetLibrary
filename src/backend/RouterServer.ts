@@ -1,7 +1,10 @@
 import * as controllers from 'modules/controllers.index'
 import { Server } from '@overnightjs/core'
-import { Request, Response } from 'express'
+import express, { Request, Response } from 'express'
 import { logger } from 'utility/logger'
+import compression from 'compression'
+import path from 'path'
+
 /**
  * Starts the server
  */
@@ -13,10 +16,20 @@ class RouterServer extends Server {
    */
   constructor () {
     super(true)
+
+    this.app.set('view engine', 'eta')
+    this.app.set('views', path.join(__dirname, 'backend/'))
+    this.app.set('trust proxy', 1)
+    this.app.use(compression())
+    this.app.use(express.static(path.join(__dirname, 'public')))
+    this.app.use(express.json())
+    this.app.use(express.urlencoded())
+
     this.app.use(function (_req, res, next) {
       res.setHeader('X-Powered-By', 'LittleMouseGames')
       next()
     })
+
     this.setupControllers()
   }
 
