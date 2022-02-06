@@ -1,1 +1,1 @@
-export * from './authentication/jobs/index'
+export * from './api/authentication/jobs/index'

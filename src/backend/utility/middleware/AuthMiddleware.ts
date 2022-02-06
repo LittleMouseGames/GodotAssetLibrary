@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express'
-import { GetUserByToken } from 'modules/authentication/models/user/GET/get.user.by.token'
+import { GetUserByToken } from 'modules/api/authentication/models/user/GET/get.user.by.token'
 import { logger } from 'utility/logger'
-import { TokenServices } from 'modules/authentication/services/TokenServices'
+import { TokenServices } from 'modules/api/authentication/services/TokenServices'
 
 module.exports = (req: Request, res: Response, next: NextFunction) => {
   try {

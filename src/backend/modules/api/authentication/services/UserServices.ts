@@ -1,11 +1,11 @@
 import * as argon2 from 'argon2'
 import { logger } from 'utility/logger'
-import { InsertUser } from 'modules/authentication/models/user/INSERT/insert.user'
+import { InsertUser } from 'modules/api/authentication/models/user/INSERT/insert.user'
 import { Request } from 'express'
-import { InsertToken } from 'modules/authentication/models/user/INSERT/insert.token'
-import { GetPasswordHash } from 'modules/authentication/models/user/GET/get.password.hash'
-import { GetUserByToken } from 'modules/authentication/models/user/GET/get.user.by.token'
-import { TokenServices } from 'modules/authentication/services/TokenServices'
+import { InsertToken } from 'modules/api/authentication/models/user/INSERT/insert.token'
+import { GetPasswordHash } from 'modules/api/authentication/models/user/GET/get.password.hash'
+import { GetUserByToken } from 'modules/api/authentication/models/user/GET/get.user.by.token'
+import { TokenServices } from 'modules/api/authentication/services/TokenServices'
 
 export class UserServices {
   private static instance: UserServices

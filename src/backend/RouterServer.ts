@@ -9,7 +9,7 @@ import path from 'path'
  * Starts the server
  */
 class RouterServer extends Server {
-  private readonly FRONT_END_MSG = 'Unable to route. You seeing this message is almost definitely a mistake, so please reach out if you are seeing this (consistently)'
+  private readonly FRONT_END_MSG = 'Unable to route. If you\'re seeing this message its almost definitely a mistake'
 
   /**
    * Sets up our dependencies

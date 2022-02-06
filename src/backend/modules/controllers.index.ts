@@ -1,1 +1,1 @@
-export * from './authentication/controllers/index'
+export * from './api/authentication/controllers/index'
