@@ -1,0 +1,3 @@
+<%~ includeFile('components/head.eta') %>
+
+Hello, World!

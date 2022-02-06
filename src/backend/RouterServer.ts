@@ -18,7 +18,7 @@ class RouterServer extends Server {
     super(true)
 
     this.app.set('view engine', 'eta')
-    this.app.set('views', path.join(__dirname, 'backend/'))
+    this.app.set('views', path.join(__dirname, '/'))
     this.app.set('trust proxy', 1)
     this.app.use(compression())
     this.app.use(express.static(path.join(__dirname, 'public')))

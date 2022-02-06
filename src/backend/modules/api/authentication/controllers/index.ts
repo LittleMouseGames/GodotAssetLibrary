@@ -1,1 +1,1 @@
-export * from './user/UserController'
+export * from './users/UserController'
