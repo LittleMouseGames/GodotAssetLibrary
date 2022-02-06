@@ -14,7 +14,6 @@
 <!-- TWITTER -->
 <meta name="twitter:card" content="summary">
 <!-- STYLESHEET -->
-<link rel="stylesheet" href="/styles/styles.css">
 <link rel="preconnect" href="https://fonts.gstatic.com">
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700&family=Raleway:wght@500&display=swap"
     rel="stylesheet" rel="preload" as="style">

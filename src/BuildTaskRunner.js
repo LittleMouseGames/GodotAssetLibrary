@@ -31,7 +31,11 @@ async function moveTemplates () {
 
       fs.watch(path.join(route, module, 'views', 'templates'), async function (eventType) {
         if (eventType === 'change') {
-          await movePages(route, module)
+          try {
+            await movePages(route, module)
+          } catch (e) {
+            console.log('Error moving page, please try again')
+          }
         }
       })
     }
@@ -52,8 +56,7 @@ async function moveComponents () {
   return await fs.copy(path.join(__dirname, '/backend/components/templates'), path.join(__dirname, '../dist/templates/components'))
 }
 
-function compileScss () {
-  console.log('uhhhhhh\n\n')
+function findScss () {
   // eslint-disable-next-line new-cap
   glob(path.join(__dirname, '/**/*.scss'), {}, (_err, files) => {
     files.forEach(file => {
@@ -62,18 +65,29 @@ function compileScss () {
 
       // make sure we're only moving pages, components will be pulled in at compile
       if (file.includes('backend/modules/pages')) {
-        const exportPath = path.join(path.join(__dirname, '../dist/public/'), file.replace('src/', '').replace('backend/', '').replace('views/', '').replace('styles/', '').replace('modules/', 'styles/').replace('.scss', '.css'))
-        const result = sass.compile(path.join(file), { loadPaths: [path.join(__dirname, 'backend')] })
+        compileScss(file)
 
-        console.log('sapp', path.dirname(exportPath))
-        console.log(file)
-
-        fs.mkdirSync(path.dirname(exportPath), { recursive: true })
-        fs.writeFile(`${exportPath}`, result.css)
+        fs.watch(path.dirname(file), async function (eventType) {
+          if (eventType === 'change') {
+            try {
+              await compileScss(file)
+            } catch (e) {
+              console.log('Error compiling, please try again')
+            }
+          }
+        })
       }
     })
   })
 }
 
+function compileScss (file) {
+  const exportPath = path.join(path.join(__dirname, '../dist/public/'), file.replace('src/', '').replace('pages/', '').replace('backend/', '').replace('views/', '').replace('styles/', '').replace('modules/', 'styles/').replace('.scss', '.css'))
+  const result = sass.compile(path.join(file), { loadPaths: [path.join(__dirname, 'backend')] })
+
+  fs.mkdirSync(path.dirname(exportPath), { recursive: true })
+  fs.writeFile(`${exportPath}`, result.css)
+}
+
 moveTemplates()
-compileScss()
+findScss()

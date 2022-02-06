@@ -1,3 +1,15 @@
-<%~ includeFile('templates/components/head.eta') %>
+<head>
+    <%~ includeFile('templates/components/head.eta') %>
+    <title>Godot Library | Home</title>
+    <meta name="description" content="Godot Library - Open Source Godot Asset Library">
+    <meta property="og:description" content="Godot Library - Open Source Godot Asset Library">
+    <meta name="twitter:description" content="Godot Library - Open Source Godot Asset Library">
+    <meta property="og:url" content="https://godotlibrary.com/">
+    <meta property="og:title" content="Godot Library">
+    <meta property="og:site_name" content="Godot Library">
+    <meta name="twitter:url" content="https://godotlibrary.com/">
+    <meta name="twitter:title" content="Godot Library">
+    <link rel="stylesheet" href="styles/homepage/styles.css">
+</head>
 
 Hello, World!
