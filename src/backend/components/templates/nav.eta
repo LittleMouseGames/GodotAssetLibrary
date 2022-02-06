@@ -18,5 +18,7 @@
       <option value="demos">Demos</option>
     </select>
   </div>
-  <div class="account"></div>
+  <div class="account">
+    <span class="icon"></span>
+  </div>
 </nav>
