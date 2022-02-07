@@ -1,0 +1,44 @@
+@mixin reset-ul {
+  ul {
+    list-style: none;
+    padding-left: 0;
+    margin-left: 0;
+  }
+}
+
+@mixin reset-header-spacing {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5 {
+    margin: 0;
+    padding: 0;
+  }
+}
+
+@mixin brand-styles($title-color, $subtitle-color) {
+  $title-color: $title-color;
+  $subtitle-color: $subtitle-color;
+
+  .brand {
+    cursor: pointer;
+
+    .title {
+      font-weight: bold;
+      font-size: 22px;
+      line-height: 25px;
+      color: $title-color;
+    }
+
+    .subtitle {
+      font-weight: 500;
+      font-size: 13px;
+      color: $subtitle-color;
+
+      .strong {
+        font-weight: 700;
+      }
+    }
+  }
+}

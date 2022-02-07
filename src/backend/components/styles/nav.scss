@@ -1,8 +1,11 @@
+@import "components/styles/variables";
+@import "components/styles/mixins";
+
 .promobar {
   position: absolute;
   width: 100%;
   height: 41px;
-  background: #000000;
+  background: $color-brand-black;
 
   font-weight: 600;
   font-size: 12px;
@@ -33,37 +36,22 @@
 }
 
 nav {
+  @include brand-styles($title-color: $text-dark-darkest, $subtitle-color: $text-dark-deep-gray);
+
   height: 75px;
   background: white;
   width: 100%;
 
+  .brand {
+    margin-right: 40px;
+  }
+
   .contents {
     display: flex;
     align-items: center;
-    max-width: 1555px;
+    max-width: $constrained-width;
     margin: auto;
     height: 100%;
-  }
-
-  .brand {
-    margin-right: 40px;
-
-    .title {
-      font-weight: bold;
-      font-size: 22px;
-      line-height: 25px;
-      color: #060606;
-    }
-
-    .subtitle {
-      font-weight: 500;
-      font-size: 13px;
-      color: #353535;
-
-      .strong {
-        font-weight: 700;
-      }
-    }
   }
 
   .links {
@@ -76,6 +64,7 @@ nav {
       font-size: 14px;
       line-height: 16px;
       margin-right: 20px;
+      cursor: pointer;
     }
 
     select {
@@ -85,6 +74,7 @@ nav {
       background: #f1f1f1;
       border-radius: 6px;
       padding: 0 12px;
+      cursor: pointer;
 
       font-weight: 600;
       font-size: 14px;
@@ -123,6 +113,7 @@ nav {
     font-weight: 600;
     display: flex;
     align-items: center;
+    cursor: pointer;
 
     .iconify {
       width: 30px;

@@ -1,0 +1,58 @@
+@import "components/styles/variables";
+@import "components/styles/mixins";
+
+footer {
+  @include reset-ul;
+  @include reset-header-spacing;
+  @include brand-styles($title-color: $text-light-white, $subtitle-color: $text-light-lightest);
+
+  background: $color-brand-black;
+  width: 100%;
+  color: white;
+
+  h2 {
+    font-style: 18px;
+  }
+
+  p,
+  li {
+    font-weight: 600;
+  }
+
+  li {
+    color: $text-light-darker;
+  }
+
+  .gold {
+    color: $color-gold;
+  }
+
+  .content {
+    padding-top: 48px;
+    display: flex;
+    padding-bottom: 42px;
+    margin: auto;
+    max-width: $constrained-width;
+  }
+
+  .column {
+    display: flex;
+    flex-direction: column;
+    max-width: 330px;
+
+    &:not(:last-of-type) {
+      margin-right: 138px;
+    }
+  }
+
+  .brand {
+    margin-left: auto;
+  }
+
+  .disclaimer {
+    color: $text-light-darker;
+    font-family: "DM Sans";
+    font-weight: 500;
+    font-style: italic;
+  }
+}

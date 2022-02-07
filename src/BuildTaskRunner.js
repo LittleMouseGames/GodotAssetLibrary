@@ -10,7 +10,17 @@ async function moveTemplates () {
 
   moveComponents()
 
-  fs.watch(path.join(__dirname, '/backend/components/templates'), function (eventType) {
+  fs.watch(path.join(__dirname, '/backend/components/templates/layouts'), function (eventType) {
+    if (eventType === 'change') {
+      try {
+        moveComponents()
+      } catch (e) {
+        console.log('Error moving template, please try again')
+      }
+    }
+  })
+
+  fs.watch(path.join(__dirname, '/backend/components/templates/partials'), function (eventType) {
     if (eventType === 'change') {
       try {
         moveComponents()
@@ -80,7 +90,7 @@ function findScss () {
           try {
             await compileScss()
           } catch (e) {
-            console.log('Error compiling, please try again')
+            console.log(e)
           }
         }
       })

@@ -1,0 +1,50 @@
+<footer>
+  <div class="content">
+    <section class="column">
+      <h2 class="header">
+        Helpful Links
+      </h2>
+      <ul>
+        <li>Godot Engine</li>
+        <li>About Us</li>
+        <li class="gold">Godot Patreon</li>
+        <li>LittleMouseGames</li>
+      </ul>
+    </section>
+    <section class="column">
+      <h2 class="header">
+        My Account
+      </h2>
+      <ul>
+        <li>Login or Register</li>
+        <li>Account Dashboard</li>
+        <li>My Reviews</li>
+        <li>Upload a New Asset</li>
+      </ul>
+    </section>
+    <section class="column wide">
+      <h2 class="header">Contact us</h2>
+      <p>Questions or Concerns? Contact us anytime and we'll get back to you as soon as we can</p>
+      <div class="links">
+        <div class="link">
+          <span class="icon"></span>
+          <span>Email</span>
+        </div>
+        <div class="link">
+          <span class="icon"></span>
+          <span>Twitter</span>
+        </div>
+        <div class="link">
+          <span class="icon"></span>
+          <span>Contact Form</span>
+        </div>
+      </div>
+      <span class="disclaimer">Godot Library is not affiliated with Godot Engine</span>
+    </section>
+    <section class="brand">
+      <div class="title">Godot Library</div>
+      <div class="subtitle">by <span class="strong">LittleMouseGames</span></div>
+      <span class="copyright disclaimer">&copy; 2022 Godot Library</span>
+    </section>
+  </div>
+</footer>

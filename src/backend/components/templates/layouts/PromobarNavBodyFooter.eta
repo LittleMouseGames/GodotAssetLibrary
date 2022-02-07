@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <%~ includeFile('templates/components/partials/head.eta') %>
+  <title><%= it.meta.title %></title>
+  <meta name="description" content="<%= it.meta.description %>">
+  <meta property="og:description" content="<%= it.meta.description %>">
+  <meta property="og:url" content="<%= it.meta.url %>">
+  <meta property="og:title" content="<%= it.meta.title %>">
+  <meta property="og:site_name" content="<%= it.meta.title %>">
+  <meta name="twitter:description" content="<%= it.meta.description %>">
+  <meta name="twitter:url" content="<%= it.meta.url %>">
+  <meta name="twitter:title" content="<%= it.meta.title %>">
+  <link rel="stylesheet" href="styles/<%= it.meta.moduleName %>/styles.css">
+</head>
+
+<body>
+  <%~ includeFile('templates/components/partials/nav.eta') %>
+
+  <%= it.body %>
+
+  <%~ includeFile('templates/components/partials/footer.eta') %>
+</body>
+
+</html>
