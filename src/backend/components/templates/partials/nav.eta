@@ -17,7 +17,7 @@
     <div class="links">
       <div class="link">2D Tools</div>
       <div class="link">3D Tools</div>
-      <div class="link">Editor Tools</div>
+      <div class="link">Tools</div>
       <div class="link">Shaders</div>
       <select>
         <option value="" selected disabled hidden>More Categories</option>

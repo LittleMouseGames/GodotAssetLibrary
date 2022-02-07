@@ -1,3 +1,44 @@
+<section class="site-info">
+  <div class="contents">
+    <div class="about">
+      <h2>About Godot Library</h2>
+      <p>Godot Library is a free and Open Source asset library for the Godot Engine, created by LittleMouseGames and
+        maintained by the Godot Library community on GitHub. Explore top assets created by the Godot Engine community,
+        and
+        kickstart your development with quality assets from Godot Library</p>
+    </div>
+    <div class="trust-badges">
+      <div class="trust-badge">
+        <div class="icon">
+          <span class="iconify" data-icon="ri:open-source-fill"></span>
+        </div>
+        <div class="contents">
+          <h2>Open Source</h2>
+          <span>Released under the AGPLv3 license</span>
+        </div>
+      </div>
+      <div class="trust-badge">
+        <div class="icon">
+          <span class="iconify" data-icon="fluent:plug-disconnected-24-filled"></span>
+        </div>
+        <div class="contents">
+          <h2>Plug and Play</h2>
+          <span>Browse assets directly from Godot</span>
+        </div>
+      </div>
+      <div class="trust-badge">
+        <div class="icon">
+          <span class="iconify hq" data-icon="ic:baseline-high-quality"></span>
+        </div>
+        <div class="contents">
+          <h2>Community Driven</h2>
+          <span>Created by and for developers</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
 <footer>
   <div class="content">
     <section class="column">
