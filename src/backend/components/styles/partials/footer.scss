@@ -26,6 +26,7 @@
       margin-top: 7px;
       font-size: 16px;
       color: $text-dark-darker;
+      letter-spacing: 0.02em;
     }
   }
 
@@ -83,6 +84,11 @@ footer {
     color: $text-light-darker;
   }
 
+  p {
+    margin-bottom: 9px;
+    color: $text-light-lightest;
+  }
+
   .gold {
     color: $color-gold;
   }
@@ -121,10 +127,6 @@ footer {
     font-family: "DM Sans";
     font-weight: 500;
     margin-top: 5px;
-  }
-
-  p {
-    margin-bottom: 9px;
   }
 
   .links {

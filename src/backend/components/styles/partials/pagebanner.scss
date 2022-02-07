@@ -1,0 +1,68 @@
+.page-banner {
+  @include reset-header-spacing();
+
+  color: $text-light-white;
+  background: black;
+  border-radius: 3px;
+  padding: 14px 20px 15px;
+  position: relative;
+  overflow: hidden;
+
+  .contents {
+    z-index: 1;
+    position: relative;
+  }
+
+  .heading {
+    font-size: 18px;
+    font-weight: 700;
+  }
+
+  span {
+    display: block;
+    margin-top: 2px;
+    font-weight: 500;
+    font-size: 13px;
+    letter-spacing: 0.02rem;
+  }
+
+  .background {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    z-index: 0;
+    display: flex;
+  }
+
+  .block {
+    width: 380px;
+  }
+
+  .mask {
+    position: relative;
+
+    &:after {
+      position: absolute;
+      content: "";
+      height: 100%;
+      width: 100%;
+      top: 0;
+      left: 0;
+      background: linear-gradient(
+        90deg,
+        #010101 0.09%,
+        rgba(255, 255, 255, 0.7) 42.21%,
+        rgba(255, 255, 255, 0.49) 99.94%
+      );
+    }
+  }
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    margin-left: auto;
+    display: block;
+  }
+}
