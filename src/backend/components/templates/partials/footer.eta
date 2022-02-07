@@ -5,10 +5,12 @@
         Helpful Links
       </h2>
       <ul>
-        <li>Godot Engine</li>
-        <li>About Us</li>
+        <li>Godot Website</li>
+        <li>Privacy Policy</li>
+        <li>Terms of Service</li>
+        <li>Cookie Policy</li>
         <li class="gold">Godot Patreon</li>
-        <li>LittleMouseGames</li>
+        <li>Acceptable Use Policy</li>
       </ul>
     </section>
     <section class="column">
@@ -22,20 +24,20 @@
         <li>Upload a New Asset</li>
       </ul>
     </section>
-    <section class="column wide">
+    <section class="column">
       <h2 class="header">Contact us</h2>
       <p>Questions or Concerns? Contact us anytime and we'll get back to you as soon as we can</p>
       <div class="links">
         <div class="link">
-          <span class="icon"></span>
+          <span class="iconify" data-icon="ic:baseline-email"></span>
           <span>Email</span>
         </div>
         <div class="link">
-          <span class="icon"></span>
+          <span class="iconify" data-icon="fa-brands:twitter-square"></span>
           <span>Twitter</span>
         </div>
         <div class="link">
-          <span class="icon"></span>
+          <span class="iconify" data-icon="cil:input"></span>
           <span>Contact Form</span>
         </div>
       </div>

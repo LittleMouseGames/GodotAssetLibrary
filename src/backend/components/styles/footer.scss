@@ -6,6 +6,7 @@ footer {
   @include reset-header-spacing;
   @include brand-styles($title-color: $text-light-white, $subtitle-color: $text-light-lightest);
 
+  margin-top: auto;
   background: $color-brand-black;
   width: 100%;
   color: white;
@@ -45,7 +46,14 @@ footer {
     }
   }
 
+  .iconify {
+    height: 18px;
+    width: auto;
+    margin-right: 8px;
+  }
+
   .brand {
+    margin-top: 30px;
     margin-left: auto;
   }
 
@@ -53,6 +61,24 @@ footer {
     color: $text-light-darker;
     font-family: "DM Sans";
     font-weight: 500;
-    font-style: italic;
+    margin-top: 5px;
+  }
+
+  p {
+    margin-bottom: 9px;
+  }
+
+  .links {
+    display: flex;
+    margin-bottom: 5px;
+
+    .link {
+      align-items: center;
+      display: flex;
+
+      &:not(:last-of-type) {
+        margin-right: 17px;
+      }
+    }
   }
 }

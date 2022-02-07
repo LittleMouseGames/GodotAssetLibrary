@@ -1,8 +1,15 @@
+html {
+  height: 100%;
+}
+
 body {
   margin: 0;
   padding: 0;
   background: #efefef;
   font-size: 14px;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 
   font-family: "Poppins", sans-serif;
 }
