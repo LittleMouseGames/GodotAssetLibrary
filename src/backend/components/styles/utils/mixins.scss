@@ -1,3 +1,5 @@
+@import "components/styles/utils/variables";
+
 @mixin reset-ul {
   ul {
     list-style: none;
@@ -40,5 +42,107 @@
         font-weight: 700;
       }
     }
+  }
+}
+
+@mixin asset-featured-button-styles {
+  height: 36px;
+  background: $button-dark-gray;
+  color: $text-light-white;
+  border: none;
+  border-radius: 6px;
+  font-family: "DM Sans";
+  font-weight: bold;
+  width: 80px;
+  cursor: pointer;
+}
+
+@mixin card-rating-styles {
+  %full-star {
+    &:after {
+      content: url("https://api.iconify.design/fa/star.svg?color=%23ffc700&width=15&height=15");
+    }
+  }
+
+  %half-star {
+    &:before {
+      content: url("https://api.iconify.design/fa/star-half.svg?color=%23ffc700&width=15&height=15");
+      margin-right: -7.6px;
+    }
+    &:after {
+      content: url("https://api.iconify.design/fa/star-half.svg?color=lightgray&flip=horizontal&width=15&height=15");
+    }
+  }
+
+  .stars {
+    margin: 0;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    color: #900;
+    $this: &;
+
+    &__item {
+      display: block;
+
+      &::after {
+        content: url("https://api.iconify.design/fa/star.svg?color=lightgray&width=15&height=15");
+      }
+    }
+
+    @for $i from 0 to 6 {
+      &[data-rating="#{$i}"] {
+        #{$this}__item:nth-child(-n + #{$i}) {
+          @extend %full-star;
+        }
+      }
+
+      &[data-rating="#{$i + 0.5}"] {
+        #{$this}__item:nth-child(-n + #{$i}) {
+          @extend %full-star;
+        }
+
+        #{$this}__item:nth-child(#{$i + 1}) {
+          @extend %half-star;
+        }
+      }
+    }
+  }
+}
+
+@mixin background-gradient-image($background, $mask, $image, $gradient) {
+  #{$background} {
+    position: absolute;
+    border-radius: 6px;
+    width: 100%;
+    height: 100%;
+    left: 0;
+    top: 0;
+    z-index: 0;
+    display: flex;
+  }
+
+  #{$mask} {
+    position: relative;
+    width: 100%;
+
+    &:after {
+      position: absolute;
+      content: "";
+      height: 100%;
+      width: 100%;
+      top: 0;
+      left: 0;
+      background: $gradient;
+    }
+  }
+
+  #{$image} {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    margin-left: auto;
+    display: block;
   }
 }

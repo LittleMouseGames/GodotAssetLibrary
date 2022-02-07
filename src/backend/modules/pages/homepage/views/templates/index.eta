@@ -6,4 +6,16 @@
 } %>
 <% layout('templates/components/layouts/PromobarNavBodyFooter.eta') %>
 
+<section class="homepage">
+  <section>
+    <h2>Assets we Love</h2>
+
+    <div class="container three-wide">
+      <%~ includeFile('templates/components/partials/assetcardfeatured.eta') %>
+      <%~ includeFile('templates/components/partials/assetcardfeatured.eta') %>
+      <%~ includeFile('templates/components/partials/assetcardfeatured.eta') %>
+    </div>
+  </section>
+</section>
+
 HELLO WOORRLLDD

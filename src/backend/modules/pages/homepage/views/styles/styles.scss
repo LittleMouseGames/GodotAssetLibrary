@@ -1,1 +1,19 @@
 @import "components/styles/layouts/PromobarNavBodyFooter";
+@import "components/styles/partials/assetcardfeatured";
+@include card-rating-styles;
+
+.homepage {
+  h2 {
+    font-family: "Inter";
+    font-weight: 700;
+    font-size: 18px;
+    margin-top: 40px;
+    margin-bottom: 13px;
+  }
+
+  .three-wide {
+    display: grid;
+    grid-template-columns: auto auto auto;
+    column-gap: 20px;
+  }
+}

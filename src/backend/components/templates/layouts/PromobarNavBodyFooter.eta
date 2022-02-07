@@ -20,7 +20,7 @@
 
   <section class="main">
     <%~ includeFile('templates/components/partials/pagebanner.eta') %>
-    <%= it.body %>
+    <%~ it.body %>
   </section>
 
   <%~ includeFile('templates/components/partials/footer.eta') %>
