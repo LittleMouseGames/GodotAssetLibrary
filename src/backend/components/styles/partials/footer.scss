@@ -1,5 +1,5 @@
-@import "components/styles/variables";
-@import "components/styles/mixins";
+@import "components/styles/utils/variables";
+@import "components/styles/utils/mixins";
 
 footer {
   @include reset-ul;

@@ -18,7 +18,9 @@
 <body>
   <%~ includeFile('templates/components/partials/nav.eta') %>
 
-  <%= it.body %>
+  <section class="main">
+    <%= it.body %>
+  </section>
 
   <%~ includeFile('templates/components/partials/footer.eta') %>
 </body>
