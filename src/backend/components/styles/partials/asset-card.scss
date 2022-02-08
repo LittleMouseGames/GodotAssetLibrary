@@ -58,7 +58,6 @@
     position: relative;
     z-index: 1;
     display: flex;
-    align-items: baseline;
   }
 
   .badge {
@@ -78,10 +77,12 @@
     z-index: 1;
     position: relative;
     height: $head-height;
-  }
 
-  .more {
-    margin-left: auto;
+    .iconify {
+      margin-left: auto;
+      height: 27px;
+      width: auto;
+    }
   }
 
   .badge-blue {

@@ -3,7 +3,7 @@
     <div class="badges">
       <div class="badge badge-blue">2D TOOLS</div>
       <div class="badge badge-purple">3.2</div>
-      <div class="more">...</div>
+      <span class="iconify" data-icon="akar-icons:more-horizontal"></span>
     </div>
     <% if (!it?.featured) { %>
     <div class="background">
