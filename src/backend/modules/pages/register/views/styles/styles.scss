@@ -1,4 +1,67 @@
 @import "components/styles/layouts/promobar-nav-body-footer";
+@import "components/styles/utils/mixins";
+@import "components/styles/utils/variables";
 
-.register {
+.page-register {
+  @include reset-header-spacing;
+  display: grid;
+  grid-template-columns: auto auto;
+  column-gap: 80px;
+  margin-top: 40px;
+
+  h2 {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 15px;
+  }
+
+  p {
+    margin-bottom: 3px;
+  }
+
+  ul {
+    margin-top: 3px;
+    margin-bottom: 20px;
+  }
+
+  li {
+    &:not(:last-of-type) {
+      margin-bottom: 3px;
+    }
+  }
+
+  input {
+    background: $button-gray;
+    color: $text-dark-darker;
+    padding: 15px;
+    border-radius: 4px;
+    border: none;
+    width: 100%;
+    font-family: "Inter";
+
+    &:not(:last-of-type) {
+      margin-bottom: 15px;
+    }
+  }
+
+  strong {
+    font-weight: 600;
+    color: $text-dark-darker;
+  }
+
+  .disclaimer {
+    margin-top: 20px;
+    margin-bottom: 20px;
+  }
+
+  button {
+    background: $button-very-dark;
+    border: none;
+    color: white;
+    border-radius: 3px;
+    font-family: "Inter";
+    font-weight: 600;
+    padding: 11px 27px;
+    cursor: pointer;
+  }
 }

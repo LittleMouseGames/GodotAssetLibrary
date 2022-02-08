@@ -1,11 +1,41 @@
 <% it.meta = {
-  title: 'Godot Library | Search',
+  title: 'Godot Library | Register',
   description: 'Find all <Search Query> Assets on Godot',
-  url: 'https://godotlibrary.com/search/q?=<Search Query>',
-  moduleName: 'search'
+  url: 'https://godotlibrary.com/register',
+  moduleName: 'register'
 } %>
 <% layout('templates/components/layouts/promobar_nav_body_footer.eta') %>
 
 <section class="page-register">
-  Oh, hi!
+  <div class="column">
+    <h2>Sign in to an existing Account</h2>
+    <form action="">
+      <input type="email" placeholder="Email Address" required>
+      <input type="password" placeholder="Password" required>
+      <div class="disclaimer">This site is protected by reCAPTCHA and the Google <strong>Privacy Policy</strong> and
+        <strong>Terms of
+          Service</strong> apply.
+      </div>
+      <button action="submit">Login</button>
+    </form>
+  </div>
+  <div class="column">
+    <h2>Create a new Account</h2>
+    <p>With a free Godot Library account, you can:</p>
+    <ul>
+      <li>Add new assets to the Library</li>
+      <li>Leave ratings and reviews</li>
+      <li>Easily bookmark assets for future lookup</li>
+    </ul>
+    <form action="">
+      <input type="email" placeholder="Email Address" required>
+      <input type="password" placeholder="Password" required>
+      <input type="password" placeholder="Password confirmation" required>
+      <div class="disclaimer">This site is protected by reCAPTCHA and the Google <strong>Privacy Policy</strong> and
+        <strong>Terms of
+          Service</strong> apply.
+      </div>
+      <button action="submit">Create account</button>
+    </form>
+  </div>
 </section>
