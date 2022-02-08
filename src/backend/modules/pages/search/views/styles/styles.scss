@@ -4,17 +4,6 @@
 
 @include card-rating-styles;
 
-.featured {
-  .three-wide {
-    margin-bottom: 40px;
-    margin-top: 30px;
-    display: grid;
-    grid-template-columns: auto auto auto;
-    column-gap: 20px;
-    row-gap: 20px;
-  }
-}
-
 .search-results {
   display: grid;
   grid-template-columns: 260px auto;

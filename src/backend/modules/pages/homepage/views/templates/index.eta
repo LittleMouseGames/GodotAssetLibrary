@@ -8,16 +8,6 @@
 
 <section class="homepage">
   <section>
-    <h2>Assets we Love</h2>
-    <div class="container three-wide">
-      <%~ includeFile('templates/components/partials/asset-card.eta', { featured: true }) %>
-      <%~ includeFile('templates/components/partials/asset-card.eta', { featured: true }) %>
-      <%~ includeFile('templates/components/partials/asset-card.eta', { featured: true }) %>
-    </div>
-  </section>
-
-
-  <section>
     <h2>Whats popular</h2>
     <div class="container five-wide">
       <%~ includeFile('templates/components/partials/asset-card.eta') %>
@@ -25,6 +15,15 @@
       <%~ includeFile('templates/components/partials/asset-card.eta') %>
       <%~ includeFile('templates/components/partials/asset-card.eta') %>
       <%~ includeFile('templates/components/partials/asset-card.eta') %>
+    </div>
+  </section>
+
+  <section>
+    <h2>Assets we Love</h2>
+    <div class="container three-wide">
+      <%~ includeFile('templates/components/partials/asset-card.eta', { featured: true }) %>
+      <%~ includeFile('templates/components/partials/asset-card.eta', { featured: true }) %>
+      <%~ includeFile('templates/components/partials/asset-card.eta', { featured: true }) %>
     </div>
   </section>
 
