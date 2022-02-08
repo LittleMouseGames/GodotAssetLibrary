@@ -6,6 +6,18 @@
 } %>
 <% layout('templates/components/layouts/promobar_nav_body_footer.eta') %>
 
+<section class="featured">
+  <% if (!it?.onCategory) { %>
+  <section>
+    <div class="container three-wide">
+      <%~ includeFile('templates/components/partials/asset-card.eta', { featured: true }) %>
+      <%~ includeFile('templates/components/partials/asset-card.eta', { featured: true }) %>
+      <%~ includeFile('templates/components/partials/asset-card.eta', { featured: true }) %>
+    </div>
+  </section>
+  <% } %>
+</section>
+
 <section class="search-results">
   <section>
     <%~ includeFile('templates/components/partials/catalog-filters.eta') %>
