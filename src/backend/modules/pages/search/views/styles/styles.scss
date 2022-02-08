@@ -1,23 +1,12 @@
 @import "components/styles/layouts/promobar-nav-body-footer";
-@import "components/styles/partials/asset-card";
-@import "components/styles/partials/category-card-featured";
-@import "components/styles/partials/category-card";
+@import "components/styles/partials/catalog-grid";
+@import "components/styles/partials/catalog-filters";
 
 @include card-rating-styles;
 
-.search {
-  h2 {
-    font-family: "Inter";
-    font-weight: 700;
-    font-size: 18px;
-    margin-top: 40px;
-    margin-bottom: 13px;
-  }
-
-  .four-wide {
-    display: grid;
-    grid-template-columns: auto auto auto auto;
-    column-gap: 20px;
-    row-gap: 20px;
-  }
+.search-results {
+  display: grid;
+  grid-template-columns: 260px auto;
+  column-gap: 55px;
+  margin-top: 25px;
 }

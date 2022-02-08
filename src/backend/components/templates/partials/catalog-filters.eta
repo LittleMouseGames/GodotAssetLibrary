@@ -1,0 +1,40 @@
+<div class="catalog-filters">
+  <div class="filter">
+    <h2>Category Filters</h2>
+    <hr>
+    <div class="options">
+      <ul>
+        <li>
+          <label>
+            <input type="checkbox">
+            2D Tools (10)
+          </label>
+        </li>
+        <li>
+          <label>
+            <input type="checkbox">
+            3D Tools (10)
+          </label>
+        </li>
+        <li>
+          <label>
+            <input type="checkbox">
+            Shaders (10)
+          </label>
+        </li>
+        <li>
+          <label>
+            <input type="checkbox">
+            Materials (10)
+          </label>
+        </li>
+        <li>
+          <label>
+            <input type="checkbox">
+            Tools (10)
+          </label>
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>

@@ -104,17 +104,21 @@ function compileScss () {
     const exportPath = path.join(path.join(__dirname, '../dist/public/'), file.replace('src/', '').replace('pages/', '').replace('backend/', '').replace('views/', '').replace('styles/', '').replace('modules/', 'styles/').replace('.scss', '.css'))
     const compiledCSS = sass.compile(path.join(file), { loadPaths: [path.join(__dirname, 'backend')], style: 'compressed' })
 
-    cssPurge.purgeCSS(compiledCSS.css, {
-      trim: true,
-      shorten: true
-    }, function (error, result) {
-      if (error) {
-        console.log(error)
-      } else {
-        fs.mkdirSync(path.dirname(exportPath), { recursive: true })
-        fs.writeFile(`${exportPath}`, result)
-      }
-    })
+    fs.mkdirSync(path.dirname(exportPath), { recursive: true })
+    fs.writeFile(`${exportPath}`, compiledCSS.css)
+
+    // TODO: Move to production builder
+    // cssPurge.purgeCSS(compiledCSS.css, {
+    //   trim: true,
+    //   shorten: true
+    // }, function (error, result) {
+    //   if (error) {
+    //     console.log(error)
+    //   } else {
+    //     fs.mkdirSync(path.dirname(exportPath), { recursive: true })
+    //     fs.writeFile(`${exportPath}`, result)
+    //   }
+    // })
   })
 }
 
