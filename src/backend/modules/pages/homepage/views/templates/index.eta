@@ -43,4 +43,21 @@
       <%~ includeFile('templates/components/partials/category-card-featured.eta') %>
     </div>
   </section>
+
+  <section>
+    <h2>Explore more from Categories</h2>
+
+    <div class="container five-wide">
+      <%~ includeFile('templates/components/partials/category-card.eta') %>
+      <%~ includeFile('templates/components/partials/category-card.eta') %>
+      <%~ includeFile('templates/components/partials/category-card.eta') %>
+      <%~ includeFile('templates/components/partials/category-card.eta') %>
+      <%~ includeFile('templates/components/partials/category-card.eta') %>
+      <%~ includeFile('templates/components/partials/category-card.eta') %>
+      <%~ includeFile('templates/components/partials/category-card.eta') %>
+      <%~ includeFile('templates/components/partials/category-card.eta') %>
+      <%~ includeFile('templates/components/partials/category-card.eta') %>
+      <%~ includeFile('templates/components/partials/category-card.eta') %>
+    </div>
+  </section>
 </section>

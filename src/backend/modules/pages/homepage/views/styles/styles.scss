@@ -1,6 +1,8 @@
 @import "components/styles/layouts/promobar-nav-body-footer";
 @import "components/styles/partials/asset-card";
 @import "components/styles/partials/category-card-featured";
+@import "components/styles/partials/category-card";
+
 @include card-rating-styles;
 
 .homepage {
