@@ -8,3 +8,4 @@ export * from './api/authentication/controllers/index'
  **/
 export * from './pages/homepage/controllers/index'
 export * from './pages/search/controllers/index'
+export * from './pages/register/controllers/index'

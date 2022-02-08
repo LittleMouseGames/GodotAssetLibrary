@@ -6,12 +6,6 @@
 } %>
 <% layout('templates/components/layouts/promobar_nav_body_footer.eta') %>
 
-<section class="page-search">
-  <section>
-    <%~ includeFile('templates/components/partials/catalog-filters.eta') %>
-  </section>
-
-  <section>
-    <%~ includeFile('templates/components/partials/catalog-grid.eta') %>
-  </section>
+<section class="page-register">
+  Oh, hi!
 </section>

@@ -6,7 +6,7 @@
 } %>
 <% layout('templates/components/layouts/promobar_nav_body_footer.eta') %>
 
-<section class="homepage">
+<section class="page-home">
   <section>
     <h2>Whats popular</h2>
     <div class="container five-wide">
