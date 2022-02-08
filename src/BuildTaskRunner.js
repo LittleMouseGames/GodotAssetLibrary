@@ -2,6 +2,7 @@ const fs = require('fs-extra')
 const path = require('path')
 const glob = require('glob')
 const sass = require('sass')
+const cssPurge = require('css-purge')
 
 const pageScss = []
 
@@ -101,10 +102,19 @@ function findScss () {
 function compileScss () {
   pageScss.forEach(file => {
     const exportPath = path.join(path.join(__dirname, '../dist/public/'), file.replace('src/', '').replace('pages/', '').replace('backend/', '').replace('views/', '').replace('styles/', '').replace('modules/', 'styles/').replace('.scss', '.css'))
-    const result = sass.compile(path.join(file), { loadPaths: [path.join(__dirname, 'backend')], style: 'compressed' })
+    const compiledCSS = sass.compile(path.join(file), { loadPaths: [path.join(__dirname, 'backend')], style: 'compressed' })
 
-    fs.mkdirSync(path.dirname(exportPath), { recursive: true })
-    fs.writeFile(`${exportPath}`, result.css)
+    cssPurge.purgeCSS(compiledCSS.css, {
+      trim: true,
+      shorten: true
+    }, function (error, result) {
+      if (error) {
+        console.log(error)
+      } else {
+        fs.mkdirSync(path.dirname(exportPath), { recursive: true })
+        fs.writeFile(`${exportPath}`, result)
+      }
+    })
   })
 }
 
