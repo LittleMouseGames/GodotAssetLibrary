@@ -45,16 +45,24 @@
   }
 }
 
-@mixin asset-featured-button-styles {
+@mixin asset-featured-button-styles($dark: "true") {
   height: 31px;
-  background: $button-dark-gray;
-  color: $text-light-white;
   border: none;
   border-radius: 3px;
   font-family: "DM Sans";
   font-weight: bold;
   width: 63px;
   cursor: pointer;
+
+  @if $dark == "true" {
+    background: $button-dark-gray;
+    color: $text-light-white;
+  }
+
+  @if $dark == "false" {
+    background: $button-lighter-gray;
+    color: $text-gray-dark;
+  }
 }
 
 @mixin card-rating-styles {
