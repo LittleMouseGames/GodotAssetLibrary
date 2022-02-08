@@ -15,11 +15,13 @@
     display: grid;
     grid-template-columns: auto auto auto;
     column-gap: 20px;
+    row-gap: 20px;
   }
 
   .five-wide {
     display: grid;
     grid-template-columns: auto auto auto auto auto;
     column-gap: 20px;
+    row-gap: 20px;
   }
 }

@@ -26,6 +26,11 @@
       <%~ includeFile('templates/components/partials/asset-card.eta') %>
       <%~ includeFile('templates/components/partials/asset-card.eta') %>
       <%~ includeFile('templates/components/partials/asset-card.eta') %>
+      <%~ includeFile('templates/components/partials/asset-card.eta') %>
+      <%~ includeFile('templates/components/partials/asset-card.eta') %>
+      <%~ includeFile('templates/components/partials/asset-card.eta') %>
+      <%~ includeFile('templates/components/partials/asset-card.eta') %>
+      <%~ includeFile('templates/components/partials/asset-card.eta') %>
     </div>
   </section>
 </section>
