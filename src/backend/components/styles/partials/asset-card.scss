@@ -1,47 +1,47 @@
 @import "components/styles/utils/variables";
 @import "components/styles/utils/mixins";
 
-@mixin head-styles($height: auto) {
-  .head {
-    width: 100%;
-    z-index: 1;
-    position: relative;
-    height: $height;
-  }
-}
+@mixin set-styles(
+  $head-height: auto,
+  $background-is-banner: "false",
+  $background-color,
+  $body-margin-top,
+  $author-color,
+  $title-color,
+  $rating-color,
+  $padding-size: 15px
+) {
+  @include background-gradient-image(
+    ".background",
+    ".mask",
+    "img",
+    #{linear-gradient(
+        180deg,
+        rgba(0, 0, 0, 0) 0%,
+        rgba(0, 0, 0, 0.69) 36.46%,
+        rgba(0, 0, 0, 0.88) 54.69%,
+        rgba(0, 0, 0, 0.9) 76.56%,
+        #000000 100%
+      )}
+  );
 
-.asset-card {
-  $padding-size: 15px;
-
-  padding: $padding-size;
-  border-radius: 6px;
-  color: white;
-  position: relative;
-  overflow: hidden;
-  background: $color-brand-white;
-
-  &.featured {
-    @include head-styles();
-    background: $color-brand-black;
-
-    .body {
-      margin-top: 26px;
-    }
-  }
-
-  &.normal {
-    @include head-styles(142px);
-
+  @if $background-is-banner == "true" {
     .background {
       margin-left: -$padding-size;
       margin-top: -$padding-size;
       width: calc(100% + ($padding-size * 2));
       height: calc(100% + $padding-size);
     }
+  }
+  padding: $padding-size;
+  border-radius: 6px;
+  color: white;
+  position: relative;
+  overflow: hidden;
+  background: $background-color;
 
-    .body {
-      margin-top: 15px;
-    }
+  .body {
+    margin-top: $body-margin-top;
   }
 
   .badges {
@@ -61,6 +61,13 @@
     color: white;
     display: inline-block;
     margin-right: 10px;
+  }
+
+  .head {
+    width: 100%;
+    z-index: 1;
+    position: relative;
+    height: $head-height;
   }
 
   .more {
@@ -103,7 +110,7 @@
     .title {
       font-size: 15px;
       font-weight: 600;
-      color: $text-light-white;
+      color: $title-color;
     }
 
     p {
@@ -136,18 +143,30 @@
       }
     }
   }
+}
 
-  @include background-gradient-image(
-    ".background",
-    ".mask",
-    "img",
-    #{linear-gradient(
-        180deg,
-        rgba(0, 0, 0, 0) 0%,
-        rgba(0, 0, 0, 0.69) 36.46%,
-        rgba(0, 0, 0, 0.88) 54.69%,
-        rgba(0, 0, 0, 0.9) 76.56%,
-        #000000 100%
-      )}
-  );
+.asset-card {
+  &.featured {
+    @include set-styles(
+      $head-height: auto,
+      $background-is-banner: "false",
+      $background-color: $color-brand-black,
+      $body-margin-top: 26px,
+      $author-color: $text-light-gray,
+      $title-color: $text-light-white,
+      $rating-color: $text-light-white
+    );
+  }
+
+  &.normal {
+    @include set-styles(
+      $head-height: 140px,
+      $background-is-banner: "true",
+      $background-color: $color-brand-white,
+      $body-margin-top: 15px,
+      $author-color: $text-light-grayer,
+      $title-color: $text-dark-darkest,
+      $rating-color: $text-dark-darkest
+    );
+  }
 }
