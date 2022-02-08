@@ -7,3 +7,4 @@ export * from './api/authentication/controllers/index'
  * Pages exports
  **/
 export * from './pages/homepage/controllers/index'
+export * from './pages/search/controllers/index'

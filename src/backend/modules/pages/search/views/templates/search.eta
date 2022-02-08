@@ -1,0 +1,29 @@
+<% it.meta = {
+  title: 'Godot Library | Search',
+  description: 'Find all <Search Query> Assets on Godot',
+  url: 'https://godotlibrary.com/search/q?=<Search Query>',
+  moduleName: 'search'
+} %>
+<% layout('templates/components/layouts/promobar_nav_body_footer.eta') %>
+
+<section class="search">
+  <section>
+    <h2>Whats popular</h2>
+    <div class="container four-wide">
+      <%~ includeFile('templates/components/partials/asset-card.eta') %>
+      <%~ includeFile('templates/components/partials/asset-card.eta') %>
+      <%~ includeFile('templates/components/partials/asset-card.eta') %>
+      <%~ includeFile('templates/components/partials/asset-card.eta') %>
+      <%~ includeFile('templates/components/partials/asset-card.eta') %>
+      <%~ includeFile('templates/components/partials/asset-card.eta') %>
+      <%~ includeFile('templates/components/partials/asset-card.eta') %>
+      <%~ includeFile('templates/components/partials/asset-card.eta') %>
+      <%~ includeFile('templates/components/partials/asset-card.eta') %>
+      <%~ includeFile('templates/components/partials/asset-card.eta') %>
+      <%~ includeFile('templates/components/partials/asset-card.eta') %>
+      <%~ includeFile('templates/components/partials/asset-card.eta') %>
+    </div>
+  </section>
+
+
+</section>
