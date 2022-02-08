@@ -1,0 +1,17 @@
+<div class="category-card-featured">
+  <div class="head">
+    <div>Featured Category</div>
+  </div>
+  <div class="body">
+    <div>Editor Tools:</div>
+    <div>More Tools for a better Editor</div>
+  </div>
+  <div class="footer">
+    <button>Explore Editor Tools</button>
+  </div>
+  <div class="background">
+    <div class="mask">
+      <img src="https://github.com/LittleMouseGames/whiskers/raw/master/media.png" alt="">
+    </div>
+  </div>
+</div>

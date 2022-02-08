@@ -33,4 +33,14 @@
       <%~ includeFile('templates/components/partials/asset-card.eta') %>
     </div>
   </section>
+
+  <section>
+    <h2>Featured Categories</h2>
+
+    <div class="container three-wide">
+      <%~ includeFile('templates/components/partials/category-card-featured.eta') %>
+      <%~ includeFile('templates/components/partials/category-card-featured.eta') %>
+      <%~ includeFile('templates/components/partials/category-card-featured.eta') %>
+    </div>
+  </section>
 </section>
