@@ -9,8 +9,7 @@
   border-radius: 6px;
   overflow: hidden;
   color: $color-brand-white;
-  box-shadow: 0px 17px 80px rgba(0, 0, 0, 0.07), 0px 3.79717px 17.869px rgba(0, 0, 0, 0.0417275),
-    0px 1.13052px 5.32008px rgba(0, 0, 0, 0.0282725);
+  box-shadow: $standard-shadow;
 
   .head,
   .body,

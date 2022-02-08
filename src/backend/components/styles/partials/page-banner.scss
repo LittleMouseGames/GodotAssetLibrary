@@ -7,8 +7,7 @@
   padding: 14px 20px 15px;
   position: relative;
   overflow: hidden;
-  box-shadow: 0px 17px 80px rgba(0, 0, 0, 0.07), 0px 3.79717px 17.869px rgba(0, 0, 0, 0.0417275),
-    0px 1.13052px 5.32008px rgba(0, 0, 0, 0.0282725);
+  box-shadow: $standard-shadow;
 
   .contents {
     z-index: 1;

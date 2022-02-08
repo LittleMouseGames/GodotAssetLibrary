@@ -44,6 +44,7 @@ nav {
   position: sticky;
   top: 0;
   z-index: 2;
+  box-shadow: $standard-shadow;
 
   .brand {
     margin-right: 40px;
