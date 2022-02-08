@@ -1,5 +1,5 @@
 @import "components/styles/layouts/promobar-nav-body-footer";
-@import "components/styles/partials/asset-card-featured";
+@import "components/styles/partials/asset-card";
 @include card-rating-styles;
 
 .homepage {
@@ -14,6 +14,12 @@
   .three-wide {
     display: grid;
     grid-template-columns: auto auto auto;
+    column-gap: 20px;
+  }
+
+  .five-wide {
+    display: grid;
+    grid-template-columns: auto auto auto auto auto;
     column-gap: 20px;
   }
 }

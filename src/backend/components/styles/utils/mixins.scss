@@ -46,14 +46,14 @@
 }
 
 @mixin asset-featured-button-styles {
-  height: 33px;
+  height: 31px;
   background: $button-dark-gray;
   color: $text-light-white;
   border: none;
-  border-radius: 6px;
+  border-radius: 3px;
   font-family: "DM Sans";
   font-weight: bold;
-  width: 70px;
+  width: 63px;
   cursor: pointer;
 }
 

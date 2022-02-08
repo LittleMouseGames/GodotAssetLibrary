@@ -1,8 +1,19 @@
-<div class="asset-card-featured">
+<div class="asset-card <%= it?.featured ? 'featured' : 'normal' %>">
   <div class="head">
-    <div class="badge badge-blue">2D TOOLS</div>
-    <div class="badge badge-purple">3.2</div>
-    <div class="more">...</div>
+    <div class="badges">
+      <div class="badge badge-blue">2D TOOLS</div>
+      <div class="badge badge-purple">3.2</div>
+      <div class="more">...</div>
+    </div>
+    <% if (!it?.featured) { %>
+    <div class="background">
+      <div class="mask">
+        <img
+          src="https://images.unsplash.com/photo-1644146083026-ee18d9f05a53?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1171&q=80"
+          alt="">
+      </div>
+    </div>
+    <% } %>
   </div>
   <div class="body">
     <div class="top">
@@ -33,6 +44,7 @@
       <button>View</button>
     </div>
   </div>
+  <% if (it?.featured) { %>
   <div class="background">
     <div class="mask">
       <img
@@ -40,4 +52,5 @@
         alt="">
     </div>
   </div>
+  <% } %>
 </div>

@@ -1,19 +1,54 @@
 @import "components/styles/utils/variables";
 @import "components/styles/utils/mixins";
 
-.asset-card-featured {
-  padding: 15px;
+@mixin head-styles($height: auto) {
+  .head {
+    width: 100%;
+    z-index: 1;
+    position: relative;
+    height: $height;
+  }
+}
+
+.asset-card {
+  $padding-size: 15px;
+
+  padding: $padding-size;
   border-radius: 6px;
-  background: black;
   color: white;
   position: relative;
   overflow: hidden;
+  background: $color-brand-white;
 
-  .head {
-    width: 100%;
-    display: flex;
-    z-index: 1;
+  &.featured {
+    @include head-styles();
+    background: $color-brand-black;
+
+    .body {
+      margin-top: 26px;
+    }
+  }
+
+  &.normal {
+    @include head-styles(142px);
+
+    .background {
+      margin-left: -$padding-size;
+      margin-top: -$padding-size;
+      width: calc(100% + ($padding-size * 2));
+      height: calc(100% + $padding-size);
+    }
+
+    .body {
+      margin-top: 15px;
+    }
+  }
+
+  .badges {
     position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: baseline;
   }
 
   .badge {
@@ -25,10 +60,7 @@
     background: $color-brand-black;
     color: white;
     display: inline-block;
-
-    &:not(:last-of-type) {
-      margin-right: 10px;
-    }
+    margin-right: 10px;
   }
 
   .more {
@@ -44,7 +76,6 @@
   }
 
   .body {
-    margin-top: 26px;
     z-index: 1;
     position: relative;
 
