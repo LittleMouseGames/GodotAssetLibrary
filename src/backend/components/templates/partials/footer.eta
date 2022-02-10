@@ -46,9 +46,9 @@
         Helpful Links
       </h2>
       <ul>
-        <li><a href="">Godot Website</a></li>
+        <li><a href="https://godotengine.org" target="_blank">Godot Website</a></li>
         <li><a href="/terms/privacy-policy">Privacy Policy</a></li>
-        <li class="gold"><a href="">Godot Patreon</a></li>
+        <li class="gold"><a href="https://patreon.com/godotengine" target="_blank">Godot Patreon</a></li>
         <li><a href="/terms/terms-of-service">Terms of Service</a></li>
         <li><a href="/terms/cookie-policy">Cookie Policy</a></li>
         <li><a href="/terms/acceptable-use-policy">Acceptable Use Policy</a></li>
@@ -59,10 +59,10 @@
         My Account
       </h2>
       <ul>
-        <li><a href="register">Login or Register</a></li>
-        <li><a href="dashboard">Account Dashboard</a></li>
+        <li><a href="/register">Login or Register</a></li>
+        <li><a href="/dashboard">Account Dashboard</a></li>
         <li><a href="">My Reviews</a></li>
-        <li><a href="">Upload a New Asset</a></li>
+        <li><a href="/create">Upload a New Asset</a></li>
       </ul>
     </section>
     <section class="column">
@@ -71,15 +71,15 @@
       <div class="links">
         <div class="link">
           <span class="iconify" data-icon="ic:baseline-email"></span>
-          <span>Email</span>
+          <a href="mailto:hello@godotlibrary.com">
+            <span>Email</span>
+          </a>
         </div>
         <div class="link">
           <span class="iconify" data-icon="fa-brands:twitter-square"></span>
-          <span>Twitter</span>
-        </div>
-        <div class="link">
-          <span class="iconify" data-icon="cil:input"></span>
-          <span>Contact Form</span>
+          <a href="https://twitter.com/LittleMouseDev" target="_blank">
+            <span>Twitter</span>
+          </a>
         </div>
       </div>
       <span class="disclaimer">Godot Library is not affiliated with Godot Engine</span>
@@ -87,7 +87,8 @@
     <section class="brand">
       <a href="/">
         <div class="title">Godot Library</div>
-        <div class="subtitle">by <span class="strong">LittleMouseGames</span></div>
+        <div class="subtitle">by <a href="https://twitter.com/LittleMouseDev" target="_blank" class="mouse-link"><span
+              class="strong">LittleMouseGames</span></a></div>
       </a>
       <span class="copyright disclaimer">&copy; 2022 Godot Library</span>
     </section>

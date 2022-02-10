@@ -18,3 +18,11 @@ a {
   text-decoration: none;
   color: inherit;
 }
+
+.mouse-link {
+  transition: 0.2s;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}

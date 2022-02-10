@@ -32,7 +32,7 @@
     </div>
     <div class="account">
       <span class="iconify" data-icon="codicon:account"></span>
-      <span>Account / Login</span>
+      <a href="/register"><span>Account / Login</span></a>
     </div>
   </div>
 </nav>
