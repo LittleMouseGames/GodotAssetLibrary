@@ -1,0 +1,47 @@
+<% it.meta = {
+  title: 'Godot Library | create',
+  description: 'Find all <Search Query> Assets on Godot',
+  url: 'https://godotlibrary.com/dashboard',
+  moduleName: 'dashboard'
+} %>
+<% layout('templates/components/layouts/promobar_nav_body_footer.eta') %>
+
+<section class="page-dashboard">
+  <div class="column">
+    <div class="sidebar">
+      <div class="item">Account Information</div>
+      <div class="item">My Added Assets</div>
+      <div class="item">Bookmarked Assets</div>
+      <div class="item">My Reviews</div>
+    </div>
+  </div>
+  <div class="column">
+    <form action="">
+      <h2>Account Information</h2>
+      <input type="text" name="username" placeholder="Username">
+      <input type="text" name="email" placeholder="Email Address">
+      <label>
+        <input type="checkbox">
+        Send notifications to my email address
+      </label>
+      <div class="disclaimer">This site is protected by reCAPTCHA and the Google <strong>Privacy Policy</strong> and
+        <strong>Terms of
+          Service</strong> apply.
+      </div>
+      <button type="submit">Submit</button>
+    </form>
+  </div>
+  <div class="column">
+    <form action="">
+      <h2>Account Security</h2>
+      <input type="password" placeholder="Current Password">
+      <input type="password" placeholder="New Password">
+      <input type="password" placeholder="New Password Confirmation">
+      <div class="disclaimer">This site is protected by reCAPTCHA and the Google <strong>Privacy Policy</strong> and
+        <strong>Terms of
+          Service</strong> apply.
+      </div>
+      <button type="submit">Submit</button>
+    </form>
+  </div>
+</section>
