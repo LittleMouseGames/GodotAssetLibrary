@@ -1,0 +1,11 @@
+<% it.meta = {
+  title: 'Godot Library | Asset',
+  description: 'Find the best Godot Assets on Godot Library',
+  url: 'https://godotlibrary.com',
+  moduleName: 'asset'
+} %>
+<% layout('templates/components/layouts/promobar-nav-body-footer.eta') %>
+
+<section class="page-asset">
+
+</section>

@@ -85,8 +85,10 @@
       <span class="disclaimer">Godot Library is not affiliated with Godot Engine</span>
     </section>
     <section class="brand">
-      <div class="title">Godot Library</div>
-      <div class="subtitle">by <span class="strong">LittleMouseGames</span></div>
+      <a href="/">
+        <div class="title">Godot Library</div>
+        <div class="subtitle">by <span class="strong">LittleMouseGames</span></div>
+      </a>
       <span class="copyright disclaimer">&copy; 2022 Godot Library</span>
     </section>
   </div>
