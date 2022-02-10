@@ -9,8 +9,8 @@
 <section class="page-terms">
   <div class="column">
     <div class="sidebar">
-      <div class="item active"><a href="/terms/privacy-policy">Privacy Policy</a></div>
-      <div class="item"><a href="/terms/terms-of-service">Terms of Service</a></div>
+      <div class="item"><a href="/terms/privacy-policy">Privacy Policy</a></div>
+      <div class="item active"><a href="/terms/terms-of-service">Terms of Service</a></div>
       <div class="item"><a href="/terms/cookie-policy">Cookie Policy</a></div>
       <div class="item"><a href="/terms/acceptable-use-policy">Acceptable Use Policy</a></div>
     </div>
