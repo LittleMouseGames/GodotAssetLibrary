@@ -34,16 +34,22 @@
     </div>
     <div class="section">
       <div class="row">
-        <input type="text" placeholder="Quick about (used in listing cards)" required>
+        <div class="input">
+          <input type="text" placeholder="Quick about (used in listing cards)" required>
+        </div>
       </div>
       <div class="row">
-        <input type="text" placeholder="YouTube video (optional)">
+        <div class="input">
+          <input type="text" placeholder="YouTube video (optional)">
+        </div>
         <div class="note">
           <span><strong>Note:</strong> If a video is provided it will display first in the asset display page</span>
         </div>
       </div>
       <div class="row">
-        <input type="text" placeholder="Card banner image URL" required>
+        <div class="input">
+          <input type="text" placeholder="Card banner image URL" required>
+        </div>
         <div class="note">
           <span><strong>Note:</strong> The image used in asset cards across the site. This could be a link to an image
             in your
@@ -51,30 +57,40 @@
         </div>
       </div>
       <div class="row">
-        <input type="text" placeholder="Icon URL" required>
+        <div class="input">
+          <input type="text" placeholder="Icon URL" required>
+        </div>
         <div class="note">
           <span><strong>Note:</strong> This could be a link to an image in your repo</span>
         </div>
       </div>
       <div class="row">
-        <select>
-          <option value="1">Godot Engine Version</option>
-        </select>
+        <div class="input">
+          <select>
+            <option value="1">Godot Engine Version</option>
+          </select>
+        </div>
       </div>
       <div class="row">
-        <input type="text" placeholder="Asset Version, ex 1.0.0" required>
+        <div class="input">
+          <input type="text" placeholder="Asset Version, ex 1.0.0" required>
+        </div>
       </div>
       <div class="row">
-        <select>
-          <option value="" required>License</option>
-        </select>
+        <div class="input">
+          <select>
+            <option value="" required>License</option>
+          </select>
+        </div>
         <div class="note">
           <span><strong>Note:</strong> License must match the one thats in your Git repo LICENSE or LICENSE.md
             file</span>
         </div>
       </div>
       <div class="row">
-        <input type="text" placeholder="Asset Git URL" required>
+        <div class="input">
+          <input type="text" placeholder="Asset Git URL" required>
+        </div>
         <div class="note">
           <span><strong>Note:</strong> Only GitHub, GitLab, BitBucket, cogs/GitTea and cgit are support right now. Not
             the
@@ -82,7 +98,9 @@
         </div>
       </div>
       <div class="row">
-        <input type="text" placeholder="Download commit hash" required>
+        <div class="input">
+          <input type="text" placeholder="Download commit hash" required>
+        </div>
         <div class="note">
           <span><strong>Note: </strong> Note: The Download Commit Hash is the commit you want to release to the asset
             library. You can think of this like 'tagging' a release. Ex, if you make breaking changes to master then
