@@ -1,16 +1,80 @@
 @import "components/styles/layouts/promobar-nav-body-footer";
 @import "components/styles/partials/asset-card";
-@import "components/styles/partials/category-card-featured";
-@import "components/styles/partials/category-card";
+@import "components/styles/partials/forms";
+@import "components/styles/utils/mixins";
 
 @include card-rating-styles;
 
 .page-asset {
+  @include reset-header-spacing;
+
+  display: grid;
+  grid-template-columns: 70% auto;
+
+  .card {
+    @include set-styles(
+      $head-height: 120px,
+      $background-is-banner: "true",
+      $background-color: transparent,
+      $body-margin-top: 15px,
+      $author-color: $text-light-grayer,
+      $title-color: $text-dark-darkest,
+      $desc-color: $text-dark-darker,
+      $rating-color: $text-gray-dark,
+      $cta-dark: "false",
+      $padding-bottom-override: 0px
+    );
+
+    padding: 0px;
+
+    .banner {
+      position: relative;
+      height: 130px;
+      border-radius: 6px;
+      overflow: hidden;
+      padding: 15px;
+    }
+
+    p {
+      font-family: "Roboto";
+      color: $text-dark-darker;
+    }
+  }
+
+  .rating {
+    display: flex;
+    margin-bottom: 15px;
+
+    span {
+      margin-left: 10px;
+      font-size: 13px;
+      font-family: "DM Sans";
+      font-weight: 500;
+      color: $text-dark-darkest;
+    }
+  }
+
   h2 {
     font-family: "Inter";
     font-weight: 700;
     font-size: 18px;
     margin-top: 40px;
-    margin-bottom: 13px;
+    margin-bottom: 7px;
+  }
+
+  .row {
+    color: $text-dark-very-dark;
+    font-family: "Inter";
+    font-weight: 600;
+    display: flex;
+    justify-content: space-between;
+    margin-top: 10px;
+    font-size: 13px;
+  }
+
+  button {
+    @include form-button;
+    width: 100%;
+    margin-top: 15px;
   }
 }
