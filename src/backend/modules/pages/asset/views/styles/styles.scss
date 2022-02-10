@@ -60,7 +60,7 @@
     font-family: "Inter";
     font-weight: 700;
     font-size: 18px;
-    margin-bottom: 7px;
+    margin-bottom: 3px;
   }
 
   .row {
@@ -107,6 +107,14 @@
       &.active {
         border-bottom: 2px solid $color-brand-black;
       }
+    }
+  }
+
+  .badges {
+    .iconify {
+      margin-left: auto;
+      height: 27px;
+      width: auto;
     }
   }
 
