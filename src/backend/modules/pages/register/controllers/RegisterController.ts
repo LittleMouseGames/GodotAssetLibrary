@@ -8,11 +8,7 @@ import { RegisterService } from '../services/RegisterService'
  */
 @Controller('register')
 export class RegisterController {
-  private readonly RegisterService: RegisterService
-
-  public constructor () {
-    this.RegisterService = new RegisterService()
-  }
+  private readonly RegisterService: RegisterService = new RegisterService()
 
   /**
    * Home

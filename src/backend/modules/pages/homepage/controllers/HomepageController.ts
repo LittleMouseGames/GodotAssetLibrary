@@ -8,11 +8,7 @@ import { HomepageService } from '../services/HomepageService'
  */
 @Controller('/')
 export class HomepageController {
-  private readonly HomepageService: HomepageService
-
-  public constructor () {
-    this.HomepageService = new HomepageService()
-  }
+  private readonly HomepageService: HomepageService = new HomepageService()
 
   /**
    * Home

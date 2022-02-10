@@ -1,0 +1,37 @@
+@import "components/styles/utils/variables";
+
+@mixin _form-shared {
+  background: $button-gray;
+  color: $text-dark-darker;
+  padding: 15px;
+  border-radius: 4px;
+  border: none;
+  width: 100%;
+  font-family: "Inter";
+  box-sizing: border-box;
+  font-size: 14px;
+}
+
+@mixin form-input {
+  @include _form-shared();
+}
+
+@mixin form-textarea {
+  @include _form-shared();
+  resize: vertical;
+}
+
+@mixin form-button {
+  background: $button-very-dark;
+  border: none;
+  color: white;
+  border-radius: 3px;
+  font-family: "Inter";
+  font-weight: 600;
+  padding: 12px 27px;
+  cursor: pointer;
+}
+
+@mixin form-select {
+  @include _form-shared();
+}

@@ -1,0 +1,82 @@
+@import "components/styles/layouts/promobar-nav-body-footer";
+@import "components/styles/utils/mixins";
+@import "components/styles/utils/variables";
+@import "components/styles/partials/forms";
+
+.page-create {
+  @include reset-header-spacing;
+  margin-top: 40px;
+
+  .grid-special {
+    .inputs {
+      * {
+        &:not(:last-child) {
+          margin-bottom: 20px;
+        }
+      }
+    }
+
+    .general-notes {
+      * {
+        &:not(:last-child) {
+          margin-bottom: 10px;
+        }
+      }
+    }
+  }
+
+  h2 {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 15px;
+  }
+
+  input {
+    @include form-input;
+  }
+
+  strong {
+    font-weight: 600;
+    color: $text-dark-darker;
+  }
+
+  button {
+    @include form-button;
+  }
+
+  textarea {
+    @include form-textarea;
+  }
+
+  .row {
+    display: grid;
+    grid-template-columns: 50% auto;
+    column-gap: 80px;
+
+    &:not(:last-of-type) {
+      margin-bottom: 20px;
+    }
+
+    .note {
+      display: flex;
+      align-items: center;
+    }
+  }
+
+  select {
+    @include form-select;
+  }
+
+  .code {
+    padding: 4px 9px;
+    background: $color-brand-gray;
+    border-radius: 3px;
+    font-size: 12px;
+    font-weight: 500;
+  }
+
+  .disclaimer {
+    margin-top: 20px;
+    margin-bottom: 20px;
+  }
+}

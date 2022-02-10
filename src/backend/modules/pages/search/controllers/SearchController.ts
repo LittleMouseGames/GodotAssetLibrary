@@ -8,11 +8,7 @@ import { SearchService } from '../services/SearchService'
  */
 @Controller('search')
 export class SearchController {
-  private readonly SearchService: SearchService
-
-  public constructor () {
-    this.SearchService = new SearchService()
-  }
+  private readonly SearchService: SearchService = new SearchService()
 
   /**
    * Home

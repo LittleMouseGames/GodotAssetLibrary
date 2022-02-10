@@ -1,0 +1,100 @@
+<% it.meta = {
+  title: 'Godot Library | create',
+  description: 'Find all <Search Query> Assets on Godot',
+  url: 'https://godotlibrary.com/create',
+  moduleName: 'create'
+} %>
+<% layout('templates/components/layouts/promobar_nav_body_footer.eta') %>
+
+<section class="page-create">
+  <form action="">
+    <legend>
+      <div class="row">
+        <h2>Asset Information</h2>
+        <h2>Notes</h2>
+      </div>
+    </legend>
+    <div class="section row grid-special">
+      <div class="inputs">
+        <input type="text" placeholder="Asset Name" required>
+        <select>
+          <option value="">Asset category</option>
+        </select>
+        <textarea placeholder="Asset Description (Markdown supported)" required></textarea>
+      </div>
+      <div class="general-notes">
+        <div><strong>General Note:</strong> Similar to Godots default asset library, we require you to host your addon
+          on Git (like GitHub) This allows you to retain full control of your assets, and lowers hosting costs</div>
+        <div><strong>General Note:</strong> Screenshots on the display page will be pulled from the <span class="code">
+            screenshots/</span> top level folder in your repo (if it exists)</div>
+        <div><strong>General Note:</strong> All assets are subject to review before going live</div>
+        <div><strong>General Note:</strong> Please visit the <a href="">Submitting to the Asset Library</a> doc for
+          more information</div>
+      </div>
+    </div>
+    <div class="section">
+      <div class="row">
+        <input type="text" placeholder="Quick about (used in listing cards)" required>
+      </div>
+      <div class="row">
+        <input type="text" placeholder="YouTube video (optional)">
+        <div class="note">
+          <span><strong>Note:</strong> If a video is provided it will display first in the asset display page</span>
+        </div>
+      </div>
+      <div class="row">
+        <input type="text" placeholder="Card banner image URL" required>
+        <div class="note">
+          <span><strong>Note:</strong> The image used in asset cards across the site. This could be a link to an image
+            in your
+            repo</span>
+        </div>
+      </div>
+      <div class="row">
+        <input type="text" placeholder="Icon URL" required>
+        <div class="note">
+          <span><strong>Note:</strong> This could be a link to an image in your repo</span>
+        </div>
+      </div>
+      <div class="row">
+        <select>
+          <option value="1">Godot Engine Version</option>
+        </select>
+      </div>
+      <div class="row">
+        <input type="text" placeholder="Asset Version, ex 1.0.0" required>
+      </div>
+      <div class="row">
+        <select>
+          <option value="" required>License</option>
+        </select>
+        <div class="note">
+          <span><strong>Note:</strong> License must match the one thats in your Git repo LICENSE or LICENSE.md
+            file</span>
+        </div>
+      </div>
+      <div class="row">
+        <input type="text" placeholder="Asset Git URL" required>
+        <div class="note">
+          <span><strong>Note:</strong> Only GitHub, GitLab, BitBucket, cogs/GitTea and cgit are support right now. Not
+            the
+            URL that ends in .git, but the one used to browse your code</span>
+        </div>
+      </div>
+      <div class="row">
+        <input type="text" placeholder="Download commit hash" required>
+        <div class="note">
+          <span><strong>Note: </strong> Note: The Download Commit Hash is the commit you want to release to the asset
+            library. You can think of this like 'tagging' a release. Ex, if you make breaking changes to master then
+            those
+            changes wont affect peoples ability to use your addon</span>
+        </div>
+      </div>
+    </div>
+    <div class="disclaimer">This site is protected by reCAPTCHA and the Google <strong>Privacy Policy</strong> and
+      <strong>Terms of
+        Service</strong> apply.
+    </div>
+    <button type="submit">Submit asset</button>
+  </form>
+</section>
