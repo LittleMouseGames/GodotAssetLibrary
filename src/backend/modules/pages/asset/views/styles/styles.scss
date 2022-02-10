@@ -9,7 +9,9 @@
   @include reset-header-spacing;
 
   display: grid;
-  grid-template-columns: 70% auto;
+  grid-template-columns: 67% auto;
+  column-gap: 50px;
+  margin-top: 40px;
 
   .card {
     @include set-styles(
@@ -58,7 +60,6 @@
     font-family: "Inter";
     font-weight: 700;
     font-size: 18px;
-    margin-top: 40px;
     margin-bottom: 7px;
   }
 
@@ -76,5 +77,64 @@
     @include form-button;
     width: 100%;
     margin-top: 15px;
+    border-radius: 6px;
+  }
+
+  .quick-info {
+    position: sticky;
+    top: 95px;
+  }
+
+  .tabs {
+    @include reset-ul;
+
+    ul {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+    }
+
+    li {
+      padding: 0 3px;
+      font-family: "Inter";
+      font-weight: 600;
+      padding-bottom: 2px;
+      transition: 0.1s;
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+
+      &:hover,
+      &.active {
+        border-bottom: 2px solid $color-brand-black;
+      }
+    }
+  }
+
+  .media {
+    display: grid;
+    grid-template-columns: auto 80.5%;
+    column-gap: 20px;
+
+    .thumbnails {
+      .image {
+        padding-top: 56.25%;
+        background: $color-brand-gray;
+        width: 100%;
+        border-radius: 3px;
+
+        &:not(:last-of-type) {
+          margin-bottom: 20px;
+        }
+      }
+    }
+
+    .player {
+      .container {
+        padding-top: 56.25%;
+        background: $color-brand-gray;
+        width: 100%;
+        border-radius: 3px;
+      }
+    }
   }
 }
