@@ -23,13 +23,29 @@
         <textarea placeholder="Asset Description (Markdown supported)" required></textarea>
       </div>
       <div class="general-notes">
-        <div><strong>General Note:</strong> Similar to Godots default asset library, we require you to host your addon
-          on Git (like GitHub) This allows you to retain full control of your assets, and lowers hosting costs</div>
-        <div><strong>General Note:</strong> Screenshots on the display page will be pulled from the <span class="code">
-            screenshots/</span> top level folder in your repo (if it exists)</div>
-        <div><strong>General Note:</strong> All assets are subject to review before going live</div>
-        <div><strong>General Note:</strong> Please visit the <a href="">Submitting to the Asset Library</a> doc for
-          more information</div>
+        <div class="note">
+          <div>
+            <strong>General Note:</strong> Similar to Godots default asset library, we require you to host your addon
+            on Git (like GitHub) This allows you to retain full control of your assets, and lowers hosting costs
+          </div>
+        </div>
+        <div class="note">
+          <div>
+            <strong>General Note:</strong> Screenshots on the display page will be pulled from the <span class="code">
+              screenshots/</span> top level folder in your repo (if it exists)
+          </div>
+        </div>
+        <div class="note">
+          <div>
+            <strong>General Note:</strong> All assets are subject to review before going live
+          </div>
+        </div>
+        <div class="note">
+          <div>
+            <strong>General Note:</strong> Please visit the <a href="">Submitting to the Asset Library</a> doc for
+            more information
+          </div>
+        </div>
       </div>
     </div>
     <div class="section">

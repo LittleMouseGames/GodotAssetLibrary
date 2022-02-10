@@ -11,7 +11,7 @@
     .inputs {
       * {
         &:not(:last-child) {
-          margin-bottom: 20px;
+          margin-bottom: 15px;
         }
       }
     }
@@ -54,7 +54,7 @@
     column-gap: 80px;
 
     &:not(:last-of-type) {
-      margin-bottom: 20px;
+      margin-bottom: 15px;
     }
 
     .note {
