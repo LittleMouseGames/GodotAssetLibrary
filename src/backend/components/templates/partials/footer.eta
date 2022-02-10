@@ -46,12 +46,12 @@
         Helpful Links
       </h2>
       <ul>
-        <li>Godot Website</li>
-        <li>Privacy Policy</li>
-        <li class="gold">Godot Patreon</li>
-        <li>Terms of Service</li>
-        <li>Cookie Policy</li>
-        <li>Acceptable Use Policy</li>
+        <li><a href="">Godot Website</a></li>
+        <li><a href="">Privacy Policy</a></li>
+        <li class="gold"><a href="">Godot Patreon</a></li>
+        <li><a href="">Terms of Service</a></li>
+        <li><a href="">Cookie Policy</a></li>
+        <li><a href="">Acceptable Use Policy</a></li>
       </ul>
     </section>
     <section class="column">
@@ -59,10 +59,10 @@
         My Account
       </h2>
       <ul>
-        <li>Login or Register</li>
-        <li>Account Dashboard</li>
-        <li>My Reviews</li>
-        <li>Upload a New Asset</li>
+        <li><a href="register">Login or Register</a></li>
+        <li><a href="dashboard">Account Dashboard</a></li>
+        <li><a href="">My Reviews</a></li>
+        <li><a href="">Upload a New Asset</a></li>
       </ul>
     </section>
     <section class="column">

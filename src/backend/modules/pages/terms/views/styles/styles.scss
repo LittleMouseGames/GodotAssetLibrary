@@ -1,0 +1,46 @@
+@import "components/styles/layouts/promobar-nav-body-footer";
+@import "components/styles/utils/mixins";
+@import "components/styles/utils/variables";
+@import "components/styles/partials/forms";
+
+.page-terms {
+  @include reset-header-spacing;
+  margin-top: 40px;
+  display: grid;
+  column-gap: 60px;
+  grid-template-columns: auto auto;
+
+  h2 {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 15px;
+  }
+
+  strong {
+    font-weight: 600;
+    color: $text-dark-darker;
+  }
+
+  p,
+  ul,
+  li {
+    font-family: "DM Sans";
+  }
+
+  .sidebar {
+    position: sticky;
+    top: 95px;
+
+    .item {
+      padding: 15px;
+      border: 3px solid $color-brand-gray;
+      font-family: "Inter";
+      font-weight: 600;
+      width: 200px;
+
+      &:not(:last-of-type) {
+        border-bottom: 0;
+      }
+    }
+  }
+}

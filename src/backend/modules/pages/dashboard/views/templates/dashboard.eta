@@ -4,7 +4,7 @@
   url: 'https://godotlibrary.com/dashboard',
   moduleName: 'dashboard'
 } %>
-<% layout('templates/components/layouts/promobar_nav_body_footer.eta') %>
+<% layout('templates/components/layouts/promobar-nav-body-footer.eta') %>
 
 <section class="page-dashboard">
   <div class="column">
