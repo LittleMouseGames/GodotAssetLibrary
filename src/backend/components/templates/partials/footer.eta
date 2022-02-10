@@ -47,11 +47,11 @@
       </h2>
       <ul>
         <li><a href="">Godot Website</a></li>
-        <li><a href="">Privacy Policy</a></li>
+        <li><a href="/terms/privacy-policy">Privacy Policy</a></li>
         <li class="gold"><a href="">Godot Patreon</a></li>
-        <li><a href="">Terms of Service</a></li>
-        <li><a href="">Cookie Policy</a></li>
-        <li><a href="">Acceptable Use Policy</a></li>
+        <li><a href="/terms/terms-of-service">Terms of Service</a></li>
+        <li><a href="/terms/cookie-policy">Cookie Policy</a></li>
+        <li><a href="/terms/acceptable-use-policy">Acceptable Use Policy</a></li>
       </ul>
     </section>
     <section class="column">
