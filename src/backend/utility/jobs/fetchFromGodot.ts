@@ -112,10 +112,13 @@ async function modelInsertAsset (asset: assetSchema): Promise<any> {
 
   asset.legacy_asset_id = asset.asset_id
   asset.asset_id = nanoid()
+  asset.quick_description = asset.description.trim().replace(/(\r\n|\n|\r|\t)/gm, '')
+  asset.upvotes = 0
+  asset.downvotes = 0
 
   const insertObj = await mongo.collection('assets').insertOne(asset)
 
   return insertObj
 }
 
-// importAssets()
+importAssets()

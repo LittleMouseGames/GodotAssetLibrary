@@ -13,6 +13,7 @@ export interface assetSchema {
   'rating': String
   'cost': String
   'description': String
+  'quick_description': String
   'support_level': String
   'download_provider': String
   'download_commit': String
@@ -23,6 +24,8 @@ export interface assetSchema {
   'searchable': String
   'modify_date': String
   'download_url': String
+  'upvotes': number
+  'downvotes': number
   'previews': Array<[
     {
       'preview_id': String

@@ -14,7 +14,7 @@ export class HomepageController {
    * Home
    */
   @Get('/')
-  private index (req: Request, res: Response): void {
-    return this.HomepageService.render(req, res)
+  private async index (req: Request, res: Response): Promise<void> {
+    return await this.HomepageService.render(req, res)
   }
 }

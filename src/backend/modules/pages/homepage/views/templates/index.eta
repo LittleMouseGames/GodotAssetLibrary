@@ -10,10 +10,9 @@
   <section>
     <h2>Whats popular</h2>
     <div class="container five-wide">
-      <%~ includeFile('templates/components/partials/asset-card.eta') %>
-      <%~ includeFile('templates/components/partials/asset-card.eta') %>
-      <%~ includeFile('templates/components/partials/asset-card.eta') %>
-      <%~ includeFile('templates/components/partials/asset-card.eta') %>
+      <% it.assets?.forEach(info => { %>
+      <%~ includeFile('templates/components/partials/asset-card.eta', { info: info }) %>
+      <% }) %>
       <%~ includeFile('templates/components/partials/asset-card.eta') %>
     </div>
   </section>

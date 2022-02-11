@@ -49,9 +49,12 @@
   overflow: hidden;
   background: $background-color;
   padding-bottom: $padding-bottom-override;
+  display: flex;
+  flex-direction: column;
 
   .body {
     margin-top: $body-margin-top;
+    flex-grow: 1;
   }
 
   .badges {
@@ -131,6 +134,13 @@
       font-family: "DM Sans";
       color: $desc-color;
       margin: 10px 0;
+
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: initial;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
     }
   }
 

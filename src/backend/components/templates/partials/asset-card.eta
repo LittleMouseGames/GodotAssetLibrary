@@ -1,8 +1,8 @@
 <div class="asset-card <%= it?.featured ? 'featured' : 'normal' %>">
   <div class="head">
     <div class="badges">
-      <div class="badge badge-blue">2D TOOLS</div>
-      <div class="badge badge-purple">3.2</div>
+      <div class="badge badge-blue"><%= it?.info?.category ?? 'ERR' %></div>
+      <div class="badge badge-purple"><%= it?.info?.godot_version ?? 'ERR' %></div>
       <span class="iconify" data-icon="akar-icons:more-horizontal"></span>
     </div>
     <% if (!it?.featured) { %>
@@ -18,27 +18,33 @@
   <div class="body">
     <div class="top">
       <div class="icon">
-        <img
-          src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAOEAAADhCAMAAAAJbSJIAAAAdVBMVEXxb13////xbVvyfW7xaVb3sanwY07xa1jxZlLwaFTwYk3+9PP85eLxcV/4uLDzgnP6z8r96+nziXv1n5T+8/LyeWn1mIz95+X++fj3r6b6ysT2pZv0joH84N3729f5wrv71ND1nJH6y8bvWUH0k4b5w7zvVTxovvkeAAAG3klEQVR4nO2dbXPqLBCGZaWEJL7HaKxarfU8//8nPkGnTdSoEMAszl4fOseZnCl3ISz7hr0eQRAEQRAEQRAEQRAEQRAEQRAEQYQIRCXQ9Sh8AVyKfLNYHMexiN9QJcjh6qtgZ5a7sYi6HpFbQOYTdsFgkbzTPEK8Yzds87jrcTmD5/NbgSWZ6HpkjuCbRn0lo/eQyGf3BDK2eweJkN8XyNj6Dd5FMX2kkI2Dtxry30OBbB76Oo3u7jJ/r6LseoxWgEyfKWSzoNfpszV6Wqcy4MNN9MBQvMc6lY/30V/C3U/jDy2BbBrqfgpDPYGMfQRq98WXrkKWB7nZ8IW2QPaVdD3aNojnprAi410P1xw5MhDIivCM4mOX4pZ/wRnFRH+bOTMObBKjo6FANghss9E8zdQJa7OJV8YCWcEDWqcA5gLD2mzkZxuFrB/MJEK/lUD2FcwJ3NhS/LIIxI0ytxS/zAN5ExNzS/HLKgg3iq9bC2QshPQpxMVzIXcJwWLERj7FDfgtBvSsBAbgC4vJcxUP2SC3GDC2FIg+8JZsbRWyNWofwyT6dA/cAQ3ZnLA3Y4TY7PMWbmEDQ7STCJGNsa84oN1sZEPVTCuwRqVMA4j32SKdRLF3pZAdUZp9vXSoHjjrF5KlO4VshdDs88yhQIyhRZ2qCxPwJfct3cJbsCVNIXIskO2RbTYtY8CPwFVJ1DYG/IgBqkmUtp59E9+ILIZ+XYkJKaJJ5K430jOIymxa5EO16GGxGO6ciis+sZh9R659A1jiw1520hNYMopy4EshlviwcBFhawZJfDhxE4BqBEd8OHHrOF2AIz78pGnEjhEGiyHdhaAawBAf9mcPFRMEm42fg/cfGOLDfpcphviw50nE4ChaVZg8BYWjKDWbR9qBwlEUXmcRhaMY523r9TTA4SiCGB+8HVAxWIyeiuzHm9F+6kMmBotxAiIuRZII+ZB4OFtPDE/rCwQWQx9Qfwi5MTomhFJ6WicSfZPyIhQWwxQwMjGAY7MxJB7rb0uHANdpT117oi8RicUwJdLPWm3Rl542Y1DsF5bFqNCvuQ31bgKDJqkgLUbPqMghTIthEiF4kcWAy2vzzh/Ln+W/o6ieZ4jimN8+ef1U6T7r+10vsRgwzLJZ9Ysgz7JNOfL1MerxLPv+GzyI42i3yqv9D8ZZpqpkyqcuK/MMYiAv6aVVr01R/SK1UaRC1XxJdd3O/ncdQXSuc6sSDyoXPo9BfF4nXEwyrK+ISkl1Cqk17coDY5ukdBS+k89aOozvSht9mBZVyPqU7d//qPq3q0qSRF9h6t9iqCU1YMtqiKrqcqLST/ufohYWUzHU3s9P7ZU91zOc6oivFJokPvzXuZej+TpepC7lnKXqOqhiXI7/7/efQv3Fdl1pUQqVlGJ+rVCauFG+8xiqfXLz37yef1Yj37NU/ajvdeJ8g9Lfi3l6Th20Z0srhRPPFkM1xUxVKKaqHTxvFCuV6p7WtjpI5HixrT2oFA5nbPUzvVmlRmlyvxaj6muqBfiEmgJQq7JW2gt5Mernn7UBneaQ51zcKEyM0uR+C95U2cV6vc4G9fdBmYrSULGLd+R35c0vV2l57ioVLq9WqYlAvxYDevP5JOFcLtK0mi+AabrmcpLWXxGAU/R0X/tDrNJULVm5nX9dvEumNfCpV7Mv5Wm3jKSsHUvg9CmWFxs5SD4c8rr5Kv/T6dPVg+b1xWh8DAA9X8C8DgBFHkOfFo0agUWl2lzBgKXgTYvn12M2gCaPoQG0q8YJ5QqNkqRdlT/OzqgmRNtaHIydUU0krYuNEHZGNQCJRdcpvs6oG0DmVqW32Dqjronk0LJt2EdnlEreOiCOpRBH++Jw13fXAhfDWbb6cMDo4KQy3K2jWL40I5+Fsq34djeJIMYe64FaM3fmKEbxoWsxzbgy+7zvr93ADkdm//43cHSPE2//0TdwdI6LZgVvjWlucBDkFy6vSnBPYf3lWLo3x3eGbduQ+z5710wtbaLzqxLcY9nA5/i2Cx/Y5aJc3jnjDau9pun70tBhFXYzSl12xT8bk+izd9IZSws3EXjXo9ehsNhqbC8jfREWmaj3V2iafu4IG4PosdPeHVYpDL/NoY7Y28whx+5ZKD5svAvk7u8Zu3ywx0s9XLG0y9C4vSvQC7YusMXXALwG62Rw+69yeBH2CX3h/jY9lzi4UwJ8XeTlhKmLomjo4T3YpG4KhgGwzuK05yi9Bv4u87Jibx0NriSKBb6Vmn4Ll6UKXK5waZyvYsclQ8CT2W7r8VIvA4rBbpb4KBiCWMTDvN85w3Ic/kppAAPe1BEEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQaDnf+AabePgf8fkAAAAAElFTkSuQmCC"
-          alt="">
+        <img src="<%= it?.info?.icon_url ?? 'https://avatars.githubusercontent.com/u/42072863?s=200&v=4' %>" alt="">
       </div>
       <div class="info">
-        <div class="author">LITTLEMOUSEDEV</div>
-        <div class="title">Whiskers Dialogue Editor</div>
+        <div class="author"><%= it?.info?.author ?? 'Failed to load'%></div>
+        <div class="title"><%= it?.info?.title ?? 'Unable to load the asset 😿' %></div>
       </div>
     </div>
-    <p>When your player enters a specific node, show greeting text</p>
+    <p><%= it?.info?.description ?? 'For some reason we\'re unable to load this asset information right now' %>
+    </p>
   </div>
   <div class="footer">
     <div class="rating">
-      <ul class="stars" data-rating="3.5">
+      <% 
+        // Convert votes to percentage, then to stars
+        var upvotes = it?.info?.upvotes
+        var total = upvotes + it?.info?.downvotes
+        var percent = Math.round((upvotes / total) * 100).toFixed(2)
+        var stars = Math.round((percent + 5) / 10).toFixed(1) / 2
+        %>
+      <ul class="stars" data-rating="<%= stars ? stars : 0 %>">
         <li class="stars__item"></li>
         <li class="stars__item"></li>
         <li class="stars__item"></li>
         <li class="stars__item"></li>
         <li class="stars__item"></li>
       </ul>
-      <span>14 ratings</span>
+      <span><%= it?.info?.upvotes + it?.info?.downvotes %> ratings</span>
     </div>
     <div class="actions">
       <button>View</button>
