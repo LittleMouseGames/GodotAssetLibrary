@@ -36,7 +36,7 @@ async function fetchAssetListings (): Promise<any[]> {
   const host = 'godotengine.org'
   const paths = [
     // '/asset-library/api/asset?type=any&max_results=500&godot_version=2.2'
-    '/asset-library/api/asset?type=any&max_results=25&godot_version=3.4&page=0'
+    '/asset-library/api/asset?type=any&max_results=5&godot_version=3.4&page=0'
     // '/asset-library/api/asset?type=any&max_results=500&godot_version=3.4&page=1',
     // '/asset-library/api/asset?type=any&max_results=500&godot_version=3.4&page=2',
     // '/asset-library/api/asset?type=any&max_results=500&godot_version=4.0'
@@ -115,6 +115,8 @@ async function modelInsertAsset (asset: assetSchema): Promise<any> {
   asset.quick_description = asset.description.trim().replace(/(\r\n|\n|\r|\t)/gm, '')
   asset.upvotes = 0
   asset.downvotes = 0
+  asset.featured = false
+  asset.title = asset.title.trim()
 
   const insertObj = await mongo.collection('assets').insertOne(asset)
 

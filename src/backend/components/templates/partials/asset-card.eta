@@ -47,7 +47,8 @@
       <span><%= it?.info?.upvotes + it?.info?.downvotes %> ratings</span>
     </div>
     <div class="actions">
-      <button>View</button>
+      <a
+        href="<%= `/asset/${it?.info?.asset_id}/${encodeURI(it?.info?.title.replace(/\s/g, '-')).toLocaleLowerCase()}` %>"><button>View</button></a>
     </div>
   </div>
   <% if (it?.featured) { %>

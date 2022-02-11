@@ -26,6 +26,7 @@ export interface assetSchema {
   'download_url': String
   'upvotes': number
   'downvotes': number
+  'featured': boolean
   'previews': Array<[
     {
       'preview_id': String

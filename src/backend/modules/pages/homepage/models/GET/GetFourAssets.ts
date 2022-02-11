@@ -11,6 +11,8 @@ interface ReturnedAssets extends WithId<Document> {
   icon_url: String
   upvotes: number
   downvotes: number
+  featured: boolean
+  asset_id: String
 }
 
 export async function GetFourAssets (): Promise<ReturnedAssets[]> {
@@ -25,7 +27,9 @@ export async function GetFourAssets (): Promise<ReturnedAssets[]> {
       quick_description: 1,
       icon_url: 1,
       upvotes: 1,
-      downvotes: 1
+      downvotes: 1,
+      featured: 1,
+      asset_id: 1
     }
   }).toArray() as ReturnedAssets[]
 
