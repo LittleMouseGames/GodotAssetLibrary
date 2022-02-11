@@ -1,7 +1,7 @@
 import RouterServer from 'RouterServer'
 import { MongoHelper } from 'MongoHelper'
 import { logger } from 'utility/logger'
-import * as cronJobs from 'modules/jobs.index'
+import * as cronJobs from 'jobs.index'
 
 // Connect to MongoDB Database
 MongoHelper.getInstance().connect().then(() => {

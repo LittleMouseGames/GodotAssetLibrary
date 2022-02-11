@@ -3,8 +3,8 @@ import { logger } from 'utility/logger'
 import { InsertUser } from 'modules/api/authentication/models/user/INSERT/insert.user'
 import { Request } from 'express'
 import { InsertToken } from 'modules/api/authentication/models/user/INSERT/insert.token'
-import { GetPasswordHash } from 'modules/api/authentication/models/user/GET/get.password.hash'
-import { GetUserByToken } from 'modules/api/authentication/models/user/GET/get.user.by.token'
+import { GetPasswordHash } from 'modules/api/authentication/models/user/GET/GetPasswordHash'
+import { GetUserByToken } from 'modules/api/authentication/models/user/GET/GetUserByToken'
 import { TokenServices } from 'modules/api/authentication/services/TokenServices'
 
 export class UserServices {

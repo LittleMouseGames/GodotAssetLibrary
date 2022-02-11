@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express'
-import { GetUserByToken } from 'modules/api/authentication/models/user/GET/get.user.by.token'
+import { GetUserByToken } from 'modules/api/authentication/models/user/GET/GetUserByToken'
 import { logger } from 'utility/logger'
 import { TokenServices } from 'modules/api/authentication/services/TokenServices'
 
