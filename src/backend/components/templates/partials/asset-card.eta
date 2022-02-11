@@ -25,7 +25,7 @@
         <div class="title"><%= it?.info?.title ?? 'Unable to load the asset 😿' %></div>
       </div>
     </div>
-    <p><%= it?.info?.description ?? 'For some reason we\'re unable to load this asset information right now' %>
+    <p><%= it?.info?.quick_description ?? 'For some reason we\'re unable to load this asset information right now' %>
     </p>
   </div>
   <div class="footer">

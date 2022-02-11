@@ -1,38 +1,38 @@
 export interface assetSchema {
-  'asset_id': String
-  'legacy_asset_id': String
-  'type': String
-  'title': String
-  'author': String
-  'author_id': String
-  'version': String
-  'version_string': String
-  'category': String
-  'category_id': String
-  'godot_version': String
-  'rating': String
-  'cost': String
-  'description': String
-  'quick_description': String
-  'support_level': String
-  'download_provider': String
-  'download_commit': String
-  'download_hash': String
-  'browse_url': String
-  'issues_url': String
-  'icon_url': String
-  'searchable': String
-  'modify_date': String
-  'download_url': String
+  'asset_id': string
+  'legacy_asset_id': string
+  'type': string
+  'title': string
+  'author': string
+  'author_id': string
+  'version': string
+  'version_string': string
+  'category': string
+  'category_id': string
+  'godot_version': string
+  'rating': string
+  'cost': string
+  'description': string
+  'quick_description': string
+  'support_level': string
+  'download_provider': string
+  'download_commit': string
+  'download_hash': string
+  'browse_url': string
+  'issues_url': string
+  'icon_url': string
+  'searchable': string
+  'modify_date': string
+  'download_url': string
   'upvotes': number
   'downvotes': number
   'featured': boolean
   'previews': Array<[
     {
-      'preview_id': String
-      'type': String
-      'link': String
-      'thumbnail': String
+      'preview_id': string
+      'type': string
+      'link': string
+      'thumbnail': string
     }
   ]>
 }

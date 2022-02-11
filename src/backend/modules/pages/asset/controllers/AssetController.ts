@@ -1,6 +1,5 @@
 import { Controller, Get } from '@overnightjs/core'
 import { Request, Response } from 'express'
-
 import { AssetService } from '../services/AssetService'
 
 /**
@@ -13,8 +12,8 @@ export class AssetController {
   /**
    * Home
    */
-  @Get('/')
-  private index (req: Request, res: Response): void {
-    return this.AssetService.render(req, res)
+  @Get(':id/*')
+  private async index (req: Request, res: Response): Promise<void> {
+    return await this.AssetService.render(req, res)
   }
 }
