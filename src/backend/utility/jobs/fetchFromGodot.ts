@@ -124,4 +124,4 @@ async function modelInsertAsset (asset: assetSchema): Promise<any> {
   return insertObj
 }
 
-importAssets()
+// importAssets()

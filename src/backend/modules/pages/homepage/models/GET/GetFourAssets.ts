@@ -2,17 +2,18 @@ import { Document, WithId } from 'mongodb'
 import { MongoHelper } from 'MongoHelper'
 
 interface ReturnedAssets extends WithId<Document> {
-  category: String
-  godot_version: String
-  author: String
-  title: String
-  description: String
-  quick_description: String
-  icon_url: String
+  category: string
+  godot_version: string
+  author: string
+  title: string
+  description: string
+  quick_description: string
+  icon_url: string
   upvotes: number
   downvotes: number
   featured: boolean
-  asset_id: String
+  asset_id: string
+  previews: any[]
 }
 
 export async function GetFourAssets (): Promise<ReturnedAssets[]> {
@@ -29,7 +30,8 @@ export async function GetFourAssets (): Promise<ReturnedAssets[]> {
       upvotes: 1,
       downvotes: 1,
       featured: 1,
-      asset_id: 1
+      asset_id: 1,
+      previews: 1
     }
   }).toArray() as ReturnedAssets[]
 
