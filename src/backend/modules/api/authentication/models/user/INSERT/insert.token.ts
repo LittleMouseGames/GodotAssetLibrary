@@ -5,7 +5,7 @@ export async function InsertToken (username: string, token: string, tokenExpires
   const mongo: Db = MongoHelper.getDatabase()
   const userObj = await mongo.collection('users').updateOne({ username: username }, {
     $push: {
-      resumeTokens: {
+      resume_tokens: {
         token: token,
         expires: tokenExpires
       }

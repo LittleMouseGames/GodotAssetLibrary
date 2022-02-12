@@ -3,10 +3,10 @@ import { MongoHelper } from 'MongoHelper'
 export async function GetPasswordHash (username: string): Promise<any> {
   const mongo = MongoHelper.getDatabase()
   const userObj = await mongo.collection('users').findOne({
-    usernameLower: username.toLocaleLowerCase()
+    username_lower: username.toLocaleLowerCase()
   }, {
     projection: {
-      password: 1
+      password_hash: 1
     }
   })
 

@@ -16,11 +16,11 @@ export async function InsertUser (username: string, passwordHash: string, token:
   const nanoid = customAlphabet('0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz', 36)
   const mongo = MongoHelper.getDatabase()
   const userObj = await mongo.collection('users').insertOne({
-    humanId: nanoid(),
+    human_id: nanoid(),
     username: username,
-    password: passwordHash,
-    usernameLower: username.toLocaleLowerCase(),
-    resumeTokens: [
+    password_hash: passwordHash,
+    username_lower: username.toLocaleLowerCase(),
+    resume_tokens: [
       {
         token: token,
         expires: tokenExpires

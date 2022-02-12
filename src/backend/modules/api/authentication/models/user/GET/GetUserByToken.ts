@@ -3,10 +3,10 @@ import { MongoHelper } from 'MongoHelper'
 export async function GetUserByToken (token: string): Promise<any> {
   const mongo = MongoHelper.getDatabase()
   const userObj = await mongo.collection('users').findOne({
-    'resumeTokens.token': token
+    'resume_tokens.token': token
   }, {
     projection: {
-      humanId: 1
+      human_id: 1
     }
   })
 
