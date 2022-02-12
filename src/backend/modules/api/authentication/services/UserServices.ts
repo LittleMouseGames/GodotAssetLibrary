@@ -6,6 +6,7 @@ import { InsertToken } from 'modules/api/authentication/models/user/INSERT/inser
 import { GetPasswordHash } from 'modules/api/authentication/models/user/GET/GetPasswordHash'
 import { GetUserByToken } from 'modules/api/authentication/models/user/GET/GetUserByToken'
 import { TokenServices } from 'modules/api/authentication/services/TokenServices'
+import { GetDoesUsernameExist } from '../models/user/GET/GetDoesUsernameExist'
 
 export class UserServices {
   private static instance: UserServices
@@ -50,6 +51,10 @@ export class UserServices {
       throw new Error('Password mismatch')
     } else if (email === '') {
       throw new Error('Email validation failed or none supplied')
+    }
+
+    if (await GetDoesUsernameExist(username)) {
+      throw new Error('Username already in use')
     }
 
     const tokenExpires = this.TokenService.generateExpiry()

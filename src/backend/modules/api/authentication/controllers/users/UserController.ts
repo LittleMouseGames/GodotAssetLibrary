@@ -13,6 +13,12 @@ const createAccountLimiter = rateLimit({
   message: JSON.stringify({ error: 'Too many registration attempts from this IP, please try again later' })
 })
 
+const accountLoginLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000, // 1 hour window
+  max: 10, // start blocking after 5 requests
+  message: JSON.stringify({ error: 'Too many login attempts from this IP, please try again later' })
+})
+
 /**
  * The user controller
  */
@@ -30,7 +36,11 @@ export class UserController {
   private async register (req: Request, res: Response): Promise<Response> {
     try {
       const registerService = await this.AuthService.register(req)
-      return res.status(StatusCodes.OK).send({ token: registerService })
+
+      return res.status(StatusCodes.OK).cookie('auth-token', registerService, {
+        httpOnly: true,
+        maxAge: 1000 * 60 * 60 * 24 * 5 // expire after 5 days
+      }).send({ token: registerService })
     } catch (e: any) {
       return res.status(StatusCodes.BAD_REQUEST).send({ error: e.message })
     }
@@ -40,6 +50,7 @@ export class UserController {
    * Login endpoint
    */
   @Post('login')
+  @Middleware([urlencodedParser, accountLoginLimiter])
   private async login (req: Request, res: Response): Promise<Response> {
     try {
       const loginService = await this.AuthService.login(req)

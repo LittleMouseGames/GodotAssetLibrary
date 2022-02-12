@@ -19,6 +19,7 @@ export async function InsertUser (username: string, passwordHash: string, token:
     humanId: nanoid(),
     username: username,
     password: passwordHash,
+    usernameLower: username.toLocaleLowerCase(),
     resumeTokens: [
       {
         token: token,
