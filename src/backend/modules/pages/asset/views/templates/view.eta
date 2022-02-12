@@ -10,13 +10,25 @@
   <div class="column">
     <div class="media">
       <div class="thumbnails">
+        <% if(it?.info?.previews.length !== 0) { %>
+        <% it?.info?.previews.forEach(preview => { %>
+        <div class="image">
+          <img src="<%= preview.thumbnail %> " alt="" onclick="updatePlayerImage('<%= preview.link %>')">
+        </div>
+        <% }) %>
+        <% } else { %>
         <div class="image"></div>
         <div class="image"></div>
         <div class="image"></div>
         <div class="image"></div>
+        <% } %>
       </div>
       <div class="player">
-        <div class="container"></div>
+        <div class="container">
+          <% if(it?.info?.previews.length !== 0) { %>
+          <img src="<%= it?.info?.previews[0].link %>" alt="">
+          <% } %>
+        </div>
       </div>
     </div>
     <div class="info">
@@ -64,9 +76,7 @@
           <% if (!it?.featured) { %>
           <div class="background">
             <div class="mask">
-              <img
-                src="https://images.unsplash.com/photo-1644146083026-ee18d9f05a53?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1171&q=80"
-                alt="">
+              <img src="<%= it?.info?.card_banner ?? '/images/noimage.png' %>" alt="">
             </div>
           </div>
           <% } %>
@@ -120,4 +130,9 @@
       </div>
     </div>
   </div>
+  <script>
+    function updatePlayerImage(image) {
+      document.querySelector('.player img').src = image;
+    }
+  </script>
 </section>
