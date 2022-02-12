@@ -71,6 +71,7 @@
     justify-content: space-between;
     margin-top: 10px;
     font-size: 13px;
+    cursor: default;
   }
 
   button {
@@ -83,6 +84,11 @@
   .quick-info {
     position: sticky;
     top: 95px;
+  }
+
+  .details {
+    font-family: "DM Sans";
+    color: $text-dark-darker;
   }
 
   .tabs {

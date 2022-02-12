@@ -26,3 +26,17 @@ a {
     text-decoration: underline;
   }
 }
+
+.main {
+  section {
+    a {
+      color: #2081db;
+      transition: 0.01s;
+
+      &:hover {
+        color: #204f79;
+        text-decoration: underline;
+      }
+    }
+  }
+}

@@ -110,6 +110,7 @@ async function modelInsertAsset (asset: assetSchema): Promise<any> {
   const mongo: Db = MongoHelper.getDatabase()
   const nanoid = customAlphabet('0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz', 6)
 
+  // TODO: Move out of model
   asset.legacy_asset_id = asset.asset_id
   asset.asset_id = nanoid()
   asset.quick_description = asset.description.trim().replace(/(\r\n|\n|\r|\t)/gm, '')

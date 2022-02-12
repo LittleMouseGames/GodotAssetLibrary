@@ -55,6 +55,7 @@
   .body {
     margin-top: $body-margin-top;
     flex-grow: 1;
+    text-decoration: none;
   }
 
   .badges {
@@ -73,6 +74,7 @@
     color: white;
     display: inline-block;
     margin-right: 10px;
+    cursor: pointer;
   }
 
   .head {
@@ -85,6 +87,7 @@
       margin-left: auto;
       height: 27px;
       width: auto;
+      cursor: pointer;
     }
   }
 
@@ -108,8 +111,9 @@
       margin-right: 10px;
       img {
         width: 37px;
-        height: auto;
+        height: 37px;
         border-radius: 6px;
+        background: $color-ligther-gray;
       }
     }
 
@@ -165,6 +169,7 @@
         font-family: "Inter";
         font-weight: 500;
         color: $rating-color;
+        cursor: default;
       }
     }
   }

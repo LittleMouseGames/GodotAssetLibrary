@@ -15,19 +15,22 @@
     </div>
     <% } %>
   </div>
-  <div class="body">
-    <div class="top">
-      <div class="icon">
-        <img src="<%= it?.info?.icon_url ?? 'https://avatars.githubusercontent.com/u/42072863?s=200&v=4' %>" alt="">
+  <a class="body"
+    href="<%= `/asset/${it?.info?.asset_id}/${encodeURI(it?.info?.title.replace(/\s/g, '-')).toLocaleLowerCase()}` %>">
+    <div>
+      <div class="top">
+        <div class="icon">
+          <img src="<%= it?.info?.icon_url ?? 'https://avatars.githubusercontent.com/u/42072863?s=200&v=4' %>" alt="">
+        </div>
+        <div class="info">
+          <div class="author"><%= it?.info?.author ?? 'Failed to load'%></div>
+          <div class="title"><%= it?.info?.title ?? 'Unable to load the asset 😿' %></div>
+        </div>
       </div>
-      <div class="info">
-        <div class="author"><%= it?.info?.author ?? 'Failed to load'%></div>
-        <div class="title"><%= it?.info?.title ?? 'Unable to load the asset 😿' %></div>
-      </div>
+      <p><%= it?.info?.quick_description ?? 'For some reason we\'re unable to load this asset information right now' %>
+      </p>
     </div>
-    <p><%= it?.info?.quick_description ?? 'For some reason we\'re unable to load this asset information right now' %>
-    </p>
-  </div>
+  </a>
   <div class="footer">
     <div class="rating">
       <% 

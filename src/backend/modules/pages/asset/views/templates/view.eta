@@ -29,6 +29,9 @@
           <li>Author Information</li>
         </ul>
       </div>
+      <div class="details">
+        <%= it?.info?.description %>
+      </div>
     </div>
   </div>
   <div class="column">
