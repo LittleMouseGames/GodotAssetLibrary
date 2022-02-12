@@ -1,7 +1,7 @@
 <% it.meta = {
-  title: 'Godot Library | Asset',
-  description: 'Find the best Godot Assets on Godot Library',
-  url: 'https://godotlibrary.com',
+  title: `Godot Library | ${it?.info?.title ?? 'Asset'}`,
+  description: it?.info?.quick_description ??  'Find the best Godot Assets on Godot Library',
+  url: `https://godotlibrary.com/asset/${it?.info?.asset_id}/${encodeURI(it?.info?.title.replace(/\s/g, '-')).toLocaleLowerCase()}`,
   moduleName: 'asset'
 } %>
 <% layout('templates/components/layouts/promobar-nav-body-footer.eta') %>
