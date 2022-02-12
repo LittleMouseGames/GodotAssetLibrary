@@ -20,29 +20,29 @@
         <select>
           <option value="">Asset category</option>
         </select>
-        <textarea placeholder="Asset Description (Markdown supported)" required></textarea>
+        <select>
+          <option value="1">Godot Engine Version</option>
+        </select>
       </div>
       <div class="general-notes">
         <div class="note">
           <div>
-            <strong>General Note:</strong> Similar to Godots default asset library, we require you to host your addon
-            on Git (like GitHub) This allows you to retain full control of your assets, and lowers hosting costs
+            <strong>Note:</strong> We require you to host on Git which allows you to retain full control of your assets
           </div>
         </div>
         <div class="note">
           <div>
-            <strong>General Note:</strong> Screenshots on the display page will be pulled from the <span class="code">
-              screenshots/</span> top level folder in your repo (if it exists)
+            <strong>Note:</strong> Your description will be pulled from your repo <span class="code">README</span> file
           </div>
         </div>
         <div class="note">
           <div>
-            <strong>General Note:</strong> All assets are subject to review before going live
+            <strong>Note:</strong> All assets are subject to review before going live
           </div>
         </div>
         <div class="note">
           <div>
-            <strong>General Note:</strong> Please visit the <a href="">Submitting to the Asset Library</a> doc for
+            <strong>Note:</strong> Please visit the <a href="">Submitting to the Asset Library</a> doc for
             more information
           </div>
         </div>
@@ -82,13 +82,6 @@
       </div>
       <div class="row">
         <div class="input">
-          <select>
-            <option value="1">Godot Engine Version</option>
-          </select>
-        </div>
-      </div>
-      <div class="row">
-        <div class="input">
           <input type="text" placeholder="Asset Version, ex 1.0.0" required>
         </div>
       </div>
@@ -122,6 +115,26 @@
             library. You can think of this like 'tagging' a release. Ex, if you make breaking changes to master then
             those
             changes wont affect peoples ability to use your addon</span>
+        </div>
+      </div>
+    </div>
+    <legend>
+      <div class="row">
+        <h2>Asset Media</h2>
+      </div>
+    </legend>
+    <div class="section row grid-special">
+      <div class="inputs">
+        <input type="text" placeholder="Media URL (ex imgur link)" required>
+        <input type="text" placeholder="(optional) Media URL (ex imgur link)">
+        <input type="text" placeholder="(optional) Media URL (ex imgur link)">
+        <input type="text" placeholder="(optional) Media URL (ex imgur link)">
+      </div>
+      <div class="general-notes">
+        <div class="note">
+          <div>
+            <strong>Note:</strong> You're required to upload at least one image, but can have up to 4
+          </div>
         </div>
       </div>
     </div>

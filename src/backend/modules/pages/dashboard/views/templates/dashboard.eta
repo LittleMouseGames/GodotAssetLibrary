@@ -28,7 +28,7 @@
         <strong>Terms of
           Service</strong> apply.
       </div>
-      <button type="submit">Submit</button>
+      <button type="submit">Update</button>
     </form>
   </div>
   <div class="column">
@@ -41,7 +41,7 @@
         <strong>Terms of
           Service</strong> apply.
       </div>
-      <button type="submit">Submit</button>
+      <button type="submit">Update</button>
     </form>
   </div>
 </section>
