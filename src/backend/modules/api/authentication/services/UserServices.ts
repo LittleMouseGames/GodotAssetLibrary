@@ -67,7 +67,7 @@ export class UserServices {
       return token
     } catch (e: any) {
       logger.log('error', e.message)
-      throw new Error('Unrecoverable error')
+      throw new Error('Failed to create user')
     }
   }
 
@@ -85,25 +85,27 @@ export class UserServices {
   public async login (req: Request): Promise<string> {
     const authHeader = req.headers.authorization ?? ''
 
-    if (authHeader === '') {
-      throw new Error('Missing auth header')
-    }
+    if (authHeader.includes('Bearer')) {
+      // TODO: bearer token implementation
+    } else {
+      // if not explicity Bearer token, we'll assume basic auth
 
-    // basic auth
-    if (authHeader.includes('Basic')) {
-      let authString = authHeader.split('Basic ')[1]
-      authString = Buffer.from(authString, 'base64').toString('ascii')
+      let username = ''
+      let password = ''
 
-      const username = authString.split(':')[0] ?? ''
-      const password = authString.split(':')[1] ?? ''
+      if (authHeader.includes('Basic')) {
+        let authString = authHeader.split('Basic ')[1]
+        authString = Buffer.from(authString, 'base64').toString('ascii')
+        username = authString.split(':')[0] ?? ''
+        password = authString.split(':')[1] ?? ''
+      } else {
+        username = req.body.username ?? ''
+        password = req.body.password ?? ''
+      }
 
       if (username === '' || password === '') {
         throw new Error('Missing auth params')
       }
-
-      const token = this.TokenService.generateToken()
-      const tokenHash = this.TokenService.hashToken(token)
-      const tokenExpires = this.TokenService.generateExpiry()
 
       try {
         const passwordHash = await GetPasswordHash(username)
@@ -112,6 +114,10 @@ export class UserServices {
         if (!verify) {
           throw new Error('Invalid credentials')
         }
+
+        const token = this.TokenService.generateToken()
+        const tokenHash = this.TokenService.hashToken(token)
+        const tokenExpires = this.TokenService.generateExpiry()
 
         await InsertToken(username, tokenHash, tokenExpires)
 

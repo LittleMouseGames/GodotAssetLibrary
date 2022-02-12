@@ -3,7 +3,7 @@ import { MongoHelper } from 'MongoHelper'
 export async function GetPasswordHash (username: string): Promise<any> {
   const mongo = MongoHelper.getDatabase()
   const userObj = await mongo.collection('users').findOne({
-    username: username
+    usernameLower: username.toLocaleLowerCase()
   }, {
     projection: {
       password: 1

@@ -28,6 +28,11 @@ export class UserController {
     private readonly AuthService: UserServices = UserServices.getInstance()
   ) { }
 
+  private readonly cookieOptons = {
+    httpOnly: true,
+    maxAge: 1000 * 60 * 60 * 24 * 5 // expire after 5 days
+  }
+
   /**
    * Register endpoint
    */
@@ -37,10 +42,7 @@ export class UserController {
     try {
       const registerService = await this.AuthService.register(req)
 
-      return res.status(StatusCodes.OK).cookie('auth-token', registerService, {
-        httpOnly: true,
-        maxAge: 1000 * 60 * 60 * 24 * 5 // expire after 5 days
-      }).send({ token: registerService })
+      return res.status(StatusCodes.OK).cookie('auth-token', registerService, this.cookieOptons).send({ token: registerService })
     } catch (e: any) {
       return res.status(StatusCodes.BAD_REQUEST).send({ error: e.message })
     }
@@ -54,7 +56,7 @@ export class UserController {
   private async login (req: Request, res: Response): Promise<Response> {
     try {
       const loginService = await this.AuthService.login(req)
-      return res.status(StatusCodes.OK).send({ token: loginService })
+      return res.status(StatusCodes.OK).cookie('auth-token', loginService, this.cookieOptons).send({ token: loginService })
     } catch (e: any) {
       return res.status(StatusCodes.BAD_REQUEST).send({ error: e.message })
     }

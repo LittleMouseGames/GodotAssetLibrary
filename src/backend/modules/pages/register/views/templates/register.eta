@@ -9,9 +9,9 @@
 <section class="page-register">
   <div class="column">
     <h2>Sign in to an existing Account</h2>
-    <form action="/api/users/login" onsubmit="send(event, this)">
-      <input type="username" placeholder="Username" required>
-      <input type="password" placeholder="Password" required>
+    <form method="POST" action="/api/users/login" onsubmit="send(event, this)">
+      <input name="username" type="username" placeholder="Username" required>
+      <input name="password" type="password" placeholder="Password" required>
       <div class="disclaimer">This site is protected by reCAPTCHA and the Google <strong>Privacy Policy</strong> and
         <strong>Terms of
           Service</strong> apply.
