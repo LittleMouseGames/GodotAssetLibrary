@@ -9,8 +9,8 @@
 <section class="page-register">
   <div class="column">
     <h2>Sign in to an existing Account</h2>
-    <form action="">
-      <input type="email" placeholder="Email Address" required>
+    <form action="/api/users/login" onsubmit="send(event, this)">
+      <input type="username" placeholder="Username" required>
       <input type="password" placeholder="Password" required>
       <div class="disclaimer">This site is protected by reCAPTCHA and the Google <strong>Privacy Policy</strong> and
         <strong>Terms of
@@ -27,10 +27,11 @@
       <li>Leave ratings and reviews</li>
       <li>Easily bookmark assets for future lookup</li>
     </ul>
-    <form action="">
-      <input type="email" placeholder="Email Address" required>
-      <input type="password" placeholder="Password" required>
-      <input type="password" placeholder="Password confirmation" required>
+    <form method="POST" action="/api/users/register" onsubmit="send(event, this)">
+      <input name="username" type="username" placeholder="Username" required>
+      <input name="email" type="email" placeholder="Email Address" required>
+      <input name="password" type="password" placeholder="Password" required>
+      <input name="passwordConf" type="password" placeholder="Password confirmation" required>
       <div class="disclaimer">This site is protected by reCAPTCHA and the Google <strong>Privacy Policy</strong> and
         <strong>Terms of
           Service</strong> apply.
@@ -38,4 +39,24 @@
       <button action="submit">Create account</button>
     </form>
   </div>
+
+  <script>
+    function send(e, form) {
+      fetch(form.action, {
+        method: 'post',
+        body: new URLSearchParams(new FormData(form)),
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+      }).then(response => {
+        if (!response.ok) {
+          console.log(response)
+          response.json().then(data => {
+            alert(data.error)
+          })
+        }
+      })
+      e.preventDefault()
+    }
+  </script>
 </section>

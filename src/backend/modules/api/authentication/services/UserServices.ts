@@ -43,13 +43,13 @@ export class UserServices {
     const email = req.body.email ?? ''
 
     if (!this.USERNAME_REGEX.test(username)) {
-      throw new Error('Username validation fail')
+      throw new Error('Username validation failed')
     } else if (!this.PASSWORD_REGEX.test(password)) {
-      throw new Error('Password validation fail')
+      throw new Error('Password failed validation. Is it too short?')
     } else if (password !== passwordConf) {
       throw new Error('Password mismatch')
     } else if (email === '') {
-      throw new Error('Email validation fail')
+      throw new Error('Email validation failed or none supplied')
     }
 
     const tokenExpires = this.TokenService.generateExpiry()

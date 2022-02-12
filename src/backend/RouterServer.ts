@@ -23,7 +23,9 @@ class RouterServer extends Server {
     this.app.use(compression())
     this.app.use(express.static(path.join(__dirname, 'public')))
     this.app.use(express.json())
-    this.app.use(express.urlencoded())
+    this.app.use(express.urlencoded({
+      extended: true
+    }))
 
     this.app.use(function (_req, res, next) {
       res.setHeader('X-Powered-By', 'LittleMouseGames')
