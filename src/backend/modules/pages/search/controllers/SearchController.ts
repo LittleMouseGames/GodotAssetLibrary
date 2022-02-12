@@ -1,4 +1,4 @@
-import { Controller, Get } from '@overnightjs/core'
+import { Controller, Get, Post } from '@overnightjs/core'
 import { Request, Response } from 'express'
 
 import { SearchService } from '../services/SearchService'
@@ -14,7 +14,15 @@ export class SearchController {
    * Home
    */
   @Get('/')
-  private index (req: Request, res: Response): void {
-    return this.SearchService.render(req, res)
+  private async index (req: Request, res: Response): Promise<void> {
+    return await this.SearchService.render(req, res)
+  }
+
+  /**
+   * Home
+   */
+  @Post('/')
+  private async getQuery (req: Request, res: Response): Promise<void> {
+    return this.SearchService.redirectToSearchUrl(req, res)
   }
 }

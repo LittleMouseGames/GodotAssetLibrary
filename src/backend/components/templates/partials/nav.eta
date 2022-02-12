@@ -11,10 +11,12 @@
         <div class="subtitle">by <span class="strong">LittleMouseGames</span></div>
       </a>
     </div>
-    <div class="search">
-      <span class="iconify" data-icon="eva:search-outline"></span>
-      <input placeholder="Search...">
-    </div>
+    <form method="POST" action="/search">
+      <div class="search">
+        <span class="iconify" data-icon="eva:search-outline"></span>
+        <input placeholder="Search..." name="query">
+      </div>
+    </form>
     <div class="links">
       <div class="link">2D Tools</div>
       <div class="link">3D Tools</div>

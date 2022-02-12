@@ -8,10 +8,108 @@
 
 <section class="page-search">
   <section>
-    <%~ includeFile('templates/components/partials/catalog-filters.eta') %>
+    <div class="catalog-filters">
+      <div class="filter">
+        <h2>Category Filters</h2>
+        <hr>
+        <div class="options">
+          <ul>
+            <% for (const [key, value] of Object.entries(it.categoryFilters)) { %>
+            <li>
+              <label>
+                <input type="checkbox">
+                <%= String(key) %> (<%= String(value) %>)
+              </label>
+            </li>
+            <% } %>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="catalog-filters">
+      <div class="filter">
+        <h2>Engine Filters</h2>
+        <hr>
+        <div class="options">
+          <ul>
+            <% for (const [key, value] of Object.entries(it.engineFilters)) { %>
+            <li>
+              <label>
+                <input type="checkbox">
+                <%= String(`Godot ${key}`) %> (<%= String(value) %>)
+              </label>
+            </li>
+            <% } %>
+          </ul>
+        </div>
+      </div>
+    </div>
   </section>
 
   <section>
-    <%~ includeFile('templates/components/partials/catalog-grid.eta') %>
+    <div class="catalog-grid">
+      <div class="top-bar">
+        <div class="left">
+          <div class="sort">
+            <label>
+              Sort By
+              <select>
+                <option value="popular">Popular</option>
+                <option value="new">New</option>
+              </select>
+            </label>
+          </div>
+        </div>
+        <div class="right">
+          <label>
+            Results per Page
+            <select>
+              <option>12</option>
+              <option>24</option>
+              <option>36</option>
+            </select>
+          </label>
+          <div class="buttons">
+            <button class="disabled">Back</button>
+            <button>Next</button>
+          </div>
+        </div>
+      </div>
+      <div class="results">
+        <%~ includeFile('templates/components/partials/asset-card.eta') %>
+        <%~ includeFile('templates/components/partials/asset-card.eta') %>
+        <%~ includeFile('templates/components/partials/asset-card.eta') %>
+        <%~ includeFile('templates/components/partials/asset-card.eta') %>
+
+        <%~ includeFile('templates/components/partials/asset-card.eta') %>
+        <%~ includeFile('templates/components/partials/asset-card.eta') %>
+        <%~ includeFile('templates/components/partials/asset-card.eta') %>
+        <%~ includeFile('templates/components/partials/asset-card.eta') %>
+
+        <%~ includeFile('templates/components/partials/asset-card.eta') %>
+        <%~ includeFile('templates/components/partials/asset-card.eta') %>
+        <%~ includeFile('templates/components/partials/asset-card.eta') %>
+        <%~ includeFile('templates/components/partials/asset-card.eta') %>
+      </div>
+      <div class="bottom-bar">
+        <div class="left">
+          <label>
+            Results per Page
+            <select>
+              <option>12</option>
+              <option>24</option>
+              <option>36</option>
+            </select>
+          </label>
+        </div>
+        <div class="right">
+          <div class="buttons">
+            <button class="disabled">Back</button>
+            <button>Next</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
   </section>
 </section>

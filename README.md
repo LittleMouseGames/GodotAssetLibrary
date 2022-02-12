@@ -31,6 +31,18 @@ For linting:
 npm run lint
 ```
 
+### Indexes
+Searching the catalog of assets relies on MongoDBs `text` search, so we need to create a text asset on the `asset` collection. To do so is pretty easy, just log into the MongoDB shell and run:
+```
+db.assets.createIndex({ 
+  description: "text",
+  quick_description: "text",
+  title: "text",
+  author: "text",
+})
+```
+In future versions we may do this automatically if it detects the index doesn't already exist, but for now its a manual process.
+
 ## Folder Structure
 ```
  src
