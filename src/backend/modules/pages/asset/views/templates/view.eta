@@ -17,16 +17,17 @@
         </div>
         <% }) %>
         <% } else { %>
-        <div class="image"></div>
-        <div class="image"></div>
-        <div class="image"></div>
-        <div class="image"></div>
+        <div class="image">
+          <img src="<%= it?.info?.icon_url %>" alt="">
+        </div>
         <% } %>
       </div>
       <div class="player">
         <div class="container">
           <% if(it?.info?.previews.length !== 0) { %>
           <img src="<%= it?.info?.previews[0].link %>" alt="">
+          <% } else { %>
+          <img src="<%= it?.info?.icon_url %>" alt="">
           <% } %>
         </div>
       </div>
@@ -75,7 +76,7 @@
           <% if (!it?.featured) { %>
           <div class="background">
             <div class="mask">
-              <img src="<%= it?.info?.card_banner ?? '/images/noimage.png' %>" alt="">
+              <img src="<%= it?.info?.card_banner ?? it?.info?.icon_url %>" alt="">
             </div>
           </div>
           <% } %>
