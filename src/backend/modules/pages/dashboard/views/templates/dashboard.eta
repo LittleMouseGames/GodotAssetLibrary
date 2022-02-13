@@ -18,8 +18,8 @@
   <div class="column">
     <form action="">
       <h2>Account Information</h2>
-      <input type="text" name="username" placeholder="Username">
-      <input type="text" name="email" placeholder="Email Address">
+      <input type="text" name="username" placeholder="Username" value="<%= it.info.username %>">
+      <input type="text" name="email" placeholder="Email Address" value="<%= it.info.email %>">
       <label>
         <input type="checkbox">
         Send notifications to my email address

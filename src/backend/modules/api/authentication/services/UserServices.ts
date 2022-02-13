@@ -63,7 +63,7 @@ export class UserServices {
     const passwordHash = await argon2.hash(password)
 
     try {
-      await InsertUser(username, passwordHash, tokenHash, tokenExpires)
+      await InsertUser(username, email, passwordHash, tokenHash, tokenExpires)
       return token
     } catch (e: any) {
       logger.log('error', e.message)

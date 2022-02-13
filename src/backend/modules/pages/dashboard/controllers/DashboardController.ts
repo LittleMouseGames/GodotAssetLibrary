@@ -1,5 +1,6 @@
-import { Controller, Get } from '@overnightjs/core'
+import { Controller, Get, Middleware } from '@overnightjs/core'
 import { Request, Response } from 'express'
+import { CheckIfUserExistAndRedirect } from 'utility/middleware/CheckIfUserExistAndRedirect'
 
 import { DashboardService } from '../services/DashboardService'
 
@@ -14,7 +15,8 @@ export class DashboardController {
    * Home
    */
   @Get('/')
+  @Middleware(CheckIfUserExistAndRedirect('/register', false))
   private async index (req: Request, res: Response): Promise<void> {
-    return this.DashboardService.render(req, res)
+    return await this.DashboardService.render(req, res)
   }
 }

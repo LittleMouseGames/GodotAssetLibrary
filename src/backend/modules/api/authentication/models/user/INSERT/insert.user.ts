@@ -12,12 +12,13 @@ import { customAlphabet } from 'nanoid/non-secure'
  * @param {String} token the hashed token
  * @param {Date} tokenExpires when the token expires
  */
-export async function InsertUser (username: string, passwordHash: string, token: string, tokenExpires: Date): Promise<any> {
+export async function InsertUser (username: string, email: string, passwordHash: string, token: string, tokenExpires: Date): Promise<any> {
   const nanoid = customAlphabet('0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz', 36)
   const mongo = MongoHelper.getDatabase()
   const userObj = await mongo.collection('users').insertOne({
     human_id: nanoid(),
     username: username,
+    email: email,
     password_hash: passwordHash,
     username_lower: username.toLocaleLowerCase(),
     resume_tokens: [
