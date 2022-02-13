@@ -1,5 +1,7 @@
 import { Request, Response } from 'express'
 import { GetAllFilters } from '../models/GET/GetAllFilters'
+import { GetAssetsFromQuery } from '../models/GET/GetAssetsFromQuery'
+import { GetAssetsWithoutQuery } from '../models/GET/GetAssetsWithoutQuery'
 import { GetSearchResultFilters } from '../models/GET/GetSearchResultFilters'
 
 export class SearchService {
@@ -9,7 +11,7 @@ export class SearchService {
    * @param {Request} req request object
   */
   public async render (req: Request, res: Response): Promise<void> {
-    const query = req.body.query ?? req.query.q ?? ''
+    const query = String(req.query.q) ?? ''
 
     const categoryFilters: {
       [key: string]: number
@@ -21,11 +23,15 @@ export class SearchService {
 
     let filters = []
 
+    let assets: any = []
+
     // if no query we'll show all assets
     if (query === '') {
       filters = await GetAllFilters()
+      assets = await GetAssetsWithoutQuery(12)
     } else {
       filters = await GetSearchResultFilters(query)
+      assets = await GetAssetsFromQuery(query, 12)
     }
 
     for (const filter of filters) {
@@ -42,11 +48,11 @@ export class SearchService {
       }
     }
 
-    return res.render('templates/pages/search/search', { categoryFilters: categoryFilters, engineFilters: engineFilters })
+    return res.render('templates/pages/search/search', { categoryFilters: categoryFilters, engineFilters: engineFilters, assets: assets })
   }
 
   public redirectToSearchUrl (req: Request, res: Response): void {
-    const query = req.body.query ?? ''
+    const query = encodeURIComponent(req.body.query ?? '')
     res.redirect(`/search/?q=${query}`)
   }
 }

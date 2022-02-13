@@ -76,20 +76,9 @@
         </div>
       </div>
       <div class="results">
-        <%~ includeFile('templates/components/partials/asset-card.eta') %>
-        <%~ includeFile('templates/components/partials/asset-card.eta') %>
-        <%~ includeFile('templates/components/partials/asset-card.eta') %>
-        <%~ includeFile('templates/components/partials/asset-card.eta') %>
-
-        <%~ includeFile('templates/components/partials/asset-card.eta') %>
-        <%~ includeFile('templates/components/partials/asset-card.eta') %>
-        <%~ includeFile('templates/components/partials/asset-card.eta') %>
-        <%~ includeFile('templates/components/partials/asset-card.eta') %>
-
-        <%~ includeFile('templates/components/partials/asset-card.eta') %>
-        <%~ includeFile('templates/components/partials/asset-card.eta') %>
-        <%~ includeFile('templates/components/partials/asset-card.eta') %>
-        <%~ includeFile('templates/components/partials/asset-card.eta') %>
+        <% it.assets?.forEach(info => { %>
+        <%~ includeFile('templates/components/partials/asset-card.eta', { info: info }) %>
+        <% }) %>
       </div>
       <div class="bottom-bar">
         <div class="left">

@@ -1,6 +1,7 @@
 @import "components/styles/layouts/promobar-nav-body-footer";
-@import "components/styles/partials/catalog-grid";
-@import "components/styles/partials/catalog-filters";
+@import "components/styles/utils/mixins";
+@import "components/styles/utils/variables";
+@import "components/styles/partials/asset-card";
 
 @include card-rating-styles;
 
@@ -9,4 +10,110 @@
   grid-template-columns: 260px auto;
   column-gap: 55px;
   margin-top: 25px;
+
+  .catalog-filters {
+    @include reset-header-spacing;
+    @include reset-ul;
+    margin-left: 5px;
+    margin-top: 6px;
+
+    h2 {
+      font-size: 18px;
+      font-family: "Inter";
+      font-weight: 600;
+    }
+
+    hr {
+      background: $color-brand-gray;
+      height: 2px;
+      border: none;
+      margin-top: 8px;
+      margin-bottom: 8px;
+    }
+
+    li {
+      margin-bottom: 7px;
+    }
+
+    label {
+      font-family: "DM Sans";
+      font-weight: 400;
+      cursor: pointer;
+
+      input {
+        margin-right: 7px;
+      }
+    }
+  }
+
+  .catalog-grid {
+    .results {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr 1fr;
+      column-gap: 20px;
+      row-gap: 20px;
+    }
+
+    .top-bar,
+    .bottom-bar {
+      display: flex;
+      justify-content: space-between;
+
+      &:not(.top-bar) {
+        margin-top: 25px;
+      }
+
+      &:not(.bottom-bar) {
+        margin-bottom: 25px;
+      }
+
+      .right {
+        display: flex;
+      }
+
+      label {
+        font-family: "Inter";
+        font-weight: 500;
+        font-size: 14px;
+        color: $text-gray-darker;
+      }
+
+      select {
+        border-radius: 6px;
+        background: $button-gray;
+        font-family: "Poppins";
+        font-weight: 600;
+        color: $text-dark-black;
+        border: none;
+        padding: 7px 10px;
+        margin-left: 10px;
+      }
+
+      .buttons {
+        margin-left: 40px;
+
+        button {
+          background: $button-gray;
+          border-radius: 6px;
+          font-family: "Inter";
+          font-size: 14px;
+          font-weight: 500;
+          border: none;
+          height: 35px;
+          text-align: center;
+          width: 80px;
+
+          &.disabled {
+            color: $text-light-darker;
+            background-color: $button-very-gray;
+            cursor: not-allowed;
+          }
+
+          &:not(:last-of-type) {
+            margin-right: 10px;
+          }
+        }
+      }
+    }
+  }
 }
