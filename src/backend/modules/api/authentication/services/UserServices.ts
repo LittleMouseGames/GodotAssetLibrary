@@ -171,4 +171,12 @@ export class UserServices {
   public isPasswordValid (password: string): boolean {
     return this.PASSWORD_REGEX.test(password)
   }
+
+  public async doesPasswordMatchHash (hash: string, password: string): Promise<boolean> {
+    return await argon2.verify(hash, password)
+  }
+
+  public async hashPassword (password: string): Promise<string> {
+    return await argon2.hash(password)
+  }
 }

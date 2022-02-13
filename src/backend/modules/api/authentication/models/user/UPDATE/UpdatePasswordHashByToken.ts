@@ -1,12 +1,12 @@
 import { MongoHelper } from 'MongoHelper'
 
-export async function GetUserByToken (token: string): Promise<any> {
+export async function UpdatePasswordHashByToken (token: string, passwordHash: string): Promise<any> {
   const mongo = MongoHelper.getDatabase()
-  const operationObject = await mongo.collection('users').findOne({
+  const operationObject = await mongo.collection('users').updateOne({
     'resume_tokens.token': token
   }, {
-    projection: {
-      human_id: 1
+    $set: {
+      password_hash: passwordHash
     }
   })
 
@@ -14,5 +14,5 @@ export async function GetUserByToken (token: string): Promise<any> {
     throw new Error('User not found')
   }
 
-  return operationObject.human_id
+  return operationObject
 }

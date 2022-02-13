@@ -35,7 +35,7 @@
     </form>
   </div>
   <div class="column">
-    <form method="POST" action="/users/update/info">
+    <form method="POST" action="/dashboard/update/password">
       <h2>Account Security</h2>
       <div class="input-container">
         <input id="password-current" name="password-current" type="password" placeholder="">
