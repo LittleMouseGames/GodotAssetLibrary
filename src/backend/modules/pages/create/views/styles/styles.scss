@@ -75,6 +75,16 @@
     }
   }
 
+  .section-media {
+    &.row {
+      margin-bottom: 0px;
+    }
+  }
+
+  .disclaimer {
+    margin-top: 5px;
+  }
+
   select {
     @include form-select;
   }

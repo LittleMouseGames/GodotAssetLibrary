@@ -19,9 +19,9 @@
         <label for="login-password" class="placeholder">Password</label>
       </div>
       <div class="disclaimer">
-        This site is protected by hCaptcha and its
-        <a href="https://hcaptcha.com/privacy">Privacy Policy</a> and
-        <a href="https://hcaptcha.com/terms">Terms of Service</a> apply.
+        By submitting this form you agree to our
+        <a href="/terms/privacy-plicy">Privacy Policy</a> and
+        <a href="/terms/terms-of-service">Terms of Service</a>
       </div>
       <button action="submit">Login</button>
     </form>
@@ -52,9 +52,9 @@
         <label for="register-password-conf" class="placeholder">Password Confirmation</label>
       </div>
       <div class="disclaimer">
-        This site is protected by hCaptcha and its
-        <a href="https://hcaptcha.com/privacy">Privacy Policy</a> and
-        <a href="https://hcaptcha.com/terms">Terms of Service</a> apply.
+        By submitting this form you agree to our
+        <a href="/terms/privacy-plicy">Privacy Policy</a> and
+        <a href="/terms/terms-of-service">Terms of Service</a>
       </div>
       <button action="submit">Create account</button>
     </form>
