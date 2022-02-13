@@ -5,6 +5,8 @@
 
 .page-register {
   @include reset-header-spacing;
+  @include sneaky-labels;
+
   display: grid;
   grid-template-columns: auto auto;
   column-gap: 80px;

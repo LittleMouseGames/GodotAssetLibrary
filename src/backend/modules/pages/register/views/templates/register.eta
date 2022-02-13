@@ -10,8 +10,14 @@
   <div class="column">
     <h2>Sign in to an existing Account</h2>
     <form method="POST" action="/api/users/login" onsubmit="send(event, this)">
-      <input name="username" type="username" placeholder="Username" required>
-      <input name="password" type="password" placeholder="Password" required>
+      <div class="input-container">
+        <input id="login-username" name="username" type="username" placeholder="" required>
+        <label for="login-username" class="placeholder">Username</label>
+      </div>
+      <div class="input-container">
+        <input id="login-password" name="password" type="password" placeholder="" required>
+        <label for="login-password" class="placeholder">Password</label>
+      </div>
       <div class="disclaimer">This site is protected by reCAPTCHA and the Google <strong>Privacy Policy</strong> and
         <strong>Terms of
           Service</strong> apply.
@@ -28,10 +34,22 @@
       <li>Easily bookmark assets for future lookup</li>
     </ul>
     <form method="POST" action="/api/users/register" onsubmit="send(event, this)">
-      <input name="username" type="username" placeholder="Username" required>
-      <input name="email" type="email" placeholder="Email Address" required>
-      <input name="password" type="password" placeholder="Password" required>
-      <input name="passwordConf" type="password" placeholder="Password confirmation" required>
+      <div class="input-container">
+        <input id="register-username" name="username" type="username" placeholder="" required>
+        <label for="register-username" class="placeholder">Username</label>
+      </div>
+      <div class="input-container">
+        <input id="register-email" name="email" type="email" placeholder="" required>
+        <label for="register-email" class="placeholder">Email Address</label>
+      </div>
+      <div class="input-container">
+        <input id="register-password" name="password" type="password" placeholder="" required>
+        <label for="register-password" class="placeholder">Passwword</label>
+      </div>
+      <div class="input-container">
+        <input id="register-password-conf" name="passwordConf" type="password" placeholder="" required>
+        <label for="register-password-conf" class="placeholder">Password Confirmation</label>
+      </div>
       <div class="disclaimer">This site is protected by reCAPTCHA and the Google <strong>Privacy Policy</strong> and
         <strong>Terms of
           Service</strong> apply.
