@@ -7,18 +7,21 @@
   background: $color-brand-black;
   position: sticky;
   top: 0;
-
   font-weight: 600;
   font-size: 12px;
 
-  display: flex;
-  align-items: center;
-  text-align: center;
-  justify-items: right;
-
-  color: $text-light-white;
-  position: relative;
-  justify-content: end;
+  .contents {
+    display: flex;
+    align-items: center;
+    text-align: center;
+    justify-items: right;
+    height: 100%;
+    max-width: $constrained-width;
+    margin: 0 auto;
+    color: $text-light-white;
+    position: relative;
+    justify-content: end;
+  }
 
   .text {
     width: 100%;
@@ -29,7 +32,6 @@
   .iconify {
     width: 20px;
     height: auto;
-    margin-right: 10px;
     cursor: pointer;
     z-index: 1;
   }
