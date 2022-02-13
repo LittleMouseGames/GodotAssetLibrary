@@ -1,6 +1,6 @@
-import { Controller, Get } from '@overnightjs/core'
+import { Controller, Get, Middleware } from '@overnightjs/core'
 import { Request, Response } from 'express'
-
+import { CheckIfUserExistAndRedirect } from 'utility/middleware/CheckIfUserExistAndRedirect'
 import { CreateService } from '../services/CreateService'
 
 /**
@@ -14,6 +14,7 @@ export class CreateController {
    * Home
    */
   @Get('/')
+  @Middleware(CheckIfUserExistAndRedirect('/register', false))
   private index (req: Request, res: Response): void {
     return this.CreateService.render(req, res)
   }
