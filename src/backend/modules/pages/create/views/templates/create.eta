@@ -16,7 +16,10 @@
     </legend>
     <div class="section row grid-special">
       <div class="inputs">
-        <input type="text" placeholder="Asset Name" required>
+        <div class="input-container">
+          <input id="asset-name" type="text" placeholder="" required>
+          <label for="asset-name" class="placeholder">Asset Name</label>
+        </div>
         <select>
           <option value="">Asset category</option>
         </select>
@@ -50,21 +53,24 @@
     </div>
     <div class="section">
       <div class="row">
-        <div class="input">
-          <input type="text" placeholder="Quick about (used in listing cards)" required>
+        <div class="input-container">
+          <input id="quick-about" type="text" placeholder="" required>
+          <label for="quick-about" class="placeholder">Quick about (used in listing cards)</label>
         </div>
       </div>
       <div class="row">
-        <div class="input">
-          <input type="text" placeholder="YouTube video (optional)">
+        <div class="input-container">
+          <input id="youtube-video" type="text" placeholder="">
+          <label for="youtube-video" class="placeholder">YouTube video (optional)</label>
         </div>
         <div class="note">
           <span><strong>Note:</strong> If a video is provided it will display first in the asset display page</span>
         </div>
       </div>
       <div class="row">
-        <div class="input">
-          <input type="text" placeholder="Card banner image URL" required>
+        <div class="input-container">
+          <input id="banner-url" type="text" placeholder="" required>
+          <label for="banner-url" class="placeholder">Card banner image URL</label>
         </div>
         <div class="note">
           <span><strong>Note:</strong> The image used in asset cards across the site. This could be a link to an image
@@ -73,20 +79,22 @@
         </div>
       </div>
       <div class="row">
-        <div class="input">
-          <input type="text" placeholder="Icon URL" required>
+        <div class="input-container">
+          <input id="icon-url" type="text" placeholder="" required>
+          <label for="icon-url" class="placeholder">Icon URL</label>
         </div>
         <div class="note">
           <span><strong>Note:</strong> This could be a link to an image in your repo</span>
         </div>
       </div>
       <div class="row">
-        <div class="input">
-          <input type="text" placeholder="Asset Version, ex 1.0.0" required>
+        <div class="input-container">
+          <input id="asset-version" type="text" placeholder="" required>
+          <label for="asset-version" class="placeholder">Asset Version (ex 1.0.0)</label>
         </div>
       </div>
       <div class="row">
-        <div class="input">
+        <div class="input-container">
           <select>
             <option value="" required>License</option>
           </select>
@@ -97,8 +105,9 @@
         </div>
       </div>
       <div class="row">
-        <div class="input">
-          <input type="text" placeholder="Asset Git URL" required>
+        <div class="input-container">
+          <input id="git-url" type="text" placeholder="" required>
+          <label for="git-url" class="placeholder">Asset Git URL</label>
         </div>
         <div class="note">
           <span><strong>Note:</strong> Only GitHub, GitLab, BitBucket, cogs/GitTea and cgit are support right now. Not
@@ -107,8 +116,9 @@
         </div>
       </div>
       <div class="row">
-        <div class="input">
-          <input type="text" placeholder="Download commit hash" required>
+        <div class="input-container">
+          <input id="download-hash-url" type="text" placeholder="" required>
+          <label for="download-hash-url" class="placeholder">Download commit hash</label>
         </div>
         <div class="note">
           <span><strong>Note: </strong> Note: The Download Commit Hash is the commit you want to release to the asset
@@ -125,10 +135,22 @@
     </legend>
     <div class="section row grid-special">
       <div class="inputs">
-        <input type="text" placeholder="Media URL (ex imgur link)" required>
-        <input type="text" placeholder="(optional) Media URL (ex imgur link)">
-        <input type="text" placeholder="(optional) Media URL (ex imgur link)">
-        <input type="text" placeholder="(optional) Media URL (ex imgur link)">
+        <div class="input-container">
+          <input id="media-one" type="text" placeholder="" required>
+          <label for="media-one" class="placeholder">Media URL</label>
+        </div>
+        <div class="input-container">
+          <input id="media-two" type="text" placeholder="">
+          <label for="media-two" class="placeholder">(optional) Media URL</label>
+        </div>
+        <div class="input-container">
+          <input id="media-three" type="text" placeholder="">
+          <label for="media-four" class="placeholder">(optional) Media URL</label>
+        </div>
+        <div class="input-container">
+          <input id="media-four" type="text" placeholder="">
+          <label for="media-four" class="placeholder">(optional) Media URL</label>
+        </div>
       </div>
       <div class="general-notes">
         <div class="note">

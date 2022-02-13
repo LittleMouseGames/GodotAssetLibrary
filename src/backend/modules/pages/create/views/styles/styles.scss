@@ -5,6 +5,8 @@
 
 .page-create {
   @include reset-header-spacing;
+  @include sneaky-labels;
+
   margin-top: 40px;
 
   .grid-special {
@@ -60,6 +62,15 @@
     .note {
       display: flex;
       align-items: center;
+    }
+  }
+
+  .row,
+  .inputs {
+    .input-container {
+      &:not(:last-child) {
+        margin-bottom: 0;
+      }
     }
   }
 
