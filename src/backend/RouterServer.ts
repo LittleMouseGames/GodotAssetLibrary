@@ -4,6 +4,7 @@ import express, { Request, Response } from 'express'
 import { logger } from 'utility/logger'
 import compression from 'compression'
 import path from 'path'
+import cookieParser from 'cookie-parser'
 
 /**
  * Starts the server
@@ -23,12 +24,13 @@ class RouterServer extends Server {
     this.app.use(compression())
     this.app.use(express.static(path.join(__dirname, 'public')))
     this.app.use(express.json())
+    this.app.use(cookieParser())
     this.app.use(express.urlencoded({
       extended: true
     }))
 
     this.app.use(function (_req, res, next) {
-      res.setHeader('X-Powered-By', 'LittleMouseGames')
+      res.setHeader('X-Powered-By', 'Open Source Software and Coffee')
       next()
     })
 

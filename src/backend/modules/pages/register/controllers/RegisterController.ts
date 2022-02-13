@@ -14,7 +14,7 @@ export class RegisterController {
    * Home
    */
   @Get('/')
-  private index (req: Request, res: Response): void {
-    return this.RegisterService.render(req, res)
+  private async index (req: Request, res: Response): Promise<void> {
+    return await this.RegisterService.render(req, res)
   }
 }

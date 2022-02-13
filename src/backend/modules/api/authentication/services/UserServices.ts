@@ -115,6 +115,25 @@ export class UserServices {
           throw new Error('Invalid credentials')
         }
 
+        /**
+         * Lets break this down
+         *
+         * We create a token, then hash it and put it in
+         * the database, and then send back the original
+         * unhased token back to the caller (which in this
+         * case probably means added as a cookie on the
+         * client)
+         *
+         * When we go to check the token validity, we then
+         * re-hash it and find the user who has that matching
+         * hash. This way if the DB becomes compromised,
+         * all they have is the token hash. And since we re-hash
+         * on the login checks, they will not be able to
+         * imepersonate a user.
+         *
+         * This is very similar to how MeteorJS does (did?) their
+         * token implementation
+         */
         const token = this.TokenService.generateToken()
         const tokenHash = this.TokenService.hashToken(token)
         const tokenExpires = this.TokenService.generateExpiry()
