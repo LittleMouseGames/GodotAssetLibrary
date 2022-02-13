@@ -109,7 +109,7 @@ export class UserServices {
 
       try {
         const passwordHash = await GetPasswordHash(username)
-        const verify = await argon2.verify(passwordHash.password, password)
+        const verify = await argon2.verify(passwordHash, password)
 
         if (!verify) {
           throw new Error('Invalid credentials')

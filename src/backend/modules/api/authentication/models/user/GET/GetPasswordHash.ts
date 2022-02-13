@@ -14,5 +14,5 @@ export async function GetPasswordHash (username: string): Promise<any> {
     throw new Error('User not found')
   }
 
-  return userObj
+  return userObj.password_hash
 }

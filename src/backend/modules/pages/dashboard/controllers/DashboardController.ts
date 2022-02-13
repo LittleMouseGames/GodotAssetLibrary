@@ -14,7 +14,7 @@ export class DashboardController {
    * Home
    */
   @Get('/')
-  private index (req: Request, res: Response): void {
+  private async index (req: Request, res: Response): Promise<void> {
     return this.DashboardService.render(req, res)
   }
 }

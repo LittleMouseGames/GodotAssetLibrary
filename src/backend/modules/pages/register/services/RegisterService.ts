@@ -27,6 +27,8 @@ export class RegisterService {
       } catch (e) {
         return res.render('templates/pages/register/register')
       }
+    } else {
+      return res.render('templates/pages/register/register')
     }
   }
 }
