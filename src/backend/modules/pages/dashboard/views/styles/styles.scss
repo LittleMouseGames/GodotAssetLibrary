@@ -5,7 +5,8 @@
 
 .page-dashboard {
   @include reset-header-spacing;
-  @include sneaky-labels();
+  @include sneaky-labels;
+  @include disclaimer-styles;
 
   margin-top: 40px;
   display: grid;
@@ -43,11 +44,6 @@
 
   select {
     @include form-select;
-  }
-
-  .disclaimer {
-    margin-top: 15px;
-    margin-bottom: 20px;
   }
 
   .sidebar {

@@ -18,9 +18,10 @@
         <input id="login-password" name="password" type="password" placeholder="" required>
         <label for="login-password" class="placeholder">Password</label>
       </div>
-      <div class="disclaimer">This site is protected by reCAPTCHA and the Google <strong>Privacy Policy</strong> and
-        <strong>Terms of
-          Service</strong> apply.
+      <div class="disclaimer">
+        This site is protected by hCaptcha and its
+        <a href="https://hcaptcha.com/privacy">Privacy Policy</a> and
+        <a href="https://hcaptcha.com/terms">Terms of Service</a> apply.
       </div>
       <button action="submit">Login</button>
     </form>
@@ -50,9 +51,10 @@
         <input id="register-password-conf" name="passwordConf" type="password" placeholder="" required>
         <label for="register-password-conf" class="placeholder">Password Confirmation</label>
       </div>
-      <div class="disclaimer">This site is protected by reCAPTCHA and the Google <strong>Privacy Policy</strong> and
-        <strong>Terms of
-          Service</strong> apply.
+      <div class="disclaimer">
+        This site is protected by hCaptcha and its
+        <a href="https://hcaptcha.com/privacy">Privacy Policy</a> and
+        <a href="https://hcaptcha.com/terms">Terms of Service</a> apply.
       </div>
       <button action="submit">Create account</button>
     </form>

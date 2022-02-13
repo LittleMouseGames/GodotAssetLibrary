@@ -6,6 +6,7 @@
 .page-register {
   @include reset-header-spacing;
   @include sneaky-labels;
+  @include disclaimer-styles;
 
   display: grid;
   grid-template-columns: auto auto;
@@ -44,11 +45,6 @@
   strong {
     font-weight: 600;
     color: $text-dark-darker;
-  }
-
-  .disclaimer {
-    margin-top: 20px;
-    margin-bottom: 20px;
   }
 
   button {

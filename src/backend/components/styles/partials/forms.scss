@@ -71,3 +71,15 @@
     }
   }
 }
+
+@mixin disclaimer-styles {
+  .disclaimer {
+    margin-top: 20px;
+    margin-bottom: 20px;
+
+    a {
+      color: $text-dark-darkest;
+      font-weight: 600;
+    }
+  }
+}

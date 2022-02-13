@@ -6,6 +6,7 @@
 .page-create {
   @include reset-header-spacing;
   @include sneaky-labels;
+  @include disclaimer-styles;
 
   margin-top: 40px;
 
@@ -84,10 +85,5 @@
     border-radius: 3px;
     font-size: 12px;
     font-weight: 500;
-  }
-
-  .disclaimer {
-    margin-top: 20px;
-    margin-bottom: 20px;
   }
 }
