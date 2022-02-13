@@ -18,8 +18,14 @@
   <div class="column">
     <form action="">
       <h2>Account Information</h2>
-      <input type="text" name="username" placeholder="Username" value="<%= it.info.username %>">
-      <input type="text" name="email" placeholder="Email Address" value="<%= it.info.email %>">
+      <div class="input-container">
+        <input it="username" type="text" name="username" placeholder="" value="<%= it.info.username %>">
+        <label for="username" class="placeholder">Username</label>
+      </div>
+      <div class="input-container">
+        <input id="email" type="text" name="email" placeholder="" value="<%= it.info.email %>">
+        <label for="email" class="placeholder">Email Address</label>
+      </div>
       <label>
         <input type="checkbox">
         Send notifications to my email address
@@ -34,9 +40,18 @@
   <div class="column">
     <form action="">
       <h2>Account Security</h2>
-      <input type="password" placeholder="Current Password">
-      <input type="password" placeholder="New Password">
-      <input type="password" placeholder="New Password Confirmation">
+      <div class="input-container">
+        <input id="password-current" name="password-current" type="password" placeholder="">
+        <label for="password-current" class="placeholder">Current Password</label>
+      </div>
+      <div class="input-container">
+        <input id="new-password" name="new-password" type="password" placeholder="">
+        <label for="new-password" class="placeholder">New Password</label>
+      </div>
+      <div class="input-container">
+        <input id="new-password-conf" name="new-password-conf" type="password" placeholder="">
+        <label for="new-password-conf" class="placeholder">New Password Confirmation</label>
+      </div>
       <div class="disclaimer">This site is protected by reCAPTCHA and the Google <strong>Privacy Policy</strong> and
         <strong>Terms of
           Service</strong> apply.

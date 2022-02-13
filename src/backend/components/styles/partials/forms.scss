@@ -35,3 +35,38 @@
 @mixin form-select {
   @include _form-shared();
 }
+
+@mixin sneaky-labels {
+  .input-container {
+    position: relative;
+
+    .placeholder {
+      color: $text-dark-darker;
+      font-family: Inter;
+      left: 17px;
+      line-height: 14px;
+      pointer-events: none;
+      position: absolute;
+      transform-origin: 0 50%;
+      transition: transform 200ms, color 200ms, font-size 200ms, background 200ms;
+      top: 15px;
+      border-radius: 3px;
+    }
+
+    &:not(:last-of-type) {
+      margin-bottom: 15px;
+    }
+
+    input:focus ~ .placeholder,
+    input:not(:placeholder-shown) ~ .placeholder {
+      transform: translateY(-23px) translateX(-4px);
+      padding: 0px 7px 3px 7px;
+      background: #efefef;
+      font-size: 12px;
+    }
+
+    input:not(:placeholder-shown) ~ .placeholder {
+      color: $text-gray-dark;
+    }
+  }
+}

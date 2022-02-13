@@ -5,6 +5,8 @@
 
 .page-dashboard {
   @include reset-header-spacing;
+  @include sneaky-labels();
+
   margin-top: 40px;
   display: grid;
   column-gap: 60px;
@@ -18,10 +20,6 @@
 
   input {
     @include form-input;
-
-    &:not(:last-of-type) {
-      margin-bottom: 15px;
-    }
   }
 
   input[type="checkbox"] {
