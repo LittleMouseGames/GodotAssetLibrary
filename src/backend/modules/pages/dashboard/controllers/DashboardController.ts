@@ -1,5 +1,6 @@
 import { Controller, Get, Middleware, Post } from '@overnightjs/core'
 import { Request, Response } from 'express'
+import { StatusCodes } from 'http-status-codes'
 import { CheckIfUserExistAndRedirect } from 'utility/middleware/CheckIfUserExistAndRedirect'
 
 import { DashboardService } from '../services/DashboardService'
@@ -26,6 +27,10 @@ export class DashboardController {
   @Post('update/info')
   @Middleware(CheckIfUserExistAndRedirect('/register', false))
   private async updateInformation (req: Request, res: Response): Promise<void> {
-    return await this.DashboardService.render(req, res)
+    try {
+      return await this.DashboardService.updateInfo(req, res)
+    } catch (e: any) {
+      res.status(StatusCodes.BAD_REQUEST).send({ error: e.message })
+    }
   }
 }

@@ -158,4 +158,17 @@ export class UserServices {
     const userId = await GetUserByToken(hashedToken)
     return userId
   }
+
+  /**
+   * Checks a given username against the regex test
+   *
+   * @param username username
+   */
+  public isUsernameValid (username: string): boolean {
+    return this.USERNAME_REGEX.test(username)
+  }
+
+  public isPasswordValid (password: string): boolean {
+    return this.PASSWORD_REGEX.test(password)
+  }
 }
