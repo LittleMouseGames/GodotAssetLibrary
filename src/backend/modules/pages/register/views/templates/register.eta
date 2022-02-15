@@ -70,10 +70,12 @@
         },
       }).then(response => {
         if (!response.ok) {
-          console.log(response)
           response.json().then(data => {
-            alert(data.error)
+            window.godotLibrary.pageMessages.removeAllPageMessages()
+            window.godotLibrary.pageMessages.addPageMessage(data.error)
           })
+        } else {
+          location.reload()
         }
       })
       e.preventDefault()
