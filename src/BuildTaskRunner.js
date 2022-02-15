@@ -122,5 +122,10 @@ function compileScss () {
   })
 }
 
+function copyPublic () {
+  console.log('hi')
+  return fs.copySync(path.join(__dirname, 'public'), path.join(__dirname, '../dist/public/'))
+}
+
 moveTemplates()
 findScss()

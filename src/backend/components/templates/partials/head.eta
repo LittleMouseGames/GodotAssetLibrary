@@ -21,3 +21,4 @@
     rel="stylesheet">
 <link rel="icon" href="/favicon.ico">
 <script src="https://code.iconify.design/2/2.1.2/iconify.min.js"></script>
+<script src="/javascript/utilities.js"></script>

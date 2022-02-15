@@ -1,0 +1,16 @@
+.page-message {
+  margin-top: 20px;
+
+  .message {
+    padding: 13px 15px;
+    border-radius: 3px;
+    background-color: white;
+    font-family: "Inter";
+    color: white;
+    background: #3e41f5;
+
+    &:not(:last-of-type) {
+      margin-bottom: 15px;
+    }
+  }
+}
