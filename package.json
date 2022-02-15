@@ -72,5 +72,11 @@
     "plugins": [
       "@typescript-eslint/eslint-plugin"
     ]
+  },
+  "nodemonConfig": {
+    "ignore": [
+      "dist/public",
+      "src/public"
+    ]
   }
 }

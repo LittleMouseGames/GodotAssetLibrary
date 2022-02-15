@@ -2,130 +2,172 @@ const fs = require('fs-extra')
 const path = require('path')
 const glob = require('glob')
 const sass = require('sass')
-const cssPurge = require('css-purge')
 
-const pageScss = []
+/**
+ * Goals:
+ * - glob find SCSS, JS, TS, templates and static content
+ * - watch for changes
+ *   - if SCSS or TS, compile
+ * - copy over to dist folder
+ *
+ */
 
-async function moveTemplates () {
+/**
+ * Make sure our folders exist
+ */
+function makeDistFolder () {
   fs.mkdirSync(path.join(__dirname, '../dist/templates'), { recursive: true })
-
-  moveComponents()
-
-  fs.watch(path.join(__dirname, '/backend/components/templates/layouts'), function (eventType) {
-    if (eventType === 'change') {
-      try {
-        moveComponents()
-      } catch (e) {
-        console.log('Error moving template, please try again')
-      }
-    }
-  })
-
-  fs.watch(path.join(__dirname, '/backend/components/templates/partials'), function (eventType) {
-    if (eventType === 'change') {
-      try {
-        moveComponents()
-      } catch (e) {
-        console.log('Error moving template, please try again')
-      }
-    }
-  })
-
-  const route = path.join(__dirname, '/backend/modules/pages')
-
-  const directories = source => fs.readdirSync(source, {
-    withFileTypes: true
-  }).reduce((a, c) => {
-    c.isDirectory() && a.push(c.name)
-    return a
-  }, [])
-
-  const pageModules = directories(route)
-
-  pageModules.forEach(function (module) {
-    if (fs.existsSync(path.join(route, module, 'views', 'templates'))) {
-      movePages(route, module)
-
-      fs.watch(path.join(route, module, 'views', 'templates'), function (eventType) {
-        if (eventType === 'change') {
-          try {
-            movePages(route, module)
-          } catch (e) {
-            console.log('Error moving page, please try again')
-          }
-        }
-      })
-    }
-  })
+  fs.mkdirSync(path.join(__dirname, '../dist/public/javascript'), { recursive: true })
+  fs.mkdirSync(path.join(__dirname, '../dist/public/styles'), { recursive: true })
 }
 
 /**
-  * Moves pages to a 'nicer' namespace in dist/
-*/
-function movePages (route, module) {
-  return fs.copySync(path.join(route, module, 'views', 'templates'), path.join(__dirname, '../dist/templates/pages/', module))
-}
-
-/**
-  * Moves all components to dist/ folder
-*/
-function moveComponents () {
-  return fs.copySync(path.join(__dirname, '/backend/components/templates'), path.join(__dirname, '../dist/templates/components/'))
-}
-
+ * Find our SCSS in the project
+ */
 function findScss () {
-  // eslint-disable-next-line new-cap
   glob(path.join(__dirname, '/**/*.scss'), {}, (_err, files) => {
     files.forEach(file => {
+      compileAndMoveScss(file)
+
       // in case there is a path prefixed, lets lob it off
-      file = 'src/' + file.split('src/')[1]
+      file = file.split('src/')[1]
 
-      // make sure we're only moving pages, components will be pulled in at compile
-      if (file.includes('backend/modules/pages')) {
-        pageScss.push(file)
-        compileScss()
-      }
-
-      fs.watch(path.dirname(file), async function (eventType) {
-        if (eventType === 'change') {
-          try {
-            await compileScss()
-          } catch (e) {
-            console.log(e)
-          }
-        }
-      })
+      watchFileOrFolder(file, 'scss', compileAndMoveScss, files)
     })
   })
 }
 
-function compileScss () {
-  pageScss.forEach(file => {
-    const exportPath = path.join(path.join(__dirname, '../dist/public/'), file.replace('src/', '').replace('pages/', '').replace('backend/', '').replace('views/', '').replace('styles/', '').replace('modules/', 'styles/').replace('.scss', '.css'))
-    const compiledCSS = sass.compile(path.join(file), { loadPaths: [path.join(__dirname, 'backend')], style: 'compressed' })
+/**
+ * Find all ETA templates in projects
+ */
+function findTemplates () {
+  glob(path.join(__dirname, '/**/*.eta'), {}, (_err, files) => {
+    files.forEach(file => {
+      // moveTemplates(file)
 
-    fs.mkdirSync(path.dirname(exportPath), { recursive: true })
-    fs.writeFile(`${exportPath}`, compiledCSS.css)
+      // in case there is a path prefixed, lets lob it off
+      file = file.split('src/')[1]
 
-    // TODO: Move to production builder
-    // cssPurge.purgeCSS(compiledCSS.css, {
-    //   trim: true,
-    //   shorten: true
-    // }, function (error, result) {
-    //   if (error) {
-    //     console.log(error)
-    //   } else {
-    //     fs.mkdirSync(path.dirname(exportPath), { recursive: true })
-    //     fs.writeFile(`${exportPath}`, result)
-    //   }
-    // })
+      watchFileOrFolder(file, 'template', moveTemplates)
+    })
   })
 }
 
-function copyPublic () {
-  console.log('hi')
-  return fs.copySync(path.join(__dirname, 'public'), path.join(__dirname, '../dist/public/'))
+/**
+ * Watch static files in public/ or their sub
+ * directories (such as javascript/ or images/)
+ */
+
+function watchPublicFolders () {
+  /** on first load */
+  movePublicFolderFile('public')
+
+  watchFileOrFolder('public/images', 'image', movePublicFolderFile, 'image')
+  watchFileOrFolder('public/javascript', 'public javascript', movePublicFolderFile, 'javascript')
+  watchFileOrFolder('public', 'public general', movePublicFolderFile)
 }
 
-moveTemplates()
+/**
+ * Watch file or folder for changes
+ *
+ * Watch and make a callback to a specified function
+ * and (optionally) pass along a data object (mostly
+ * just for SCSS usage, but may be handy in the future)
+ *
+ * @param {string} name the file or folder name
+ * @param {string} type the file type (for error reporting)
+ * @param {requestCallback} moveFunction the callback function when we find a change
+ * @param {any} passAlongObject the optional data object to pass along to the function
+ */
+function watchFileOrFolder (name, type, moveFunction, passAlongObject = {}) {
+  fs.watch(path.join(__dirname, name), function (eventType) {
+    if (eventType === 'change') {
+      try {
+        if (passAlongObject !== {}) {
+          moveFunction(name, passAlongObject)
+        } else {
+          moveFunction(name)
+        }
+      } catch (e) {
+        console.log(`Error moving ${type}, please try again: ${e}`)
+      }
+    }
+  })
+}
+
+function compileAndMoveScss (file, allScssFiles = []) {
+  // if were a page type, just compile that file alone
+  if (file.includes('backend/modules/pages')) {
+    /**
+     * We want to change from:
+     * - src/backend/modules/pages/{module}/views/styles/{}.scss
+     * To:
+     * - (in dist/public) `styles/{page}/*.css
+     * Because:
+     * - its a nicer file path and makes things predictable
+     */
+    file = 'src/' + file.split('src/')[1]
+
+    const updatedFileName = file.replace('src/', '')
+      .replace('pages/', '')
+      .replace('backend/', '')
+      .replace('views/', '')
+      .replace('styles/', '')
+      .replace('modules/', 'styles/')
+      .replace('.scss', '.css')
+
+    const exportPath = path.join(path.join(__dirname, '../dist/public/'), updatedFileName)
+    const compiledCSS = sass.compile(path.join(file), { loadPaths: [path.join(__dirname, 'backend/')], style: 'compressed' })
+
+    fs.mkdirSync(path.dirname(exportPath), { recursive: true })
+    fs.writeFile(`${exportPath}`, compiledCSS.css)
+  } else if (file.includes('backend/components') && allScssFiles.length > 0) {
+    /**
+     * If we're not a page we'll assume that we're instead a partial
+     * or something, and since we don't really know what files are
+     * using it (we *could* we just don't _now_) then we'll recompile
+     * all found page SCSS files *just in case*
+     */
+    allScssFiles.forEach(file => {
+      compileAndMoveScss(file)
+    })
+  }
+}
+
+/**
+ * Move pages and component to better namespace in dist/
+ *
+ * If we were to use raw file path for namespace, it'd
+ * start to feel a little repetitive. So instead when
+ * we copy we adjust the name space so that its more
+ * predictable and only includes the most relevant information
+ *
+ * Ex, from:
+ * - backend/modules/pages/{module}/views/templates/{template}.eta
+ * To:
+ * - templates/pages/{module}/{template}.eta
+ *
+ * @param {string} file
+ */
+function moveTemplates (file) {
+  if (file.includes('backend/modules/pages')) {
+    const moduleName = file.split('backend/modules/pages')[0]
+    console.log(moduleName)
+
+    fs.copySync(path.join(__dirname, file), path.join(__dirname, '../dist/templates/pages/', moduleName))
+  } else if (file.includes('backend/components')) {
+    fs.copySync(path.join(__dirname, '/backend/components/templates'), path.join(__dirname, '../dist/templates/components/'))
+  }
+}
+
+/**
+ * Move new files over
+ */
+function movePublicFolderFile (file, type = '') {
+  fs.copySync(path.join(__dirname, file), path.join(__dirname, `../dist/public/${type}`))
+}
+
+makeDistFolder()
 findScss()
+findTemplates()
+watchPublicFolders()
