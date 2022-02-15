@@ -43,12 +43,13 @@ function findScss () {
 function findTemplates () {
   glob(path.join(__dirname, '/**/*.eta'), {}, (_err, files) => {
     files.forEach(file => {
-      // moveTemplates(file)
-
       // in case there is a path prefixed, lets lob it off
       file = file.split('src/')[1]
 
       watchFileOrFolder(file, 'template', moveTemplates)
+
+      /** on first start */
+      moveTemplates(file)
     })
   })
 }
@@ -151,8 +152,9 @@ function compileAndMoveScss (file, allScssFiles = []) {
  */
 function moveTemplates (file) {
   if (file.includes('backend/modules/pages')) {
-    const moduleName = file.split('backend/modules/pages')[0]
-    console.log(moduleName)
+    const moduleName = file.split('backend/modules/pages')[1]
+      .replace('views', '')
+      .replace('templates', '')
 
     fs.copySync(path.join(__dirname, file), path.join(__dirname, '../dist/templates/pages/', moduleName))
   } else if (file.includes('backend/components')) {
