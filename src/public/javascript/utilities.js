@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 /**
  * Add PageMessage work to window object
  *
@@ -19,6 +20,27 @@ window.godotLibrary = {
     removeAllPageMessages: function () {
       // write empty HTML to page messages container
       document.querySelector('.page-message .messages').innerHTML = ''
+    }
+  },
+  formTools: {
+    sendFormAjax: function (e, form) {
+      fetch(form.action, {
+        method: 'post',
+        body: new URLSearchParams(new FormData(form)),
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded'
+        }
+      }).then(response => {
+        if (!response.ok) {
+          response.json().then(data => {
+            window.godotLibrary.pageMessages.removeAllPageMessages()
+            window.godotLibrary.pageMessages.addPageMessage(data.error)
+          })
+        } else {
+          location.reload()
+        }
+      })
+      e.preventDefault()
     }
   }
 }

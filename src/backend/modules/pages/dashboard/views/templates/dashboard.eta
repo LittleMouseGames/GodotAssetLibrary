@@ -16,7 +16,8 @@
     </div>
   </div>
   <div class="column">
-    <form method="POST" action="/dashboard/update/info">
+    <form method="POST" action="/dashboard/update/info"
+      onsubmit="window.godotLibrary.formTools.sendFormAjax(event, this)">
       <h2>Account Information</h2>
       <div class="input-container">
         <input it="username" type="text" name="username" placeholder="" value="<%= it.info.username %>">
@@ -35,7 +36,8 @@
     </form>
   </div>
   <div class="column">
-    <form method="POST" action="/dashboard/update/password">
+    <form method="POST" action="/dashboard/update/password"
+      onsubmit="window.godotLibrary.formTools.sendFormAjax(event, this)">
       <h2>Account Security</h2>
       <div class="input-container">
         <input id="password-current" name="password-current" type="password" placeholder="">

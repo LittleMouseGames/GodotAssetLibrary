@@ -9,7 +9,7 @@
 <section class="page-register">
   <div class="column">
     <h2>Sign in to an existing Account</h2>
-    <form method="POST" action="/api/users/login" onsubmit="send(event, this)">
+    <form method="POST" action="/api/users/login" onsubmit="window.godotLibrary.formTools.sendFormAjax(event, this)">
       <div class="input-container">
         <input id="login-username" name="username" type="username" placeholder="" required>
         <label for="login-username" class="placeholder">Username</label>
@@ -34,7 +34,7 @@
       <li>Leave ratings and reviews</li>
       <li>Easily bookmark assets for future lookup</li>
     </ul>
-    <form method="POST" action="/api/users/register" onsubmit="send(event, this)">
+    <form method="POST" action="/api/users/register" onsubmit="window.godotLibrary.formTools.sendFormAjax(event, this)">
       <div class="input-container">
         <input id="register-username" name="username" type="username" placeholder="" required>
         <label for="register-username" class="placeholder">Username</label>
@@ -59,26 +59,4 @@
       <button action="submit">Create account</button>
     </form>
   </div>
-
-  <script>
-    function send(e, form) {
-      fetch(form.action, {
-        method: 'post',
-        body: new URLSearchParams(new FormData(form)),
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
-      }).then(response => {
-        if (!response.ok) {
-          response.json().then(data => {
-            window.godotLibrary.pageMessages.removeAllPageMessages()
-            window.godotLibrary.pageMessages.addPageMessage(data.error)
-          })
-        } else {
-          location.reload()
-        }
-      })
-      e.preventDefault()
-    }
-  </script>
 </section>
