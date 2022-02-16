@@ -23,6 +23,8 @@
                     let filterAlreadyAdded = false
                     let filterLink = '' 
                     
+                    filterParams.set('page', 0)
+
                     if (currentParams.includes(key.toLocaleLowerCase()) || currentParams.includes(key)) {
                       filterAlreadyAdded = true
 

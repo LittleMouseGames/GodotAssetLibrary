@@ -37,12 +37,17 @@
     }
 
     label {
-      font-family: "DM Sans";
+      font-family: "Inter";
       font-weight: 400;
       cursor: pointer;
 
       input {
         margin-right: 7px;
+      }
+
+      a {
+        color: inherit;
+        text-decoration: none;
       }
     }
   }
