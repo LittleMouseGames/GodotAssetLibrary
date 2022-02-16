@@ -67,11 +67,14 @@
         <div class="right">
           <label>
             Results per Page
-            <select>
-              <option>12</option>
-              <option>24</option>
-              <option>36</option>
-            </select>
+            <div class="dropdown">
+              <div class="value">12</div>
+              <div class="options">
+                <a href="">12</a>
+                <a href="">24</a>
+                <a href="">36</a>
+              </div>
+            </div>
           </label>
           <div class="buttons">
             <button class="disabled">Back</button>

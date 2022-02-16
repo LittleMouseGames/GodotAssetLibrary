@@ -107,7 +107,12 @@ function compileAndMoveScss (file, allScssFiles = []) {
      * Because:
      * - its a nicer file path and makes things predictable
      */
-    file = 'src/' + file.split('src/')[1]
+
+    if (file.includes('src/')) {
+      file = 'src/' + file.split('src/')[1]
+    } else {
+      file = 'src/' + file
+    }
 
     const updatedFileName = file.replace('src/', '')
       .replace('pages/', '')

@@ -83,3 +83,21 @@
     }
   }
 }
+
+@mixin dropdown-styles {
+  .dropdown {
+    position: relative;
+
+    .value {
+      cursor: pointer;
+    }
+
+    .options {
+      position: absolute;
+      bottom: -15px;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+  }
+}

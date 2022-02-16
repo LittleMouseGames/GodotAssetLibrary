@@ -2,6 +2,7 @@
 @import "components/styles/utils/mixins";
 @import "components/styles/utils/variables";
 @import "components/styles/partials/asset-card";
+@import "components/styles/partials/forms";
 
 @include card-rating-styles;
 
@@ -47,6 +48,7 @@
   }
 
   .catalog-grid {
+    @include dropdown-styles;
     .results {
       display: grid;
       grid-template-columns: 1fr 1fr 1fr 1fr;
