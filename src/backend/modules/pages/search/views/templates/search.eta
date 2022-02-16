@@ -10,7 +10,7 @@
     <% for (const [filtersKey, filtersValue] of Object.entries(it.filters)) { %>
     <div class="catalog-filters">
       <div class="filter">
-        <h2><%= filtersKey %></h2>
+        <h2><%= filtersKey === 'category' ? 'Category Filters' : 'Engine Filters' %></h2>
         <hr>
         <div class="options">
           <ul>
@@ -19,7 +19,7 @@
               <label>
                 <% 
                     let filterParams = new URLSearchParams(it.params ?? 'q=')
-                    let currentParams = filterParams.getAll('category')
+                    let currentParams = filterParams.getAll(filtersKey)
                     let filterAlreadyAdded = false
                     let filterLink = '' 
                     
@@ -28,17 +28,17 @@
   
                       const paramsToArray = decodeURIComponent(filterParams.toString()).split('&')
                       filterLink = paramsToArray.filter((v, i, a) => a.indexOf(v) === i)
-                                      .filter(e => e !== `category=${key.toLocaleLowerCase()}`)
+                                      .filter(e => e !== `${filtersKey}=${key.toLocaleLowerCase()}`)
                                       .join(',')
                                       .replace(/,/g, '&')
                     } else {
-                      filterParams.append('category', String(key.toLocaleLowerCase()))
+                      filterParams.append(filtersKey, String(key.toLocaleLowerCase()))
                       filterLink = decodeURIComponent(filterParams.toString())
                     }
                   %>
                 <a href="<%= filterLink %>">
                   <input type="checkbox" <%= filterAlreadyAdded ? 'checked' : '' %>>
-                  <%= `${filtersKey == 'Engine Filters' ? 'Godot' : ''}  ${String(key)}` %> (<%= String(value) %>)
+                  <%= `${filtersKey == 'engine' ? 'Godot' : ''}  ${String(key)}` %> (<%= String(value) %>)
                 </a>
               </label>
             </li>

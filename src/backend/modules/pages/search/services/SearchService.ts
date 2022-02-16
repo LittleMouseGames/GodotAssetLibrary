@@ -13,6 +13,8 @@ export class SearchService {
   public async render (req: Request, res: Response): Promise<void> {
     const query = String(req.query.q) ?? ''
 
+    console.log(req.query)
+
     const categoryFilters: {
       [key: string]: number
     } = {}
@@ -49,7 +51,7 @@ export class SearchService {
     }
 
     return res.render('templates/pages/search/search', {
-      filters: { 'Category Filters': categoryFilters, 'Engine Filters': engineFilters },
+      filters: { category: categoryFilters, engine: engineFilters },
       assets: assets,
       params: req.originalUrl
     })
