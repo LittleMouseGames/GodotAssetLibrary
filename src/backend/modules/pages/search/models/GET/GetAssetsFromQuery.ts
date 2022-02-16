@@ -20,15 +20,16 @@ export async function GetAssetsFromQuery (query: string, limit: number = 12, cat
     }
   }
 
+  if (query !== '') {
+    filters.$text = {
+      $search: query,
+      $caseSensitive: false
+    }
+  }
+
   const operationObject = await mongo.collection('assets').find({
     $and: [
-      filters,
-      {
-        $text: {
-          $search: query,
-          $caseSensitive: false
-        }
-      }
+      filters
     ]
   }, {
     limit: limit,

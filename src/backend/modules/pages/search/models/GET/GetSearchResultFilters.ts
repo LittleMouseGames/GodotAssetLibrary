@@ -8,12 +8,16 @@ interface ReturnedAssets extends WithId<Document> {
 
 export async function GetSearchResultFilters (query: string): Promise<ReturnedAssets[]> {
   const mongo = MongoHelper.getDatabase()
-  const operationObject = await mongo.collection('assets').find({
-    $text: {
+  const filters: any = {}
+
+  if (query !== '') {
+    filters.$text = {
       $search: query,
       $caseSensitive: false
     }
-  }, {
+  }
+
+  const operationObject = await mongo.collection('assets').find(filters, {
     projection: {
       category: 1,
       godot_version: 1

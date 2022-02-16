@@ -11,7 +11,7 @@ export class SearchService {
    * @param {Request} req request object
   */
   public async render (req: Request, res: Response): Promise<void> {
-    const query = String(req.query.q) ?? ''
+    const query = String(req.query.q ?? '')
     const categoryParams = req.query.category ?? ''
     const engineParams = req.query.engine ?? ''
 
@@ -51,7 +51,7 @@ export class SearchService {
     let assets: any = []
 
     // if no query we'll show all assets
-    if (query === '' && categoryArray === [] && engineArray === []) {
+    if (query === '' && categoryArray.length === 0 && engineArray.length === 0) {
       filters = await GetAllFilters()
       assets = await GetAssetsWithoutQuery(12)
     } else {
