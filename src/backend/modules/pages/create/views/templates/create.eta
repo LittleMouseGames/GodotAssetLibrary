@@ -7,7 +7,7 @@
 <% layout('templates/components/layouts/promobar-nav-body-footer.eta') %>
 
 <section class="page-create">
-  <form action="">
+  <form action="" onsubmit="window.godotLibrary.formTools.sendFormAjax(event, this)">
     <legend>
       <div class="row">
         <h2>Asset Information</h2>

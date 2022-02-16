@@ -48,7 +48,7 @@ export class SearchService {
       }
     }
 
-    return res.render('templates/pages/search/search', { categoryFilters: categoryFilters, engineFilters: engineFilters, assets: assets })
+    return res.render('templates/pages/search/search', { categoryFilters: categoryFilters, engineFilters: engineFilters, assets: assets, params: req.originalUrl })
   }
 
   public redirectToSearchUrl (req: Request, res: Response): void {

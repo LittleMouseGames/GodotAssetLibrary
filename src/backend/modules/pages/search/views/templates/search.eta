@@ -5,7 +5,6 @@
   moduleName: 'search'
 } %>
 <% layout('templates/components/layouts/promobar-nav-body-footer.eta') %>
-
 <section class="page-search">
   <section>
     <div class="catalog-filters">
@@ -18,8 +17,29 @@
             <% for (const [key, value] of Object.entries(it.categoryFilters)) { %>
             <li>
               <label>
-                <input type="checkbox">
-                <%= String(key) %> (<%= String(value) %>)
+                <% 
+                  let categoryParams = new URLSearchParams(it.params ?? 'q=')
+                  let currentParams = categoryParams.getAll('category')
+                  let categoryAlreadyAdded = false
+                  let categoryLink = '' 
+                  
+                  if (currentParams.includes(key.toLocaleLowerCase()) || currentParams.includes(key)) {
+                    categoryAlreadyAdded = true
+
+                    const paramsToArray = decodeURIComponent(categoryParams.toString()).split('&')
+                    categoryLink = paramsToArray.filter((v, i, a) => a.indexOf(v) === i)
+                                    .filter(e => e !== `category=${key.toLocaleLowerCase()}`)
+                                    .join(',')
+                                    .replace(/,/g, '&')
+                  } else {
+                    categoryParams.append('category', String(key.toLocaleLowerCase()))
+                    categoryLink = decodeURIComponent(categoryParams.toString())
+                  }
+                %>
+                <a href="<%= categoryLink %>">
+                  <input type="checkbox" <%= categoryAlreadyAdded ? 'checked' : '' %>>
+                  <%= String(key) %> (<%= String(value) %>)
+                </a>
               </label>
             </li>
             <% } %>
@@ -36,8 +56,15 @@
             <% for (const [key, value] of Object.entries(it.engineFilters)) { %>
             <li>
               <label>
-                <input type="checkbox">
-                <%= String(`Godot ${key}`) %> (<%= String(value) %>)
+                <% 
+                  let engineParams = new URLSearchParams(it.params ?? 'q=')
+
+                  engineParams.append('category', String(key.toLocaleLowerCase()));
+                %>
+                <a href="<%= decodeURIComponent(engineParams.toString()) %>">
+                  <input type="checkbox">
+                  <%= `Godot ${String(key)}` %> (<%= String(value) %>)
+                </a>
               </label>
             </li>
             <% } %>
