@@ -18,7 +18,7 @@
             <li>
               <label>
                 <% 
-                    let filterParams = new URLSearchParams(it.params ?? 'q=')
+                    let filterParams = new URLSearchParams(it.params ?? '?q=')
                     let currentParams = filterParams.getAll(filtersKey)
                     let filterAlreadyAdded = false
                     let filterLink = '' 
@@ -73,12 +73,17 @@
           <label class="inline-dropdown">
             Results per Page
             <div class="dropdown" onclick="window.godotLibrary.dropdown.showContent(event, this)">
-              <div class="value">12</div>
+              <% var params = new URLSearchParams(it.params ?? '?q=') %>
+              <div class="value"><%= params.get('limit') ?? '12' %></div>
               <span class="iconify" data-icon="bxs:chevron-down"></span>
               <div class="options">
-                <a href="">12</a>
-                <a href="">24</a>
-                <a href="">36</a>
+                <% 
+                var limitOptions = ['12', '24', '36']
+                limitOptions.forEach(option => { 
+                  params.set('limit', option) 
+                %>
+                <a href="<%= decodeURIComponent(params.toString()) %>"><%= option %></a>
+                <% }) %>
               </div>
             </div>
           </label>
@@ -98,12 +103,17 @@
           <label class="inline-dropdown">
             Results per Page
             <div class="dropdown" onclick="window.godotLibrary.dropdown.showContent(event, this)">
-              <div class="value">12</div>
+              <% var params = new URLSearchParams(it.params ?? '?q=') %>
+              <div class="value"><%= params.get('limit') ?? '12' %></div>
               <span class="iconify" data-icon="bxs:chevron-down"></span>
               <div class="options">
-                <a href="">12</a>
-                <a href="">24</a>
-                <a href="">36</a>
+                <% 
+                var limitOptions = ['12', '24', '36']
+                limitOptions.forEach(option => { 
+                  params.set('limit', option) 
+                %>
+                <a href="<%= decodeURIComponent(params.toString()) %>"><%= option %></a>
+                <% }) %>
               </div>
             </div>
           </label>

@@ -14,6 +14,11 @@ export class SearchService {
     const query = String(req.query.q ?? '')
     const categoryParams = req.query.category ?? ''
     const engineParams = req.query.engine ?? ''
+    let limit = Number(req.query.limit ?? 12)
+
+    if (limit > 36) {
+      limit = 36
+    }
 
     let categoryArray: any[] = []
     let engineArray: any[] = []
@@ -53,10 +58,10 @@ export class SearchService {
     // if no query we'll show all assets
     if (query === '' && categoryArray.length === 0 && engineArray.length === 0) {
       filters = await GetAllFilters()
-      assets = await GetAssetsWithoutQuery(12)
+      assets = await GetAssetsWithoutQuery(limit)
     } else {
       filters = await GetSearchResultFilters(query)
-      assets = await GetAssetsFromQuery(query, 12, categoryArray, engineArray)
+      assets = await GetAssetsFromQuery(query, limit, categoryArray, engineArray)
     }
 
     for (const filter of filters) {
