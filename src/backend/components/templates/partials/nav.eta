@@ -20,20 +20,20 @@
       </div>
     </form>
     <div class="links">
-      <div class="link">2D Tools</div>
-      <div class="link">3D Tools</div>
-      <div class="link">Tools</div>
-      <div class="link">Shaders</div>
+      <a href="/search/?q=&category=2d+tools" class="link">2D Tools</a>
+      <a href="/search/?q=&category=3d+tools" class="link">3D Tools</a>
+      <a href="/search/?q=&category=tools" class="link">Tools</a>
+      <a href="/search/?q=&category=shaders" class="link">Shaders</a>
       <div class="dropdown" onclick="window.godotLibrary.dropdown.showContent(event, this)">
         <div class="value">More Categories</div>
         <span class="iconify" data-icon="bxs:chevron-down"></span>
         <div class="options">
-          <a href="">Materials</a>
-          <a href="">Scripts</a>
-          <a href="">Misc</a>
-          <a href="">Templates</a>
-          <a href="">Projects</a>
-          <a href="">Demos</a>
+          <a href="/search/?q=&category=materials">Materials</a>
+          <a href="/search/?q=&category=scripts">Scripts</a>
+          <a href="/search/?q=&category=misc">Misc</a>
+          <a href="/search/?q=&category=templates">Templates</a>
+          <a href="/search/?q=&category=projects">Projects</a>
+          <a href="/search/?q=&category=demos">Demos</a>
         </div>
       </div>
     </div>
