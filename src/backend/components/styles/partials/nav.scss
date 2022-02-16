@@ -1,5 +1,6 @@
 @import "components/styles/utils/variables";
 @import "components/styles/utils/mixins";
+@import "components/styles/partials/forms";
 
 .promobar {
   width: 100%;
@@ -39,6 +40,7 @@
 
 nav {
   @include brand-styles($title-color: $text-dark-darkest, $subtitle-color: $text-dark-deep-gray);
+  @include dropdown-styles($padding: 12px, $background: $color-ligther-gray);
 
   height: 75px;
   background: white;
@@ -69,18 +71,6 @@ nav {
       font-weight: 600;
       margin-right: 20px;
       cursor: pointer;
-    }
-
-    select {
-      font-family: "Poppins";
-      border: none;
-      height: 45px;
-      background: $color-ligther-gray;
-      border-radius: 6px;
-      padding: 0 12px;
-      cursor: pointer;
-
-      font-weight: 600;
     }
   }
 

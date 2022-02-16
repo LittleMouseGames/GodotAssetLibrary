@@ -24,15 +24,18 @@
       <div class="link">3D Tools</div>
       <div class="link">Tools</div>
       <div class="link">Shaders</div>
-      <select>
-        <option value="" selected disabled hidden>More Categories</option>
-        <option value="materials">Materials</option>
-        <option value="scripts">Scripts</option>
-        <option value="misc">Misc</option>
-        <option value="templates">Templates</option>
-        <option value="projects">Projects</option>
-        <option value="demos">Demos</option>
-      </select>
+      <div class="dropdown" onclick="window.godotLibrary.dropdown.showContent(event, this)">
+        <div class="value">More Categories</div>
+        <span class="iconify" data-icon="bxs:chevron-down"></span>
+        <div class="options">
+          <a href="">Materials</a>
+          <a href="">Scripts</a>
+          <a href="">Misc</a>
+          <a href="">Templates</a>
+          <a href="">Projects</a>
+          <a href="">Demos</a>
+        </div>
+      </div>
     </div>
     <div class="account">
       <span class="iconify" data-icon="codicon:account"></span>

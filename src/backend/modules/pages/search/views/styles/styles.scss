@@ -73,22 +73,16 @@
         display: flex;
       }
 
+      .inline-dropdown {
+        display: flex;
+        align-items: center;
+      }
+
       label {
         font-family: "Inter";
         font-weight: 500;
         font-size: 14px;
         color: $text-gray-darker;
-      }
-
-      select {
-        border-radius: 6px;
-        background: $button-gray;
-        font-family: "Poppins";
-        font-weight: 600;
-        color: $text-dark-black;
-        border: none;
-        padding: 7px 10px;
-        margin-left: 10px;
       }
 
       .buttons {

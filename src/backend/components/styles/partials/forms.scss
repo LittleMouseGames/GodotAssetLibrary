@@ -84,9 +84,28 @@
   }
 }
 
-@mixin dropdown-styles {
+@mixin dropdown-styles($padding: 7px 13px, $background: $button-gray) {
   .dropdown {
     position: relative;
+    border-radius: 6px;
+    background: $background;
+    font-family: "Poppins";
+    font-weight: 600;
+    color: $text-dark-black;
+    border: none;
+    margin-left: 10px;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+
+    .value,
+    .iconify {
+      padding: $padding;
+    }
+
+    .iconify {
+      padding-left: 0;
+    }
 
     .value {
       cursor: pointer;
@@ -94,10 +113,31 @@
 
     .options {
       position: absolute;
-      bottom: -15px;
       width: 100%;
       display: flex;
       flex-direction: column;
+      display: none;
+      top: calc(100% + 5px);
+      background: $background;
+      font-weight: 600;
+      color: $text-dark-black;
+      box-sizing: border-box;
+      left: 0;
+      border-radius: 6px;
+      overflow: hidden;
+      box-shadow: $standard-shadow;
+      border: 1px solid $color-brand-gray;
+      z-index: 1;
+
+      a {
+        color: inherit;
+        padding: $padding;
+        text-decoration: none;
+
+        &:hover {
+          background: $text-light-gray;
+        }
+      }
     }
   }
 }

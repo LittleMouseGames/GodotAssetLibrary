@@ -55,20 +55,26 @@
       <div class="top-bar">
         <div class="left">
           <div class="sort">
-            <label>
+            <label class="inline-dropdown">
               Sort By
-              <select>
-                <option value="popular">Popular</option>
-                <option value="new">New</option>
-              </select>
+              <div class="dropdown" onclick="window.godotLibrary.dropdown.showContent(event, this)">
+                <div class="value">Relevance</div>
+                <span class="iconify" data-icon="bxs:chevron-down"></span>
+                <div class="options">
+                  <a href="">Rating</a>
+                  <a href="">Newest</a>
+                  <a href="">Oldest</a>
+                </div>
+              </div>
             </label>
           </div>
         </div>
         <div class="right">
-          <label>
+          <label class="inline-dropdown">
             Results per Page
-            <div class="dropdown">
+            <div class="dropdown" onclick="window.godotLibrary.dropdown.showContent(event, this)">
               <div class="value">12</div>
+              <span class="iconify" data-icon="bxs:chevron-down"></span>
               <div class="options">
                 <a href="">12</a>
                 <a href="">24</a>
@@ -89,13 +95,17 @@
       </div>
       <div class="bottom-bar">
         <div class="left">
-          <label>
+          <label class="inline-dropdown">
             Results per Page
-            <select>
-              <option>12</option>
-              <option>24</option>
-              <option>36</option>
-            </select>
+            <div class="dropdown" onclick="window.godotLibrary.dropdown.showContent(event, this)">
+              <div class="value">12</div>
+              <span class="iconify" data-icon="bxs:chevron-down"></span>
+              <div class="options">
+                <a href="">12</a>
+                <a href="">24</a>
+                <a href="">36</a>
+              </div>
+            </div>
           </label>
         </div>
         <div class="right">

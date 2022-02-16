@@ -42,5 +42,29 @@ window.godotLibrary = {
       })
       e.preventDefault()
     }
+  },
+  dropdown: {
+    showContent: function (event, dropdown) {
+      const dropdownElement = dropdown.querySelector('.options')
+
+      if (dropdownElement !== null && (dropdownElement.style.display === 'none' || window.getComputedStyle(dropdownElement).display === 'none')) {
+        closeAllDropdowns()
+        dropdownElement.style.display = 'flex'
+      } else {
+        dropdownElement.style.display = 'none'
+      }
+    }
   }
+}
+
+document.addEventListener('click', function (event) {
+  if (!(event.target.parentNode.classList.contains('dropdown'))) {
+    closeAllDropdowns()
+  }
+})
+
+function closeAllDropdowns () {
+  document.querySelectorAll('.dropdown .options').forEach(element => {
+    element.style.display = 'none'
+  })
 }
