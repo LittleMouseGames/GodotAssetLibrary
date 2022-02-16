@@ -8,8 +8,6 @@ export async function GetAssetsFromQuery (query: string, limit: number = 12, cat
   const mongo = MongoHelper.getDatabase()
   const filters: any = {}
 
-  console.log(engineFilters.length)
-
   if (Array.isArray(categoryFilters) && categoryFilters.length > 0) {
     filters.category_lowercase = {
       $in: categoryFilters

@@ -50,8 +50,6 @@ export class SearchService {
 
     let assets: any = []
 
-    console.log(engineArray, categoryArray)
-
     // if no query we'll show all assets
     if (query === '' && categoryArray === [] && engineArray === []) {
       filters = await GetAllFilters()
