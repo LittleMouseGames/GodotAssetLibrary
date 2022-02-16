@@ -88,8 +88,26 @@
             </div>
           </label>
           <div class="buttons">
+            <% var params = new URLSearchParams(it.params ?? '?q=') %>
+            <% var page = Number(params.get('page')) ?? 0 %>
+
+            <% if (page === 0) { %>
             <button class="disabled">Back</button>
-            <button>Next</button>
+            <% } else { %>
+            <% params.set('page', page - 1) %>
+            <a href="<%= decodeURIComponent(params.toString()) %>">
+              <button>Back</button>
+            </a>
+            <% } %>
+            <% var currentLimit = Number(params.get('limit')) === 0 ? 12 : Number(params.get('limit')) %>
+            <% if (it.assets.length !== currentLimit) { %>
+            <button class="disabled">Next</button>
+            <% } else { %>
+            <% params.set('page', page + 1) %>
+            <a href="<%= decodeURIComponent(params.toString()) %>">
+              <button>Next</button>
+            </a>
+            <% } %>
           </div>
         </div>
       </div>
@@ -120,12 +138,29 @@
         </div>
         <div class="right">
           <div class="buttons">
+            <% var params = new URLSearchParams(it.params ?? '?q=') %>
+            <% var page = Number(params.get('page')) ?? 0 %>
+
+            <% if (page === 0) { %>
             <button class="disabled">Back</button>
-            <button>Next</button>
+            <% } else { %>
+            <% params.set('page', page - 1) %>
+            <a href="<%= decodeURIComponent(params.toString()) %>">
+              <button>Back</button>
+            </a>
+            <% } %>
+            <% var currentLimit = Number(params.get('limit')) === 0 ? 12 : Number(params.get('limit')) %>
+            <% if (it.assets.length !== currentLimit) { %>
+            <button class="disabled">Next</button>
+            <% } else { %>
+            <% params.set('page', page + 1) %>
+            <a href="<%= decodeURIComponent(params.toString()) %>">
+              <button>Next</button>
+            </a>
+            <% } %>
           </div>
         </div>
       </div>
     </div>
-
   </section>
 </section>

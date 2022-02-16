@@ -88,6 +88,10 @@
       .buttons {
         margin-left: 40px;
 
+        a {
+          text-decoration: none;
+        }
+
         button {
           background: $button-gray;
           border-radius: 6px;
@@ -98,6 +102,7 @@
           height: 35px;
           text-align: center;
           width: 80px;
+          cursor: pointer;
 
           &.disabled {
             color: $text-light-darker;

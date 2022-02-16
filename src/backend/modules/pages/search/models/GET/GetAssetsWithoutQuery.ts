@@ -4,7 +4,7 @@ import { assetGridSchema } from 'utility/schema/assets-grid'
 
 interface ReturnedAssets extends WithId<Document>, assetGridSchema {}
 
-export async function GetAssetsWithoutQuery (limit: number = 12): Promise<ReturnedAssets[]> {
+export async function GetAssetsWithoutQuery (limit: number = 12, skip: number): Promise<ReturnedAssets[]> {
   const mongo = MongoHelper.getDatabase()
   const operationObject = await mongo.collection('assets').find({}, {
     limit: limit,
@@ -21,7 +21,7 @@ export async function GetAssetsWithoutQuery (limit: number = 12): Promise<Return
       asset_id: 1,
       previews: 1
     }
-  }).toArray() as ReturnedAssets[]
+  }).skip(skip).toArray() as ReturnedAssets[]
 
   if (operationObject === null || operationObject === undefined) {
     throw new Error('No assets found')
