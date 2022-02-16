@@ -84,7 +84,7 @@
   }
 }
 
-@mixin dropdown-styles($padding: 7px 13px, $background: $button-gray) {
+@mixin dropdown-styles($padding: 7px 13px, $background: $button-gray, $border-color: $text-light-gray) {
   .dropdown {
     position: relative;
     border-radius: 6px;
@@ -92,7 +92,7 @@
     font-family: "Poppins";
     font-weight: 600;
     color: $text-dark-black;
-    border: none;
+    border: 1px solid $border-color;
     margin-left: 10px;
     display: flex;
     align-items: center;
@@ -126,7 +126,7 @@
       border-radius: 6px;
       overflow: hidden;
       box-shadow: $standard-shadow;
-      border: 1px solid $color-brand-gray;
+      border: 1px solid $border-color;
       z-index: 2;
 
       a {

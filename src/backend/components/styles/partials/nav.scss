@@ -40,7 +40,7 @@
 
 nav {
   @include brand-styles($title-color: $text-dark-darkest, $subtitle-color: $text-dark-deep-gray);
-  @include dropdown-styles($padding: 12px, $background: $color-ligther-gray);
+  @include dropdown-styles($padding: 12px, $background: $color-ligther-gray, $border-color: $color-brand-gray);
 
   height: 75px;
   background: white;
