@@ -7,38 +7,38 @@
 <% layout('templates/components/layouts/promobar-nav-body-footer.eta') %>
 <section class="page-search">
   <section>
+    <% for (const [filtersKey, filtersValue] of Object.entries(it.filters)) { %>
     <div class="catalog-filters">
       <div class="filter">
-        <h2>Category Filters</h2>
+        <h2><%= filtersKey %></h2>
         <hr>
         <div class="options">
-
           <ul>
-            <% for (const [key, value] of Object.entries(it.categoryFilters)) { %>
+            <% for (const [key, value] of Object.entries(filtersValue)) { %>
             <li>
               <label>
                 <% 
-                  let categoryParams = new URLSearchParams(it.params ?? 'q=')
-                  let currentParams = categoryParams.getAll('category')
-                  let categoryAlreadyAdded = false
-                  let categoryLink = '' 
-                  
-                  if (currentParams.includes(key.toLocaleLowerCase()) || currentParams.includes(key)) {
-                    categoryAlreadyAdded = true
-
-                    const paramsToArray = decodeURIComponent(categoryParams.toString()).split('&')
-                    categoryLink = paramsToArray.filter((v, i, a) => a.indexOf(v) === i)
-                                    .filter(e => e !== `category=${key.toLocaleLowerCase()}`)
-                                    .join(',')
-                                    .replace(/,/g, '&')
-                  } else {
-                    categoryParams.append('category', String(key.toLocaleLowerCase()))
-                    categoryLink = decodeURIComponent(categoryParams.toString())
-                  }
-                %>
-                <a href="<%= categoryLink %>">
-                  <input type="checkbox" <%= categoryAlreadyAdded ? 'checked' : '' %>>
-                  <%= String(key) %> (<%= String(value) %>)
+                    let filterParams = new URLSearchParams(it.params ?? 'q=')
+                    let currentParams = filterParams.getAll('category')
+                    let filterAlreadyAdded = false
+                    let filterLink = '' 
+                    
+                    if (currentParams.includes(key.toLocaleLowerCase()) || currentParams.includes(key)) {
+                      filterAlreadyAdded = true
+  
+                      const paramsToArray = decodeURIComponent(filterParams.toString()).split('&')
+                      filterLink = paramsToArray.filter((v, i, a) => a.indexOf(v) === i)
+                                      .filter(e => e !== `category=${key.toLocaleLowerCase()}`)
+                                      .join(',')
+                                      .replace(/,/g, '&')
+                    } else {
+                      filterParams.append('category', String(key.toLocaleLowerCase()))
+                      filterLink = decodeURIComponent(filterParams.toString())
+                    }
+                  %>
+                <a href="<%= filterLink %>">
+                  <input type="checkbox" <%= filterAlreadyAdded ? 'checked' : '' %>>
+                  <%= `${filtersKey == 'Engine Filters' ? 'Godot' : ''}  ${String(key)}` %> (<%= String(value) %>)
                 </a>
               </label>
             </li>
@@ -47,31 +47,7 @@
         </div>
       </div>
     </div>
-    <div class="catalog-filters">
-      <div class="filter">
-        <h2>Engine Filters</h2>
-        <hr>
-        <div class="options">
-          <ul>
-            <% for (const [key, value] of Object.entries(it.engineFilters)) { %>
-            <li>
-              <label>
-                <% 
-                  let engineParams = new URLSearchParams(it.params ?? 'q=')
-
-                  engineParams.append('category', String(key.toLocaleLowerCase()));
-                %>
-                <a href="<%= decodeURIComponent(engineParams.toString()) %>">
-                  <input type="checkbox">
-                  <%= `Godot ${String(key)}` %> (<%= String(value) %>)
-                </a>
-              </label>
-            </li>
-            <% } %>
-          </ul>
-        </div>
-      </div>
-    </div>
+    <% } %>
   </section>
 
   <section>
