@@ -118,6 +118,7 @@ async function modelInsertAsset (asset: assetSchema): Promise<any> {
   asset.downvotes = 0
   asset.featured = false
   asset.title = asset.title.trim()
+  asset.category_lowercase = asset.category.toLocaleLowerCase()
 
   const insertObj = await mongo.collection('assets').insertOne(asset)
 

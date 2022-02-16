@@ -4,13 +4,34 @@ import { assetGridSchema } from 'utility/schema/assets-grid'
 
 interface ReturnedAssets extends WithId<Document>, assetGridSchema {}
 
-export async function GetAssetsFromQuery (query: string, limit: number = 12): Promise<ReturnedAssets[]> {
+export async function GetAssetsFromQuery (query: string, limit: number = 12, categoryFilters: any[], engineFilters: any[]): Promise<ReturnedAssets[]> {
   const mongo = MongoHelper.getDatabase()
-  const operationObject = await mongo.collection('assets').find({
-    $text: {
-      $search: query,
-      $caseSensitive: false
+  const filters: any = {}
+
+  console.log(engineFilters.length)
+
+  if (Array.isArray(categoryFilters) && categoryFilters.length > 0) {
+    filters.category_lowercase = {
+      $in: categoryFilters
     }
+  }
+
+  if (Array.isArray(engineFilters) && engineFilters.length > 0) {
+    filters.godot_version = {
+      $in: engineFilters
+    }
+  }
+
+  const operationObject = await mongo.collection('assets').find({
+    $and: [
+      filters,
+      {
+        $text: {
+          $search: query,
+          $caseSensitive: false
+        }
+      }
+    ]
   }, {
     limit: limit,
     projection: {

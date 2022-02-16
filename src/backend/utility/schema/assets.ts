@@ -8,6 +8,7 @@ export interface assetSchema {
   'version': string
   'version_string': string
   'category': string
+  'category_lowercase': string
   'category_id': string
   'godot_version': string
   'rating': string

@@ -12,8 +12,31 @@ export class SearchService {
   */
   public async render (req: Request, res: Response): Promise<void> {
     const query = String(req.query.q) ?? ''
+    const categoryParams = req.query.category ?? ''
+    const engineParams = req.query.engine ?? ''
 
-    console.log(req.query)
+    let categoryArray: any[] = []
+    let engineArray: any[] = []
+
+    if (typeof categoryParams === 'string' || categoryParams instanceof String) {
+      if (categoryParams === '') {
+        categoryArray = []
+      } else {
+        categoryArray = [categoryParams]
+      }
+    } else {
+      categoryArray = categoryParams as any[]
+    }
+
+    if (typeof engineParams === 'string' || engineParams instanceof String) {
+      if (engineParams === '') {
+        engineArray = []
+      } else {
+        engineArray = [engineParams]
+      }
+    } else {
+      engineArray = engineParams as any[]
+    }
 
     const categoryFilters: {
       [key: string]: number
@@ -27,13 +50,15 @@ export class SearchService {
 
     let assets: any = []
 
+    console.log(engineArray, categoryArray)
+
     // if no query we'll show all assets
-    if (query === '') {
+    if (query === '' && categoryArray === [] && engineArray === []) {
       filters = await GetAllFilters()
       assets = await GetAssetsWithoutQuery(12)
     } else {
       filters = await GetSearchResultFilters(query)
-      assets = await GetAssetsFromQuery(query, 12)
+      assets = await GetAssetsFromQuery(query, 12, categoryArray, engineArray)
     }
 
     for (const filter of filters) {
