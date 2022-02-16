@@ -25,10 +25,10 @@
                     
                     if (currentParams.includes(key.toLocaleLowerCase()) || currentParams.includes(key)) {
                       filterAlreadyAdded = true
-  
+
                       const paramsToArray = decodeURIComponent(filterParams.toString()).split('&')
                       filterLink = paramsToArray.filter((v, i, a) => a.indexOf(v) === i)
-                                      .filter(e => e !== `${filtersKey}=${key.toLocaleLowerCase()}`)
+                                      .filter(e => e !== `${filtersKey}=${key.toLocaleLowerCase().replace(/\s+/g, '+')}`)
                                       .join(',')
                                       .replace(/,/g, '&')
                     } else {
