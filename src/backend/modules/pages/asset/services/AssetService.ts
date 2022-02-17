@@ -3,6 +3,8 @@ import { logger } from 'utility/logger'
 import { GetAssetDisplayInformation } from '../models/GET/GetAssetDisplayInformation'
 import fromNow from 'fromnow'
 import striptags from 'striptags'
+import { TokenServices } from 'modules/api/authentication/services/TokenServices'
+import { GetDoesPostExistById } from '../models/GET/GetDoesPostExistById'
 
 export class AssetService {
   /**
@@ -27,7 +29,17 @@ export class AssetService {
 
   public async review (req: Request, res: Response): Promise<any> {
     const rating = String(req.body.rating) ?? ''
+    const authToken = req.body.hashedToken ?? ''
+    const assetId = req.params.id ?? ''
     let review = req.body.asset_review ?? ''
+
+    if (assetId === '') {
+      throw new Error('Missing post ID')
+    }
+
+    if (authToken === undefined || authToken === '') {
+      throw new Error('Missing auth token. Are you logged in?')
+    }
 
     if (rating === '' || (rating !== 'positive' && rating !== 'negative')) {
       throw new Error('Missing or invalid rating selection, expected "positive" or "negative"')
@@ -39,6 +51,10 @@ export class AssetService {
 
     if (review.length < 5) {
       throw new Error('Rating too short, must be at least 5 characters')
+    }
+
+    if (!(await GetDoesPostExistById(assetId))) {
+      throw new Error('Asset not found')
     }
 
     review = striptags(review)

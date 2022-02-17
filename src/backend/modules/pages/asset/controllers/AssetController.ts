@@ -1,6 +1,7 @@
-import { Controller, Get, Post } from '@overnightjs/core'
+import { Controller, Get, Middleware, Post } from '@overnightjs/core'
 import { Request, Response } from 'express'
 import { StatusCodes } from 'http-status-codes'
+import { CheckIfUserExistAndSendError } from 'utility/middleware/CheckIfUserExistAndSendError'
 import { AssetService } from '../services/AssetService'
 
 /**
@@ -19,6 +20,7 @@ export class AssetController {
   }
 
   @Post('review/:id')
+  @Middleware([CheckIfUserExistAndSendError()])
   private async review (req: Request, res: Response): Promise<any> {
     try {
       return await this.AssetService.review(req, res)
