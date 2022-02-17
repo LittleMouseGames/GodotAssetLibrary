@@ -2,12 +2,6 @@ import { NextFunction, Request, Response } from 'express'
 import { GetUserByToken } from 'modules/api/authentication/models/user/GET/GetUserByToken'
 import { TokenServices } from 'modules/api/authentication/services/TokenServices'
 
-/**
- * Inject user data into response object
- *
- * @param {Request} req
- * @param {Response} res
- */
 export function CheckIfUserExistAndRedirect (redirect: string, redirectOnUserFound: boolean): any {
   return (req: Request, res: Response, next: NextFunction) => {
     const authToken = req.cookies['auth-token']
@@ -30,7 +24,7 @@ export function CheckIfUserExistAndRedirect (redirect: string, redirectOnUserFou
           req.body.hashedToken = hashedToken
           next()
         }
-      }).catch(e => {
+      }).catch((_e: any) => {
         if (redirectOnUserFound) {
           next()
         } else {
