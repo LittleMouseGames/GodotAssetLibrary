@@ -87,6 +87,10 @@
       @include form-textarea;
     }
 
+    input {
+      @include form-input;
+    }
+
     .iconify {
       margin-left: auto;
       height: 20px;

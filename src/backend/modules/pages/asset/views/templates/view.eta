@@ -92,6 +92,10 @@
               </div>
             </label>
             <div class="input-container">
+              <input name="asset_review_headline" class="input" id="asset-review-headline" type="text" placeholder="">
+              <label for="asset-review-headline" class="placeholder">Headline (optional)</label>
+            </div>
+            <div class="input-container">
               <textarea name="asset_review" class="input" id="asset-review" type="text" placeholder=""></textarea>
               <label for="asset-review" class="placeholder">Review (optional)</label>
             </div>

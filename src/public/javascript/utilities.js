@@ -37,7 +37,11 @@ window.godotLibrary = {
             window.godotLibrary.pageMessages.addPageMessage(data.error)
           })
         } else {
-          location.reload()
+          window.godotLibrary.pageMessages.removeAllPageMessages()
+          window.godotLibrary.pageMessages.addPageMessage('Success! Redirecting...')
+          window.setTimeout(() => {
+            location.reload()
+          }, 2000)
         }
       })
       e.preventDefault()

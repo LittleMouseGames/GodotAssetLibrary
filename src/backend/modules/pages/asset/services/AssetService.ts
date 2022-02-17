@@ -3,13 +3,13 @@ import { logger } from 'utility/logger'
 import { GetAssetDisplayInformation } from '../models/GET/GetAssetDisplayInformation'
 import fromNow from 'fromnow'
 import striptags from 'striptags'
-import { TokenServices } from 'modules/api/authentication/services/TokenServices'
 import { GetDoesPostExistById } from '../models/GET/GetDoesPostExistById'
 import { GetHasUserReviewedAsset } from '../models/GET/GetHasUserReviewedAsset'
 import { UpdatePositiveVotesAddOne } from '../models/UPDATE/UpdatePositiveVotesAddOne'
 import { UpdateNegativeVotesAddOne } from '../models/UPDATE/UpdateNegativeVotesAddOne'
 import { GetUserByToken } from 'modules/api/authentication/models/user/GET/GetUserByToken'
 import { UpdateUserReviewedAssets } from '../models/UPDATE/UpdateUserReviewdAssets'
+import { InsertCommentForAsset } from '../models/INSERT/InsertCommentForAsset'
 
 export class AssetService {
   /**
@@ -36,7 +36,8 @@ export class AssetService {
     const rating = String(req.body.rating) ?? ''
     const authToken = req.body.hashedToken ?? ''
     const assetId = req.params.id ?? ''
-    let review = req.body.asset_review ?? ''
+    const review = req.body.asset_review ?? ''
+    const headline = req.body.asset_review_headline ?? ''
 
     if (assetId === '') {
       throw new Error('Missing post ID')
@@ -44,6 +45,10 @@ export class AssetService {
 
     if (authToken === undefined || authToken === '') {
       throw new Error('Missing auth token. Are you logged in?')
+    }
+
+    if (await GetHasUserReviewedAsset(authToken, assetId)) {
+      throw new Error('Looks like you\'ve arleady reviewed this asset')
     }
 
     if (rating === '' || (rating !== 'positive' && rating !== 'negative')) {
@@ -54,19 +59,27 @@ export class AssetService {
       throw new Error('Review text is too long, must be less than 500 characters')
     }
 
-    if (review.legnth > 0 && review.length < 5) {
-      throw new Error('Rating too short, must be at least 5 characters')
+    if (review.length > 0 && review.length < 5) {
+      throw new Error('Review text too short, must be at least 5 characters')
+    }
+
+    if (headline.length > 100) {
+      throw new Error('Headline text is too long, must be less than 100 characters')
+    }
+
+    if (headline.length > 0 && headline.length < 3) {
+      throw new Error('Headline too short, must be at least 3 characters')
+    }
+
+    if (headline.length >= 3 && review.length < 5) {
+      throw new Error('If you add a headline you need a review, too')
     }
 
     if (!(await GetDoesPostExistById(assetId))) {
       throw new Error('Asset not found')
     }
 
-    if (await GetHasUserReviewedAsset(authToken, assetId)) {
-      throw new Error('User has already reviewed this asset')
-    }
-
-    const userId = GetUserByToken(authToken)
+    const userId = await GetUserByToken(authToken)
 
     if (rating === 'positive') {
       await UpdatePositiveVotesAddOne(assetId)
@@ -75,8 +88,7 @@ export class AssetService {
     }
 
     await UpdateUserReviewedAssets(authToken, assetId)
-
-    review = striptags(review)
+    await InsertCommentForAsset(userId, assetId, rating, striptags(review), striptags(headline))
 
     res.send()
   }
