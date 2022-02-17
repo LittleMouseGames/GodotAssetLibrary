@@ -6,6 +6,10 @@ import striptags from 'striptags'
 import { TokenServices } from 'modules/api/authentication/services/TokenServices'
 import { GetDoesPostExistById } from '../models/GET/GetDoesPostExistById'
 import { GetHasUserReviewedAsset } from '../models/GET/GetHasUserReviewedAsset'
+import { UpdatePositiveVotesAddOne } from '../models/UPDATE/UpdatePositiveVotesAddOne'
+import { UpdateNegativeVotesAddOne } from '../models/UPDATE/UpdateNegativeVotesAddOne'
+import { GetUserByToken } from 'modules/api/authentication/models/user/GET/GetUserByToken'
+import { UpdateUserReviewedAssets } from '../models/UPDATE/UpdateUserReviewdAssets'
 
 export class AssetService {
   /**
@@ -50,7 +54,7 @@ export class AssetService {
       throw new Error('Review text is too long, must be less than 500 characters')
     }
 
-    if (review.length < 5) {
+    if (review.legnth > 0 && review.length < 5) {
       throw new Error('Rating too short, must be at least 5 characters')
     }
 
@@ -61,6 +65,16 @@ export class AssetService {
     if (await GetHasUserReviewedAsset(authToken, assetId)) {
       throw new Error('User has already reviewed this asset')
     }
+
+    const userId = GetUserByToken(authToken)
+
+    if (rating === 'positive') {
+      await UpdatePositiveVotesAddOne(assetId)
+    } else {
+      await UpdateNegativeVotesAddOne(assetId)
+    }
+
+    await UpdateUserReviewedAssets(authToken, assetId)
 
     review = striptags(review)
 
