@@ -35,37 +35,74 @@
     <div class="info">
       <div class="tabs">
         <ul>
-          <li class="active">Description</li>
-          <li>Reviews</li>
-          <li>File Tree</li>
-          <li>Author Information</li>
+          <li class="active">Description from README file</li>
+          <li>Legacy Godot Asset Library Description</li>
         </ul>
       </div>
       <div class="details">
-        <%= it?.info?.description %>
+        <div class="section">
+          <h2>Description from README file</h2>
+          <%= it?.info?.description %>
+        </div>
+        <div class="section">
+          <h2>Reviews</h2>
+          <%~ includeFile('templates/components/partials/stars.eta', it) %>
+
+          <div class="reviews">
+            <div class="review">
+              <div class="header">
+                <span class="headline">Good</span>
+                <span class="iconify" data-icon="akar-icons:more-horizontal"></span>
+              </div>
+              <span class="username">LittleMouseDev</span>
+              <span class="rated">Rated Positive</span>
+              <div class="review-body">
+                Probably the best asset to get what you need done
+              </div>
+            </div>
+            <div class="review">
+              <div class="header">
+                <span class="headline">Does what you'd expect</span>
+                <span class="iconify" data-icon="akar-icons:more-horizontal"></span>
+              </div>
+              <span class="username">SomeUsername</span>
+              <span class="rated">Rated Positive</span>
+              <div class="review-body">
+                It can be a little clunky to use, but once you get going its really a rock solid extension
+              </div>
+            </div>
+          </div>
+
+          <div class="write-review">
+            <h2>Your Rating</h2>
+            <label class="rating-select">
+              <input type="radio" name="rating">
+              <div class="label">
+                <span class="iconify" data-icon="bi:hand-thumbs-up-fill"></span>
+                <span>This addon is good</span>
+              </div>
+            </label>
+            <label class="rating-select">
+              <input type="radio" name="rating">
+              <div class="label">
+                <span class="iconify" data-icon="bi:hand-thumbs-down-fill"></span>
+                <span>This addon is bad</span>
+              </div>
+            </label>
+            <div class="input-container">
+              <textarea class="input" id="asset-review" type="text" placeholder=""></textarea>
+              <label for="asset-review" class="placeholder">Review (optional)</label>
+            </div>
+            <button>Submit</button>
+          </div>
+        </div>
       </div>
     </div>
   </div>
   <div class="column">
     <div class="quick-info">
       <h2>Quick Information</h2>
-      <div class="rating">
-        <% 
-          // Convert votes to percentage, then to stars
-          var upvotes = it?.info?.upvotes
-          var total = upvotes + it?.info?.downvotes
-          var percent = Math.round((upvotes / total) * 100).toFixed(2)
-          var stars = Math.round((percent + 5) / 10).toFixed(1) / 2
-          %>
-        <ul class="stars" data-rating="<%= stars ? stars : 0 %>">
-          <li class="stars__item"></li>
-          <li class="stars__item"></li>
-          <li class="stars__item"></li>
-          <li class="stars__item"></li>
-          <li class="stars__item"></li>
-        </ul>
-        <span><%= it?.info?.upvotes + it?.info?.downvotes %> ratings</span>
-      </div>
+      <%~ includeFile('templates/components/partials/stars.eta', it) %>
       <div class="card">
         <div class="banner">
           <div class="badges">

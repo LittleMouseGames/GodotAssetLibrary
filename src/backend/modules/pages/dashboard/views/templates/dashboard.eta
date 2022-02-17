@@ -20,11 +20,11 @@
       onsubmit="window.godotLibrary.formTools.sendFormAjax(event, this)">
       <h2>Account Information</h2>
       <div class="input-container">
-        <input it="username" type="text" name="username" placeholder="" value="<%= it.info.username %>">
+        <input class="input" it="username" type="text" name="username" placeholder="" value="<%= it.info.username %>">
         <label for="username" class="placeholder">Username</label>
       </div>
       <div class="input-container">
-        <input id="email" type="text" name="email" placeholder="" value="<%= it.info.email %>">
+        <input class="input" id="email" type="text" name="email" placeholder="" value="<%= it.info.email %>">
         <label for="email" class="placeholder">Email Address</label>
       </div>
       <div class="disclaimer">
@@ -40,15 +40,15 @@
       onsubmit="window.godotLibrary.formTools.sendFormAjax(event, this)">
       <h2>Account Security</h2>
       <div class="input-container">
-        <input id="password-current" name="password-current" type="password" placeholder="">
+        <input class="input" id="password-current" name="password-current" type="password" placeholder="">
         <label for="password-current" class="placeholder">Current Password</label>
       </div>
       <div class="input-container">
-        <input id="new-password" name="new-password" type="password" placeholder="">
+        <input class="input" id="new-password" name="new-password" type="password" placeholder="">
         <label for="new-password" class="placeholder">New Password</label>
       </div>
       <div class="input-container">
-        <input id="new-password-conf" name="new-password-conf" type="password" placeholder="">
+        <input class="input" id="new-password-conf" name="new-password-conf" type="password" placeholder="">
         <label for="new-password-conf" class="placeholder">New Password Confirmation</label>
       </div>
       <div class="disclaimer">

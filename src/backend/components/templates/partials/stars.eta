@@ -1,0 +1,17 @@
+<div class="rating">
+  <% 
+    // Convert votes to percentage, then to stars
+    var upvotes = it?.info?.upvotes
+    var total = upvotes + it?.info?.downvotes
+    var percent = Math.round((upvotes / total) * 100).toFixed(2)
+    var stars = Math.round((percent + 5) / 10).toFixed(1) / 2
+    %>
+  <ul class="stars" data-rating="<%= stars ? stars : 0 %>">
+    <li class="stars__item"></li>
+    <li class="stars__item"></li>
+    <li class="stars__item"></li>
+    <li class="stars__item"></li>
+    <li class="stars__item"></li>
+  </ul>
+  <span><%= it?.info?.upvotes + it?.info?.downvotes %> ratings</span>
+</div>

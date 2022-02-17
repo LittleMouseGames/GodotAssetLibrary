@@ -7,6 +7,7 @@
 
 .page-asset {
   @include reset-header-spacing;
+  @include sneaky-labels;
 
   display: grid;
   grid-template-columns: 67% auto;
@@ -56,6 +57,112 @@
     }
   }
 
+  .details {
+    font-family: "DM Sans";
+    color: $text-dark-darkest;
+
+    .section {
+      margin-top: 25px;
+      padding-bottom: 10px;
+    }
+
+    h2 {
+      margin-bottom: 10px;
+    }
+
+    .header {
+      display: flex;
+    }
+
+    .rated {
+      font-weight: 500;
+      color: $text-dark-gray;
+    }
+
+    .username {
+      color: $text-dark-deep-gray;
+    }
+
+    textarea {
+      @include form-textarea;
+    }
+
+    .iconify {
+      margin-left: auto;
+      height: 20px;
+      width: auto;
+      cursor: pointer;
+    }
+
+    .headline {
+      font-weight: 600;
+      font-family: "Inter";
+      font-size: 16px;
+    }
+
+    .headline {
+      margin-bottom: 4px;
+    }
+
+    .review-body {
+      margin-top: 4px;
+      font-size: 15px;
+    }
+
+    .review {
+      &:not(:last-of-type) {
+        margin-bottom: 20px;
+      }
+    }
+
+    button {
+      width: auto;
+    }
+  }
+
+  .reviews {
+    .username {
+      font-weight: 600;
+      font-family: Inter;
+    }
+
+    .header {
+      .rated {
+        font-family: "Poppins";
+      }
+    }
+  }
+
+  .write-review {
+    margin-top: 25px;
+
+    [type="radio"] {
+      display: none;
+      &:checked ~ .label,
+      &:hover ~ .label {
+        color: black;
+      }
+    }
+
+    .rating-select {
+      display: block;
+      margin-bottom: 20px;
+      cursor: pointer;
+      font-family: "Inter";
+
+      .label {
+        color: gray;
+        display: flex;
+        align-items: center;
+      }
+
+      .iconify {
+        margin-left: 0;
+        margin-right: 5px;
+      }
+    }
+  }
+
   h2 {
     font-family: "Inter";
     font-weight: 700;
@@ -84,11 +191,6 @@
   .quick-info {
     position: sticky;
     top: 95px;
-  }
-
-  .details {
-    font-family: "DM Sans";
-    color: $text-dark-darker;
   }
 
   .tabs {
