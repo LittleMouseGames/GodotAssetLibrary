@@ -4,20 +4,22 @@ import { GetDoesUserExistByToken } from 'modules/api/authentication/models/user/
 import { TokenServices } from 'modules/api/authentication/services/TokenServices'
 
 export function CheckIfUserExistAndSendError (): any {
-  return (req: Request, res: Response, next: NextFunction) => {
+  return async (req: Request, res: Response, next: NextFunction): Promise<any> => {
     const authToken = req.cookies['auth-token']
-    if (authToken !== undefined) {
-      const tokenServices = TokenServices.getInstance()
-      const hashedToken = tokenServices.hashToken(authToken)
 
-      GetDoesUserExistByToken(hashedToken).then(() => {
-        req.body.hashedToken = hashedToken
-        next()
-      }).catch(e => {
-        return res.status(StatusCodes.BAD_REQUEST).send({ error: e.message })
-      })
-    } else {
+    if (authToken === undefined) {
       return res.status(StatusCodes.BAD_REQUEST).send({ error: 'Missing auth token, are you logged in?' })
+    }
+
+    const tokenServices = TokenServices.getInstance()
+    const hashedToken = tokenServices.hashToken(authToken)
+
+    try {
+      await GetDoesUserExistByToken(hashedToken)
+      req.body.hashedToken = hashedToken
+      next()
+    } catch (e) {
+      return res.status(StatusCodes.BAD_REQUEST).send({ error: e.message })
     }
   }
 }

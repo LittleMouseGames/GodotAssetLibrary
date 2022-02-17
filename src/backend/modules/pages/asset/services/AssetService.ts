@@ -5,6 +5,7 @@ import fromNow from 'fromnow'
 import striptags from 'striptags'
 import { TokenServices } from 'modules/api/authentication/services/TokenServices'
 import { GetDoesPostExistById } from '../models/GET/GetDoesPostExistById'
+import { GetHasUserReviewedAsset } from '../models/GET/GetHasUserReviewedAsset'
 
 export class AssetService {
   /**
@@ -55,6 +56,10 @@ export class AssetService {
 
     if (!(await GetDoesPostExistById(assetId))) {
       throw new Error('Asset not found')
+    }
+
+    if (await GetHasUserReviewedAsset(authToken, assetId)) {
+      throw new Error('User has already reviewed this asset')
     }
 
     review = striptags(review)

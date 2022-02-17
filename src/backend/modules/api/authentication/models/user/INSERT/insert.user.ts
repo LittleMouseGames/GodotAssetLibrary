@@ -21,6 +21,7 @@ export async function InsertUser (username: string, email: string, passwordHash:
     email: email,
     password_hash: passwordHash,
     username_lower: username.toLocaleLowerCase(),
+    reviewd_assets: [],
     resume_tokens: [
       {
         token: token,
