@@ -1,5 +1,8 @@
 .page-message {
   margin-top: 20px;
+  position: sticky;
+  top: 95px;
+  z-index: 3;
 
   .message {
     padding: 13px 15px;

@@ -2,6 +2,7 @@ import { Request, Response } from 'express'
 import { logger } from 'utility/logger'
 import { GetAssetDisplayInformation } from '../models/GET/GetAssetDisplayInformation'
 import fromNow from 'fromnow'
+import striptags from 'striptags'
 
 export class AssetService {
   /**
@@ -22,5 +23,26 @@ export class AssetService {
       logger.log('error', 'Failed to load asset page', ...[e])
       return res.send({ error: 'Sorry, we\'re having issues loading this page right now' })
     }
+  }
+
+  public async review (req: Request, res: Response): Promise<any> {
+    const rating = String(req.body.rating) ?? ''
+    let review = req.body.asset_review ?? ''
+
+    if (rating === '' || (rating !== 'positive' && rating !== 'negative')) {
+      throw new Error('Missing or invalid rating selection, expected "positive" or "negative"')
+    }
+
+    if (review.length > 500) {
+      throw new Error('Review text is too long, must be less than 500 characters')
+    }
+
+    if (review.length < 5) {
+      throw new Error('Rating too short, must be at least 5 characters')
+    }
+
+    review = striptags(review)
+
+    res.send()
   }
 }

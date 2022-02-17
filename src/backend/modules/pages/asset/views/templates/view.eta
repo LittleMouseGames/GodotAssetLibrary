@@ -72,29 +72,31 @@
               </div>
             </div>
           </div>
-
-          <div class="write-review">
+        </div>
+        <div class="section">
+          <form method="POST" action="/asset/review/<%= it?.info?.asset_id %>" class="write-review"
+            onsubmit="window.godotLibrary.formTools.sendFormAjax(event, this)">
             <h2>Your Rating</h2>
             <label class="rating-select">
-              <input type="radio" name="rating">
+              <input type="radio" name="rating" value="positive" required>
               <div class="label">
                 <span class="iconify" data-icon="bi:hand-thumbs-up-fill"></span>
                 <span>This addon is good</span>
               </div>
             </label>
             <label class="rating-select">
-              <input type="radio" name="rating">
+              <input type="radio" name="rating" value="negative" required>
               <div class="label">
                 <span class="iconify" data-icon="bi:hand-thumbs-down-fill"></span>
                 <span>This addon is bad</span>
               </div>
             </label>
             <div class="input-container">
-              <textarea class="input" id="asset-review" type="text" placeholder=""></textarea>
+              <textarea name="asset_review" class="input" id="asset-review" type="text" placeholder=""></textarea>
               <label for="asset-review" class="placeholder">Review (optional)</label>
             </div>
-            <button>Submit</button>
-          </div>
+            <button type="submit">Submit</button>
+          </form>
         </div>
       </div>
     </div>
