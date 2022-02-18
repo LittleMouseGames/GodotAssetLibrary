@@ -59,7 +59,7 @@
                 <span class="headline"><%= comment.headline %></span>
                 <span class="iconify" data-icon="akar-icons:more-horizontal"></span>
               </div>
-              <span class="username">LittleMouseDev</span>
+              <span class="username"><%= comment.username %></span>
               <span class="rated">Rated <%= comment.review_type %></span>
               <div class="review-body">
                 <%= comment.text %>

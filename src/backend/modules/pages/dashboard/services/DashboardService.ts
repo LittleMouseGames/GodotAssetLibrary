@@ -1,10 +1,12 @@
 import { Request, Response } from 'express'
 import { GetDoesUsernameExist } from 'modules/api/authentication/models/user/GET/GetDoesUsernameExist'
 import { GetPasswordHashByToken } from 'modules/api/authentication/models/user/GET/GetPasswordHashByToken'
+import { GetUserByToken } from 'modules/api/authentication/models/user/GET/GetUserByToken'
 import { UpdatePasswordHashByToken } from 'modules/api/authentication/models/user/UPDATE/UpdatePasswordHashByToken'
 import { UserServices } from 'modules/api/authentication/services/UserServices'
 import { GetUserInfoByToken } from '../models/GET/GetUserInfoByToken'
 import { UpdateUserInformtaion } from '../models/UPDATE/UpateUserInformation'
+import { UpdateCommentsInformationByUserId } from '../models/UPDATE/UpdateCommentsUsernameByUserId'
 
 export class DashboardService {
   /**
@@ -36,7 +38,10 @@ export class DashboardService {
       throw new Error('Username already in use')
     }
 
+    const userId = await GetUserByToken(hashedToken)
+
     await UpdateUserInformtaion(hashedToken, username, email)
+    await UpdateCommentsInformationByUserId(userId, username)
 
     const info = await GetUserInfoByToken(req.body.hashedToken)
     return res.render('templates/pages/dashboard/dashboard', { info: info })
