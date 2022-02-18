@@ -1,0 +1,12 @@
+import { CronJob } from 'cron'
+import { logger } from 'utility/logger'
+import { DeleteExpiredResumeTokens } from '../../models/user/DELETE/DeleteExpiredResumeTokens'
+
+export const deleteExpiredTokens = new CronJob('0 0 0 */1 * *', function () {
+  logger.log('info', 'Removing expired tokens')
+  DeleteExpiredResumeTokens().then(() => {
+    logger.log('info', 'Expired resume tokens removed')
+  }).catch(_e => {
+    // ignore
+  })
+})
