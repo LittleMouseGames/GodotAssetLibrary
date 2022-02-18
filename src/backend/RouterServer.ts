@@ -5,6 +5,8 @@ import { logger } from 'utility/logger'
 import compression from 'compression'
 import path from 'path'
 import cookieParser from 'cookie-parser'
+import { TokenServices } from 'modules/api/authentication/services/TokenServices'
+import { GetDoesUserExistByToken } from 'modules/api/authentication/models/user/GET/GetDoesUserExistByToken'
 
 /**
  * Starts the server
@@ -29,8 +31,21 @@ class RouterServer extends Server {
       extended: true
     }))
 
-    this.app.use(function (req: Request, res: Response, next: NextFunction) {
-      res.locals.user = req.cookies['auth-token'] ?? ''
+    this.app.use(async function (req: Request, res: Response, next: NextFunction) {
+      const authToken = req.cookies['auth-token'] ?? ''
+      res.locals.loggedIn = false
+
+      if (authToken !== '') {
+        const tokenServices = TokenServices.getInstance()
+        const hashedToken = tokenServices.hashToken(authToken)
+
+        try {
+          res.locals.loggedIn = await GetDoesUserExistByToken(hashedToken)
+        } catch (e) {
+          // ignore
+        }
+      }
+
       next()
     })
 

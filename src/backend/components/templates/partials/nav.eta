@@ -37,7 +37,7 @@
       </div>
     </div>
     <div class="account">
-      <% if(it?._locals?.user !== '') { %>
+      <% if(it?._locals?.loggedIn === true) { %>
       <div class="dropdown" onclick="window.godotLibrary.dropdown.showContent(event, this)">
         <span class="iconify" data-icon="codicon:account"></span>
         <div class="value">My Account</div>
@@ -50,7 +50,7 @@
       </div>
       <% } else { %>
       <span class="iconify" data-icon="codicon:account"></span>
-      <a href="/register"><span>Account / Login</span></a>
+      <a href="/register"><span>Register / Login</span></a>
       <% } %>
     </div>
   </div>
