@@ -44,33 +44,28 @@
           <h2>Description from README file</h2>
           <%= it?.info?.description %>
         </div>
+
         <div class="section">
           <h2>Reviews</h2>
           <%~ includeFile('templates/components/partials/stars.eta', it) %>
 
           <div class="reviews">
+            <% if (it?.comments) { %>
+            <% const comments = it?.comments ?? [] %>
+            <% comments.forEach(comment => { %>
             <div class="review">
               <div class="header">
-                <span class="headline">Good</span>
+                <span class="headline"><%= comment.headline %></span>
                 <span class="iconify" data-icon="akar-icons:more-horizontal"></span>
               </div>
               <span class="username">LittleMouseDev</span>
-              <span class="rated">Rated Positive</span>
+              <span class="rated">Rated <%= comment.review_type %></span>
               <div class="review-body">
-                Probably the best asset to get what you need done
+                <%= comment.text %>
               </div>
             </div>
-            <div class="review">
-              <div class="header">
-                <span class="headline">Does what you'd expect</span>
-                <span class="iconify" data-icon="akar-icons:more-horizontal"></span>
-              </div>
-              <span class="username">SomeUsername</span>
-              <span class="rated">Rated Positive</span>
-              <div class="review-body">
-                It can be a little clunky to use, but once you get going its really a rock solid extension
-              </div>
-            </div>
+            <% }) %>
+            <% } %>
           </div>
         </div>
         <div class="section">

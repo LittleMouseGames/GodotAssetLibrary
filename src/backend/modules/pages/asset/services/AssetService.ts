@@ -10,6 +10,8 @@ import { UpdateNegativeVotesAddOne } from '../models/UPDATE/UpdateNegativeVotesA
 import { GetUserByToken } from 'modules/api/authentication/models/user/GET/GetUserByToken'
 import { UpdateUserReviewedAssets } from '../models/UPDATE/UpdateUserReviewdAssets'
 import { InsertCommentForAsset } from '../models/INSERT/InsertCommentForAsset'
+import { GetAssetCommentsById } from '../models/GET/GetAssetCommentsById'
+import { GetUsernameById } from 'modules/api/authentication/models/user/GET/GetUsernameById'
 
 export class AssetService {
   /**
@@ -18,14 +20,23 @@ export class AssetService {
    * @param {Request} req request object
   */
   public async render (req: Request, res: Response): Promise<any> {
+    const assetId = req.params.id ?? ''
+
+    if (assetId === '') {
+      throw new Error('Missing asset ID')
+    }
+
     try {
-      const assetInfo = await GetAssetDisplayInformation(req.params.id)
+      const assetInfo = await GetAssetDisplayInformation(assetId)
       assetInfo.modify_date_pretty = fromNow(new Date(assetInfo.modify_date), {
         suffix: true,
         zero: false,
         max: 1
       })
-      return res.render('templates/pages/asset/view', { info: assetInfo })
+
+      const comments = await GetAssetCommentsById(assetId)
+
+      return res.render('templates/pages/asset/view', { info: assetInfo, comments: comments })
     } catch (e) {
       logger.log('error', 'Failed to load asset page', ...[e])
       return res.send({ error: 'Sorry, we\'re having issues loading this page right now' })
@@ -75,11 +86,16 @@ export class AssetService {
       throw new Error('If you add a headline you need a review, too')
     }
 
+    if (review.length > 5 && headline.length < 3) {
+      throw new Error('If you add a review you need a headline, too')
+    }
+
     if (!(await GetDoesPostExistById(assetId))) {
       throw new Error('Asset not found')
     }
 
     const userId = await GetUserByToken(authToken)
+    const username = await GetUsernameById(userId)
 
     if (rating === 'positive') {
       await UpdatePositiveVotesAddOne(assetId)
@@ -88,7 +104,7 @@ export class AssetService {
     }
 
     await UpdateUserReviewedAssets(authToken, assetId)
-    await InsertCommentForAsset(userId, assetId, rating, striptags(review), striptags(headline))
+    await InsertCommentForAsset(userId, username, assetId, rating, striptags(review), striptags(headline))
 
     res.send()
   }
