@@ -73,6 +73,7 @@
           <form method="PATCH" action="/asset/review/<%= it?.info?.asset_id %>" class="write-review"
             onsubmit="window.godotLibrary.formTools.sendFormAjax(event, this)">
             <h2>Your Rating</h2>
+            <% if(it?._locals?.loggedIn) { %>
             <label class="rating-select">
               <input type="radio" name="rating" value="positive" required
                 <%= it?.usersAssetComment?.review_type === 'positive' ? 'checked' : '' %>>
@@ -100,6 +101,9 @@
               <label for="asset-review" class="placeholder">Review (optional)</label>
             </div>
             <button type="submit"><%= it?.hasUserReviewedAsset ? 'Update' : 'Submit' %></button>
+            <% } else { %>
+            Please <a href="/register">sign in</a> to add a review
+            <% } %>
           </form>
         </div>
       </div>

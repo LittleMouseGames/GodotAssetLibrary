@@ -4,6 +4,7 @@ export interface assetSchema {
   'type': string
   'title': string
   'author': string
+  'author_lowercase': string
   'author_id': string
   'version': string
   'version_string': string

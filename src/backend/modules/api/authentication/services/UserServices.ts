@@ -7,10 +7,11 @@ import { GetPasswordHash } from 'modules/api/authentication/models/user/GET/GetP
 import { GetUserByToken } from 'modules/api/authentication/models/user/GET/GetUserByToken'
 import { TokenServices } from 'modules/api/authentication/services/TokenServices'
 import { GetDoesUsernameExist } from '../models/user/GET/GetDoesUsernameExist'
+import { GetIsUsernameReserved } from '../models/user/GET/GetIsUsernameReserved'
 
 export class UserServices {
   private static instance: UserServices
-  private readonly USERNAME_REGEX: RegExp = /^[a-z0-9_-]{3,16}$/
+  private readonly USERNAME_REGEX: RegExp = /^[a-zA-Z0-9_-]{3,16}$/
   private readonly PASSWORD_REGEX: RegExp = /^(((?=.*[a-z])(?=.*[A-Z]))|((?=.*[a-z])(?=.*[0-9]))|((?=.*[A-Z])(?=.*[0-9])))(?=.{6,})/
   private readonly TokenService: TokenServices = TokenServices.getInstance()
 
@@ -55,6 +56,10 @@ export class UserServices {
 
     if (await GetDoesUsernameExist(username)) {
       throw new Error('Username already in use')
+    }
+
+    if (await GetIsUsernameReserved(username)) {
+      throw new Error('Username is reserved since its used on an asset thats been imported. If this username and those assets belong to you, please reach out so that you can claim this username.')
     }
 
     const tokenExpires = this.TokenService.generateExpiry()
