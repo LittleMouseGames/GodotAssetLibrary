@@ -1,7 +1,6 @@
 import { Request, Response } from 'express'
 import { logger } from 'utility/logger'
 import { GetAssetDisplayInformation } from '../models/GET/GetAssetDisplayInformation'
-import fromNow from 'fromnow'
 import striptags from 'striptags'
 import { GetDoesPostExistById } from '../models/GET/GetDoesPostExistById'
 import { GetHasUserReviewedAsset } from '../models/GET/GetHasUserReviewedAsset'
@@ -13,8 +12,11 @@ import { InsertCommentForAsset } from '../models/INSERT/InsertCommentForAsset'
 import { GetAssetCommentsById } from '../models/GET/GetAssetCommentsById'
 import { GetUsernameById } from 'modules/api/authentication/models/user/GET/GetUsernameById'
 import { TokenServices } from 'modules/api/authentication/services/TokenServices'
-import { GetDoesUserExistByToken } from 'modules/api/authentication/models/user/GET/GetDoesUserExistByToken'
 import { GetAssetCommentByUserId } from '../models/GET/GetAssetCommentByUserId'
+import { UpdateNegativeVotesRemoveOne } from '../models/UPDATE/UpdateNegativeVotesRemoveOne'
+import { UpdatePositiveVotesRemoveOne } from '../models/UPDATE/UpdatePositiveVotesRemoveOne'
+import { UpdateCommentForAsset } from '../models/UPDATE/UpdateCommentForAsset'
+import fromNow from 'fromnow'
 
 export class AssetService {
   /**
@@ -36,6 +38,12 @@ export class AssetService {
       let hasUserReviewedAsset = false
       let usersAssetComment = {}
 
+      assetInfo.modify_date_pretty = fromNow(new Date(assetInfo.modify_date), {
+        suffix: true,
+        zero: false,
+        max: 1
+      })
+
       if (authToken !== '') {
         const tokenServices = TokenServices.getInstance()
         const hashedToken = tokenServices.hashToken(authToken)
@@ -47,8 +55,6 @@ export class AssetService {
           // ignore
         }
       }
-
-      console.log(usersAssetComment)
 
       return res.render('templates/pages/asset/view', { info: assetInfo, comments: comments, hasUserReviewedAsset: hasUserReviewedAsset, usersAssetComment: usersAssetComment })
     } catch (e) {
@@ -63,6 +69,7 @@ export class AssetService {
     const assetId = req.params.id ?? ''
     const review = req.body.asset_review ?? ''
     const headline = req.body.asset_review_headline ?? ''
+    const hasUserReviewedAsset = await GetHasUserReviewedAsset(authToken, assetId)
 
     if (assetId === '') {
       throw new Error('Missing post ID')
@@ -70,10 +77,6 @@ export class AssetService {
 
     if (authToken === undefined || authToken === '') {
       throw new Error('Missing auth token. Are you logged in?')
-    }
-
-    if (await GetHasUserReviewedAsset(authToken, assetId)) {
-      throw new Error('Looks like you\'ve arleady reviewed this asset')
     }
 
     if (rating === '' || (rating !== 'positive' && rating !== 'negative')) {
@@ -111,14 +114,28 @@ export class AssetService {
     const userId = await GetUserByToken(authToken)
     const username = await GetUsernameById(userId)
 
-    if (rating === 'positive') {
-      await UpdatePositiveVotesAddOne(assetId)
-    } else {
-      await UpdateNegativeVotesAddOne(assetId)
-    }
+    if (!hasUserReviewedAsset) {
+      if (rating === 'positive') {
+        await UpdatePositiveVotesAddOne(assetId)
+      } else {
+        await UpdateNegativeVotesAddOne(assetId)
+      }
 
-    await UpdateUserReviewedAssets(authToken, assetId)
-    await InsertCommentForAsset(userId, username, assetId, rating, striptags(review), striptags(headline))
+      await UpdateUserReviewedAssets(authToken, assetId)
+      await InsertCommentForAsset(userId, username, assetId, rating, striptags(review), striptags(headline))
+    } else {
+      const oldComment = await GetAssetCommentByUserId(assetId, userId)
+
+      if (oldComment.review_type === 'positive' && rating === 'negative') {
+        await UpdateNegativeVotesAddOne(assetId)
+        await UpdatePositiveVotesRemoveOne(assetId)
+      } else if (oldComment.review_type === 'negative' && rating === 'positive') {
+        await UpdatePositiveVotesAddOne(assetId)
+        await UpdateNegativeVotesRemoveOne(assetId)
+      }
+
+      await UpdateCommentForAsset(userId, assetId, rating, striptags(review), striptags(headline), new Date())
+    }
 
     res.send()
   }

@@ -69,9 +69,8 @@
           </div>
         </div>
         <div class="section">
-          <form method="POST"
-            action="/asset/review/<%= it?.hasUserReviewedAsset ? 'update/' : '' %><%= it?.info?.asset_id %>"
-            class="write-review" onsubmit="window.godotLibrary.formTools.sendFormAjax(event, this)">
+          <form method="PATCH" action="/asset/review/<%= it?.info?.asset_id %>" class="write-review"
+            onsubmit="window.godotLibrary.formTools.sendFormAjax(event, this)">
             <h2>Your Rating</h2>
             <label class="rating-select">
               <input type="radio" name="rating" value="positive" required

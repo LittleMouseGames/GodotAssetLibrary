@@ -5,7 +5,6 @@ import { customAlphabet } from 'nanoid/non-secure'
 import { MongoHelper } from 'MongoHelper'
 import { Db } from 'mongodb'
 import { assetSchema } from 'utility/schema/assets'
-import fromNow from 'fromnow'
 
 const host = 'godotengine.org'
 
@@ -120,11 +119,6 @@ async function modelInsertAsset (asset: assetSchema): Promise<any> {
   asset.featured = false
   asset.title = asset.title.trim()
   asset.category_lowercase = asset.category.toLocaleLowerCase()
-  asset.modify_date_pretty = fromNow(new Date(asset.modify_date), {
-    suffix: true,
-    zero: false,
-    max: 1
-  })
 
   const insertObj = await mongo.collection('assets').insertOne(asset)
 
