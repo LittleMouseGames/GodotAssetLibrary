@@ -108,6 +108,7 @@ nav {
     .iconify {
       width: 30px;
       height: auto;
+      margin-right: 14px;
     }
 
     .dropdown {
@@ -124,6 +125,10 @@ nav {
         font-size: 14px;
         width: auto;
         margin-left: 10px;
+      }
+
+      .iconify {
+        margin-right: 0;
       }
     }
   }

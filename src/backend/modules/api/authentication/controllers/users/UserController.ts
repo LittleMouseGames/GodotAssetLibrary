@@ -1,5 +1,5 @@
 import { StatusCodes } from 'http-status-codes'
-import { Controller, Post, Middleware } from '@overnightjs/core'
+import { Controller, Post, Middleware, Get } from '@overnightjs/core'
 import { Request, Response } from 'express'
 import { UserServices } from 'modules/api/authentication/services/UserServices'
 import bodyParser from 'body-parser'
@@ -60,5 +60,14 @@ export class UserController {
     } catch (e: any) {
       return res.status(StatusCodes.BAD_REQUEST).send({ error: e.message })
     }
+  }
+
+  /**
+   * Logout endpoint
+   */
+  @Get('logout')
+  private logout (_req: Request, res: Response): void {
+    res.clearCookie('auth-token')
+    res.redirect('/')
   }
 }
