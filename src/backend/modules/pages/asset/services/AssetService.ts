@@ -134,7 +134,7 @@ export class AssetService {
         await UpdateNegativeVotesRemoveOne(assetId)
       }
 
-      await UpdateCommentForAsset(userId, assetId, rating, striptags(review), striptags(headline), new Date())
+      await UpdateCommentForAsset(userId, assetId, rating, striptags(review), striptags(headline))
     }
 
     res.send()

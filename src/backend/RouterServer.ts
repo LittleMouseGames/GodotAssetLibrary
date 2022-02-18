@@ -50,7 +50,7 @@ class RouterServer extends Server {
     })
 
     this.app.use(function (_req, res, next) {
-      res.setHeader('X-Powered-By', 'Open Source Software and Coffee')
+      res.setHeader('X-Powered-By', 'Godot Library, an AGPLv3 Software')
       next()
     })
 
