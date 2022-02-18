@@ -1,7 +1,6 @@
 import { Request, Response } from 'express'
 import { logger } from 'utility/logger'
 import { GetAssetDisplayInformation } from '../models/GET/GetAssetDisplayInformation'
-import striptags from 'striptags'
 import { GetDoesPostExistById } from '../models/GET/GetDoesPostExistById'
 import { GetHasUserReviewedAsset } from '../models/GET/GetHasUserReviewedAsset'
 import { UpdatePositiveVotesAddOne } from '../models/UPDATE/UpdatePositiveVotesAddOne'
@@ -17,6 +16,7 @@ import { UpdateNegativeVotesRemoveOne } from '../models/UPDATE/UpdateNegativeVot
 import { UpdatePositiveVotesRemoveOne } from '../models/UPDATE/UpdatePositiveVotesRemoveOne'
 import { UpdateCommentForAsset } from '../models/UPDATE/UpdateCommentForAsset'
 import fromNow from 'fromnow'
+import striptags from 'striptags'
 
 export class AssetService {
   /**

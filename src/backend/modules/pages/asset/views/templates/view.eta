@@ -33,15 +33,16 @@
       </div>
     </div>
     <div class="info">
-      <div class="tabs">
+      <!-- we'll implement this in the future probably™️ -->
+      <!-- <div class="tabs">
         <ul>
           <li class="active">Description from README file</li>
           <li>Legacy Godot Asset Library Description</li>
         </ul>
-      </div>
+      </div> -->
       <div class="details">
         <div class="section">
-          <h2>Description from README file</h2>
+          <h2>Asset Description</h2>
           <%= it?.info?.description %>
         </div>
 
