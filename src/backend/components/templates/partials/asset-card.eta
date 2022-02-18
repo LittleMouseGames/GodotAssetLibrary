@@ -1,8 +1,12 @@
 <div class="asset-card <%= it?.featured ? 'featured' : 'normal' %>">
   <div class="head">
     <div class="badges">
-      <div class="badge badge-blue"><%= it?.info?.category ?? 'ERR' %></div>
-      <div class="badge badge-purple"><%= it?.info?.godot_version ?? 'ERR' %></div>
+      <a href="/search/?q=&category=<%= it?.info?.category?.toLocaleLowerCase() %>">
+        <div class="badge badge-blue"><%= it?.info?.category ?? 'ERR' %></div>
+      </a>
+      <a href="/search/?q=&engine=<%= it?.info?.godot_version?.toLocaleLowerCase() %>">
+        <div class="badge badge-purple"><%= it?.info?.godot_version ?? 'ERR' %></div>
+      </a>
       <span class="iconify" data-icon="akar-icons:more-horizontal"></span>
     </div>
     <% if (!it?.featured) { %>
