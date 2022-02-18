@@ -108,7 +108,23 @@ nav {
     .iconify {
       width: 30px;
       height: auto;
-      margin-right: 14px;
+    }
+
+    .dropdown {
+      margin-left: 0;
+      padding: 0;
+      background: inherit;
+      border: none;
+
+      .value {
+        padding: 0;
+      }
+
+      .chevron {
+        font-size: 14px;
+        width: auto;
+        margin-left: 10px;
+      }
     }
   }
 }

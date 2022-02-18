@@ -1,6 +1,6 @@
 import * as controllers from 'modules/controllers.index'
 import { Server } from '@overnightjs/core'
-import express, { Request, Response } from 'express'
+import express, { NextFunction, Request, Response } from 'express'
 import { logger } from 'utility/logger'
 import compression from 'compression'
 import path from 'path'
@@ -28,6 +28,11 @@ class RouterServer extends Server {
     this.app.use(express.urlencoded({
       extended: true
     }))
+
+    this.app.use(function (req: Request, res: Response, next: NextFunction) {
+      res.locals.user = req.cookies['auth-token'] ?? ''
+      next()
+    })
 
     this.app.use(function (_req, res, next) {
       res.setHeader('X-Powered-By', 'Open Source Software and Coffee')

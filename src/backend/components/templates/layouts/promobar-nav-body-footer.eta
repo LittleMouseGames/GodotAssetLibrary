@@ -17,10 +17,10 @@
 
 
 <body>
-  <%~ includeFile('templates/components/partials/nav.eta') %>
+  <%~ includeFile('templates/components/partials/nav.eta', it) %>
 
   <section class="main">
-    <%~ includeFile('templates/components/partials/page-banner.eta') %>
+    <%~ includeFile('templates/components/partials/page-banner.eta', it) %>
     <%~ includeFile('templates/components/partials/page-message.eta') %>
     <%~ it.body %>
   </section>

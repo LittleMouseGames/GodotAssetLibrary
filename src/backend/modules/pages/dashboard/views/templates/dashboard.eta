@@ -10,7 +10,7 @@
   <div class="column">
     <div class="sidebar">
       <div class="item">Account Information</div>
-      <div class="item">My Added Assets</div>
+      <!-- We'll probably™️ add this later <div class="item">My Added Assets</div> -->
       <div class="item">Bookmarked Assets</div>
       <div class="item">My Reviews</div>
     </div>

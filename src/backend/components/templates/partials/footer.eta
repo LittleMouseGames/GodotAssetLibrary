@@ -62,7 +62,7 @@
         <li><a href="/register">Login or Register</a></li>
         <li><a href="/dashboard">Account Dashboard</a></li>
         <li><a href="">My Reviews</a></li>
-        <li><a href="/create">Upload a New Asset</a></li>
+        <!-- We'll add this later, probably™️ <li><a href="/create">Upload a New Asset</a></li> -->
       </ul>
     </section>
     <section class="column">
