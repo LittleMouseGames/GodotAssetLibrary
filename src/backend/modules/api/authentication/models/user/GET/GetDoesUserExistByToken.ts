@@ -11,7 +11,7 @@ export async function GetDoesUserExistByToken (token: string): Promise<boolean> 
   })
 
   if (operationObject === null || operationObject === undefined) {
-    throw new Error('User not found, are you logged in?')
+    return false
   }
 
   return true

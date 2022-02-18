@@ -28,7 +28,8 @@ export interface assetSchema {
   'upvotes': number
   'downvotes': number
   'featured': boolean
-  'banner_url': String
+  'banner_url': string
+  'modify_date_pretty': string
   'previews': Array<[
     {
       'preview_id': string

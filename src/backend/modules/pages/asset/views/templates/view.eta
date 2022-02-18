@@ -69,13 +69,16 @@
           </div>
         </div>
         <div class="section">
-          <form method="POST" action="/asset/review/<%= it?.info?.asset_id %>" class="write-review"
-            onsubmit="window.godotLibrary.formTools.sendFormAjax(event, this)">
+          <form method="POST"
+            action="/asset/review/<%= it?.hasUserReviewedAsset ? 'update/' : '' %><%= it?.info?.asset_id %>"
+            class="write-review" onsubmit="window.godotLibrary.formTools.sendFormAjax(event, this)">
             <h2>Your Rating</h2>
             <label class="rating-select">
-              <input type="radio" name="rating" value="positive" required>
+              <input type="radio" name="rating" value="positive" required
+                <%= it?.usersAssetComment?.review_type === 'positive' ? 'checked' : '' %>>
               <div class="label">
-                <span class="iconify" data-icon="bi:hand-thumbs-up-fill"></span>
+                <span class="iconify" data-icon="bi:hand-thumbs-up-fill"
+                  <%= it?.usersAssetComment?.review_type === 'false' ? 'checked' : '' %>></span>
                 <span>This addon is good</span>
               </div>
             </label>
@@ -87,14 +90,16 @@
               </div>
             </label>
             <div class="input-container">
-              <input name="asset_review_headline" class="input" id="asset-review-headline" type="text" placeholder="">
+              <input name="asset_review_headline" class="input" id="asset-review-headline" type="text" placeholder=""
+                value="<%= it?.usersAssetComment?.headline ? it?.usersAssetComment?.headline : '' %>">
               <label for="asset-review-headline" class="placeholder">Headline (optional)</label>
             </div>
             <div class="input-container">
-              <textarea name="asset_review" class="input" id="asset-review" type="text" placeholder=""></textarea>
+              <textarea name="asset_review" class="input" id="asset-review" type="text"
+                placeholder=""><%= it?.usersAssetComment?.text ? it?.usersAssetComment?.text : '' %></textarea>
               <label for="asset-review" class="placeholder">Review (optional)</label>
             </div>
-            <button type="submit">Submit</button>
+            <button type="submit"><%= it?.hasUserReviewedAsset ? 'Update' : 'Submit' %></button>
           </form>
         </div>
       </div>

@@ -14,12 +14,11 @@ export function CheckIfUserExistAndSendError (): any {
     const tokenServices = TokenServices.getInstance()
     const hashedToken = tokenServices.hashToken(authToken)
 
-    try {
-      await GetDoesUserExistByToken(hashedToken)
+    if (await GetDoesUserExistByToken(hashedToken)) {
       req.body.hashedToken = hashedToken
       next()
-    } catch (e) {
-      return res.status(StatusCodes.BAD_REQUEST).send({ error: e.message })
+    } else {
+      return res.status(StatusCodes.BAD_REQUEST).send({ error: 'User not found' })
     }
   }
 }

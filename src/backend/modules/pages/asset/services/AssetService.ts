@@ -12,6 +12,9 @@ import { UpdateUserReviewedAssets } from '../models/UPDATE/UpdateUserReviewdAsse
 import { InsertCommentForAsset } from '../models/INSERT/InsertCommentForAsset'
 import { GetAssetCommentsById } from '../models/GET/GetAssetCommentsById'
 import { GetUsernameById } from 'modules/api/authentication/models/user/GET/GetUsernameById'
+import { TokenServices } from 'modules/api/authentication/services/TokenServices'
+import { GetDoesUserExistByToken } from 'modules/api/authentication/models/user/GET/GetDoesUserExistByToken'
+import { GetAssetCommentByUserId } from '../models/GET/GetAssetCommentByUserId'
 
 export class AssetService {
   /**
@@ -21,6 +24,7 @@ export class AssetService {
   */
   public async render (req: Request, res: Response): Promise<any> {
     const assetId = req.params.id ?? ''
+    const authToken = req.cookies['auth-token'] ?? ''
 
     if (assetId === '') {
       throw new Error('Missing asset ID')
@@ -28,15 +32,25 @@ export class AssetService {
 
     try {
       const assetInfo = await GetAssetDisplayInformation(assetId)
-      assetInfo.modify_date_pretty = fromNow(new Date(assetInfo.modify_date), {
-        suffix: true,
-        zero: false,
-        max: 1
-      })
-
       const comments = await GetAssetCommentsById(assetId)
+      let hasUserReviewedAsset = false
+      let usersAssetComment = {}
 
-      return res.render('templates/pages/asset/view', { info: assetInfo, comments: comments })
+      if (authToken !== '') {
+        const tokenServices = TokenServices.getInstance()
+        const hashedToken = tokenServices.hashToken(authToken)
+        try {
+          const userId = await GetUserByToken(hashedToken)
+          hasUserReviewedAsset = await GetHasUserReviewedAsset(hashedToken, assetId)
+          usersAssetComment = await GetAssetCommentByUserId(assetId, userId)
+        } catch (e) {
+          // ignore
+        }
+      }
+
+      console.log(usersAssetComment)
+
+      return res.render('templates/pages/asset/view', { info: assetInfo, comments: comments, hasUserReviewedAsset: hasUserReviewedAsset, usersAssetComment: usersAssetComment })
     } catch (e) {
       logger.log('error', 'Failed to load asset page', ...[e])
       return res.send({ error: 'Sorry, we\'re having issues loading this page right now' })
