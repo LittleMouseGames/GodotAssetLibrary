@@ -1,19 +1,19 @@
 import { MongoHelper } from 'MongoHelper'
 
-export async function GetHasUserReviewedAsset (hashedToken: string, assetId: String): Promise<boolean> {
+export async function GetUserReviewedAssets (token: string): Promise<any> {
   const mongo = MongoHelper.getDatabase()
   const operationObject = await mongo.collection('users').findOne({
-    'resume_tokens.token': hashedToken,
-    reviewd_assets: assetId
+    'resume_tokens.token': token
   }, {
     projection: {
+      _id: 0,
       reviewed_assets: 1
     }
   })
 
   if (operationObject === null || operationObject === undefined) {
-    return false
+    throw new Error('User not found')
   }
 
-  return true
+  return operationObject.reviewed_assets
 }

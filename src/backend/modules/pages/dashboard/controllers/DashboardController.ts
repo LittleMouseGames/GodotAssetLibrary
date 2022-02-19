@@ -33,6 +33,12 @@ export class DashboardController {
     return await this.DashboardService.render(req, res)
   }
 
+  @Get('reviews')
+  @Middleware([CheckIfUserExistAndRedirect('/register', false)])
+  private async reviews (req: Request, res: Response): Promise<void> {
+    return await this.DashboardService.renderReviews(req, res)
+  }
+
   @Post('update/info')
   @Middleware([updateInfoRateLimit, CheckIfUserExistAndRedirect('/register', false)])
   private async updateInformation (req: Request, res: Response): Promise<void> {

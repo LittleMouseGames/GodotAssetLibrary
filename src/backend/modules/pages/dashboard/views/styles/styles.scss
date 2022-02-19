@@ -2,6 +2,9 @@
 @import "components/styles/utils/mixins";
 @import "components/styles/utils/variables";
 @import "components/styles/partials/forms";
+@import "components/styles/partials/catalog-grid";
+@import "components/styles/partials/asset-card";
+@include card-rating-styles;
 
 .page-dashboard {
   @include reset-header-spacing;
@@ -11,7 +14,15 @@
   margin-top: 40px;
   display: grid;
   column-gap: 60px;
-  grid-template-columns: auto auto auto;
+  grid-template-columns: auto 1fr 1fr;
+
+  &.reviews {
+    grid-template-columns: auto 1fr;
+
+    button {
+      padding: 0;
+    }
+  }
 
   h2 {
     font-size: 18px;
@@ -57,6 +68,10 @@
       &:not(:last-of-type) {
         border-bottom: 0;
       }
+    }
+
+    a {
+      color: inherit;
     }
   }
 }

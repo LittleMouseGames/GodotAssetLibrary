@@ -5,7 +5,9 @@ import { GetPasswordHashByToken } from 'modules/api/authentication/models/user/G
 import { GetUserByToken } from 'modules/api/authentication/models/user/GET/GetUserByToken'
 import { UpdatePasswordHashByToken } from 'modules/api/authentication/models/user/UPDATE/UpdatePasswordHashByToken'
 import { UserServices } from 'modules/api/authentication/services/UserServices'
+import { GetReviewedAssetsFromQuery } from '../models/GET/GetReviewedAssetsFromQuery'
 import { GetUserInfoByToken } from '../models/GET/GetUserInfoByToken'
+import { GetUserReviewedAssets } from '../models/GET/GetUserReviewedAssets'
 import { UpdateUserInformtaion } from '../models/UPDATE/UpateUserInformation'
 import { UpdateCommentsInformationByUserId } from '../models/UPDATE/UpdateCommentsUsernameByUserId'
 
@@ -18,6 +20,20 @@ export class DashboardService {
   public async render (req: Request, res: Response): Promise<void> {
     const info = await GetUserInfoByToken(req.body.hashedToken)
     return res.render('templates/pages/dashboard/dashboard', { info: info })
+  }
+
+  public async renderReviews (req: Request, res: Response): Promise<void> {
+    let limit = Number(req.query.limit ?? 12)
+    const page = Number(req.query.page ?? 0)
+
+    if (limit > 36) {
+      limit = 36
+    }
+
+    const reviewedAssetList = await GetUserReviewedAssets(req.body.hashedToken)
+    console.log(reviewedAssetList)
+    const reviewedAssets = await GetReviewedAssetsFromQuery(limit, page, reviewedAssetList)
+    return res.render('templates/pages/dashboard/reviews', { assets: reviewedAssets })
   }
 
   public async updateInfo (req: Request, res: Response): Promise<void> {

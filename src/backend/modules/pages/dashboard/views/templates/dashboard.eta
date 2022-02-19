@@ -9,10 +9,9 @@
 <section class="page-dashboard">
   <div class="column">
     <div class="sidebar">
-      <div class="item">Account Information</div>
-      <!-- We'll probably™️ add this later <div class="item">My Added Assets</div> -->
-      <div class="item">Bookmarked Assets</div>
-      <div class="item">My Reviews</div>
+      <div class="item active"><a href="/dashboard">Account Information</a></div>
+      <div class="item"><a href="/dashboard/bookmarked">My Bookmarked Assets</a></div>
+      <div class="item"><a href="/dashboard/reviews">My Reviewed Assets</a></div>
     </div>
   </div>
   <div class="column">

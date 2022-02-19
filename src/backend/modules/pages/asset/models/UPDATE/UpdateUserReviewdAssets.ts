@@ -6,7 +6,7 @@ export async function UpdateUserReviewedAssets (hashedToken: string, assetId: St
     'resume_tokens.token': hashedToken
   }, {
     $push: {
-      reviewd_assets: assetId
+      reviewed_assets: assetId
     }
   })
 
