@@ -20,7 +20,7 @@
       <label class="inline-dropdown">
         Results per Page
         <div class="dropdown" onclick="window.godotLibrary.dropdown.showContent(event, this)">
-          <% var params = new URLSearchParams(it.params ?? '?q=') %>
+          <% var params = new URLSearchParams(it.params?.includes('q=') ? it.params : it.params + '?q=') %>
           <div class="value"><%= params.get('limit') ?? '12' %></div>
           <span class="iconify" data-icon="bxs:chevron-down"></span>
           <div class="options">
@@ -35,7 +35,7 @@
         </div>
       </label>
       <div class="buttons">
-        <% var params = new URLSearchParams(it.params ?? '?q=') %>
+        <% var params = new URLSearchParams(it.params?.includes('q=') ? it.params : it.params + '?q=') %>
         <% var page = Number(params.get('page')) ?? 0 %>
 
         <% if (page === 0) { %>
@@ -68,7 +68,7 @@
       <label class="inline-dropdown">
         Results per Page
         <div class="dropdown" onclick="window.godotLibrary.dropdown.showContent(event, this)">
-          <% var params = new URLSearchParams(it.params ?? '?q=') %>
+          <% var params = new URLSearchParams(it.params?.includes('q=') ? it.params : it.params + '?q=') %>
           <div class="value"><%= params.get('limit') ?? '12' %></div>
           <span class="iconify" data-icon="bxs:chevron-down"></span>
           <div class="options">
@@ -85,7 +85,7 @@
     </div>
     <div class="right">
       <div class="buttons">
-        <% var params = new URLSearchParams(it.params ?? '?q=') %>
+        <% var params = new URLSearchParams(it.params?.includes('q=') ? it.params : it.params + '?q=') %>
         <% var page = Number(params.get('page')) ?? 0 %>
 
         <% if (page === 0) { %>

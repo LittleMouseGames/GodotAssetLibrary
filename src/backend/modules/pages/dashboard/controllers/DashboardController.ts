@@ -24,16 +24,13 @@ const updatePasswordRateLimit = rateLimit({
 export class DashboardController {
   private readonly DashboardService: DashboardService = new DashboardService()
 
-  /**
-   * Home
-   */
   @Get('/')
   @Middleware([CheckIfUserExistAndRedirect('/register', false)])
   private async index (req: Request, res: Response): Promise<void> {
     return await this.DashboardService.render(req, res)
   }
 
-  @Get('reviews')
+  @Get('reviews/')
   @Middleware([CheckIfUserExistAndRedirect('/register', false)])
   private async reviews (req: Request, res: Response): Promise<void> {
     return await this.DashboardService.renderReviews(req, res)

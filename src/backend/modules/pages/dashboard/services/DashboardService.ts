@@ -30,10 +30,11 @@ export class DashboardService {
       limit = 36
     }
 
+    const skip = limit * page
+
     const reviewedAssetList = await GetUserReviewedAssets(req.body.hashedToken)
-    console.log(reviewedAssetList)
-    const reviewedAssets = await GetReviewedAssetsFromQuery(limit, page, reviewedAssetList)
-    return res.render('templates/pages/dashboard/reviews', { assets: reviewedAssets })
+    const reviewedAssets = await GetReviewedAssetsFromQuery(limit, skip, reviewedAssetList)
+    return res.render('templates/pages/dashboard/reviews', { assets: reviewedAssets, params: req.originalUrl })
   }
 
   public async updateInfo (req: Request, res: Response): Promise<void> {
