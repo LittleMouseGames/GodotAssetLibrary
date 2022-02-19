@@ -91,8 +91,8 @@ export class AssetService {
       throw new Error('Review text too short, must be at least 5 characters')
     }
 
-    if (headline.length > 100) {
-      throw new Error('Headline text is too long, must be less than 100 characters')
+    if (headline.length > 50) {
+      throw new Error('Headline text is too long, must be less than 50 characters')
     }
 
     if (headline.length > 0 && headline.length < 3) {

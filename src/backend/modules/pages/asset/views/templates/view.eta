@@ -96,7 +96,7 @@
                 <span>This addon is bad</span>
               </div>
             </label>
-            <div class="requirement">Headline must be at least 3 characters but no more than 100</div>
+            <div class="requirement">Headline must be at least 3 characters but not more than 50</div>
             <div class="input-container">
               <input name="asset_review_headline" class="input" id="asset-review-headline" type="text" placeholder=""
                 value="<%= it?.usersAssetComment?.headline ? it?.usersAssetComment?.headline : '' %>">
