@@ -76,6 +76,7 @@
     .rated {
       font-weight: 500;
       color: $text-dark-gray;
+      font-size: 12px;
     }
 
     .username {
@@ -124,6 +125,7 @@
   }
 
   .reviews {
+    @include dropdown-styles;
     .username {
       font-weight: 600;
       font-family: Inter;
@@ -132,6 +134,22 @@
     .header {
       .rated {
         font-family: "Poppins";
+      }
+    }
+
+    .dropdown {
+      background: transparent;
+      border: none;
+      margin-left: auto;
+
+      .iconify {
+        padding: 0;
+      }
+
+      .options {
+        right: 0;
+        left: auto;
+        width: auto;
       }
     }
   }

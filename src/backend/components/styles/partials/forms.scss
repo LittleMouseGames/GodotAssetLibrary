@@ -130,7 +130,8 @@
       border: 1px solid $border-color;
       z-index: 2;
 
-      a {
+      a,
+      div {
         color: inherit;
         padding: $padding;
         text-decoration: none;

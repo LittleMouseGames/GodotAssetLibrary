@@ -14,6 +14,7 @@
   $cta-dark: "true",
   $padding-bottom-override: 15px
 ) {
+  @include dropdown-styles;
   @include background-gradient-image(
     ".background",
     ".mask",
@@ -171,6 +172,23 @@
         color: $rating-color;
         cursor: default;
       }
+    }
+  }
+
+  .dropdown {
+    background: transparent;
+    border: none;
+    margin-left: auto;
+
+    .iconify {
+      padding: 0;
+      color: white;
+    }
+
+    .options {
+      right: 0;
+      left: auto;
+      width: auto;
     }
   }
 }

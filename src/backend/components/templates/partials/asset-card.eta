@@ -7,7 +7,13 @@
       <a href="/search/?q=&engine=<%= it?.info?.godot_version?.toLocaleLowerCase() %>">
         <div class="badge badge-purple"><%= it?.info?.godot_version ?? 'ERR' %></div>
       </a>
-      <span class="iconify" data-icon="akar-icons:more-horizontal"></span>
+      <div class="dropdown" onclick="window.godotLibrary.dropdown.showContent(event, this)">
+        <span class="iconify" data-icon="akar-icons:more-horizontal"></span>
+        <div class="options">
+          <div>Bookmark</div>
+          <div>Report</div>
+        </div>
+      </div>
     </div>
     <% if (!it?.featured) { %>
     <div class="background">
