@@ -5,7 +5,8 @@ import { GetPasswordHashByToken } from 'modules/api/authentication/models/user/G
 import { GetUserByToken } from 'modules/api/authentication/models/user/GET/GetUserByToken'
 import { UpdatePasswordHashByToken } from 'modules/api/authentication/models/user/UPDATE/UpdatePasswordHashByToken'
 import { UserServices } from 'modules/api/authentication/services/UserServices'
-import { GetReviewedAssetsFromQuery } from '../models/GET/GetReviewedAssetsFromQuery'
+import { GetUserAssetsFromQuery } from '../models/GET/GetUserAssetsFromQuery'
+import { GetUserBookmarkedAssets } from '../models/GET/GetUserBookmarkedAssets'
 import { GetUserInfoByToken } from '../models/GET/GetUserInfoByToken'
 import { GetUserReviewedAssets } from '../models/GET/GetUserReviewedAssets'
 import { UpdateUserInformtaion } from '../models/UPDATE/UpateUserInformation'
@@ -33,7 +34,22 @@ export class DashboardService {
     const skip = limit * page
 
     const reviewedAssetList = await GetUserReviewedAssets(req.body.hashedToken)
-    const reviewedAssets = await GetReviewedAssetsFromQuery(limit, skip, reviewedAssetList)
+    const reviewedAssets = await GetUserAssetsFromQuery(limit, skip, reviewedAssetList)
+    return res.render('templates/pages/dashboard/reviews', { assets: reviewedAssets, params: req.originalUrl })
+  }
+
+  public async renderBookmarked (req: Request, res: Response): Promise<void> {
+    let limit = Number(req.query.limit ?? 12)
+    const page = Number(req.query.page ?? 0)
+
+    if (limit > 36) {
+      limit = 36
+    }
+
+    const skip = limit * page
+
+    const reviewedAssetList = await GetUserBookmarkedAssets(req.body.hashedToken) ?? []
+    const reviewedAssets = await GetUserAssetsFromQuery(limit, skip, reviewedAssetList)
     return res.render('templates/pages/dashboard/reviews', { assets: reviewedAssets, params: req.originalUrl })
   }
 

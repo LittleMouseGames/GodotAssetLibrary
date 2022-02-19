@@ -36,6 +36,12 @@ export class DashboardController {
     return await this.DashboardService.renderReviews(req, res)
   }
 
+  @Get('bookmarked/')
+  @Middleware([CheckIfUserExistAndRedirect('/register', false)])
+  private async bookmarked (req: Request, res: Response): Promise<void> {
+    return await this.DashboardService.renderBookmarked(req, res)
+  }
+
   @Post('update/info')
   @Middleware([updateInfoRateLimit, CheckIfUserExistAndRedirect('/register', false)])
   private async updateInformation (req: Request, res: Response): Promise<void> {
