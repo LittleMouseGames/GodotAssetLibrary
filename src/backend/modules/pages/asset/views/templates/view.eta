@@ -96,11 +96,13 @@
                 <span>This addon is bad</span>
               </div>
             </label>
+            <div class="requirement">Headline must be at least 3 characters but no more than 100</div>
             <div class="input-container">
               <input name="asset_review_headline" class="input" id="asset-review-headline" type="text" placeholder=""
                 value="<%= it?.usersAssetComment?.headline ? it?.usersAssetComment?.headline : '' %>">
               <label for="asset-review-headline" class="placeholder">Headline (optional)</label>
             </div>
+            <div class="requirement">Review must be at least 5 characters but not more than 500</div>
             <div class="input-container">
               <textarea name="asset_review" class="input" id="asset-review" type="text"
                 placeholder=""><%= it?.usersAssetComment?.text ? it?.usersAssetComment?.text : '' %></textarea>
