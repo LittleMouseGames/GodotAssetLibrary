@@ -43,6 +43,7 @@
         <input class="input" id="password-current" name="password-current" type="password" placeholder="">
         <label for="password-current" class="placeholder">Current Password</label>
       </div>
+      <div class="requirement">Password must be at least 6 characters and contain at least 1 number</div>
       <div class="input-container">
         <input class="input" id="new-password" name="new-password" type="password" placeholder="">
         <label for="new-password" class="placeholder">New Password</label>

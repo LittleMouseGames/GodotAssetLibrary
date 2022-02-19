@@ -12,7 +12,7 @@ import { GetIsUsernameReserved } from '../models/user/GET/GetIsUsernameReserved'
 export class UserServices {
   private static instance: UserServices
   private readonly USERNAME_REGEX: RegExp = /^[a-zA-Z0-9_-]{3,16}$/
-  private readonly PASSWORD_REGEX: RegExp = /^(((?=.*[a-z])(?=.*[A-Z]))|((?=.*[a-z])(?=.*[0-9]))|((?=.*[A-Z])(?=.*[0-9])))(?=.{6,})/
+  private readonly PASSWORD_REGEX: RegExp = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@$!%*#?&]{6,}$/
   private readonly TokenService: TokenServices = TokenServices.getInstance()
 
   /**

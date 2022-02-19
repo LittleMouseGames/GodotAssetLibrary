@@ -71,6 +71,10 @@
       color: $text-dark-deep-gray;
     }
   }
+
+  .requirement {
+    margin-bottom: 10px;
+  }
 }
 
 @mixin disclaimer-styles {

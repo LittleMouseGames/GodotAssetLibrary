@@ -35,6 +35,7 @@
       <li>Easily bookmark assets for future lookup</li>
     </ul>
     <form method="POST" action="/api/users/register" onsubmit="window.godotLibrary.formTools.sendFormAjax(event, this)">
+      <div class="requirement">Username must be at least 6 characters (but no more than 16)</div>
       <div class="input-container">
         <input class="input" id="register-username" name="username" type="username" placeholder="" required>
         <label for="register-username" class="placeholder">Username</label>
@@ -43,6 +44,7 @@
         <input class="input" id="register-email" name="email" type="email" placeholder="" required>
         <label for="register-email" class="placeholder">Email Address</label>
       </div>
+      <div class="requirement">Password must be at least 6 characters and contain at least 1 number</div>
       <div class="input-container">
         <input class="input" id="register-password" name="password" type="password" placeholder="" required>
         <label for="register-password" class="placeholder">Passwword</label>
