@@ -11,7 +11,7 @@
     <h2>Whats popular</h2>
     <div class="container five-wide">
       <% it.assets?.forEach(info => { %>
-      <%~ includeFile('templates/components/partials/asset-card.eta', { info: info }) %>
+      <%~ includeFile('templates/components/partials/asset-card.eta', { info: info, _locals: it?._locals }) %>
       <% }) %>
       <%~ includeFile('templates/components/partials/asset-card.eta') %>
     </div>

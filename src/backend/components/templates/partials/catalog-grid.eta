@@ -60,7 +60,7 @@
   </div>
   <div class="results">
     <% it.assets?.forEach(info => { %>
-    <%~ includeFile('templates/components/partials/asset-card.eta', { info: info }) %>
+    <%~ includeFile('templates/components/partials/asset-card.eta', { info: info, _locals: it?._locals }) %>
     <% }) %>
   </div>
   <% if(it?.assets?.length > 0) { %>

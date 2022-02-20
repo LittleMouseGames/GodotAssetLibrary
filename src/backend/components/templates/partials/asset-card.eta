@@ -20,6 +20,11 @@
           </div>
           <% } %>
           <div>Report</div>
+          <% if(it?._locals?.role === 'admin') { %>
+          <div onclick="window.godotLibrary.dropdown.callSaveRoute('/admin/feature-post/<%= it?.info?.asset_id %>')">
+            Feature
+          </div>
+          <% } %>
         </div>
       </div>
     </div>
