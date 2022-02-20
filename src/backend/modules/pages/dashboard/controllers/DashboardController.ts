@@ -58,4 +58,14 @@ export class DashboardController {
       res.status(StatusCodes.BAD_REQUEST).send({ error: e.message })
     }
   }
+
+  @Get('bookmark/:id')
+  @Middleware([CheckIfUserExistAndRedirect('/register', false)])
+  private async bookmarkAsset (req: Request, res: Response): Promise<void> {
+    try {
+      return await this.DashboardService.bookmarkAsset(req, res)
+    } catch (e: any) {
+      res.status(StatusCodes.BAD_REQUEST).send({ error: e.message })
+    }
+  }
 }

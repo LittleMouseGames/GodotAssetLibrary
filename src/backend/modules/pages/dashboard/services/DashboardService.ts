@@ -5,12 +5,14 @@ import { GetPasswordHashByToken } from 'modules/api/authentication/models/user/G
 import { GetUserByToken } from 'modules/api/authentication/models/user/GET/GetUserByToken'
 import { UpdatePasswordHashByToken } from 'modules/api/authentication/models/user/UPDATE/UpdatePasswordHashByToken'
 import { UserServices } from 'modules/api/authentication/services/UserServices'
+import { GetDoesPostExistById } from 'modules/pages/asset/models/GET/GetDoesPostExistById'
 import { GetUserAssetsFromQuery } from '../models/GET/GetUserAssetsFromQuery'
 import { GetUserBookmarkedAssets } from '../models/GET/GetUserBookmarkedAssets'
 import { GetUserInfoByToken } from '../models/GET/GetUserInfoByToken'
 import { GetUserReviewedAssets } from '../models/GET/GetUserReviewedAssets'
 import { UpdateUserInformtaion } from '../models/UPDATE/UpateUserInformation'
 import { UpdateCommentsInformationByUserId } from '../models/UPDATE/UpdateCommentsUsernameByUserId'
+import { UpdateUserBookmarkedAssets } from '../models/UPDATE/UpdateUserBookmarkedAssets'
 
 export class DashboardService {
   public async render (req: Request, res: Response): Promise<void> {
@@ -130,5 +132,32 @@ export class DashboardService {
 
     const info = await GetUserInfoByToken(req.body.hashedToken)
     return res.render('templates/pages/dashboard/dashboard', { info: info })
+  }
+
+  public async bookmarkAsset (req: Request, res: Response): Promise<void> {
+    const asset = req.params.id ?? ''
+    const hashedToken = req.body.hashedToken ?? ''
+
+    if (hashedToken === '') {
+      throw new Error('Missing user auth')
+    }
+
+    if (asset === '') {
+      throw new Error('Missing asset id')
+    }
+
+    if (!(await GetDoesPostExistById(asset))) {
+      throw new Error('Asset not found')
+    }
+
+    const userBookmarked = await GetUserBookmarkedAssets(hashedToken)
+
+    if (userBookmarked?.includes(asset)) {
+      throw new Error('Already bookmarked')
+    }
+
+    await UpdateUserBookmarkedAssets(hashedToken, asset)
+
+    res.send()
   }
 }
