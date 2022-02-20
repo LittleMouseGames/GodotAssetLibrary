@@ -6,7 +6,7 @@ import { MongoHelper } from 'MongoHelper'
  * @param {string} token hashed token
  * @returns {Promise<string>}
  */
-export async function GetIsUserAdminByToken (token: string): Promise<boolean> {
+export async function GetUserRoleByToken (token: string): Promise<string> {
   const mongo = MongoHelper.getDatabase()
   const operationObject = await mongo.collection('users').findOne({
     'resume_tokens.token': token
