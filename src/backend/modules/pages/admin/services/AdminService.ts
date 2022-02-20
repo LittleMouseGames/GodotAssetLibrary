@@ -3,6 +3,7 @@ import { GetDoesPostExistById } from 'modules/pages/asset/models/GET/GetDoesPost
 import striptags from 'striptags'
 import { GetAssetsByIdList } from '../models/GET/GetAssetsByIdList'
 import { GetFeaturedAssets } from '../models/GET/GetFeaturedAssets'
+import { UpdateAssetSetFeatured } from '../models/UPDATE/UpdateAssetSetFeatured'
 import { UpdateFeaturedAssetsAdd } from '../models/UPDATE/UpdateFeaturedAssetsAdd'
 import { UpdateFeaturedAssetsRemove } from '../models/UPDATE/UpdateFeaturedAssetsRemove'
 import { UpdatePromobarMessage } from '../models/UPDATE/UpdatePromobarMessage'
@@ -66,11 +67,14 @@ export class AdminService {
 
       if (featuredAssets?.includes(asset)) {
         await UpdateFeaturedAssetsRemove(asset)
+        await UpdateAssetSetFeatured(asset, false)
       } else {
         await UpdateFeaturedAssetsAdd(asset)
+        await UpdateAssetSetFeatured(asset, true)
       }
     } catch (e) {
       await UpdateFeaturedAssetsAdd(asset)
+      await UpdateAssetSetFeatured(asset, true)
     }
 
     res.send()
