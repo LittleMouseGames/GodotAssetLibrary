@@ -1,8 +1,8 @@
 <div class="page-banner">
   <div class="contents">
-    <h2 class="heading">Godot Library</h2>
-    <span>Discover the <i>best</i> <strong>Godot Assets</strong> on
-      <strong>Godot Library</strong></span>
+    <h2 class="heading"><%= it?.pageBanner?.title ? it?.pageBanner?.title : 'Godot Library' %></h2>
+    <span><%~ it?.pageBanner?.info ? it?.pageBanner?.info : `Discover the <i>best</i> <strong>Godot Assets</strong> on
+      <strong>Godot Library</strong>` %></span>
   </div>
   <div class="background">
     <div class="block"></div>

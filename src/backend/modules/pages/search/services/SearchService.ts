@@ -1,5 +1,7 @@
 import { Request, Response } from 'express'
 import { GetAllFilters } from '../models/GET/GetAllFilters'
+import { GetAssetsCountFromQuery } from '../models/GET/GetAssetsCountFromQuery'
+import { GetAssetsCountWithoutQuery } from '../models/GET/GetAssetsCountWithoutQuery'
 import { GetAssetsFromQuery } from '../models/GET/GetAssetsFromQuery'
 import { GetAssetsWithoutQuery } from '../models/GET/GetAssetsWithoutQuery'
 import { GetSearchResultFilters } from '../models/GET/GetSearchResultFilters'
@@ -24,6 +26,7 @@ export class SearchService {
     const skip = limit * page
     let categoryArray: any[] = []
     let engineArray: any[] = []
+    let totalAssetsForQuery = 0
 
     if (typeof categoryParams === 'string' || categoryParams instanceof String) {
       if (categoryParams === '') {
@@ -61,9 +64,11 @@ export class SearchService {
     if (query === '' && categoryArray.length === 0 && engineArray.length === 0) {
       filters = await GetAllFilters()
       assets = await GetAssetsWithoutQuery(limit, skip)
+      totalAssetsForQuery = await GetAssetsCountWithoutQuery()
     } else {
       filters = await GetSearchResultFilters(query)
       assets = await GetAssetsFromQuery(query, limit, skip, categoryArray, engineArray)
+      totalAssetsForQuery = await GetAssetsCountFromQuery(query, categoryArray, engineArray)
     }
 
     for (const filter of filters) {
@@ -80,10 +85,16 @@ export class SearchService {
       }
     }
 
+    const pageBanner = {
+      title: `Search results ${query === '' ? '' : 'for: ' + query}`,
+      info: `Found <strong>${totalAssetsForQuery} assets</strong> from <strong>${Object.keys(categoryFilters).length} categories</strong>`
+    }
+
     return res.render('templates/pages/search/search', {
       filters: { category: categoryFilters, engine: engineFilters },
       assets: assets,
-      params: req.originalUrl
+      params: req.originalUrl,
+      pageBanner: pageBanner
     })
   }
 

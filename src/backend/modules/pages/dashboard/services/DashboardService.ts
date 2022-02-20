@@ -20,7 +20,13 @@ export class DashboardService {
   */
   public async render (req: Request, res: Response): Promise<void> {
     const info = await GetUserInfoByToken(req.body.hashedToken)
-    return res.render('templates/pages/dashboard/dashboard', { info: info })
+
+    const pageBanner = {
+      title: 'Account Information',
+      info: 'Manage your account information, including username and password'
+    }
+
+    return res.render('templates/pages/dashboard/dashboard', { info: info, pageBanner: pageBanner })
   }
 
   public async renderReviews (req: Request, res: Response): Promise<void> {
@@ -35,7 +41,13 @@ export class DashboardService {
 
     const reviewedAssetList = await GetUserReviewedAssets(req.body.hashedToken)
     const reviewedAssets = await GetUserAssetsFromQuery(limit, skip, reviewedAssetList)
-    return res.render('templates/pages/dashboard/reviews', { assets: reviewedAssets, params: req.originalUrl })
+
+    const pageBanner = {
+      title: 'Reviewed Assets',
+      info: 'View all assets you\'ve left reviews on'
+    }
+
+    return res.render('templates/pages/dashboard/reviews', { assets: reviewedAssets, params: req.originalUrl, pageBanner: pageBanner })
   }
 
   public async renderBookmarked (req: Request, res: Response): Promise<void> {
@@ -50,7 +62,13 @@ export class DashboardService {
 
     const reviewedAssetList = await GetUserBookmarkedAssets(req.body.hashedToken) ?? []
     const reviewedAssets = await GetUserAssetsFromQuery(limit, skip, reviewedAssetList)
-    return res.render('templates/pages/dashboard/reviews', { assets: reviewedAssets, params: req.originalUrl })
+
+    const pageBanner = {
+      title: 'Bookmarked Assets',
+      info: 'View all assets you\'ve bookmarked'
+    }
+
+    return res.render('templates/pages/dashboard/reviews', { assets: reviewedAssets, params: req.originalUrl, pageBanner: pageBanner })
   }
 
   public async updateInfo (req: Request, res: Response): Promise<void> {

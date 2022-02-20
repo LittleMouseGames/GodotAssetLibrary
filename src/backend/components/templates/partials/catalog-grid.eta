@@ -63,6 +63,7 @@
     <%~ includeFile('templates/components/partials/asset-card.eta', { info: info }) %>
     <% }) %>
   </div>
+  <% if(it?.assets?.length > 0) { %>
   <div class="bottom-bar">
     <div class="left">
       <label class="inline-dropdown">
@@ -108,4 +109,7 @@
       </div>
     </div>
   </div>
+  <% } else { %>
+  <div>No assets found for query</div>
+  <% } %>
 </div>
