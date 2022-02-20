@@ -1,5 +1,5 @@
 <% it.meta = {
-  title: 'Godot Library | Terms',
+  title: 'Terms of Service | Godot Library',
   description: 'Find all <Search Query> Assets on Godot',
   url: 'https://godotlibrary.com/terms',
   moduleName: 'terms'

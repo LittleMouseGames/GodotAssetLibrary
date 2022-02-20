@@ -1,5 +1,5 @@
 <% it.meta = {
-  title: `Godot Library | ${it?.info?.title ?? 'Asset'}`,
+  title: `${it?.info?.title ?? 'Asset'} | Godot Library`,
   description: it?.info?.quick_description ??  'Find the best Godot Assets on Godot Library',
   url: `https://godotlibrary.com/asset/${it?.info?.asset_id}/${encodeURI(it?.info?.title.replace(/\s/g, '-')).toLocaleLowerCase()}`,
   moduleName: 'asset'

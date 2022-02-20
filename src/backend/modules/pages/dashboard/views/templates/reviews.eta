@@ -1,5 +1,5 @@
 <% it.meta = {
-  title: 'Godot Library | create',
+  title: 'My Reviews | Godot Library',
   description: 'Find all <Search Query> Assets on Godot',
   url: 'https://godotlibrary.com/dashboard/reviews',
   moduleName: 'dashboard'
