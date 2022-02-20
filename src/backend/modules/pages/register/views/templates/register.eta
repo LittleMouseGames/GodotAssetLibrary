@@ -32,7 +32,7 @@
     <ul>
       <li>Add new assets to the Library</li>
       <li>Leave ratings and reviews</li>
-      <li>Easily bookmark assets for future lookup</li>
+      <li>Easily save assets for future lookup</li>
     </ul>
     <form method="POST" action="/api/users/register" onsubmit="window.godotLibrary.formTools.sendFormAjax(event, this)">
       <div class="requirement">Username must be at least 6 characters (but no more than 16)</div>

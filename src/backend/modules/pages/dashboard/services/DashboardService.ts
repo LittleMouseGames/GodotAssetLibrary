@@ -7,12 +7,12 @@ import { UpdatePasswordHashByToken } from 'modules/api/authentication/models/use
 import { UserServices } from 'modules/api/authentication/services/UserServices'
 import { GetDoesPostExistById } from 'modules/pages/asset/models/GET/GetDoesPostExistById'
 import { GetUserAssetsFromQuery } from '../models/GET/GetUserAssetsFromQuery'
-import { GetUserBookmarkedAssets } from '../models/GET/GetUserBookmarkedAssets'
+import { GetUserSavedAssets } from '../models/GET/GetUserSavedAssets'
 import { GetUserInfoByToken } from '../models/GET/GetUserInfoByToken'
 import { GetUserReviewedAssets } from '../models/GET/GetUserReviewedAssets'
 import { UpdateUserInformtaion } from '../models/UPDATE/UpateUserInformation'
 import { UpdateCommentsInformationByUserId } from '../models/UPDATE/UpdateCommentsUsernameByUserId'
-import { UpdateUserBookmarkedAssets } from '../models/UPDATE/UpdateUserBookmarkedAssets'
+import { UpdateUserSavedAssets } from '../models/UPDATE/UpdateUserSavedAssets'
 
 export class DashboardService {
   public async render (req: Request, res: Response): Promise<void> {
@@ -47,7 +47,7 @@ export class DashboardService {
     return res.render('templates/pages/dashboard/reviews', { assets: reviewedAssets, params: req.originalUrl, pageBanner: pageBanner })
   }
 
-  public async renderBookmarked (req: Request, res: Response): Promise<void> {
+  public async renderSaved (req: Request, res: Response): Promise<void> {
     let limit = Number(req.query.limit ?? 12)
     const page = Number(req.query.page ?? 0)
 
@@ -57,12 +57,12 @@ export class DashboardService {
 
     const skip = limit * page
 
-    const reviewedAssetList = await GetUserBookmarkedAssets(req.body.hashedToken) ?? []
+    const reviewedAssetList = await GetUserSavedAssets(req.body.hashedToken) ?? []
     const reviewedAssets = await GetUserAssetsFromQuery(limit, skip, reviewedAssetList)
 
     const pageBanner = {
-      title: 'Bookmarked Assets',
-      info: 'View all assets you\'ve bookmarked'
+      title: 'Saved Assets',
+      info: 'View all assets you\'ve saved'
     }
 
     return res.render('templates/pages/dashboard/reviews', { assets: reviewedAssets, params: req.originalUrl, pageBanner: pageBanner })
@@ -134,7 +134,7 @@ export class DashboardService {
     return res.render('templates/pages/dashboard/dashboard', { info: info })
   }
 
-  public async bookmarkAsset (req: Request, res: Response): Promise<void> {
+  public async saveAsset (req: Request, res: Response): Promise<void> {
     const asset = req.params.id ?? ''
     const hashedToken = req.body.hashedToken ?? ''
 
@@ -150,13 +150,13 @@ export class DashboardService {
       throw new Error('Asset not found')
     }
 
-    const userBookmarked = await GetUserBookmarkedAssets(hashedToken)
+    const userSaved = await GetUserSavedAssets(hashedToken)
 
-    if (userBookmarked?.includes(asset)) {
-      throw new Error('Already bookmarked')
+    if (userSaved?.includes(asset)) {
+      throw new Error('Already saved')
     }
 
-    await UpdateUserBookmarkedAssets(hashedToken, asset)
+    await UpdateUserSavedAssets(hashedToken, asset)
 
     res.send()
   }

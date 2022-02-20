@@ -1,18 +1,18 @@
 import { MongoHelper } from 'MongoHelper'
 
 /**
- * Add asset ID to users bookmarked_assets list
+ * Add asset ID to users saved_assets list
  *
  * @param {string} hashedToken
  * @param {string} assetId
  */
-export async function UpdateUserBookmarkedAssets (hashedToken: string, assetId: String): Promise<void> {
+export async function UpdateUserSavedAssets (hashedToken: string, assetId: String): Promise<void> {
   const mongo = MongoHelper.getDatabase()
   const operationObject = await mongo.collection('users').updateOne({
     'resume_tokens.token': hashedToken
   }, {
     $push: {
-      bookmarked_assets: assetId
+      saved_assets: assetId
     }
   })
 

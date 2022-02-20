@@ -1,6 +1,6 @@
 import { Request, Response } from 'express'
 import { TokenServices } from 'modules/api/authentication/services/TokenServices'
-import { GetUserBookmarkedAssets } from 'modules/pages/dashboard/models/GET/GetUserBookmarkedAssets'
+import { GetUserSavedAssets } from 'modules/pages/dashboard/models/GET/GetUserSavedAssets'
 import { GetAllFilters } from '../models/GET/GetAllFilters'
 import { GetAssetsCountFromQuery } from '../models/GET/GetAssetsCountFromQuery'
 import { GetAssetsCountWithoutQuery } from '../models/GET/GetAssetsCountWithoutQuery'
@@ -93,10 +93,10 @@ export class SearchService {
       const hashedToken = tokenServices.hashToken(authToken)
 
       try {
-        const userBookmarked = await GetUserBookmarkedAssets(hashedToken)
+        const userSaved = await GetUserSavedAssets(hashedToken)
 
         for (const asset of assets) {
-          asset.bookmarked = userBookmarked.includes(asset.asset_id)
+          asset.saved = userSaved.includes(asset.asset_id)
         }
       } catch (e) {
         // ignore

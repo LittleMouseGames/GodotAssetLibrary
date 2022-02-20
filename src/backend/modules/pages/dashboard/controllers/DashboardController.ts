@@ -33,10 +33,10 @@ export class DashboardController {
     return await this.DashboardService.renderReviews(req, res)
   }
 
-  @Get('bookmarked/')
+  @Get('saved/')
   @Middleware([CheckIfUserExistAndRedirect('/register', false)])
-  private async bookmarked (req: Request, res: Response): Promise<void> {
-    return await this.DashboardService.renderBookmarked(req, res)
+  private async saved (req: Request, res: Response): Promise<void> {
+    return await this.DashboardService.renderSaved(req, res)
   }
 
   @Post('update/info')
@@ -59,11 +59,11 @@ export class DashboardController {
     }
   }
 
-  @Get('bookmark/:id')
+  @Get('save/:id')
   @Middleware([CheckIfUserExistAndRedirect('/register', false)])
-  private async bookmarkAsset (req: Request, res: Response): Promise<void> {
+  private async saveAsset (req: Request, res: Response): Promise<void> {
     try {
-      return await this.DashboardService.bookmarkAsset(req, res)
+      return await this.DashboardService.saveAsset(req, res)
     } catch (e: any) {
       res.status(StatusCodes.BAD_REQUEST).send({ error: e.message })
     }

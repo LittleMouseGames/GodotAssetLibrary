@@ -44,7 +44,7 @@
         <span class="iconify chevron" data-icon="bxs:chevron-down"></span>
         <div class="options">
           <a href="/dashboard">Dashboard</a>
-          <a href="/dashboard/bookmarked/">Bookmarked</a>
+          <a href="/dashboard/saved/">Saved</a>
           <a href="/dashboard/reviews/">Reviewed Assets</a>
           <a href="/api/users/logout">Logout</a>
         </div>
