@@ -15,6 +15,12 @@ export class AdminController {
     return await this.AdminService.render(req, res)
   }
 
+  @Get('featured')
+  @Middleware([CheckIfUserExistAndRedirect('/register', false), CheckIfUserAdminAndRedirectIfNot('/404')])
+  private async featured (req: Request, res: Response): Promise<void> {
+    return await this.AdminService.renderFeatured(req, res)
+  }
+
   @Post('update/promobar')
   @Middleware([CheckIfUserExistAndRedirect('/register', false), CheckIfUserAdminAndRedirectIfNot('/404')])
   private async updatePromobarMessage (req: Request, res: Response): Promise<void> {

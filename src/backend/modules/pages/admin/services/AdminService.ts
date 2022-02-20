@@ -1,6 +1,7 @@
 import { Request, Response } from 'express'
 import { GetDoesPostExistById } from 'modules/pages/asset/models/GET/GetDoesPostExistById'
 import striptags from 'striptags'
+import { GetAssetsByIdList } from '../models/GET/GetAssetsByIdList'
 import { GetFeaturedAssets } from '../models/GET/GetFeaturedAssets'
 import { UpdateFeaturedAssetsAdd } from '../models/UPDATE/UpdateFeaturedAssetsAdd'
 import { UpdateFeaturedAssetsRemove } from '../models/UPDATE/UpdateFeaturedAssetsRemove'
@@ -14,6 +15,27 @@ export class AdminService {
     }
 
     return res.render('templates/pages/admin/admin', { pageBanner: pageBanner })
+  }
+
+  public async renderFeatured (req: Request, res: Response): Promise<void> {
+    let limit = Number(req.query.limit ?? 12)
+    const page = Number(req.query.page ?? 0)
+
+    if (limit > 36) {
+      limit = 36
+    }
+
+    const skip = limit * page
+
+    const featuredAssetList = await GetFeaturedAssets() ?? []
+    const assets = await GetAssetsByIdList(featuredAssetList, limit, skip)
+
+    const pageBanner = {
+      title: 'Featured Assets',
+      info: 'View all featured assets on the site'
+    }
+
+    return res.render('templates/pages/admin/featured', { assets: assets, params: req.originalUrl, pageBanner: pageBanner })
   }
 
   public async updatePromobarMessage (req: Request, res: Response): Promise<void> {
