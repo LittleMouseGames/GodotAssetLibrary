@@ -10,6 +10,12 @@ export class RegisterService {
   */
   public async render (_req: Request, res: Response): Promise<void> {
     const authToken = _req.cookies['auth-token']
+
+    const pageBanner = {
+      title: 'Login or Register',
+      info: 'Make the best of <strong>Godot Library</strong> with a free account'
+    }
+
     if (authToken !== undefined) {
       const tokenServices = TokenServices.getInstance()
       const hashedToken = tokenServices.hashToken(authToken)
@@ -25,10 +31,10 @@ export class RegisterService {
         await GetUserByToken(hashedToken)
         res.redirect('/dashboard')
       } catch (e) {
-        return res.render('templates/pages/register/register')
+        return res.render('templates/pages/register/register', { pageBanner: pageBanner })
       }
     } else {
-      return res.render('templates/pages/register/register')
+      return res.render('templates/pages/register/register', { pageBanner: pageBanner })
     }
   }
 }
