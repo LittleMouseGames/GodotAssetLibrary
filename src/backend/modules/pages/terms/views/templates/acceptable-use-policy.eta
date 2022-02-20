@@ -1,5 +1,5 @@
 <% it.meta = {
-  title: 'Acceptable Use Policy | Godot Library',
+  title: 'Acceptable Use Policy | Godot Asset Library',
   description: 'Find all <Search Query> Assets on Godot',
   url: 'https://godotlibrary.com/terms',
   moduleName: 'terms'
@@ -18,9 +18,10 @@
   <div class="column">
     <h2>Acceptable Use Policy</h2>
     <p>This acceptable use policy covers the products, services, and technologies (collectively referred to as the
-      &ldquo;Products&rdquo;) provided by Godot Library under any ongoing agreement. It’s designed to protect us, our
+      &ldquo;Products&rdquo;) provided by Godot Asset Library under any ongoing agreement. It’s designed to protect us,
+      our
       users, and the general Internet community from unethical, irresponsible, and illegal activity. </p>
-    <p>Godot Library users found engaging in activities prohibited by this acceptable use policy can be liable for
+    <p>Godot Asset Library users found engaging in activities prohibited by this acceptable use policy can be liable for
       service suspension and account termination. In extreme cases, we may be legally obliged to report such users
       to the relevant authorities. </p>
     <p>This policy was last reviewed on 5 February 2022. </p>
@@ -71,9 +72,11 @@
       <li>Any act or omission in violation of consumer protection laws and regulations;</li>
       <li>Any violation of a person’s privacy.</li>
     </ol>
-    <h4>Unauthorized use of Godot Library property</h4>
-    <p>We prohibit the impersonation of Godot Library, the representation of a significant business relationship with
-      Godot Library, or ownership of any Godot Library property (including our Products and brand) for the purpose of
+    <h4>Unauthorized use of Godot Asset Library property</h4>
+    <p>We prohibit the impersonation of Godot Asset Library, the representation of a significant business relationship
+      with
+      Godot Asset Library, or ownership of any Godot Asset Library property (including our Products and brand) for the
+      purpose of
       fraudulently gaining service, custom, patronage, or user trust. </p>
     <h3>About this policy</h3>
     <p>This policy outlines a non-exclusive list of activities and intent we deem unacceptable and incompatible with our

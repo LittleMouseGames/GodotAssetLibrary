@@ -1,11 +1,13 @@
 <section class="site-info">
   <div class="contents">
     <div class="about">
-      <h2>About Godot Library</h2>
-      <p>Godot Library is a free and Open Source asset library for the Godot Engine, created by LittleMouseGames and
-        maintained by the Godot Library community on GitHub. Explore top assets created by the Godot Engine community,
+      <h2>About Godot Asset Library</h2>
+      <p>Godot Asset Library is a free and Open Source asset library for the Godot Engine, created by LittleMouseGames
         and
-        kickstart your development with quality assets from Godot Library</p>
+        maintained by the Godot Asset Library community on GitHub. Explore top assets created by the Godot Engine
+        community,
+        and
+        kickstart your development with quality assets from Godot Asset Library</p>
     </div>
     <div class="trust-badges">
       <div class="trust-badge">
@@ -82,15 +84,15 @@
           </a>
         </div>
       </div>
-      <span class="disclaimer">Godot Library is not affiliated with Godot Engine</span>
+      <span class="disclaimer">Godot Asset Library is not affiliated with Godot Engine</span>
     </section>
     <section class="brand">
       <a href="/">
-        <div class="title">Godot Library</div>
+        <div class="title">Godot Asset Library</div>
         <div class="subtitle">by <a href="https://twitter.com/LittleMouseDev" target="_blank" class="mouse-link"><span
               class="strong">LittleMouseGames</span></a></div>
       </a>
-      <span class="copyright disclaimer">&copy; 2022 Godot Library</span>
+      <span class="copyright disclaimer">&copy; 2022 Godot Asset Library</span>
     </section>
   </div>
 </footer>

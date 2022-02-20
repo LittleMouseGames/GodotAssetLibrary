@@ -8,7 +8,7 @@ export class RegisterService {
 
     const pageBanner = {
       title: 'Login or Register',
-      info: 'Make the best of <strong>Godot Library</strong> with a free account'
+      info: 'Make the best of <strong>Godot Asset Library</strong> with a free account'
     }
 
     if (authToken !== undefined) {

@@ -1,4 +1,4 @@
-# Godot Library
+# Godot Asset Library
 
 **What is this:**
 An Open Source (AGPLv3) Godot Asset Library

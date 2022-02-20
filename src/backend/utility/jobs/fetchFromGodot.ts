@@ -24,7 +24,7 @@ export const fetchAssetsFromGodot = new CronJob('0 1 * * */2', function () {
 })
 
 async function importAssets (): Promise<void> {
-  logger.log('info', 'Fetching data to mirror from Godot Library')
+  logger.log('info', 'Fetching data to mirror from Godot Asset Library')
 
   const assetIDs = await fetchAssetListings()
   await fetchAssetInformationAndInsert(assetIDs)

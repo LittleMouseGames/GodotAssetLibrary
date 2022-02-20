@@ -1,5 +1,5 @@
 <% it.meta = {
-  title: 'Register | Godot Library',
+  title: 'Register | Godot Asset Library',
   description: 'Find all <Search Query> Assets on Godot',
   url: 'https://godotlibrary.com/register',
   moduleName: 'register'
@@ -28,7 +28,7 @@
   </div>
   <div class="column">
     <h2>Create a new Account</h2>
-    <p>With a free Godot Library account, you can:</p>
+    <p>With a free Godot Asset Library account, you can:</p>
     <ul>
       <li>Add new assets to the Library</li>
       <li>Leave ratings and reviews</li>

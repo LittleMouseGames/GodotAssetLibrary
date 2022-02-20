@@ -1,5 +1,5 @@
 <% it.meta = {
-  title: 'Search | Godot Library',
+  title: 'Search | Godot Asset Library',
   description: 'Find all <Search Query> Assets on Godot',
   url: 'https://godotlibrary.com/search/q?=<Search Query>',
   moduleName: 'search'

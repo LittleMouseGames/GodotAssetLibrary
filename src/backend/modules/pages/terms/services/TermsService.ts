@@ -4,7 +4,7 @@ export class TermsService {
   public render (_req: Request, res: Response): void {
     const pageBanner = {
       title: 'Privacy Policy',
-      info: 'Godot Library <strong>Privacy Policy</strong>'
+      info: 'Godot Asset Library <strong>Privacy Policy</strong>'
     }
 
     return res.render('templates/pages/terms/privacy-policy', { pageBanner: pageBanner })
@@ -13,7 +13,7 @@ export class TermsService {
   public renderPrivacyPolicy (_req: Request, res: Response): void {
     const pageBanner = {
       title: 'Privacy Policy',
-      info: 'Godot Library <strong>Privacy Policy</strong>'
+      info: 'Godot Asset Library <strong>Privacy Policy</strong>'
     }
 
     return res.render('templates/pages/terms/privacy-policy', { pageBanner: pageBanner })
@@ -22,7 +22,7 @@ export class TermsService {
   public renderTermsOfService (_req: Request, res: Response): void {
     const pageBanner = {
       title: 'Terms of Service',
-      info: 'Godot Library <strong>Terms of Service</strong>'
+      info: 'Godot Asset Library <strong>Terms of Service</strong>'
     }
 
     return res.render('templates/pages/terms/terms-of-service', { pageBanner: pageBanner })
@@ -31,7 +31,7 @@ export class TermsService {
   public renderCookiePolicy (_req: Request, res: Response): void {
     const pageBanner = {
       title: 'Cookie Policy',
-      info: 'Godot Library <strong>Cookie Policy</strong>'
+      info: 'Godot Asset Library <strong>Cookie Policy</strong>'
     }
 
     return res.render('templates/pages/terms/cookie-policy', { pageBanner: pageBanner })
@@ -40,7 +40,7 @@ export class TermsService {
   public renderAcceptableUsePolicy (_req: Request, res: Response): void {
     const pageBanner = {
       title: 'Acceptable Use Policy',
-      info: 'Godot Library <strong>Acceptable Use Policy</strong>'
+      info: 'Godot Asset Library <strong>Acceptable Use Policy</strong>'
     }
 
     return res.render('templates/pages/terms/acceptable-use-policy', { pageBanner: pageBanner })

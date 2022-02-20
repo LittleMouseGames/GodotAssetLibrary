@@ -62,7 +62,7 @@ class RouterServer extends Server {
     })
 
     this.app.use(function (_req, res, next) {
-      res.setHeader('X-Powered-By', 'Godot Library, an AGPLv3 Software')
+      res.setHeader('X-Powered-By', 'Godot Asset Library, an AGPLv3 Software')
       next()
     })
 

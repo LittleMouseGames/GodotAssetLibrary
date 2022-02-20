@@ -1,5 +1,5 @@
 <% it.meta = {
-  title: 'Cookie Policy | Godot Library',
+  title: 'Cookie Policy | Godot Asset Library',
   description: 'Find all <Search Query> Assets on Godot',
   url: 'https://godotlibrary.com/terms',
   moduleName: 'terms'
@@ -18,7 +18,8 @@
   <div class="column">
     <h2>Cookie Policy</h2>
     <p>We use cookies to help improve your experience of our website at <a
-        href="https://godotlibrary.com">https://godotlibrary.com</a>. This cookie policy is part of Godot Library&#39;s
+        href="https://godotlibrary.com">https://godotlibrary.com</a>. This cookie policy is part of Godot Asset
+      Library&#39;s
       privacy policy. It covers the use of cookies between your device and our site. </p>
     <p>We also provide basic information on third-party services we may use, who may also use cookies as part of their
       service. This policy does not cover their cookies. </p>
