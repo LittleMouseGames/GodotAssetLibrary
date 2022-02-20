@@ -83,7 +83,16 @@ window.godotLibrary = {
 }
 
 document.addEventListener('click', function (event) {
-  if (!(event.target.parentNode.classList.contains('dropdown'))) {
+  let inDropdown = false
+
+  for (const dropdown of document.querySelectorAll('.dropdown')) {
+    if (dropdown.contains(event.target)) {
+      inDropdown = true
+      break
+    }
+  }
+
+  if (!inDropdown) {
     closeAllDropdowns()
   }
 })

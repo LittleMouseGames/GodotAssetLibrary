@@ -10,9 +10,9 @@
       <div class="dropdown" onclick="window.godotLibrary.dropdown.showContent(event, this)">
         <span class="iconify" data-icon="akar-icons:more-horizontal"></span>
         <div class="options">
-          <% if(it?.info?.saved === true || it?.info?.saved === undefined) { %>
+          <% if(it?.info?.saved === true) { %>
           <div onclick="window.godotLibrary.dropdown.callSaveRoute('/dashboard/unsave/<%= it?.info?.asset_id %>')">
-            Un-save
+            Unsave
           </div>
           <% } else { %>
           <div onclick="window.godotLibrary.dropdown.callSaveRoute('/dashboard/save/<%= it?.info?.asset_id %>')">
