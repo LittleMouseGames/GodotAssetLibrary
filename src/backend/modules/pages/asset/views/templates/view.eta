@@ -43,7 +43,8 @@
       <div class="details">
         <div class="section">
           <h2>Asset Description</h2>
-          <%= it?.info?.description %>
+          <% const descriptionFormatted = it?.info?.description?.replace(/\n/g, '<br>') %>
+          <p><%~ descriptionFormatted %></p>
         </div>
 
         <div class="section">
