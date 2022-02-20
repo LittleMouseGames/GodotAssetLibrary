@@ -10,9 +10,17 @@
       <div class="dropdown" onclick="window.godotLibrary.dropdown.showContent(event, this)">
         <span class="iconify" data-icon="akar-icons:more-horizontal"></span>
         <div class="options">
+          <% if(it?.info?.bookmarked === true || it?.info?.bookmarked === undefined) { %>
+          <div
+            onclick="window.godotLibrary.dropdown.callBookmarkRoute('/dashboard/unbookmark/<%= it?.info?.asset_id %>')">
+            Un-bookmark
+          </div>
+          <% } else { %>
           <div
             onclick="window.godotLibrary.dropdown.callBookmarkRoute('/dashboard/bookmark/<%= it?.info?.asset_id %>')">
-            Bookmark</div>
+            Bookmark
+          </div>
+          <% } %>
           <div>Report</div>
         </div>
       </div>

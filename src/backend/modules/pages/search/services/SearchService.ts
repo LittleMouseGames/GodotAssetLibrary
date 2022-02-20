@@ -1,4 +1,6 @@
 import { Request, Response } from 'express'
+import { TokenServices } from 'modules/api/authentication/services/TokenServices'
+import { GetUserBookmarkedAssets } from 'modules/pages/dashboard/models/GET/GetUserBookmarkedAssets'
 import { GetAllFilters } from '../models/GET/GetAllFilters'
 import { GetAssetsCountFromQuery } from '../models/GET/GetAssetsCountFromQuery'
 import { GetAssetsCountWithoutQuery } from '../models/GET/GetAssetsCountWithoutQuery'
@@ -13,6 +15,7 @@ export class SearchService {
     const engineParams = req.query.engine ?? ''
     let limit = Number(req.query.limit ?? 12)
     const page = Number(req.query.page) ?? 0
+    const authToken = req.cookies['auth-token'] ?? ''
 
     if (limit > 36) {
       limit = 36
@@ -83,6 +86,21 @@ export class SearchService {
     const pageBanner = {
       title: `Search results ${query === '' ? '' : 'for: ' + query}`,
       info: `Found <strong>${totalAssetsForQuery} assets</strong> from <strong>${Object.keys(categoryFilters).length} categories</strong>`
+    }
+
+    if (authToken !== '') {
+      const tokenServices = TokenServices.getInstance()
+      const hashedToken = tokenServices.hashToken(authToken)
+
+      try {
+        const userBookmarked = await GetUserBookmarkedAssets(hashedToken)
+
+        for (const asset of assets) {
+          asset.bookmarked = userBookmarked.includes(asset.asset_id)
+        }
+      } catch (e) {
+        // ignore
+      }
     }
 
     return res.render('templates/pages/search/search', {
