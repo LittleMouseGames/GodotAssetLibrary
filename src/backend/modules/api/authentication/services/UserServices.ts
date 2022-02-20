@@ -4,7 +4,7 @@ import { InsertUser } from 'modules/api/authentication/models/user/INSERT/InserU
 import { Request } from 'express'
 import { InsertToken } from 'modules/api/authentication/models/user/INSERT/InsertToken'
 import { GetPasswordHash } from 'modules/api/authentication/models/user/GET/GetPasswordHash'
-import { GetUserByToken } from 'modules/api/authentication/models/user/GET/GetUserByToken'
+import { GetUserIdByToken } from 'modules/api/authentication/models/user/GET/GetUserIdByToken'
 import { TokenServices } from 'modules/api/authentication/services/TokenServices'
 import { GetDoesUsernameExist } from '../models/user/GET/GetDoesUsernameExist'
 import { GetIsUsernameReserved } from '../models/user/GET/GetIsUsernameReserved'
@@ -160,7 +160,7 @@ export class UserServices {
    */
   public async verify (token: string): Promise<string> {
     const hashedToken = this.TokenService.hashToken(token)
-    const userId = await GetUserByToken(hashedToken)
+    const userId = await GetUserIdByToken(hashedToken)
     return userId
   }
 

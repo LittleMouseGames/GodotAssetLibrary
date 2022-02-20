@@ -1,5 +1,5 @@
 import { Request, Response } from 'express'
-import { GetUserByToken } from 'modules/api/authentication/models/user/GET/GetUserByToken'
+import { GetUserIdByToken } from 'modules/api/authentication/models/user/GET/GetUserIdByToken'
 import { TokenServices } from 'modules/api/authentication/services/TokenServices'
 
 export class RegisterService {
@@ -23,7 +23,7 @@ export class RegisterService {
        * no: go to register page
        */
       try {
-        await GetUserByToken(hashedToken)
+        await GetUserIdByToken(hashedToken)
         res.redirect('/dashboard')
       } catch (e) {
         return res.render('templates/pages/register/register', { pageBanner: pageBanner })

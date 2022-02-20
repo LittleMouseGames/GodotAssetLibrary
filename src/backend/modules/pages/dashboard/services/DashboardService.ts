@@ -2,7 +2,7 @@ import { Request, Response } from 'express'
 import { GetDoesUsernameExist } from 'modules/api/authentication/models/user/GET/GetDoesUsernameExist'
 import { GetIsUsernameReserved } from 'modules/api/authentication/models/user/GET/GetIsUsernameReserved'
 import { GetPasswordHashByToken } from 'modules/api/authentication/models/user/GET/GetPasswordHashByToken'
-import { GetUserByToken } from 'modules/api/authentication/models/user/GET/GetUserByToken'
+import { GetUserIdByToken } from 'modules/api/authentication/models/user/GET/GetUserIdByToken'
 import { UpdatePasswordHashByToken } from 'modules/api/authentication/models/user/UPDATE/UpdatePasswordHashByToken'
 import { UserServices } from 'modules/api/authentication/services/UserServices'
 import { GetDoesPostExistById } from 'modules/pages/asset/models/GET/GetDoesPostExistById'
@@ -91,7 +91,7 @@ export class DashboardService {
       throw new Error('Username is reserved since its used on an asset thats been imported. If this username and those assets belong to you, please reach out so that you can claim this username.')
     }
 
-    const userId = await GetUserByToken(hashedToken)
+    const userId = await GetUserIdByToken(hashedToken)
 
     await UpdateUserInformtaion(hashedToken, username, email)
     await UpdateCommentsInformationByUserId(userId, username)

@@ -5,7 +5,7 @@ import { GetDoesPostExistById } from '../models/GET/GetDoesPostExistById'
 import { GetHasUserReviewedAsset } from '../models/GET/GetHasUserReviewedAsset'
 import { UpdatePositiveVotesAddOne } from '../models/UPDATE/UpdatePositiveVotesAddOne'
 import { UpdateNegativeVotesAddOne } from '../models/UPDATE/UpdateNegativeVotesAddOne'
-import { GetUserByToken } from 'modules/api/authentication/models/user/GET/GetUserByToken'
+import { GetUserIdByToken } from 'modules/api/authentication/models/user/GET/GetUserIdByToken'
 import { UpdateUserReviewedAssets } from '../models/UPDATE/UpdateUserReviewedAssets'
 import { InsertCommentForAsset } from '../models/INSERT/InsertCommentForAsset'
 import { GetAssetCommentsById } from '../models/GET/GetAssetCommentsById'
@@ -50,7 +50,7 @@ export class AssetService {
         const tokenServices = TokenServices.getInstance()
         const hashedToken = tokenServices.hashToken(authToken)
         try {
-          const userId = await GetUserByToken(hashedToken)
+          const userId = await GetUserIdByToken(hashedToken)
           hasUserReviewedAsset = await GetHasUserReviewedAsset(hashedToken, assetId)
           usersAssetComment = await GetAssetCommentByUserId(assetId, userId)
         } catch (e) {
@@ -124,7 +124,7 @@ export class AssetService {
       throw new Error('Asset not found')
     }
 
-    const userId = await GetUserByToken(authToken)
+    const userId = await GetUserIdByToken(authToken)
     const username = await GetUsernameById(userId)
 
     if (!hasUserReviewedAsset) {

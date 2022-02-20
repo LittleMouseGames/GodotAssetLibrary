@@ -1,0 +1,19 @@
+<% it.meta = {
+  title: 'My Reviews | Godot Library',
+  description: 'Find all <Search Query> Assets on Godot',
+  url: 'https://godotlibrary.com/dashboard/reviews',
+  moduleName: 'dashboard'
+} %>
+<% layout('templates/components/layouts/promobar-nav-body-footer.eta') %>
+
+<section class="page-dashboard reviews">
+  <div class="column">
+    <div class="sidebar">
+      <div class="item"><a href="/admin">Site Settings</a></div>
+      <div class="item active"><a href="/admin/featured/">Featured Posts</a></div>
+    </div>
+  </div>
+  <div class="column">
+    <%~ includeFile('templates/components/partials/catalog-grid.eta', it) %>
+  </div>
+</section>

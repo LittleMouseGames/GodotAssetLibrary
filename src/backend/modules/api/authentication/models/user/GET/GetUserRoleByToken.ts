@@ -6,13 +6,13 @@ import { MongoHelper } from 'MongoHelper'
  * @param {string} token hashed token
  * @returns {Promise<string>}
  */
-export async function GetUserByToken (token: string): Promise<string> {
+export async function GetIsUserAdminByToken (token: string): Promise<boolean> {
   const mongo = MongoHelper.getDatabase()
   const operationObject = await mongo.collection('users').findOne({
     'resume_tokens.token': token
   }, {
     projection: {
-      human_id: 1
+      role: 1
     }
   })
 
@@ -20,5 +20,5 @@ export async function GetUserByToken (token: string): Promise<string> {
     throw new Error('User not found')
   }
 
-  return operationObject.human_id
+  return operationObject.role
 }

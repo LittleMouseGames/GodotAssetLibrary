@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from 'express'
-import { GetUserByToken } from 'modules/api/authentication/models/user/GET/GetUserByToken'
+import { GetUserIdByToken } from 'modules/api/authentication/models/user/GET/GetUserIdByToken'
 import { TokenServices } from 'modules/api/authentication/services/TokenServices'
 
 export function CheckIfUserExistAndRedirect (redirect: string, redirectOnUserFound: boolean): any {
@@ -17,7 +17,7 @@ export function CheckIfUserExistAndRedirect (redirect: string, redirectOnUserFou
      * no: go to register page
      */
 
-      GetUserByToken(hashedToken).then(() => {
+      GetUserIdByToken(hashedToken).then(() => {
         if (redirectOnUserFound) {
           return res.redirect(redirect)
         } else {
