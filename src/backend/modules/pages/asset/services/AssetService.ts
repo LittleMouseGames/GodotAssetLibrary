@@ -7,14 +7,14 @@ import { UpdatePositiveVotesAddOne } from '../models/UPDATE/UpdatePositiveVotesA
 import { UpdateNegativeVotesAddOne } from '../models/UPDATE/UpdateNegativeVotesAddOne'
 import { GetUserIdByToken } from 'modules/api/authentication/models/user/GET/GetUserIdByToken'
 import { UpdateUserReviewedAssets } from '../models/UPDATE/UpdateUserReviewedAssets'
-import { InsertCommentForAsset } from '../models/INSERT/InsertCommentForAsset'
-import { GetAssetCommentsById } from '../models/GET/GetAssetCommentsById'
+import { InsertReviewForAsset } from '../models/INSERT/InsertReviewForAsset'
+import { GetAssetReviewsById } from '../models/GET/GetAssetReviewsById'
 import { GetUsernameById } from 'modules/api/authentication/models/user/GET/GetUsernameById'
 import { TokenServices } from 'modules/api/authentication/services/TokenServices'
-import { GetAssetCommentByUserId } from '../models/GET/GetAssetCommentByUserId'
+import { GetAssetReviewByUserId } from '../models/GET/GetAssetReviewByUserId'
 import { UpdateNegativeVotesRemoveOne } from '../models/UPDATE/UpdateNegativeVotesRemoveOne'
 import { UpdatePositiveVotesRemoveOne } from '../models/UPDATE/UpdatePositiveVotesRemoveOne'
-import { UpdateCommentForAsset } from '../models/UPDATE/UpdateCommentForAsset'
+import { UpdateReviewForAsset } from '../models/UPDATE/UpdateReviewForAsset'
 import fromNow from 'fromnow'
 import striptags from 'striptags'
 import { GetUserSavedAssets } from 'modules/pages/dashboard/models/GET/GetUserSavedAssets'
@@ -37,9 +37,9 @@ export class AssetService {
 
     try {
       const assetInfo = await GetAssetDisplayInformation(assetId)
-      const comments = await GetAssetCommentsById(assetId)
+      const comments = await GetAssetReviewsById(assetId)
       let hasUserReviewedAsset = false
-      let usersAssetComment = {}
+      let usersAssetReview = {}
 
       assetInfo.modify_date_pretty = fromNow(new Date(assetInfo.modify_date), {
         suffix: true,
@@ -53,7 +53,7 @@ export class AssetService {
         try {
           const userId = await GetUserIdByToken(hashedToken)
           hasUserReviewedAsset = await GetHasUserReviewedAsset(hashedToken, assetId)
-          usersAssetComment = await GetAssetCommentByUserId(assetId, userId)
+          usersAssetReview = await GetAssetReviewByUserId(assetId, userId)
         } catch (e) {
           // ignore
         }
@@ -72,7 +72,7 @@ export class AssetService {
         info: `An asset by <strong>${assetInfo.author}</strong>`
       }
 
-      return res.render('templates/pages/asset/view', { info: assetInfo, comments: comments, hasUserReviewedAsset: hasUserReviewedAsset, usersAssetComment: usersAssetComment, pageBanner: pageBanner })
+      return res.render('templates/pages/asset/view', { info: assetInfo, comments: comments, hasUserReviewedAsset: hasUserReviewedAsset, usersAssetReview: usersAssetReview, pageBanner: pageBanner })
     } catch (e) {
       logger.log('error', 'Failed to load asset page', ...[e])
       return res.send({ error: 'Sorry, we\'re having issues loading this page right now' })
@@ -144,19 +144,19 @@ export class AssetService {
       }
 
       await UpdateUserReviewedAssets(authToken, assetId)
-      await InsertCommentForAsset(userId, username, assetId, rating, striptags(review), striptags(headline))
+      await InsertReviewForAsset(userId, username, assetId, rating, striptags(review), striptags(headline))
     } else {
-      const oldComment = await GetAssetCommentByUserId(assetId, userId)
+      const oldReview = await GetAssetReviewByUserId(assetId, userId)
 
-      if (oldComment.review_type === 'positive' && rating === 'negative') {
+      if (oldReview.review_type === 'positive' && rating === 'negative') {
         await UpdateNegativeVotesAddOne(assetId)
         await UpdatePositiveVotesRemoveOne(assetId)
-      } else if (oldComment.review_type === 'negative' && rating === 'positive') {
+      } else if (oldReview.review_type === 'negative' && rating === 'positive') {
         await UpdatePositiveVotesAddOne(assetId)
         await UpdateNegativeVotesRemoveOne(assetId)
       }
 
-      await UpdateCommentForAsset(userId, assetId, rating, striptags(review), striptags(headline))
+      await UpdateReviewForAsset(userId, assetId, rating, striptags(review), striptags(headline))
     }
 
     res.send()

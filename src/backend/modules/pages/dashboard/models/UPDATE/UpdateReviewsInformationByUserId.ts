@@ -7,7 +7,7 @@ import { MongoHelper } from 'MongoHelper'
  * @param {string} username
  * @returns
  */
-export async function UpdateCommentsInformationByUserId (userId: string, username: string): Promise<any> {
+export async function UpdateReviewsInformationByUserId (userId: string, username: string): Promise<any> {
   const mongo = MongoHelper.getDatabase()
   const operationObject = await mongo.collection('comments').updateMany({
     user_id: userId

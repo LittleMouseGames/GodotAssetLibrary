@@ -10,7 +10,7 @@ import { MongoHelper } from 'MongoHelper'
  * @param {string} reviewHeadline
  * @returns
  */
-export async function UpdateCommentForAsset (userId: string, assetId: string, reviewType: string, reviewText: string, reviewHeadline: string): Promise<any> {
+export async function UpdateReviewForAsset (userId: string, assetId: string, reviewType: string, reviewText: string, reviewHeadline: string): Promise<any> {
   const mongo = MongoHelper.getDatabase()
   const operationObject = await mongo.collection('comments').updateOne({
     user_id: userId,

@@ -12,7 +12,7 @@ import { customAlphabet } from 'nanoid/non-secure'
  * @param {string} reviewHeadline
  * @returns
  */
-export async function InsertCommentForAsset (userId: string, username: string, assetId: string, reviewType: string, reviewText: string, reviewHeadline: string): Promise<any> {
+export async function InsertReviewForAsset (userId: string, username: string, assetId: string, reviewType: string, reviewText: string, reviewHeadline: string): Promise<any> {
   const nanoid = customAlphabet('0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz', 20)
   const mongo = MongoHelper.getDatabase()
   const operationObject = await mongo.collection('comments').insertOne({

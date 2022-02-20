@@ -11,7 +11,7 @@ import { GetUserSavedAssets } from '../models/GET/GetUserSavedAssets'
 import { GetUserInfoByToken } from '../models/GET/GetUserInfoByToken'
 import { GetUserReviewedAssets } from '../models/GET/GetUserReviewedAssets'
 import { UpdateUserInformtaion } from '../models/UPDATE/UpateUserInformation'
-import { UpdateCommentsInformationByUserId } from '../models/UPDATE/UpdateCommentsUsernameByUserId'
+import { UpdateReviewsInformationByUserId } from '../models/UPDATE/UpdateReviewsInformationByUserId'
 import { UpdateUserSavedAssetsAdd } from '../models/UPDATE/UpdateUserSavedAssetsAdd'
 import striptags from 'striptags'
 import { UpdateUserSavedAssetsRemove } from '../models/UPDATE/UpdateUserSavedAssetsRemove'
@@ -116,7 +116,7 @@ export class DashboardService {
     const userId = await GetUserIdByToken(hashedToken)
 
     await UpdateUserInformtaion(hashedToken, username, email)
-    await UpdateCommentsInformationByUserId(userId, username)
+    await UpdateReviewsInformationByUserId(userId, username)
 
     const info = await GetUserInfoByToken(req.body.hashedToken)
     return res.render('templates/pages/dashboard/dashboard', { info: info })

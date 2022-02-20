@@ -6,7 +6,7 @@
     "noImplicitAny": true,
     "moduleResolution": "node",
     "outDir": "./dist",
-    "removeComments": true,
+    "removeReviews": true,
     "allowJs": false,
     "baseUrl": "./src/backend",
     "incremental": false,
