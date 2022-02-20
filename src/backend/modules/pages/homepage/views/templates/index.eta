@@ -52,7 +52,7 @@
   </section>
 
   <section>
-    <h2>Whats popular</h2>
+    <h2>Newly Updated</h2>
     <div class="container five-wide">
       <%~ includeFile('templates/components/partials/asset-card.eta') %>
       <%~ includeFile('templates/components/partials/asset-card.eta') %>
@@ -63,7 +63,7 @@
   </section>
 
   <section>
-    <h2>Whats popular</h2>
+    <h2>Newest Assets</h2>
     <div class="container five-wide">
       <%~ includeFile('templates/components/partials/asset-card.eta') %>
       <%~ includeFile('templates/components/partials/asset-card.eta') %>

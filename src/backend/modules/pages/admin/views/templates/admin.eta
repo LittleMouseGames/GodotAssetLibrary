@@ -1,0 +1,32 @@
+<% it.meta = {
+  title: 'Admin | Godot Library',
+  description: 'Find all <Search Query> Assets on Godot',
+  url: 'https://godotlibrary.com/admin',
+  moduleName: 'admin'
+} %>
+<% layout('templates/components/layouts/promobar-nav-body-footer.eta') %>
+
+<section class="page-admin">
+  <div class="column">
+    <div class="sidebar">
+      <div class="item active"><a href="/admin">Site Settings</a></div>
+      <div class="item"><a href="/admin/featured/">Featured Posts</a></div>
+    </div>
+  </div>
+  <div class="column">
+    <form method="POST" action="/admin/update/promobar"
+      onsubmit="window.godotLibrary.formTools.sendFormAjax(event, this)">
+      <h2>Site Settings</h2>
+      <div class="input-container">
+        <input class="input" it="username" type="text" name="username" placeholder="" value="">
+        <label for="username" class="placeholder">Promobar Message</label>
+      </div>
+      <div class="disclaimer">
+        By submitting this form you agree to our
+        <a href="/terms/privacy-plicy">Privacy Policy</a> and
+        <a href="/terms/terms-of-service">Terms of Service</a>
+      </div>
+      <button type="submit">Update</button>
+    </form>
+  </div>
+</section>
