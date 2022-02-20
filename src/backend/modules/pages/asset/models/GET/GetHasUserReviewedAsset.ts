@@ -11,7 +11,7 @@ export async function GetHasUserReviewedAsset (hashedToken: string, assetId: Str
   const mongo = MongoHelper.getDatabase()
   const operationObject = await mongo.collection('users').findOne({
     'resume_tokens.token': hashedToken,
-    reviewd_assets: assetId
+    reviewed_assets: assetId
   }, {
     projection: {
       reviewed_assets: 1

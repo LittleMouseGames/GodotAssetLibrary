@@ -9,6 +9,7 @@ export class CreateService {
    * @returns
    */
   public render (_req: Request, res: Response): void {
-    return res.render('templates/pages/create/create')
+    return res.redirect('/')
+    // return res.render('templates/pages/create/create')
   }
 }

@@ -166,7 +166,7 @@
     }
 
     .rating-select {
-      display: block;
+      display: inline-block;
       margin-bottom: 20px;
       cursor: pointer;
       font-family: "Inter";
@@ -180,6 +180,10 @@
       .iconify {
         margin-left: 0;
         margin-right: 5px;
+      }
+
+      &:not(:last-of-type) {
+        margin-right: 15px;
       }
     }
   }

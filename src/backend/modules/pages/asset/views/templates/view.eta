@@ -93,7 +93,7 @@
               <input type="radio" name="rating" value="negative" required>
               <div class="label">
                 <span class="iconify" data-icon="bi:hand-thumbs-down-fill"></span>
-                <span>This addon is bad</span>
+                <span>This addon is not good</span>
               </div>
             </label>
             <div class="requirement">Headline must be at least 3 characters but not more than 50</div>
