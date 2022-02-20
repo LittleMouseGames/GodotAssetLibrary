@@ -7,6 +7,7 @@ import path from 'path'
 import cookieParser from 'cookie-parser'
 import { TokenServices } from 'modules/api/authentication/services/TokenServices'
 import { GetDoesUserExistByToken } from 'modules/api/authentication/models/user/GET/GetDoesUserExistByToken'
+import { GetUserRoleByToken } from 'modules/api/authentication/models/user/GET/GetUserRoleByToken'
 
 /**
  * Starts the server
@@ -41,6 +42,7 @@ class RouterServer extends Server {
 
         try {
           res.locals.loggedIn = await GetDoesUserExistByToken(hashedToken)
+          res.locals.role = await GetUserRoleByToken(hashedToken)
         } catch (e) {
           // ignore
         }

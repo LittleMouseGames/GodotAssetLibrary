@@ -13,6 +13,7 @@ import { GetUserReviewedAssets } from '../models/GET/GetUserReviewedAssets'
 import { UpdateUserInformtaion } from '../models/UPDATE/UpateUserInformation'
 import { UpdateCommentsInformationByUserId } from '../models/UPDATE/UpdateCommentsUsernameByUserId'
 import { UpdateUserSavedAssets } from '../models/UPDATE/UpdateUserSavedAssets'
+import striptags from 'striptags'
 
 export class DashboardService {
   public async render (req: Request, res: Response): Promise<void> {
@@ -69,9 +70,9 @@ export class DashboardService {
   }
 
   public async updateInfo (req: Request, res: Response): Promise<void> {
-    const username = req.body.username ?? ''
-    const email = req.body.email ?? ''
-    const hashedToken = req.body.hashedToken ?? ''
+    const username = striptags(req.body.username ?? '')
+    const email = striptags(req.body.email ?? '')
+    const hashedToken = striptags(req.body.hashedToken ?? '')
 
     if (username === '' || email === '' || hashedToken === '') {
       throw new Error('Missing required username or email')
@@ -101,9 +102,9 @@ export class DashboardService {
   }
 
   public async updatePassword (req: Request, res: Response): Promise<void> {
-    const currentPassword = req.body['password-current'] ?? ''
-    const newPassword = req.body['new-password'] ?? ''
-    const newPasswordConf = req.body['new-password-conf'] ?? ''
+    const currentPassword = striptags(req.body['password-current'] ?? '')
+    const newPassword = striptags(req.body['new-password'] ?? '')
+    const newPasswordConf = striptags(req.body['new-password-conf'] ?? '')
     const hashedToken = req.body.hashedToken ?? ''
 
     if (currentPassword === '' || newPassword === '' || newPasswordConf === '' || hashedToken === '') {
@@ -135,7 +136,7 @@ export class DashboardService {
   }
 
   public async saveAsset (req: Request, res: Response): Promise<void> {
-    const asset = req.params.id ?? ''
+    const asset = striptags(req.params.id ?? '')
     const hashedToken = req.body.hashedToken ?? ''
 
     if (hashedToken === '') {
