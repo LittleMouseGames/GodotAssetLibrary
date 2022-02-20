@@ -13,11 +13,6 @@ import { UpdateUserInformtaion } from '../models/UPDATE/UpateUserInformation'
 import { UpdateCommentsInformationByUserId } from '../models/UPDATE/UpdateCommentsUsernameByUserId'
 
 export class DashboardService {
-  /**
-   * Account registration
-   *
-   * @param {Request} req request object
-  */
   public async render (req: Request, res: Response): Promise<void> {
     const info = await GetUserInfoByToken(req.body.hashedToken)
 

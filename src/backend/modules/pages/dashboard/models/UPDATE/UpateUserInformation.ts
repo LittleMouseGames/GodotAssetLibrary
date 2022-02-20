@@ -1,5 +1,13 @@
 import { MongoHelper } from 'MongoHelper'
 
+/**
+ * Update users email and or password given a hashed token
+ *
+ * @param {string} token
+ * @param {string} username
+ * @param {string} email
+ * @returns
+ */
 export async function UpdateUserInformtaion (token: string, username: string, email: string): Promise<any> {
   const mongo = MongoHelper.getDatabase()
   const operationObject = await mongo.collection('users').updateOne({

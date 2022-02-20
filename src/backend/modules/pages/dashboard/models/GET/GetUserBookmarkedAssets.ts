@@ -1,6 +1,12 @@
 import { MongoHelper } from 'MongoHelper'
 
-export async function GetUserBookmarkedAssets (token: string): Promise<any> {
+/**
+ * Get all bookmarked asset list from user
+ *
+ * @param {string} token
+ * @returns {[string]}
+ */
+export async function GetUserBookmarkedAssets (token: string): Promise<[string]> {
   const mongo = MongoHelper.getDatabase()
   const operationObject = await mongo.collection('users').findOne({
     'resume_tokens.token': token

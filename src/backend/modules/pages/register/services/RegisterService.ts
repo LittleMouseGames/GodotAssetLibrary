@@ -3,11 +3,6 @@ import { GetUserByToken } from 'modules/api/authentication/models/user/GET/GetUs
 import { TokenServices } from 'modules/api/authentication/services/TokenServices'
 
 export class RegisterService {
-  /**
-   * Account registration
-   *
-   * @param {Request} req request object
-  */
   public async render (_req: Request, res: Response): Promise<void> {
     const authToken = _req.cookies['auth-token']
 

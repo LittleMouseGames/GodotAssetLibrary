@@ -1,5 +1,11 @@
 import { MongoHelper } from 'MongoHelper'
 
+/**
+ * Get email and username
+ *
+ * @param {string} token
+ * @returns
+ */
 export async function GetUserInfoByToken (token: string): Promise<any> {
   const mongo = MongoHelper.getDatabase()
   const operationObject = await mongo.collection('users').findOne({

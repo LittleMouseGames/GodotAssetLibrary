@@ -7,11 +7,6 @@ import { GetAssetsWithoutQuery } from '../models/GET/GetAssetsWithoutQuery'
 import { GetSearchResultFilters } from '../models/GET/GetSearchResultFilters'
 
 export class SearchService {
-  /**
-   * Account registration
-   *
-   * @param {Request} req request object
-  */
   public async render (req: Request, res: Response): Promise<void> {
     const query = String(req.query.q ?? '')
     const categoryParams = req.query.category ?? ''

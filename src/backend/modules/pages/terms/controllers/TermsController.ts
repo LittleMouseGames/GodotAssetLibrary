@@ -3,16 +3,10 @@ import { Request, Response } from 'express'
 
 import { TermsService } from '../services/TermsService'
 
-/**
- * The user controller
- */
 @Controller('terms')
 export class TermsController {
   private readonly TermsService: TermsService = new TermsService()
 
-  /**
-   * Home
-   */
   @Get('/')
   private index (req: Request, res: Response): void {
     return this.TermsService.render(req, res)

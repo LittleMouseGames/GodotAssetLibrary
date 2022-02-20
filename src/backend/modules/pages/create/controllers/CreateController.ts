@@ -3,15 +3,16 @@ import { Request, Response } from 'express'
 import { CheckIfUserExistAndRedirect } from 'utility/middleware/CheckIfUserExistAndRedirect'
 import { CreateService } from '../services/CreateService'
 
-/**
- * The user controller
- */
 @Controller('create')
 export class CreateController {
   private readonly CreateService: CreateService = new CreateService()
 
   /**
-   * Home
+   * New asset index
+   *
+   * @param {Request} req
+   * @param {Response} res
+   * @returns
    */
   @Get('/')
   @Middleware(CheckIfUserExistAndRedirect('/register', false))

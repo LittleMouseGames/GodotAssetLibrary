@@ -1,5 +1,11 @@
 import { MongoHelper } from 'MongoHelper'
 
+/**
+ * Get users reviewed asset list
+ *
+ * @param {string} token
+ * @returns
+ */
 export async function GetUserReviewedAssets (token: string): Promise<any> {
   const mongo = MongoHelper.getDatabase()
   const operationObject = await mongo.collection('users').findOne({

@@ -1,11 +1,6 @@
 import { Request, Response } from 'express'
 
 export class TermsService {
-  /**
-   * Account registration
-   *
-   * @param {Request} req request object
-  */
   public render (_req: Request, res: Response): void {
     const pageBanner = {
       title: 'Privacy Policy',

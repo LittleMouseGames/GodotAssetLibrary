@@ -4,6 +4,14 @@ import { assetGridSchema } from 'utility/schema/assets-grid'
 
 interface ReturnedAssets extends WithId<Document>, assetGridSchema {}
 
+/**
+ * Fetch assets that match query
+ *
+ * @param {string} limit
+ * @param {string} skip
+ * @param {[string]} assetIds
+ * @returns {ReturnedAssets[]}
+ */
 export async function GetUserAssetsFromQuery (limit: number = 12, skip: number, assetIds: [string]): Promise<ReturnedAssets[]> {
   const mongo = MongoHelper.getDatabase()
 

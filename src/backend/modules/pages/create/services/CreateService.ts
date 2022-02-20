@@ -2,10 +2,12 @@ import { Request, Response } from 'express'
 
 export class CreateService {
   /**
-   * Account registration
+   * Render new asset index
    *
-   * @param {Request} req request object
-  */
+   * @param {Request} _req
+   * @param {Response} res
+   * @returns
+   */
   public render (_req: Request, res: Response): void {
     return res.render('templates/pages/create/create')
   }

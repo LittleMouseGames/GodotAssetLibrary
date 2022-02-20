@@ -3,11 +3,6 @@ import { logger } from 'utility/logger'
 import { GetFourAssets } from '../models/GET/GetFourAssets'
 
 export class HomepageService {
-  /**
-   * Account registration
-   *
-   * @param {Request} req request object
-  */
   public async render (_req: Request, res: Response): Promise<void> {
     try {
       const assets = await GetFourAssets()

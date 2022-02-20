@@ -17,9 +17,6 @@ const updatePasswordRateLimit = rateLimit({
   message: JSON.stringify({ error: 'Too many password changes in time period, please try again later' })
 })
 
-/**
- * The user controller
- */
 @Controller('dashboard')
 export class DashboardController {
   private readonly DashboardService: DashboardService = new DashboardService()

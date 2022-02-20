@@ -1,5 +1,12 @@
 import { MongoHelper } from 'MongoHelper'
 
+/**
+ * Update username on asset by user ID
+ *
+ * @param {string} userId
+ * @param {string} username
+ * @returns
+ */
 export async function UpdateAssetsInformationByUserId (userId: string, username: string): Promise<any> {
   const mongo = MongoHelper.getDatabase()
   const operationObject = await mongo.collection('assets').updateMany({
