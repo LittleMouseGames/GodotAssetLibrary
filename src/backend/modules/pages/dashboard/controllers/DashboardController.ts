@@ -4,6 +4,7 @@ import { StatusCodes } from 'http-status-codes'
 import { CheckIfUserExistAndRedirect } from 'utility/middleware/CheckIfUserExistAndRedirect'
 import { DashboardService } from '../services/DashboardService'
 import rateLimit from 'express-rate-limit'
+import { CheckIfUserExistAndSendError } from 'utility/middleware/CheckIfUserExistAndSendError'
 
 const updateInfoRateLimit = rateLimit({
   windowMs: 60 * 60 * 1000, // 1 hour window
@@ -60,7 +61,7 @@ export class DashboardController {
   }
 
   @Get('save/:id')
-  @Middleware([CheckIfUserExistAndRedirect('/register', false)])
+  @Middleware([CheckIfUserExistAndSendError('Unable to save, are you logged in?')])
   private async saveAsset (req: Request, res: Response): Promise<void> {
     try {
       return await this.DashboardService.saveAsset(req, res)

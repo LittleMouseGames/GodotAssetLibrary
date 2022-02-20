@@ -3,7 +3,7 @@ import { StatusCodes } from 'http-status-codes'
 import { GetDoesUserExistByToken } from 'modules/api/authentication/models/user/GET/GetDoesUserExistByToken'
 import { TokenServices } from 'modules/api/authentication/services/TokenServices'
 
-export function CheckIfUserExistAndSendError (): any {
+export function CheckIfUserExistAndSendError (error: string = 'User not found'): any {
   return async (req: Request, res: Response, next: NextFunction): Promise<any> => {
     const authToken = req.cookies['auth-token']
 
@@ -18,7 +18,7 @@ export function CheckIfUserExistAndSendError (): any {
       req.body.hashedToken = hashedToken
       next()
     } else {
-      return res.status(StatusCodes.BAD_REQUEST).send({ error: 'User not found' })
+      return res.status(StatusCodes.BAD_REQUEST).send({ error: error })
     }
   }
 }
