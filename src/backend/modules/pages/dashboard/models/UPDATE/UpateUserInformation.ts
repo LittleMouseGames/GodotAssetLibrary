@@ -15,6 +15,7 @@ export async function UpdateUserInformtaion (token: string, username: string, em
   }, {
     $set: {
       username: username,
+      username_lowercase: username.toLocaleLowerCase(),
       email: email
     }
   })

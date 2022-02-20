@@ -22,7 +22,7 @@ export async function InsertUser (username: string, email: string, passwordHash:
     username: username,
     email: email,
     password_hash: passwordHash,
-    username_lower: username.toLocaleLowerCase(),
+    username_lowercase: username.toLocaleLowerCase(),
     reviewed_assets: [],
     saved_assets: [],
     role: 'user',
