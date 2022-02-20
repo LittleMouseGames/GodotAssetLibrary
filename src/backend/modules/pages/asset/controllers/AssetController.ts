@@ -17,7 +17,11 @@ export class AssetController {
    */
   @Get(':id/*')
   private async index (req: Request, res: Response): Promise<void> {
-    return await this.AssetService.render(req, res)
+    try {
+      return await this.AssetService.render(req, res)
+    } catch (e: any) {
+      res.status(StatusCodes.BAD_REQUEST).send({ error: e.message })
+    }
   }
 
   /**

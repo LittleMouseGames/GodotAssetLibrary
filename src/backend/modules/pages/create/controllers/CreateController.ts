@@ -1,5 +1,6 @@
 import { Controller, Get, Middleware } from '@overnightjs/core'
 import { Request, Response } from 'express'
+import { StatusCodes } from 'http-status-codes'
 import { CheckIfUserExistAndRedirect } from 'utility/middleware/CheckIfUserExistAndRedirect'
 import { CreateService } from '../services/CreateService'
 
@@ -17,6 +18,10 @@ export class CreateController {
   @Get('/')
   @Middleware(CheckIfUserExistAndRedirect('/register', false))
   private index (req: Request, res: Response): void {
-    return this.CreateService.render(req, res)
+    try {
+      return this.CreateService.render(req, res)
+    } catch (e: any) {
+      res.status(StatusCodes.BAD_REQUEST).send({ error: e.message })
+    }
   }
 }

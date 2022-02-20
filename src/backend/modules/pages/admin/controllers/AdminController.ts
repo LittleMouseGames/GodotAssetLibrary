@@ -12,13 +12,21 @@ export class AdminController {
   @Get('/')
   @Middleware([CheckIfUserExistAndRedirect('/register', false), CheckIfUserAdminAndRedirectIfNot('/404')])
   private async index (req: Request, res: Response): Promise<void> {
-    return await this.AdminService.render(req, res)
+    try {
+      return await this.AdminService.render(req, res)
+    } catch (e: any) {
+      res.status(StatusCodes.BAD_REQUEST).send({ error: e.message })
+    }
   }
 
   @Get('featured')
   @Middleware([CheckIfUserExistAndRedirect('/register', false), CheckIfUserAdminAndRedirectIfNot('/404')])
   private async featured (req: Request, res: Response): Promise<void> {
-    return await this.AdminService.renderFeatured(req, res)
+    try {
+      return await this.AdminService.renderFeatured(req, res)
+    } catch (e: any) {
+      res.status(StatusCodes.BAD_REQUEST).send({ error: e.message })
+    }
   }
 
   @Post('update/promobar')

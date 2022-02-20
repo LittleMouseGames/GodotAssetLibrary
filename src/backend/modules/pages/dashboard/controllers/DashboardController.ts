@@ -25,19 +25,31 @@ export class DashboardController {
   @Get('/')
   @Middleware([CheckIfUserExistAndRedirect('/register', false)])
   private async index (req: Request, res: Response): Promise<void> {
-    return await this.DashboardService.render(req, res)
+    try {
+      return await this.DashboardService.render(req, res)
+    } catch (e: any) {
+      res.status(StatusCodes.BAD_REQUEST).send({ error: e.message })
+    }
   }
 
   @Get('reviews/')
   @Middleware([CheckIfUserExistAndRedirect('/register', false)])
   private async reviews (req: Request, res: Response): Promise<void> {
-    return await this.DashboardService.renderReviews(req, res)
+    try {
+      return await this.DashboardService.renderReviews(req, res)
+    } catch (e: any) {
+      res.status(StatusCodes.BAD_REQUEST).send({ error: e.message })
+    }
   }
 
   @Get('saved/')
   @Middleware([CheckIfUserExistAndRedirect('/register', false)])
   private async saved (req: Request, res: Response): Promise<void> {
-    return await this.DashboardService.renderSaved(req, res)
+    try {
+      return await this.DashboardService.renderSaved(req, res)
+    } catch (e: any) {
+      res.status(StatusCodes.BAD_REQUEST).send({ error: e.message })
+    }
   }
 
   @Post('update/info')

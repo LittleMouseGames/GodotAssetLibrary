@@ -1,5 +1,6 @@
 import { Controller, Get, Post } from '@overnightjs/core'
 import { Request, Response } from 'express'
+import { StatusCodes } from 'http-status-codes'
 import { SearchService } from '../services/SearchService'
 
 @Controller('search')
@@ -8,7 +9,11 @@ export class SearchController {
 
   @Get('/')
   private async index (req: Request, res: Response): Promise<void> {
-    return await this.SearchService.render(req, res)
+    try {
+      return await this.SearchService.render(req, res)
+    } catch (e: any) {
+      res.status(StatusCodes.BAD_REQUEST).send({ error: e.message })
+    }
   }
 
   @Post('/')
