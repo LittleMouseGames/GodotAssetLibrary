@@ -21,7 +21,6 @@
             Save
           </div>
           <% } %>
-          <div>Report</div>
           <% if(it?._locals?.role === 'admin') { %>
           <div
             onclick="window.godotLibrary.dropdown.callRouteAjax('/admin/feature-post/<%= it?.info?.asset_id %>', 'Post successfully featured')">

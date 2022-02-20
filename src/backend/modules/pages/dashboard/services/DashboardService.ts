@@ -39,14 +39,24 @@ export class DashboardService {
     const skip = limit * page
 
     const reviewedAssetList = await GetUserReviewedAssets(req.body.hashedToken)
-    const reviewedAssets = await GetUserAssetsFromQuery(limit, skip, reviewedAssetList)
+    const assets = await GetUserAssetsFromQuery(limit, skip, reviewedAssetList)
 
     const pageBanner = {
       title: 'Reviewed Assets',
       info: 'View all assets you\'ve left reviews on'
     }
 
-    return res.render('templates/pages/dashboard/reviews', { assets: reviewedAssets, params: req.originalUrl, pageBanner: pageBanner })
+    try {
+      const userSaved = await GetUserSavedAssets(req.body.hashedToken)
+
+      for (const asset of assets) {
+        asset.saved = userSaved.includes(asset.asset_id)
+      }
+    } catch (e) {
+      // ignore
+    }
+
+    return res.render('templates/pages/dashboard/reviews', { assets: assets, params: req.originalUrl, pageBanner: pageBanner })
   }
 
   public async renderSaved (req: Request, res: Response): Promise<void> {
@@ -60,14 +70,24 @@ export class DashboardService {
     const skip = limit * page
 
     const reviewedAssetList = await GetUserSavedAssets(req.body.hashedToken) ?? []
-    const reviewedAssets = await GetUserAssetsFromQuery(limit, skip, reviewedAssetList)
+    const assets = await GetUserAssetsFromQuery(limit, skip, reviewedAssetList)
+
+    try {
+      const userSaved = await GetUserSavedAssets(req.body.hashedToken)
+
+      for (const asset of assets) {
+        asset.saved = userSaved.includes(asset.asset_id)
+      }
+    } catch (e) {
+      // ignore
+    }
 
     const pageBanner = {
       title: 'Saved Assets',
       info: 'View all assets you\'ve saved'
     }
 
-    return res.render('templates/pages/dashboard/reviews', { assets: reviewedAssets, params: req.originalUrl, pageBanner: pageBanner })
+    return res.render('templates/pages/dashboard/reviews', { assets: assets, params: req.originalUrl, pageBanner: pageBanner })
   }
 
   public async updateInfo (req: Request, res: Response): Promise<void> {

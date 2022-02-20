@@ -17,6 +17,7 @@ import { UpdatePositiveVotesRemoveOne } from '../models/UPDATE/UpdatePositiveVot
 import { UpdateCommentForAsset } from '../models/UPDATE/UpdateCommentForAsset'
 import fromNow from 'fromnow'
 import striptags from 'striptags'
+import { GetUserSavedAssets } from 'modules/pages/dashboard/models/GET/GetUserSavedAssets'
 
 export class AssetService {
   /**
@@ -53,6 +54,14 @@ export class AssetService {
           const userId = await GetUserIdByToken(hashedToken)
           hasUserReviewedAsset = await GetHasUserReviewedAsset(hashedToken, assetId)
           usersAssetComment = await GetAssetCommentByUserId(assetId, userId)
+        } catch (e) {
+          // ignore
+        }
+
+        try {
+          const userSaved = await GetUserSavedAssets(hashedToken)
+
+          assetInfo.saved = userSaved.includes(assetInfo.asset_id)
         } catch (e) {
           // ignore
         }
