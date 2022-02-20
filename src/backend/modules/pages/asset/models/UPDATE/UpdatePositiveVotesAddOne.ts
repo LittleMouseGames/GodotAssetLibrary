@@ -1,5 +1,10 @@
 import { MongoHelper } from 'MongoHelper'
 
+/**
+ * Update positive vote for assest
+ *
+ * @param {string} assetId
+ */
 export async function UpdatePositiveVotesAddOne (assetId: String): Promise<void> {
   const mongo = MongoHelper.getDatabase()
   const operationObject = await mongo.collection('assets').updateOne({

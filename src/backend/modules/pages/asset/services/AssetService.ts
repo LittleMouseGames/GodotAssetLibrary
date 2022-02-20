@@ -20,10 +20,12 @@ import striptags from 'striptags'
 
 export class AssetService {
   /**
-   * Account registration
+   * Render asset page
    *
-   * @param {Request} req request object
-  */
+   * @param {Request} req
+   * @param {Response} res
+   * @returns
+   */
   public async render (req: Request, res: Response): Promise<any> {
     const assetId = req.params.id ?? ''
     const authToken = req.cookies['auth-token'] ?? ''
@@ -68,6 +70,12 @@ export class AssetService {
     }
   }
 
+  /**
+   * Add review to asset
+   *
+   * @param {Request} req
+   * @param {Response} res
+   */
   public async review (req: Request, res: Response): Promise<any> {
     const rating = String(req.body.rating) ?? ''
     const authToken = req.body.hashedToken ?? ''

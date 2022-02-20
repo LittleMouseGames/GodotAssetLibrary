@@ -1,5 +1,10 @@
 import { MongoHelper } from 'MongoHelper'
 
+/**
+ * Remove positive vote on asset
+ *
+ * @param {string} assetId
+ */
 export async function UpdatePositiveVotesRemoveOne (assetId: String): Promise<void> {
   const mongo = MongoHelper.getDatabase()
   const operationObject = await mongo.collection('assets').updateOne({

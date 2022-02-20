@@ -1,6 +1,17 @@
 import { MongoHelper } from 'MongoHelper'
 import { customAlphabet } from 'nanoid/non-secure'
 
+/**
+ *  Insert review for asset
+ *
+ * @param {string} userId
+ * @param {string} username
+ * @param {string} assetId
+ * @param {string} reviewType
+ * @param {string} reviewText
+ * @param {string} reviewHeadline
+ * @returns
+ */
 export async function InsertCommentForAsset (userId: string, username: string, assetId: string, reviewType: string, reviewText: string, reviewHeadline: string): Promise<any> {
   const nanoid = customAlphabet('0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz', 20)
   const mongo = MongoHelper.getDatabase()
