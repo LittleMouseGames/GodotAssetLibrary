@@ -57,6 +57,27 @@ window.godotLibrary = {
       } else {
         dropdownElement.style.display = 'none'
       }
+    },
+    callBookmarkRoute: function (route) {
+      fetch(route, {
+        method: 'get'
+      }).then(response => {
+        if (!response.ok) {
+          response.json().then(data => {
+            window.godotLibrary.pageMessages.removeAllPageMessages()
+            window.godotLibrary.pageMessages.addPageMessage(data.error)
+            setTimeout(() => {
+              window.godotLibrary.pageMessages.removeAllPageMessages()
+            }, 5000)
+          })
+        } else {
+          window.godotLibrary.pageMessages.removeAllPageMessages()
+          window.godotLibrary.pageMessages.addPageMessage('Post successfully added to bookmarks')
+          setTimeout(() => {
+            window.godotLibrary.pageMessages.removeAllPageMessages()
+          }, 5000)
+        }
+      })
     }
   }
 }

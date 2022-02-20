@@ -10,7 +10,9 @@
       <div class="dropdown" onclick="window.godotLibrary.dropdown.showContent(event, this)">
         <span class="iconify" data-icon="akar-icons:more-horizontal"></span>
         <div class="options">
-          <a href="/dashboard/bookmark/<%= it?.info?.asset_id %>">Bookmark</a>
+          <div
+            onclick="window.godotLibrary.dropdown.callBookmarkRoute('/dashboard/bookmark/<%= it?.info?.asset_id %>')">
+            Bookmark</div>
           <div>Report</div>
         </div>
       </div>
