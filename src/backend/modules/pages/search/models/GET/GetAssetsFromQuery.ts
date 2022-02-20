@@ -44,7 +44,8 @@ export async function GetAssetsFromQuery (query: string, limit: number = 12, ski
       downvotes: 1,
       featured: 1,
       asset_id: 1,
-      previews: 1
+      previews: 1,
+      card_banner: 1
     }
   }).skip(skip).toArray() as ReturnedAssets[]
 

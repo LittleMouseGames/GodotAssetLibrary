@@ -121,6 +121,13 @@ async function modelInsertAsset (asset: assetSchema): Promise<any> {
   asset.category_lowercase = asset.category.toLocaleLowerCase()
   asset.author_lowercase = asset.author.toLocaleLowerCase()
 
+  for (const preview of asset.previews) {
+    if (preview !== undefined && (asset.card_banner === '' || asset.card_banner === undefined)) {
+      asset.card_banner = preview.thumbnail
+      break
+    }
+  }
+
   const insertObj = await mongo.collection('assets').insertOne(asset)
 
   return insertObj

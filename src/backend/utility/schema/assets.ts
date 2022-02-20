@@ -29,14 +29,14 @@ export interface assetSchema {
   'upvotes': number
   'downvotes': number
   'featured': boolean
-  'banner_url': string
+  'card_banner': string
   'modify_date_pretty': string
-  'previews': Array<[
+  'previews': [
     {
       'preview_id': string
       'type': string
       'link': string
       'thumbnail': string
     }
-  ]>
+  ]
 }
