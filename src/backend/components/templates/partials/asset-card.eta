@@ -11,17 +11,20 @@
         <span class="iconify" data-icon="akar-icons:more-horizontal"></span>
         <div class="options">
           <% if(it?.info?.saved === true) { %>
-          <div onclick="window.godotLibrary.dropdown.callSaveRoute('/dashboard/unsave/<%= it?.info?.asset_id %>')">
+          <div
+            onclick="window.godotLibrary.dropdown.callRouteAjax('/dashboard/save/<%= it?.info?.asset_id %>', 'Post successfully removed from saves')">
             Unsave
           </div>
           <% } else { %>
-          <div onclick="window.godotLibrary.dropdown.callSaveRoute('/dashboard/save/<%= it?.info?.asset_id %>')">
+          <div
+            onclick="window.godotLibrary.dropdown.callRouteAjax('/dashboard/save/<%= it?.info?.asset_id %>', 'Post successfully added to saves')">
             Save
           </div>
           <% } %>
           <div>Report</div>
           <% if(it?._locals?.role === 'admin') { %>
-          <div onclick="window.godotLibrary.dropdown.callSaveRoute('/admin/feature-post/<%= it?.info?.asset_id %>')">
+          <div
+            onclick="window.godotLibrary.dropdown.callRouteAjax('/admin/feature-post/<%= it?.info?.asset_id %>', 'Post successfully featured')">
             Feature
           </div>
           <% } %>

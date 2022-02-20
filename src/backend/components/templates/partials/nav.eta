@@ -46,7 +46,7 @@
         <span class="iconify chevron" data-icon="bxs:chevron-down"></span>
         <div class="options">
           <a href="/dashboard">Dashboard</a>
-          <a href="/dashboard/saved/">My Saved</a>
+          <a href="/dashboard/saved/">Saved Assets</a>
           <a href="/dashboard/reviews/">Reviewed Assets</a>
           <% if (it?._locals?.role === 'admin') { %><a href="/admin">Admin Dashboard</a> <% } %>
           <a href="/api/users/logout">Logout</a>

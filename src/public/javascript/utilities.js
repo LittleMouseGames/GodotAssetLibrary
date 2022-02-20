@@ -58,7 +58,7 @@ window.godotLibrary = {
         dropdownElement.style.display = 'none'
       }
     },
-    callSaveRoute: function (route) {
+    callRouteAjax: function (route, message) {
       fetch(route, {
         method: 'get'
       }).then(response => {
@@ -72,7 +72,7 @@ window.godotLibrary = {
           })
         } else {
           window.godotLibrary.pageMessages.removeAllPageMessages()
-          window.godotLibrary.pageMessages.addPageMessage('Post successfully added to saves')
+          window.godotLibrary.pageMessages.addPageMessage(message)
           setTimeout(() => {
             window.godotLibrary.pageMessages.removeAllPageMessages()
           }, 5000)

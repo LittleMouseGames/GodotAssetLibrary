@@ -12,8 +12,9 @@ import { GetUserInfoByToken } from '../models/GET/GetUserInfoByToken'
 import { GetUserReviewedAssets } from '../models/GET/GetUserReviewedAssets'
 import { UpdateUserInformtaion } from '../models/UPDATE/UpateUserInformation'
 import { UpdateCommentsInformationByUserId } from '../models/UPDATE/UpdateCommentsUsernameByUserId'
-import { UpdateUserSavedAssets } from '../models/UPDATE/UpdateUserSavedAssets'
+import { UpdateUserSavedAssetsAdd } from '../models/UPDATE/UpdateUserSavedAssetsAdd'
 import striptags from 'striptags'
+import { UpdateUserSavedAssetsRemove } from '../models/UPDATE/UpdateUserSavedAssetsRemove'
 
 export class DashboardService {
   public async render (req: Request, res: Response): Promise<void> {
@@ -154,10 +155,10 @@ export class DashboardService {
     const userSaved = await GetUserSavedAssets(hashedToken)
 
     if (userSaved?.includes(asset)) {
-      throw new Error('Already saved')
+      await UpdateUserSavedAssetsRemove(hashedToken, asset)
+    } else {
+      await UpdateUserSavedAssetsAdd(hashedToken, asset)
     }
-
-    await UpdateUserSavedAssets(hashedToken, asset)
 
     res.send()
   }
