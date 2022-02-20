@@ -7,10 +7,12 @@ import { customAlphabet } from 'nanoid/non-secure'
  * A service contract to insert a user
  * into our database
  *
- * @param {String} username the username
- * @param {String} passwordHash the hashed password
- * @param {String} token the hashed token
- * @param {Date} tokenExpires when the token expires
+ * @param {string} username
+ * @param {string} email
+ * @param {string} passwordHash
+ * @param {string} token
+ * @param {string} tokenExpires
+ * @returns
  */
 export async function InsertUser (username: string, email: string, passwordHash: string, token: string, tokenExpires: Date): Promise<any> {
   const nanoid = customAlphabet('0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz', 36)

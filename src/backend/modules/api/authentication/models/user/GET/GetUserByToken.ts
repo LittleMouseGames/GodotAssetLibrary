@@ -1,5 +1,11 @@
 import { MongoHelper } from 'MongoHelper'
 
+/**
+ * Get user human_id given hashed token
+ *
+ * @param {string} token hashed token
+ * @returns {Promise<string>}
+ */
 export async function GetUserByToken (token: string): Promise<string> {
   const mongo = MongoHelper.getDatabase()
   const operationObject = await mongo.collection('users').findOne({

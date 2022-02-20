@@ -1,5 +1,12 @@
 import { MongoHelper } from 'MongoHelper'
 
+/**
+ * Update password hash for user given a token
+ *
+ * @param {string} token
+ * @param {string} passwordHash
+ * @returns
+ */
 export async function UpdatePasswordHashByToken (token: string, passwordHash: string): Promise<any> {
   const mongo = MongoHelper.getDatabase()
   const operationObject = await mongo.collection('users').updateOne({

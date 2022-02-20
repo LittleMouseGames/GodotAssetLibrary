@@ -35,6 +35,10 @@ export class UserController {
 
   /**
    * Register endpoint
+   *
+   * @param {Request} req
+   * @param {Response} res
+   * @returns {Response}
    */
   @Post('register')
   @Middleware([urlencodedParser, createAccountLimiter])
@@ -49,7 +53,11 @@ export class UserController {
   }
 
   /**
-   * Login endpoint
+   * Login enpoint
+   *
+   * @param {Request} req
+   * @param {Response} res
+   * @returns {Response}
    */
   @Post('login')
   @Middleware([urlencodedParser, accountLoginLimiter])
@@ -63,8 +71,11 @@ export class UserController {
   }
 
   /**
-   * Logout endpoint
-   */
+ * Logout endpoint
+ *
+   * @param {Request} _req
+   * @param {Response} res
+ */
   @Get('logout')
   private logout (_req: Request, res: Response): void {
     res.clearCookie('auth-token')

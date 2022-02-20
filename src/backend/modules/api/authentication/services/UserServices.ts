@@ -173,14 +173,33 @@ export class UserServices {
     return this.USERNAME_REGEX.test(username)
   }
 
+  /**
+   * Check if password matches regex requirements
+   *
+   * @param {string} password password
+   * @returns {boolean}
+   */
   public isPasswordValid (password: string): boolean {
     return this.PASSWORD_REGEX.test(password)
   }
 
+  /**
+   * Verify if password matches hash
+   *
+   * @param {string} hash
+   * @param {string} password
+   * @returns {Promise<boolean>}
+   */
   public async doesPasswordMatchHash (hash: string, password: string): Promise<boolean> {
     return await argon2.verify(hash, password)
   }
 
+  /**
+   * Hash the password with argon2
+   *
+   * @param {string} password
+   * @returns {Promise<string>}
+   */
   public async hashPassword (password: string): Promise<string> {
     return await argon2.hash(password)
   }
