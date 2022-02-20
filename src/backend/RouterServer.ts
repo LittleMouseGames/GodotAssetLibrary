@@ -8,6 +8,7 @@ import cookieParser from 'cookie-parser'
 import { TokenServices } from 'modules/api/authentication/services/TokenServices'
 import { GetDoesUserExistByToken } from 'modules/api/authentication/models/user/GET/GetDoesUserExistByToken'
 import { GetUserRoleByToken } from 'modules/api/authentication/models/user/GET/GetUserRoleByToken'
+import { GetPromobarMessage } from 'modules/pages/admin/models/GET/GetPromobarMesasge'
 
 /**
  * Starts the server
@@ -32,6 +33,9 @@ class RouterServer extends Server {
       extended: true
     }))
 
+    /**
+     * Inject into all routes _locals space
+     */
     this.app.use(async function (req: Request, res: Response, next: NextFunction) {
       const authToken = req.cookies['auth-token'] ?? ''
       res.locals.loggedIn = false
@@ -46,6 +50,12 @@ class RouterServer extends Server {
         } catch (e) {
           // ignore
         }
+      }
+
+      try {
+        res.locals.promobarMessage = await GetPromobarMessage()
+      } catch (e) {
+        // ignore
       }
 
       next()

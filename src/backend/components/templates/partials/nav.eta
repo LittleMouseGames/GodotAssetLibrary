@@ -1,9 +1,11 @@
+<% if(it?._locals?.promobarMessage) { %>
 <section class="promobar">
   <div class="contents">
-    <div class="text">Promobar and or a place where we can put site news</div>
-    <span class="iconify" data-icon="ant-design:close-circle-filled"></span>
+    <div class="text"><%= it?._locals?.promobarMessage %> </div>
+    <!-- <span class="iconify" data-icon="ant-design:close-circle-filled"></span> -->
   </div>
 </section>
+<% } %>
 <nav>
   <div class="contents">
     <div class="brand">
