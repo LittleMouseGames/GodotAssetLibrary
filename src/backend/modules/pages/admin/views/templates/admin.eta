@@ -19,7 +19,7 @@
       <h2>Site Settings</h2>
       <div class="input-container">
         <input class="input" id="username" type="text" name="message" placeholder=""
-          value="<%= it?._locals?.promobarMessage %>">
+          value="<%= it?._locals?.promobarMessage ?? '' %>">
         <label for="username" class="placeholder">Promobar Message</label>
       </div>
       <div class="disclaimer">

@@ -24,4 +24,14 @@ export class AdminController {
       res.status(StatusCodes.BAD_REQUEST).send({ error: e.message })
     }
   }
+
+  @Get('feature-post/:id')
+  @Middleware([CheckIfUserExistAndRedirect('/register', false), CheckIfUserAdminAndRedirectIfNot('/404')])
+  private async updateFeaturedAssets (req: Request, res: Response): Promise<void> {
+    try {
+      return await this.AdminService.featureAsset(req, res)
+    } catch (e: any) {
+      res.status(StatusCodes.BAD_REQUEST).send({ error: e.message })
+    }
+  }
 }
