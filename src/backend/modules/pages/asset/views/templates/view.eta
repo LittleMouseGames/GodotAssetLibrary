@@ -149,10 +149,17 @@
                 </div>
                 <% } %>
                 <% if(it?._locals?.role === 'admin') { %>
+                <% if(it?.info?.featured === true) { %>
+                <div
+                  onclick="window.godotLibrary.dropdown.callRouteAjax('/admin/feature-post/<%= it?.info?.asset_id %>', 'Post successfully featured')">
+                  Unfeature
+                </div>
+                <% } else { %>
                 <div
                   onclick="window.godotLibrary.dropdown.callRouteAjax('/admin/feature-post/<%= it?.info?.asset_id %>', 'Post successfully featured')">
                   Feature
                 </div>
+                <% } %>
                 <% } %>
               </div>
             </div>
