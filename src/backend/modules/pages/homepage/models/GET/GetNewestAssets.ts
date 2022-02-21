@@ -4,10 +4,10 @@ import { assetGridSchema } from 'utility/schema/assets-grid'
 
 interface ReturnedAssets extends WithId<Document>, assetGridSchema {}
 
-export async function GetFourAssets (): Promise<ReturnedAssets[]> {
+export async function GetNewestAssets (): Promise<ReturnedAssets[]> {
   const mongo = MongoHelper.getDatabase()
   const operationObject = await mongo.collection('assets').find({}, {
-    limit: 4,
+    limit: 5,
     projection: {
       category: 1,
       godot_version: 1,
@@ -22,7 +22,7 @@ export async function GetFourAssets (): Promise<ReturnedAssets[]> {
       previews: 1,
       card_banner: 1
     }
-  }).toArray() as ReturnedAssets[]
+  }).sort({ added_date: -1 }).toArray() as ReturnedAssets[]
 
   if (operationObject === null || operationObject === undefined) {
     throw new Error('No assets found')

@@ -25,6 +25,7 @@ export interface assetSchema {
   'icon_url': string
   'searchable': string
   'modify_date': string
+  'added_date': Date
   'download_url': string
   'upvotes': number
   'downvotes': number

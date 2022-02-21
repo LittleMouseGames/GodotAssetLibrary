@@ -10,10 +10,9 @@
   <section>
     <h2>Whats popular</h2>
     <div class="container five-wide">
-      <% it.assets?.forEach(info => { %>
+      <% it.trendingAssets?.forEach(info => { %>
       <%~ includeFile('templates/components/partials/asset-card.eta', { info: info, _locals: it?._locals }) %>
       <% }) %>
-      <%~ includeFile('templates/components/partials/asset-card.eta') %>
     </div>
   </section>
 
@@ -52,24 +51,18 @@
   </section>
 
   <section>
-    <h2>Newly Updated</h2>
+    <h2>Newest Assets</h2>
     <div class="container five-wide">
-      <%~ includeFile('templates/components/partials/asset-card.eta') %>
-      <%~ includeFile('templates/components/partials/asset-card.eta') %>
-      <%~ includeFile('templates/components/partials/asset-card.eta') %>
-      <%~ includeFile('templates/components/partials/asset-card.eta') %>
-      <%~ includeFile('templates/components/partials/asset-card.eta') %>
-    </div>
+      <% it.newestAssets?.forEach(info => { %>
+      <%~ includeFile('templates/components/partials/asset-card.eta', { info: info, _locals: it?._locals }) %>
+      <% }) %>
   </section>
 
   <section>
-    <h2>Newest Assets</h2>
+    <h2>Newly Updated</h2>
     <div class="container five-wide">
-      <%~ includeFile('templates/components/partials/asset-card.eta') %>
-      <%~ includeFile('templates/components/partials/asset-card.eta') %>
-      <%~ includeFile('templates/components/partials/asset-card.eta') %>
-      <%~ includeFile('templates/components/partials/asset-card.eta') %>
-      <%~ includeFile('templates/components/partials/asset-card.eta') %>
-    </div>
+      <% it.lastModifiedAssets?.forEach(info => { %>
+      <%~ includeFile('templates/components/partials/asset-card.eta', { info: info, _locals: it?._locals }) %>
+      <% }) %>
   </section>
 </section>
