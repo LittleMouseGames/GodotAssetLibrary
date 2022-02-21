@@ -44,9 +44,21 @@
   <section>
     <h2>Featured Categories</h2>
     <div class="container three-wide">
-      <%~ includeFile('templates/components/partials/category-card-featured.eta') %>
-      <%~ includeFile('templates/components/partials/category-card-featured.eta') %>
-      <%~ includeFile('templates/components/partials/category-card-featured.eta') %>
+      <%~ includeFile('templates/components/partials/category-card-featured.eta', {
+        name: '2D Tools',
+        description: 'Enhance your 2D experience',
+        image: 'category-2d.png'
+      }) %>
+      <%~ includeFile('templates/components/partials/category-card-featured.eta', {
+        name: '3D Tools',
+        description: 'Level up your 3D world',
+        image: 'category-3d.png'
+      }) %>
+      <%~ includeFile('templates/components/partials/category-card-featured.eta', {
+        name: 'Tools',
+        description: 'More Tools for a better Editor',
+        image: 'category-tools.png'
+      }) %>
     </div>
   </section>
 

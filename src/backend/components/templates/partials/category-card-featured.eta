@@ -3,15 +3,15 @@
     <div>Featured Category</div>
   </div>
   <div class="body">
-    <div>Editor Tools:</div>
-    <div>More Tools for a better Editor</div>
+    <div><%= it?.name %>:</div>
+    <div><%= it?.description %></div>
   </div>
   <div class="footer">
-    <button>Explore Editor Tools</button>
+    <a href="/search/?q=&category=<%= it?.name?.toLocaleLowerCase() %>"><button>Explore <%= it?.name %></button></a>
   </div>
   <div class="background">
     <div class="mask">
-      <img src="https://github.com/LittleMouseGames/whiskers/raw/master/media.png" alt="">
+      <img src="/images/<%= it?.image %>" alt="">
     </div>
   </div>
 </div>
