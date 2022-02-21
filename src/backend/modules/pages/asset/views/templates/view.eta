@@ -6,7 +6,7 @@
 } %>
 <% layout('templates/components/layouts/promobar-nav-body-footer.eta') %>
 
-<%~ includeFile('templates/components/partials/modal-install.eta', it) %>
+<%~ includeFile('templates/components/partials/modal-install.eta', {downloadUrl: it?.info?.download_url}) %>
 <%~ includeFile('templates/components/partials/modal-report.eta') %>
 
 <section class="page-asset">
