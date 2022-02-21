@@ -36,7 +36,7 @@ async function fetchAssetListings (): Promise<any[]> {
   const host = 'godotengine.org'
   const paths = [
     // '/asset-library/api/asset?type=any&max_results=500&godot_version=2.2'
-    '/asset-library/api/asset?type=any&max_results=30&godot_version=3.4&page=0'
+    '/asset-library/api/asset?type=any&max_results=50&godot_version=3.4&page=0'
     // '/asset-library/api/asset?type=any&max_results=500&godot_version=3.4&page=1',
     // '/asset-library/api/asset?type=any&max_results=500&godot_version=3.4&page=2',
     // '/asset-library/api/asset?type=any&max_results=500&godot_version=4.0'
@@ -79,11 +79,12 @@ async function fetchAssetInformationAndInsert (assetIDs: any[]): Promise<void> {
       path: `/asset-library/api/asset/${assetID}`
     })
 
-    const result = JSON.parse(response)
+    const result = JSON.parse(response) as assetSchema
 
     if (result.asset_id !== undefined) {
       if (!(await modelDoesAssetAlreadyExist(result.asset_id))) {
         await modelInsertAsset(result)
+        void updateCategoryCountInfoObject(result.category)
       }
     }
   }
@@ -104,6 +105,20 @@ async function modelDoesAssetAlreadyExist (legacyAssetID: string): Promise<boole
   }
 
   return true
+}
+
+async function updateCategoryCountInfoObject (name: string): Promise<void> {
+  const mongo: Db = MongoHelper.getDatabase()
+  const category = String(`category.${name}`)
+  await mongo.collection('info').updateOne({
+    type: 'category_count'
+  }, {
+    $inc: {
+      [category]: 1
+    }
+  }, {
+    upsert: true
+  })
 }
 
 async function modelInsertAsset (asset: assetSchema): Promise<any> {
