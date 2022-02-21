@@ -1,0 +1,27 @@
+<div class="modal">
+  <div class="background"></div>
+  <div class="modal-install body">
+    <div class="head">
+      <!-- close icon -->
+    </div>
+    <div class="column">
+      <div class="container">
+        <h2>Install via Godot</h2>
+        <p>Since Godot Asset Library is just a mirror of the old asset library (to maintain one
+        <pre>source of truth</pre>
+        you can download this directly on Godot via the integrated asset library browser</p>
+        <button>Take me there</button>
+      </div>
+    </div>
+    <div class="column">
+      <div class="container">
+        <h2>Install Manually</h2>
+        <p>
+          You could alternatively download the zip archive of the asset and manually install it into your
+        <pre>addons/</pre> folder directly from here
+        </p>
+        <button>Download zip</button>
+      </div>
+    </div>
+  </div>
+</div>

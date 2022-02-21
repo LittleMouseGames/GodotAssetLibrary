@@ -1,4 +1,5 @@
 @import "components/styles/utils/variables";
+@import "components/styles/utils/mixins";
 
 @mixin _form-shared {
   background: $button-gray;
@@ -144,6 +145,74 @@
           background: $text-light-gray;
         }
       }
+    }
+  }
+}
+
+@mixin modal-styles {
+  .modal {
+    @include reset-header-spacing;
+    @include sneaky-labels();
+
+    width: 100%;
+    height: 100%;
+    position: fixed;
+    z-index: 4;
+    display: none;
+    top: 0;
+    left: 0;
+
+    &.active {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .background {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+      background: rgba(0, 0, 0, 0.33);
+      z-index: 0;
+    }
+
+    .body {
+      border-radius: 6px;
+      background: white;
+      z-index: 1;
+      padding: 12px 15px 15px;
+      min-width: 600px;
+    }
+
+    h2 {
+      margin-bottom: 5px;
+    }
+
+    .name {
+      margin-bottom: 10px;
+    }
+
+    .input {
+      background: $color-lighter-gray;
+    }
+
+    .input-container {
+      margin-bottom: 15px;
+    }
+
+    textarea {
+      @include form-textarea();
+    }
+
+    button {
+      @include form-button();
+    }
+
+    select {
+      @include form-select();
     }
   }
 }

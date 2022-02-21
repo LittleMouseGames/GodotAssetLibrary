@@ -40,7 +40,7 @@
 
 nav {
   @include brand-styles($title-color: $text-dark-darkest, $subtitle-color: $text-dark-deep-gray);
-  @include dropdown-styles($padding: 12px, $background: $color-ligther-gray, $border-color: $color-brand-gray);
+  @include dropdown-styles($padding: 12px, $background: $color-lighter-gray, $border-color: $color-brand-gray);
 
   height: 75px;
   background: white;
@@ -89,7 +89,7 @@ nav {
 
     input {
       height: 45px;
-      background: $color-ligther-gray;
+      background: $color-lighter-gray;
       border-radius: 6px;
       font-family: "Inter";
       border: none;

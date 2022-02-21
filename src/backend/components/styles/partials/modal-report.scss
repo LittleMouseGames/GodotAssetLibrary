@@ -1,0 +1,11 @@
+@import "components/styles/utils/variables";
+@import "components/styles/partials/forms";
+
+@include modal-styles;
+
+.modal-report {
+  button {
+    display: block;
+    margin-left: auto;
+  }
+}

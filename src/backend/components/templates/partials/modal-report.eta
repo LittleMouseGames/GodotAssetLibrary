@@ -1,0 +1,25 @@
+<div class="modal">
+  <div class="background"></div>
+  <div class="modal-report body">
+    <div class="head">
+      <!-- close icon -->
+    </div>
+    <form action="POST" method="">
+      <h2>Report comment</h2>
+      <div class="name">Report reason</div>
+      <div class="input-container">
+        <select class="input">
+          <option value="spam">Spam</option>
+          <option value="Harrasement">Harrasement</option>
+          <option value="illegal">Illegal Content</option>
+          <option value="other">Other</option>
+        </select>
+      </div>
+      <div class="input-container">
+        <textarea id="report_notes" placeholder="" class="input"></textarea>
+        <label for="report_notes" class="placeholder">Additional notes (optional)</label>
+      </div>
+      <button>Send Report</button>
+    </form>
+  </div>
+</div>
