@@ -209,7 +209,8 @@
               <div class="value"><a href="<%= it?.info?.issues_url %>" target="_blank">Link to Issues URL</a></div>
             </div>
           </div>
-          <button>Add to Project</button>
+          <button onclick="openInstallModal(event)">Add to
+            Project</button>
         </div>
       </div>
     </div>
@@ -217,6 +218,11 @@
   <script>
     function updatePlayerImage(image) {
       document.querySelector('.player img').src = image;
+    }
+
+    function openInstallModal(event) {
+      document.querySelector('.modal.install').classList.add('active')
+      event.stopPropagation()
     }
   </script>
 </section>

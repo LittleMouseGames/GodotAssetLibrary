@@ -84,6 +84,7 @@ window.godotLibrary = {
 
 document.addEventListener('click', function (event) {
   let inDropdown = false
+  let inModal = false
 
   for (const dropdown of document.querySelectorAll('.dropdown')) {
     if (dropdown.contains(event.target)) {
@@ -95,10 +96,27 @@ document.addEventListener('click', function (event) {
   if (!inDropdown) {
     closeAllDropdowns()
   }
+
+  for (const modal of document.querySelectorAll('.modal')) {
+    if (modal.querySelector('.body').contains(event.target)) {
+      inModal = true
+      break
+    }
+  }
+
+  if (!inModal) {
+    closeAllModals()
+  }
 })
 
 function closeAllDropdowns () {
   document.querySelectorAll('.dropdown .options').forEach(element => {
     element.style.display = 'none'
+  })
+}
+
+function closeAllModals () {
+  document.querySelectorAll('.modal').forEach(element => {
+    element.classList.remove('active')
   })
 }
