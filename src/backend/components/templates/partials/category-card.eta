@@ -1,4 +1,6 @@
-<div class="category-card">
-  <h3>2D Tools</h3>
-  <span>182 assets</span>
-</div>
+<a class="category-card" href="/search/?q=&category=<%= it?.name?.toLocaleLowerCase() %>">
+  <div class="container">
+    <h3><%= it?.name %></h3>
+    <span><%= it?.count %> assets</span>
+  </div>
+</a>

@@ -1,5 +1,6 @@
 import { Request, Response } from 'express'
 import { logger } from 'utility/logger'
+import { GetAllCategoriesAndTheirAssetCount } from '../models/GET/GetAllCategoriesAndTheirAssetCount'
 import { GetFourAssetsForHomepage } from '../models/GET/GetFeaturedAssetsForHomepage'
 import { GetLastModifiedAssets } from '../models/GET/GetLastModifiedAssets'
 import { GetNewestAssets } from '../models/GET/GetNewestAssets'
@@ -12,8 +13,9 @@ export class HomepageService {
       const featuredAssets = await GetFourAssetsForHomepage()
       const newestAssets = await GetNewestAssets()
       const lastModifiedAssets = await GetLastModifiedAssets()
+      const categoriesObject = await GetAllCategoriesAndTheirAssetCount()
 
-      return res.render('templates/pages/homepage/index', { trendingAssets: trendingAssets, featuredAssets: featuredAssets, newestAssets: newestAssets, lastModifiedAssets: lastModifiedAssets })
+      return res.render('templates/pages/homepage/index', { trendingAssets: trendingAssets, featuredAssets: featuredAssets, newestAssets: newestAssets, lastModifiedAssets: lastModifiedAssets, categoriesObject: categoriesObject })
     } catch (e: any) {
       logger.log('error', 'Failed to retrieve assets', ...[e])
       return res.render('templates/pages/homepage/index')

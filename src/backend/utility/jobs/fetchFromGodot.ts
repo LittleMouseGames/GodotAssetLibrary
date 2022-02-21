@@ -45,22 +45,26 @@ async function fetchAssetListings (): Promise<any[]> {
   const assetIDs = []
 
   for (const path of paths) {
+    try {
     /**
      * We run these sequentially so as to
      * minimize any potential negative impact
      * to their servers
      */
-    const response = await nodeFetch({
-      host: host,
-      path: path
-    })
+      const response = await nodeFetch({
+        host: host,
+        path: path
+      })
 
-    const result = JSON.parse(response).result
+      const result = JSON.parse(response).result
 
-    for (const asset of result) {
-      if (asset.asset_id !== undefined && !(await modelDoesAssetAlreadyExist(asset.asset_id))) {
-        assetIDs.push(asset.asset_id)
+      for (const asset of result) {
+        if (asset.asset_id !== undefined && !(await modelDoesAssetAlreadyExist(asset.asset_id))) {
+          assetIDs.push(asset.asset_id)
+        }
       }
+    } catch (e: any) {
+      logger.log('error', e.message, ...[e])
     }
   }
 
