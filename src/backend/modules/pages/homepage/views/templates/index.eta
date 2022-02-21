@@ -20,9 +20,9 @@
   <section>
     <h2>Assets we Love</h2>
     <div class="container three-wide">
-      <%~ includeFile('templates/components/partials/asset-card.eta', { featured: true }) %>
-      <%~ includeFile('templates/components/partials/asset-card.eta', { featured: true }) %>
-      <%~ includeFile('templates/components/partials/asset-card.eta', { featured: true }) %>
+      <% it.featuredAssets?.forEach(info => { %>
+      <%~ includeFile('templates/components/partials/asset-card.eta', { info: info, _locals: it?._locals, featured: true }) %>
+      <% }) %>
     </div>
   </section>
 
