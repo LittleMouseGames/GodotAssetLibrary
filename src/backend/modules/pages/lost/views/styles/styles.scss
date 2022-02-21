@@ -1,0 +1,28 @@
+@import "components/styles/layouts/promobar-nav-body-footer";
+@import "components/styles/utils/mixins";
+@import "components/styles/utils/variables";
+@import "components/styles/partials/forms";
+
+.page-not-found {
+  @include reset-header-spacing;
+  display: flex;
+  flex-grow: 1;
+
+  .center {
+    margin: auto;
+    text-align: center;
+    margin-top: 75px;
+  }
+
+  h2 {
+    font-size: 23px;
+    font-weight: 600;
+    margin-bottom: 0px;
+  }
+
+  p {
+    margin-top: 5px;
+    font-family: "DM Sans";
+    font-size: 16px;
+  }
+}

@@ -90,7 +90,8 @@ class RouterServer extends Server {
    */
   public start (port: number): void {
     this.app.get('*', (_req: Request, res: Response) => {
-      res.send(this.FRONT_END_MSG)
+      res.redirect('/lost')
+      // res.send(this.FRONT_END_MSG)
     })
 
     this.app.listen(port, () => {

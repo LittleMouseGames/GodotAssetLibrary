@@ -1,0 +1,14 @@
+<% it.meta = {
+  title: '404 | Godot Asset Library',
+  description: '404 page not found',
+  url: 'https://godotlibrary.com/404',
+  moduleName: 'lost'
+} %>
+<% layout('templates/components/layouts/promobar-nav-body-footer.eta') %>
+
+<section class="page-not-found">
+  <div class="center">
+    <h2>Nothing here but us cats 😺</h2>
+    <p>Sorry, but we were unable to find the page you were looking for</p>
+  </div>
+</section>
