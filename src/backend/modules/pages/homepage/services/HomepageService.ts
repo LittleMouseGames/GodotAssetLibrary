@@ -1,4 +1,6 @@
 import { Request, Response } from 'express'
+import { TokenServices } from 'modules/api/authentication/services/TokenServices'
+import { GetUserSavedAssets } from 'modules/pages/dashboard/models/GET/GetUserSavedAssets'
 import { logger } from 'utility/logger'
 import { GetAllCategoriesAndTheirAssetCount } from '../models/GET/GetAllCategoriesAndTheirAssetCount'
 import { GetFourAssetsForHomepage } from '../models/GET/GetFeaturedAssetsForHomepage'
@@ -7,13 +9,32 @@ import { GetNewestAssets } from '../models/GET/GetNewestAssets'
 import { GetTrendingAssets } from '../models/GET/GetTrendingAssets'
 
 export class HomepageService {
-  public async render (_req: Request, res: Response): Promise<void> {
+  public async render (req: Request, res: Response): Promise<void> {
+    const authToken = req.cookies['auth-token'] ?? ''
     try {
       const trendingAssets = await GetTrendingAssets()
       const featuredAssets = await GetFourAssetsForHomepage()
       const newestAssets = await GetNewestAssets()
       const lastModifiedAssets = await GetLastModifiedAssets()
       const categoriesObject = await GetAllCategoriesAndTheirAssetCount()
+
+      const assetPointers = [trendingAssets, featuredAssets, newestAssets, lastModifiedAssets]
+
+      if (authToken !== '') {
+        const tokenServices = TokenServices.getInstance()
+        const hashedToken = tokenServices.hashToken(authToken)
+
+        try {
+          const userSaved = await GetUserSavedAssets(hashedToken)
+          assetPointers.forEach((element) => {
+            element.forEach(asset => {
+              asset.saved = userSaved.includes(asset.asset_id)
+            })
+          })
+        } catch (e) {
+          // ignore
+        }
+      }
 
       return res.render('templates/pages/homepage/index', { trendingAssets: trendingAssets, featuredAssets: featuredAssets, newestAssets: newestAssets, lastModifiedAssets: lastModifiedAssets, categoriesObject: categoriesObject })
     } catch (e: any) {
