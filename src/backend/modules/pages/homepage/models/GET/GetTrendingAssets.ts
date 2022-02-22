@@ -31,8 +31,6 @@ export async function GetTrendingAssets (): Promise<ReturnedAssets[]> {
     }
   }]).toArray() as ReturnedAssets[]
 
-  console.log(operationObject)
-
   if (operationObject === null || operationObject === undefined) {
     throw new Error('No assets found')
   }
