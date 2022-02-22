@@ -3,16 +3,17 @@
 
 @include modal-styles;
 
-.modal-report {
+.modal-delete {
   button {
     display: block;
     margin-left: auto;
+    margin-top: 20px;
+    background: #f04242;
   }
 
-  form {
-    .name,
-    h2 {
-      margin-bottom: 10px;
-    }
+  p {
+    margin-top: 10px;
+    font-family: "DM Sans";
+    font-size: 15px;
   }
 }

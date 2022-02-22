@@ -1,0 +1,13 @@
+<div class="modal delete">
+  <div class="background"></div>
+  <div class="modal-delete body">
+    <div class="head">
+      <!-- close icon -->
+    </div>
+    <form action="POST" method="">
+      <h2>Delete <span class="type">Comment</span></h2>
+      <p>Are you sure you want to delete this <span class="type">Comment</span>? This action can't be undone.</p>
+      <button>Delete <span class="type">Comment</span></button>
+    </form>
+  </div>
+</div>

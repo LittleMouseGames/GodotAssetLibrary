@@ -6,7 +6,7 @@
     </div>
     <form action="POST" method="">
       <h2>Report comment</h2>
-      <div class="name">Report reason</div>
+      <div class="name">Reason:</div>
       <div class="input-container">
         <select class="input">
           <option value="spam">Spam</option>

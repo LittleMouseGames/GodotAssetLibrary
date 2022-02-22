@@ -183,13 +183,18 @@
       border-radius: 6px;
       background: white;
       z-index: 1;
-      padding: 12px 15px 15px;
+      padding: 15px;
       width: 600px;
     }
 
     h2 {
       margin-bottom: 5px;
       font-size: 18px;
+      font-family: "Inter";
+    }
+
+    h3 {
+      font-family: "Inter";
     }
 
     .name {

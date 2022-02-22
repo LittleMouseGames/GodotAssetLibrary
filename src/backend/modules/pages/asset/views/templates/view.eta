@@ -8,6 +8,7 @@
 
 <%~ includeFile('templates/components/partials/modal-install.eta', {downloadUrl: it?.info?.download_url}) %>
 <%~ includeFile('templates/components/partials/modal-report.eta') %>
+<%~ includeFile('templates/components/partials/modal-delete.eta') %>
 
 <section class="page-asset">
   <div class="column">

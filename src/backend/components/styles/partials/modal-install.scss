@@ -3,15 +3,19 @@
 
 @include modal-styles;
 
+.modal {
+  &.install {
+    h2 {
+      margin-bottom: 15px;
+    }
+  }
+}
+
 .modal-install {
   .grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
     column-gap: 15px;
-  }
-
-  h2 {
-    margin-bottom: 10px;
   }
 
   .column {

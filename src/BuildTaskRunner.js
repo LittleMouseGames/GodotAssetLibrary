@@ -1,3 +1,4 @@
+const minify = require('csso')
 const fs = require('fs-extra')
 const path = require('path')
 const glob = require('glob')
@@ -123,10 +124,10 @@ function compileAndMoveScss (file, allScssFiles = []) {
       .replace('.scss', '.css')
 
     const exportPath = path.join(path.join(__dirname, '../dist/public/'), updatedFileName)
-    const compiledCSS = sass.compile(path.join(file), { loadPaths: [path.join(__dirname, 'backend/')], style: 'compressed' })
+    const compiledCSS = sass.compile(path.join(file), { loadPaths: [path.join(__dirname, 'backend/')] })
 
     fs.mkdirSync(path.dirname(exportPath), { recursive: true })
-    fs.writeFile(`${exportPath}`, compiledCSS.css)
+    fs.writeFile(`${exportPath}`, minify.minify(compiledCSS.css).css)
   } else if (file.includes('backend/components') && allScssFiles.length > 0) {
     /**
      * If we're not a page we'll assume that we're instead a partial
