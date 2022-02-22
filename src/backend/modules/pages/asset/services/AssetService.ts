@@ -94,10 +94,15 @@ export class AssetService {
     const headline = req.body.asset_review_headline ?? ''
     const hasUserReviewedAsset = await GetHasUserReviewedAsset(authToken, assetId)
 
-    const siteRestrictions = await GetSiteRestrictions()
+    let siteRestrictions: any = {}
+    try {
+      siteRestrictions = await GetSiteRestrictions()
+    } catch (e) {
+      // ignore
+    }
 
     if (siteRestrictions?.disable_new_comments === true) {
-      throw new Error('Posting asset reviews are temporarily disabled')
+      throw new Error('Posting new reviews has been temporarily disabled')
     }
 
     if (assetId === '') {

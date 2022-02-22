@@ -8,6 +8,7 @@ import { GetUserIdByToken } from 'modules/api/authentication/models/user/GET/Get
 import { TokenServices } from 'modules/api/authentication/services/TokenServices'
 import { GetDoesUsernameExist } from '../models/user/GET/GetDoesUsernameExist'
 import { GetIsUsernameReserved } from '../models/user/GET/GetIsUsernameReserved'
+import { GetSiteRestrictions } from 'modules/pages/admin/models/GET/GetSiteRestrictions'
 
 export class UserServices {
   private static instance: UserServices
@@ -43,6 +44,17 @@ export class UserServices {
     const password = req.body.password ?? ''
     const passwordConf = req.body.passwordConf ?? ''
     const email = req.body.email ?? ''
+
+    let siteRestrictions: any = {}
+    try {
+      siteRestrictions = await GetSiteRestrictions()
+    } catch (e) {
+      // ignore
+    }
+
+    if (siteRestrictions?.disable_new_accounts === true) {
+      throw new Error('Account registrations have been temporarily disabled')
+    }
 
     if (!this.USERNAME_REGEX.test(username)) {
       throw new Error('Username validation failed')

@@ -17,7 +17,12 @@ export class AdminService {
       info: 'Manage site settings like promobar message and featured posts'
     }
 
-    const siteRestrictions = await GetSiteRestrictions()
+    let siteRestrictions = {}
+    try {
+      siteRestrictions = await GetSiteRestrictions()
+    } catch (e) {
+      // ignore
+    }
 
     return res.render('templates/pages/admin/admin', { pageBanner: pageBanner, siteRestrictions: siteRestrictions })
   }
