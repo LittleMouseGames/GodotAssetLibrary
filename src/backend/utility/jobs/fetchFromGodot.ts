@@ -19,15 +19,16 @@ const host = 'godotengine.org'
  * to limit any potential impact by choosing very
  * off-hour times (as much as resonably possible)
  */
-export const fetchAssetsFromGodot = new CronJob('0 1 * * 2,4,6', function () {
+export const fetchAssetsFromGodot = new CronJob('0 1 * * *', function () {
   void importAssets()
 })
 
 async function importAssets (): Promise<void> {
   logger.log('info', 'Fetching data to mirror from Godot Asset Library')
 
-  const assetIDs = await fetchAssetListings()
-  await fetchAssetInformationAndInsert(assetIDs)
+  const [newAssetIDs, updateAssetIDs] = await fetchAssetListings()
+  await fetchAssetInformationAndInsert(newAssetIDs)
+  await fetchAssetInformationAndUpdate(updateAssetIDs)
 
   logger.log('info', 'All imported assets processed')
 }
@@ -42,7 +43,8 @@ async function fetchAssetListings (): Promise<any[]> {
     // '/asset-library/api/asset?type=any&max_results=500&godot_version=4.0'
   ]
 
-  const assetIDs = []
+  const newAssetIDs = []
+  const updateAssetIDs = []
 
   for (const path of paths) {
     try {
@@ -59,8 +61,15 @@ async function fetchAssetListings (): Promise<any[]> {
       const result = JSON.parse(response).result
 
       for (const asset of result) {
-        if (asset.asset_id !== undefined && !(await modelDoesAssetAlreadyExist(asset.asset_id))) {
-          assetIDs.push(asset.asset_id)
+        if (asset.asset_id !== undefined) {
+          if (!(await modelDoesAssetAlreadyExist(asset.asset_id))) {
+            newAssetIDs.push(asset.asset_id)
+          } else {
+            const assetModifedDate = await modelGetAssetModifiedDate(asset.asset_id)
+            if (new Date(asset.modify_date) > new Date(assetModifedDate)) {
+              updateAssetIDs.push(asset.asset_id)
+            }
+          }
         }
       }
     } catch (e: any) {
@@ -68,7 +77,7 @@ async function fetchAssetListings (): Promise<any[]> {
     }
   }
 
-  return assetIDs
+  return [newAssetIDs, updateAssetIDs]
 }
 
 async function fetchAssetInformationAndInsert (assetIDs: any[]): Promise<void> {
@@ -87,10 +96,48 @@ async function fetchAssetInformationAndInsert (assetIDs: any[]): Promise<void> {
       const result = JSON.parse(response) as assetSchema
 
       if (result.asset_id !== undefined) {
-        if (!(await modelDoesAssetAlreadyExist(result.asset_id))) {
-          await modelInsertAsset(result)
+        await modelInsertAsset(result)
+        void updateCategoryCountInfoObject(result.category)
+      }
+    } catch (e: any) {
+      logger.log('error', e.message, ...[e])
+    }
+  }
+}
+
+async function fetchAssetInformationAndUpdate (assetIDs: any[]): Promise<void> {
+  for (const assetID of assetIDs) {
+    try {
+    /**
+     * We run these sequentially so as to
+     * minimize any potential negative impact
+     * to their servers
+     */
+      const response = await nodeFetch({
+        host: host,
+        path: `/asset-library/api/asset/${assetID}`
+      })
+
+      const result = JSON.parse(response) as assetSchema
+
+      if (result.asset_id !== undefined) {
+        const assetInformationWeHave = await modelGetAssetInformation(result.asset_id)
+        const newAssetInformation = { ...result, ...assetInformationWeHave }
+
+        result.legacy_asset_id = result.asset_id
+        result.asset_id = assetInformationWeHave.asset_id
+        result.title = result.title.trim()
+        result.category_lowercase = result.category.toLocaleLowerCase()
+        result.author_lowercase = result.author.toLocaleLowerCase()
+        result.quick_description = result.description.trim().replace(/(\r\n|\n|\r|\t)/gm, '')
+
+        if (assetInformationWeHave.category !== result.category) {
+          void updateCategoryCountInfoObject(assetInformationWeHave.category, -1)
           void updateCategoryCountInfoObject(result.category)
         }
+
+        await modelUpdateAssetObject(result.legacy_asset_id, newAssetInformation)
+        // console.log('updated asset', newAssetInformation)
       }
     } catch (e: any) {
       logger.log('error', e.message, ...[e])
@@ -115,17 +162,39 @@ async function modelDoesAssetAlreadyExist (legacyAssetID: string): Promise<boole
   return true
 }
 
-async function updateCategoryCountInfoObject (name: string): Promise<void> {
+async function modelGetAssetModifiedDate (legacyAssetID: string): Promise<string> {
+  const mongo: Db = MongoHelper.getDatabase()
+  const operationObject = await mongo.collection('assets').findOne({
+    legacy_asset_id: legacyAssetID
+  }, {
+    projection: {
+      modify_date: 1
+    }
+  })
+
+  return operationObject?.modify_date
+}
+
+async function updateCategoryCountInfoObject (name: string, increment: number = 1): Promise<void> {
   const mongo: Db = MongoHelper.getDatabase()
   const category = String(`category.${name}`)
   await mongo.collection('info').updateOne({
     type: 'category_count'
   }, {
     $inc: {
-      [category]: 1
+      [category]: increment
     }
   }, {
     upsert: true
+  })
+}
+
+async function modelUpdateAssetObject (assetId: string, assetObject: object): Promise<void> {
+  const mongo: Db = MongoHelper.getDatabase()
+  await mongo.collection('assets').updateOne({
+    legacy_asset_id: assetId
+  }, {
+    $set: assetObject
   })
 }
 
@@ -157,4 +226,13 @@ async function modelInsertAsset (asset: assetSchema): Promise<any> {
   return insertObj
 }
 
-importAssets()
+async function modelGetAssetInformation (legacyAssetID: string): Promise<any> {
+  const mongo: Db = MongoHelper.getDatabase()
+  const operationObject = await mongo.collection('assets').findOne({
+    legacy_asset_id: legacyAssetID
+  })
+
+  return operationObject
+}
+
+void importAssets()

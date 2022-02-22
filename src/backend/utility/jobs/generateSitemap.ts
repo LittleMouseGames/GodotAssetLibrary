@@ -7,7 +7,7 @@ import { SitemapStream } from 'sitemap'
 import path from 'path'
 
 // eslint-disable-next-line @typescript-eslint/no-misused-promises
-export const generateSitemapCron = new CronJob('0 1 * * 2,4,6', () => {
+export const generateSitemapCron = new CronJob('0 1 * * *', () => {
   logger.log('info', 'Generating sitemap')
   void generateSitemap()
 })
