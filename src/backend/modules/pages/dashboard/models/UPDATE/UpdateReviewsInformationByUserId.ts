@@ -9,7 +9,7 @@ import { MongoHelper } from 'MongoHelper'
  */
 export async function UpdateReviewsInformationByUserId (userId: string, username: string): Promise<any> {
   const mongo = MongoHelper.getDatabase()
-  const operationObject = await mongo.collection('comments').updateMany({
+  const operationObject = await mongo.collection('reviews').updateMany({
     user_id: userId
   }, {
     $set: {

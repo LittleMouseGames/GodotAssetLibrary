@@ -15,7 +15,7 @@ import { customAlphabet } from 'nanoid/non-secure'
 export async function InsertReviewForAsset (userId: string, username: string, assetId: string, reviewType: string, reviewText: string, reviewHeadline: string): Promise<any> {
   const nanoid = customAlphabet('0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz', 20)
   const mongo = MongoHelper.getDatabase()
-  const operationObject = await mongo.collection('comments').insertOne({
+  const operationObject = await mongo.collection('reviews').insertOne({
     human_id: nanoid(),
     username: username,
     user_id: userId,

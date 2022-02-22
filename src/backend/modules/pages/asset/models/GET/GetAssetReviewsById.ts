@@ -1,8 +1,8 @@
 import { Document, WithId } from 'mongodb'
 import { MongoHelper } from 'MongoHelper'
-import { comments } from 'utility/schema/comments'
+import { reviews } from 'utility/schema/reviews'
 
-interface ReturnedReviews extends WithId<Document>, comments {}
+interface ReturnedReviews extends WithId<Document>, reviews {}
 
 /**
  * Get all reviews for asset
@@ -12,7 +12,7 @@ interface ReturnedReviews extends WithId<Document>, comments {}
  */
 export async function GetAssetReviewsById (assetId: String): Promise<ReturnedReviews[]> {
   const mongo = MongoHelper.getDatabase()
-  const operationObject = await mongo.collection('comments').find({ asset_id: assetId }).limit(10).toArray() as ReturnedReviews[]
+  const operationObject = await mongo.collection('reviews').find({ asset_id: assetId }).limit(10).toArray() as ReturnedReviews[]
 
   return operationObject
 }

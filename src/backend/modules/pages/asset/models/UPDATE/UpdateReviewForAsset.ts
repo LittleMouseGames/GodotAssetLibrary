@@ -12,7 +12,7 @@ import { MongoHelper } from 'MongoHelper'
  */
 export async function UpdateReviewForAsset (userId: string, assetId: string, reviewType: string, reviewText: string, reviewHeadline: string): Promise<any> {
   const mongo = MongoHelper.getDatabase()
-  const operationObject = await mongo.collection('comments').updateOne({
+  const operationObject = await mongo.collection('reviews').updateOne({
     user_id: userId,
     asset_id: assetId
   }, {
