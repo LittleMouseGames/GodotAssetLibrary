@@ -10,4 +10,5 @@ export interface assetGridSchema {
   featured: boolean
   asset_id: string
   previews: any[]
+  modify_date: Date
 }

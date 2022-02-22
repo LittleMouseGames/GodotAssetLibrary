@@ -65,7 +65,7 @@ export class DashboardService {
     return res.render('templates/pages/dashboard/reviews', { assets: assets, params: req.originalUrl, pageBanner: pageBanner })
   }
 
-  public async renderManage (req: Request, res: Response): Promise<void> {
+  public async renderManage (_req: Request, res: Response): Promise<void> {
     const pageBanner = {
       title: 'Manage Information',
       info: 'Download your information or delete your account'

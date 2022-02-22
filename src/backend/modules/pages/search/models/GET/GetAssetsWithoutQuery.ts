@@ -20,7 +20,8 @@ export async function GetAssetsWithoutQuery (limit: number = 12, skip: number): 
       featured: 1,
       asset_id: 1,
       previews: 1,
-      card_banner: 1
+      card_banner: 1,
+      modify_date: 1
     }
   }).skip(skip).toArray() as ReturnedAssets[]
 

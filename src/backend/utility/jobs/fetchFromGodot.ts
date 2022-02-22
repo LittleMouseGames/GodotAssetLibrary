@@ -19,7 +19,7 @@ const host = 'godotengine.org'
  * to limit any potential impact by choosing very
  * off-hour times (as much as resonably possible)
  */
-export const fetchAssetsFromGodot = new CronJob('0 1 * * */2', function () {
+export const fetchAssetsFromGodot = new CronJob('0 1 * * 2,4,6', function () {
   void importAssets()
 })
 
@@ -73,23 +73,27 @@ async function fetchAssetListings (): Promise<any[]> {
 
 async function fetchAssetInformationAndInsert (assetIDs: any[]): Promise<void> {
   for (const assetID of assetIDs) {
+    try {
     /**
      * We run these sequentially so as to
      * minimize any potential negative impact
      * to their servers
      */
-    const response = await nodeFetch({
-      host: host,
-      path: `/asset-library/api/asset/${assetID}`
-    })
+      const response = await nodeFetch({
+        host: host,
+        path: `/asset-library/api/asset/${assetID}`
+      })
 
-    const result = JSON.parse(response) as assetSchema
+      const result = JSON.parse(response) as assetSchema
 
-    if (result.asset_id !== undefined) {
-      if (!(await modelDoesAssetAlreadyExist(result.asset_id))) {
-        await modelInsertAsset(result)
-        void updateCategoryCountInfoObject(result.category)
+      if (result.asset_id !== undefined) {
+        if (!(await modelDoesAssetAlreadyExist(result.asset_id))) {
+          await modelInsertAsset(result)
+          void updateCategoryCountInfoObject(result.category)
+        }
       }
+    } catch (e: any) {
+      logger.log('error', e.message, ...[e])
     }
   }
 }

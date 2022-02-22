@@ -1,8 +1,32 @@
+<% 
+  var upvotes = it?.info?.upvotes ?? 0
+  var total = upvotes + it?.info?.downvotes ?? 0
+  var percent = 0
+  var stars = 0
+  
+  if(total !== 0) {
+    percent = Math.round((upvotes / total) * 100).toFixed(2)
+    stars = Math.round((percent + 5) / 10).toFixed(1) / 2
+  }
+%>
+
 <% it.meta = {
   title: `${it?.info?.title ?? 'Asset'} | Godot Asset Library`,
   description: it?.info?.quick_description ??  'Find the best Godot Assets on Godot Asset Library',
   url: `https://godotlibrary.com/asset/${it?.info?.asset_id}/${encodeURI(it?.info?.title.replace(/\s/g, '-')).toLocaleLowerCase()}`,
-  moduleName: 'asset'
+  moduleName: 'asset',
+  jsonLd: {
+    "@context": "https://schema.org/",
+    "@type": "Product",
+    "name": it?.info?.title,
+    "image": it?.info?.card_banner,
+    "description": it?.info?.quick_description,
+    "aggregateRating": {
+      "@type": "AggregateRating",
+      "ratingValue": stars ?? 0,
+      "reviewCount": total ?? 0
+    }
+  }
 } %>
 <% layout('templates/components/layouts/promobar-nav-body-footer.eta') %>
 
