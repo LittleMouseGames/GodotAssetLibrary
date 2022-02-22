@@ -9,6 +9,8 @@ import { TokenServices } from 'modules/api/authentication/services/TokenServices
 import { GetDoesUserExistByToken } from 'modules/api/authentication/models/user/GET/GetDoesUserExistByToken'
 import { GetUserRoleByToken } from 'modules/api/authentication/models/user/GET/GetUserRoleByToken'
 import { GetPromobarMessage } from 'modules/pages/admin/models/GET/GetPromobarMesasge'
+import { StatusCodes } from 'http-status-codes'
+require('express-async-errors')
 
 /**
  * Starts the server
@@ -67,6 +69,10 @@ class RouterServer extends Server {
     })
 
     this.setupControllers()
+
+    this.app.use((err, req, res, next) => {
+      return res.status(StatusCodes.BAD_REQUEST).send({ error: err.message })
+    })
   }
 
   /**

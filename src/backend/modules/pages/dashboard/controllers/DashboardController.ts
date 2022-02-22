@@ -1,6 +1,5 @@
 import { Controller, Get, Middleware, Post } from '@overnightjs/core'
 import { Request, Response } from 'express'
-import { StatusCodes } from 'http-status-codes'
 import { CheckIfUserExistAndRedirect } from 'utility/middleware/CheckIfUserExistAndRedirect'
 import { DashboardService } from '../services/DashboardService'
 import rateLimit from 'express-rate-limit'
@@ -25,60 +24,36 @@ export class DashboardController {
   @Get('/')
   @Middleware([CheckIfUserExistAndRedirect('/register', false)])
   private async index (req: Request, res: Response): Promise<void> {
-    try {
-      return await this.DashboardService.render(req, res)
-    } catch (e: any) {
-      res.status(StatusCodes.BAD_REQUEST).send({ error: e.message })
-    }
+    return await this.DashboardService.render(req, res)
   }
 
   @Get('reviews/')
   @Middleware([CheckIfUserExistAndRedirect('/register', false)])
   private async reviews (req: Request, res: Response): Promise<void> {
-    try {
-      return await this.DashboardService.renderReviews(req, res)
-    } catch (e: any) {
-      res.status(StatusCodes.BAD_REQUEST).send({ error: e.message })
-    }
+    return await this.DashboardService.renderReviews(req, res)
   }
 
   @Get('saved/')
   @Middleware([CheckIfUserExistAndRedirect('/register', false)])
   private async saved (req: Request, res: Response): Promise<void> {
-    try {
-      return await this.DashboardService.renderSaved(req, res)
-    } catch (e: any) {
-      res.status(StatusCodes.BAD_REQUEST).send({ error: e.message })
-    }
+    return await this.DashboardService.renderSaved(req, res)
   }
 
   @Post('update/info')
   @Middleware([updateInfoRateLimit, CheckIfUserExistAndRedirect('/register', false)])
   private async updateInformation (req: Request, res: Response): Promise<void> {
-    try {
-      return await this.DashboardService.updateInfo(req, res)
-    } catch (e: any) {
-      res.status(StatusCodes.BAD_REQUEST).send({ error: e.message })
-    }
+    return await this.DashboardService.updateInfo(req, res)
   }
 
   @Post('update/password')
   @Middleware([updatePasswordRateLimit, CheckIfUserExistAndRedirect('/register', false)])
   private async updatePassword (req: Request, res: Response): Promise<void> {
-    try {
-      return await this.DashboardService.updatePassword(req, res)
-    } catch (e: any) {
-      res.status(StatusCodes.BAD_REQUEST).send({ error: e.message })
-    }
+    return await this.DashboardService.updatePassword(req, res)
   }
 
   @Get('save/:id')
   @Middleware([CheckIfUserExistAndSendError('Unable to save, are you logged in?')])
   private async saveAsset (req: Request, res: Response): Promise<void> {
-    try {
-      return await this.DashboardService.saveAsset(req, res)
-    } catch (e: any) {
-      res.status(StatusCodes.BAD_REQUEST).send({ error: e.message })
-    }
+    return await this.DashboardService.saveAsset(req, res)
   }
 }
