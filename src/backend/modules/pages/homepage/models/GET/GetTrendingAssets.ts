@@ -6,9 +6,16 @@ interface ReturnedAssets extends WithId<Document>, assetGridSchema {}
 
 export async function GetTrendingAssets (): Promise<ReturnedAssets[]> {
   const mongo = MongoHelper.getDatabase()
-  const operationObject = await mongo.collection('assets').find({}, {
-    limit: 5,
-    projection: {
+  const operationObject = await mongo.collection('assets').aggregate([{
+    $sample: {
+      size: 5
+    }
+  }, {
+    $sort: {
+      upvotes: -1
+    }
+  }, {
+    $project: {
       category: 1,
       godot_version: 1,
       author: 1,
@@ -22,7 +29,9 @@ export async function GetTrendingAssets (): Promise<ReturnedAssets[]> {
       previews: 1,
       card_banner: 1
     }
-  }).sort({ upvotes: -1 }).toArray() as ReturnedAssets[]
+  }]).toArray() as ReturnedAssets[]
+
+  console.log(operationObject)
 
   if (operationObject === null || operationObject === undefined) {
     throw new Error('No assets found')
