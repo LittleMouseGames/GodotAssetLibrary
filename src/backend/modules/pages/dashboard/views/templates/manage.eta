@@ -24,6 +24,9 @@
   <div class="column">
     <h2>Delete My Information</h2>
     <p>Delete your account and its associated information like any reviews you've left on assets</p>
-    <button>Delete account</button>
+    <p><strong>Note: Clicking the button will not prompt for a confirmation. It will immediately delete your
+        account</strong></p>
+    <a href="/dashboard/delete/"><button class="delete">Delete
+        account</button></a>
   </div>
 </section>

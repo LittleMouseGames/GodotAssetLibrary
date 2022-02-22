@@ -58,6 +58,10 @@
     @include form-select;
   }
 
+  .delete {
+    background: red;
+  }
+
   .sidebar {
     .item {
       padding: 15px;

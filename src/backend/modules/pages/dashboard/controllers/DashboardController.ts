@@ -64,8 +64,14 @@ export class DashboardController {
   }
 
   @Get('download')
-  @Middleware([CheckIfUserExistAndSendError('Unable to save, are you logged in?')])
+  @Middleware([CheckIfUserExistAndSendError('Unable to download information, are you logged in?')])
   private async downloadInfo (req: Request, res: Response): Promise<void> {
     return await this.DashboardService.downloadInformation(req, res)
+  }
+
+  @Get('delete')
+  @Middleware([CheckIfUserExistAndSendError('Unable to delete account, are you logged in?')])
+  private async delteAccount (req: Request, res: Response): Promise<void> {
+    return await this.DashboardService.deleteAccount(req, res)
   }
 }

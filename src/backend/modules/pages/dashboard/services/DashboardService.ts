@@ -17,7 +17,10 @@ import striptags from 'striptags'
 import { UpdateUserSavedAssetsRemove } from '../models/UPDATE/UpdateUserSavedAssetsRemove'
 import { GetAllUserInformation } from '../models/GET/GetAllUserInformation'
 import { GetAllUserComments } from '../models/GET/GetAllUserComments'
-import { Blob } from 'buffer'
+import { UpdatePositiveVotesRemoveOne } from 'modules/pages/asset/models/UPDATE/UpdatePositiveVotesRemoveOne'
+import { UpdateNegativeVotesRemoveOne } from 'modules/pages/asset/models/UPDATE/UpdateNegativeVotesRemoveOne'
+import { DeleteAllUserComments } from '../models/DELETE/DeleteAllUserComments copy'
+import { DeleteUserByUserId } from '../models/DELETE/DeleteUserById'
 
 export class DashboardService {
   public async render (req: Request, res: Response): Promise<void> {
@@ -215,5 +218,30 @@ export class DashboardService {
 
     res.writeHead(200, { 'Content-Type': 'application/json' })
     res.end(downloadJson, 'ascii')
+  }
+
+  public async deleteAccount (req: Request, res: Response): Promise<void> {
+    const hashedToken = req.body.hashedToken ?? ''
+
+    if (hashedToken === '') {
+      throw new Error('Missing user auth')
+    }
+
+    const userId = await GetUserIdByToken(hashedToken)
+    const userComments = await GetAllUserComments(userId)
+
+    for (const comment of userComments) {
+      if (comment.review_type === 'positive') {
+        await UpdatePositiveVotesRemoveOne(comment.asset_id)
+      } else {
+        await UpdateNegativeVotesRemoveOne(comment.asset_id)
+      }
+    }
+
+    await DeleteAllUserComments(userId)
+    await DeleteUserByUserId(userId)
+
+    res.clearCookie('auth-token')
+    res.redirect('/')
   }
 }
