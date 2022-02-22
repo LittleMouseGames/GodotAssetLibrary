@@ -70,7 +70,7 @@ class RouterServer extends Server {
 
     this.setupControllers()
 
-    this.app.use((err, req, res, next) => {
+    this.app.use((err: Error, _req: Request, res: Response, _next: NextFunction) => {
       return res.status(StatusCodes.BAD_REQUEST).send({ error: err.message })
     })
   }
