@@ -14,13 +14,25 @@
     </div>
   </div>
   <div class="column">
-    <form method="POST" action="/admin/update/promobar"
+    <form method="POST" action="/admin/update/settings"
       onsubmit="window.godotLibrary.formTools.sendFormAjax(event, this)">
       <h2>Site Settings</h2>
       <div class="input-container">
         <input class="input" id="username" type="text" name="message" placeholder=""
           value="<%= it?._locals?.promobarMessage ?? '' %>">
         <label for="username" class="placeholder">Promobar Message</label>
+      </div>
+      <div>
+        <label>
+          <input type="checkbox" name="disable_new_accounts">
+          <span>Disable new accounts</span>
+        </label>
+      </div>
+      <div>
+        <label>
+          <input type="checkbox" name="disable_new_comments">
+          <span>Disable new comments</span>
+        </label>
       </div>
       <div class="disclaimer">
         By submitting this form you agree to our

@@ -18,11 +18,10 @@ export class HomepageService {
       const lastModifiedAssets = await GetLastModifiedAssets()
       const categoriesObject = await GetAllCategoriesAndTheirAssetCount()
 
-      const assetPointers = [trendingAssets, featuredAssets, newestAssets, lastModifiedAssets]
-
       if (authToken !== '') {
         const tokenServices = TokenServices.getInstance()
         const hashedToken = tokenServices.hashToken(authToken)
+        const assetPointers = [trendingAssets, featuredAssets, newestAssets, lastModifiedAssets]
 
         try {
           const userSaved = await GetUserSavedAssets(hashedToken)

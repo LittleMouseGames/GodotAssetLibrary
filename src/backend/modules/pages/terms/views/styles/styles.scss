@@ -5,7 +5,7 @@
 
 .page-terms {
   @include reset-header-spacing;
-  margin-top: 40px;
+  margin-top: 20px;
   display: grid;
   column-gap: 60px;
   grid-template-columns: auto auto;

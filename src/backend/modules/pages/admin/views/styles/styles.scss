@@ -11,17 +11,10 @@
   @include sneaky-labels;
   @include disclaimer-styles;
 
-  margin-top: 40px;
+  margin-top: 20px;
   display: grid;
   column-gap: 60px;
   grid-template-columns: auto 1fr;
-
-  &.featured {
-    button {
-      padding: 0;
-      color: $text-dark-black;
-    }
-  }
 
   h2 {
     font-size: 18px;
@@ -34,8 +27,8 @@
   }
 
   input[type="checkbox"] {
-    margin-top: 20px;
-    margin-bottom: 0;
+    margin-top: 5px;
+    margin-bottom: 10px;
     width: auto;
   }
 
@@ -44,12 +37,12 @@
     color: $text-dark-darker;
   }
 
-  button {
-    @include form-button;
+  .disclaimer {
+    margin-top: 10px;
   }
 
-  textarea {
-    @include form-textarea;
+  button {
+    @include form-button;
   }
 
   select {

@@ -7,6 +7,7 @@ import { UpdateAssetSetFeatured } from '../models/UPDATE/UpdateAssetSetFeatured'
 import { UpdateFeaturedAssetsAdd } from '../models/UPDATE/UpdateFeaturedAssetsAdd'
 import { UpdateFeaturedAssetsRemove } from '../models/UPDATE/UpdateFeaturedAssetsRemove'
 import { UpdatePromobarMessage } from '../models/UPDATE/UpdatePromobarMessage'
+import { UpdateSiteRestrictions } from '../models/UPDATE/UpdateSiteRestrictions'
 
 export class AdminService {
   public async render (_req: Request, res: Response): Promise<void> {
@@ -39,14 +40,17 @@ export class AdminService {
     return res.render('templates/pages/admin/featured', { assets: assets, params: req.originalUrl, pageBanner: pageBanner })
   }
 
-  public async updatePromobarMessage (req: Request, res: Response): Promise<void> {
+  public async updateSiteSettings (req: Request, res: Response): Promise<void> {
     const message = striptags(req.body.message ?? '')
+    const disableNewAccounts = Boolean(req.body.disable_new_accounts ?? false)
+    const disableNewComments = Boolean(req.body.disable_new_comments ?? false)
 
     if (message.length > 100) {
       throw new Error('Promobar message too long, must be less than 100 characters')
     }
 
     await UpdatePromobarMessage(message)
+    await UpdateSiteRestrictions(disableNewAccounts, disableNewComments)
 
     res.send()
   }

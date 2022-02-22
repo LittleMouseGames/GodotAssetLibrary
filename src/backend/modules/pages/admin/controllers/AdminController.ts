@@ -29,11 +29,11 @@ export class AdminController {
     }
   }
 
-  @Post('update/promobar')
+  @Post('update/settings')
   @Middleware([CheckIfUserExistAndRedirect('/register', false), CheckIfUserAdminAndRedirectIfNot('/404')])
-  private async updatePromobarMessage (req: Request, res: Response): Promise<void> {
+  private async updateSiteSettings (req: Request, res: Response): Promise<void> {
     try {
-      return await this.AdminService.updatePromobarMessage(req, res)
+      return await this.AdminService.updateSiteSettings(req, res)
     } catch (e: any) {
       res.status(StatusCodes.BAD_REQUEST).send({ error: e.message })
     }
