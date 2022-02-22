@@ -89,13 +89,12 @@
                 <div class="dropdown" onclick="window.godotLibrary.dropdown.showContent(event, this)">
                   <span class="iconify" data-icon="akar-icons:more-horizontal"></span>
                   <div class="options">
-                    <div>Save</div>
-                    <div>Report</div>
+                    <div onclick="openReportModal(event, '<%= String(comment.human_id) %>')">Report</div>
                   </div>
                 </div>
               </div>
               <span class="username"><%= comment.username %></span>
-              <span class="rated">Rated <%= comment.review_type %></span>
+              <span class=" rated">Rated <%= comment.review_type %></span>
               <div class="review-body">
                 <%= comment.text %>
               </div>
@@ -238,7 +237,8 @@
             </div>
             <div class="row">
               <div class="property">Issue URL</div>
-              <div class="value"><a href="<%= it?.info?.issues_url %>" target="_blank">Link to Issues URL</a></div>
+              <div class="value"><a href="<%= it?.info?.issues_url %>" target="_blank">Link to Issues URL</a>
+              </div>
             </div>
           </div>
           <button onclick="openInstallModal(event)">Add to
@@ -254,6 +254,13 @@
 
     function openInstallModal(event) {
       document.querySelector('.modal.install').classList.add('active')
+      event.stopPropagation()
+    }
+
+    function openReportModal(event, commentId) {
+      const modalSelector = document.querySelector('.modal.report')
+      modalSelector.classList.add('active')
+      modalSelector.querySelector('form').setAttribute('action', `/asset/report/comment/${commentId}`)
       event.stopPropagation()
     }
   </script>
