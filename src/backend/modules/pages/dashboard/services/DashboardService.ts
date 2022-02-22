@@ -15,6 +15,9 @@ import { UpdateReviewsInformationByUserId } from '../models/UPDATE/UpdateReviews
 import { UpdateUserSavedAssetsAdd } from '../models/UPDATE/UpdateUserSavedAssetsAdd'
 import striptags from 'striptags'
 import { UpdateUserSavedAssetsRemove } from '../models/UPDATE/UpdateUserSavedAssetsRemove'
+import { GetAllUserInformation } from '../models/GET/GetAllUserInformation'
+import { GetAllUserComments } from '../models/GET/GetAllUserComments'
+import { Blob } from 'buffer'
 
 export class DashboardService {
   public async render (req: Request, res: Response): Promise<void> {
@@ -57,6 +60,15 @@ export class DashboardService {
     }
 
     return res.render('templates/pages/dashboard/reviews', { assets: assets, params: req.originalUrl, pageBanner: pageBanner })
+  }
+
+  public async renderManage (req: Request, res: Response): Promise<void> {
+    const pageBanner = {
+      title: 'Manage Information',
+      info: 'Download your information or delete your account'
+    }
+
+    return res.render('templates/pages/dashboard/manage', { pageBanner: pageBanner })
   }
 
   public async renderSaved (req: Request, res: Response): Promise<void> {
@@ -181,5 +193,27 @@ export class DashboardService {
     }
 
     res.send()
+  }
+
+  public async downloadInformation (req: Request, res: Response): Promise<void> {
+    const hashedToken = req.body.hashedToken ?? ''
+
+    if (hashedToken === '') {
+      throw new Error('Missing user auth')
+    }
+
+    const userObject = await GetAllUserInformation(hashedToken)
+    const userId = await GetUserIdByToken(hashedToken)
+    const userComments = await GetAllUserComments(userId)
+
+    const downloadObject = {
+      user_object: userObject,
+      user_comments: userComments
+    }
+
+    const downloadJson = JSON.stringify(downloadObject)
+
+    res.writeHead(200, { 'Content-Type': 'application/json' })
+    res.end(downloadJson, 'ascii')
   }
 }

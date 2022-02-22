@@ -1,12 +1,12 @@
 <% it.meta = {
-  title: 'My Reviews | Godot Asset Library',
+  title: 'Dashboard | Godot Asset Library',
   description: 'Find all <Search Query> Assets on Godot',
-  url: 'https://godotlibrary.com/dashboard/reviews',
+  url: 'https://godotlibrary.com/dashboard',
   moduleName: 'dashboard'
 } %>
 <% layout('templates/components/layouts/promobar-nav-body-footer.eta') %>
 
-<section class="page-dashboard reviews">
+<section class="page-dashboard">
   <div class="column">
     <div class="sidebar">
       <div class="item active"><a href="/dashboard">Account Information</a></div>
@@ -16,6 +16,14 @@
     </div>
   </div>
   <div class="column">
-    <%~ includeFile('templates/components/partials/catalog-grid.eta', it) %>
+    <h2>Download My Information</h2>
+    <p>Download all the information that we have about you</p>
+    <a href="/dashboard/download/" download="GodotAssetLibrary_User_Information.json"><button>Download
+        archive</button></a>
+  </div>
+  <div class="column">
+    <h2>Delete My Information</h2>
+    <p>Delete your account and its associated information like any reviews you've left on assets</p>
+    <button>Delete account</button>
   </div>
 </section>

@@ -33,6 +33,12 @@ export class DashboardController {
     return await this.DashboardService.renderReviews(req, res)
   }
 
+  @Get('manage/')
+  @Middleware([CheckIfUserExistAndRedirect('/register', false)])
+  private async manage (req: Request, res: Response): Promise<void> {
+    return await this.DashboardService.renderManage(req, res)
+  }
+
   @Get('saved/')
   @Middleware([CheckIfUserExistAndRedirect('/register', false)])
   private async saved (req: Request, res: Response): Promise<void> {
@@ -55,5 +61,11 @@ export class DashboardController {
   @Middleware([CheckIfUserExistAndSendError('Unable to save, are you logged in?')])
   private async saveAsset (req: Request, res: Response): Promise<void> {
     return await this.DashboardService.saveAsset(req, res)
+  }
+
+  @Get('download')
+  @Middleware([CheckIfUserExistAndSendError('Unable to save, are you logged in?')])
+  private async downloadInfo (req: Request, res: Response): Promise<void> {
+    return await this.DashboardService.downloadInformation(req, res)
   }
 }
