@@ -19,6 +19,7 @@ import fromNow from 'fromnow'
 import striptags from 'striptags'
 import { GetUserSavedAssets } from 'modules/pages/dashboard/models/GET/GetUserSavedAssets'
 import { GetSiteRestrictions } from 'modules/pages/admin/models/GET/GetSiteRestrictions'
+import { GetIsAccountDisabledByToken } from '../models/GET/GetIsAccountDisabledByToken'
 
 export class AssetService {
   /**
@@ -93,15 +94,16 @@ export class AssetService {
     const review = req.body.asset_review ?? ''
     const headline = req.body.asset_review_headline ?? ''
     const hasUserReviewedAsset = await GetHasUserReviewedAsset(authToken, assetId)
-
+    const isAccountDisabled = await GetIsAccountDisabledByToken(authToken)
     let siteRestrictions: any = {}
+
     try {
       siteRestrictions = await GetSiteRestrictions()
     } catch (e) {
       // ignore
     }
 
-    if (siteRestrictions?.disable_new_comments === true) {
+    if (siteRestrictions?.disable_new_comments === true || isAccountDisabled) {
       throw new Error('Posting new reviews has been temporarily disabled')
     }
 
