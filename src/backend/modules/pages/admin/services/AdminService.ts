@@ -3,6 +3,7 @@ import { GetDoesPostExistById } from 'modules/pages/asset/models/GET/GetDoesPost
 import striptags from 'striptags'
 import { GetAssetsByIdList } from '../models/GET/GetAssetsByIdList'
 import { GetFeaturedAssets } from '../models/GET/GetFeaturedAssets'
+import { GetSiteRestrictions } from '../models/GET/GetSiteRestrictions'
 import { UpdateAssetSetFeatured } from '../models/UPDATE/UpdateAssetSetFeatured'
 import { UpdateFeaturedAssetsAdd } from '../models/UPDATE/UpdateFeaturedAssetsAdd'
 import { UpdateFeaturedAssetsRemove } from '../models/UPDATE/UpdateFeaturedAssetsRemove'
@@ -16,7 +17,9 @@ export class AdminService {
       info: 'Manage site settings like promobar message and featured posts'
     }
 
-    return res.render('templates/pages/admin/admin', { pageBanner: pageBanner })
+    const siteRestrictions = await GetSiteRestrictions()
+
+    return res.render('templates/pages/admin/admin', { pageBanner: pageBanner, siteRestrictions: siteRestrictions })
   }
 
   public async renderFeatured (req: Request, res: Response): Promise<void> {

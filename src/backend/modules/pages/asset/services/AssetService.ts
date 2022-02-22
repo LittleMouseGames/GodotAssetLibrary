@@ -18,6 +18,7 @@ import { UpdateReviewForAsset } from '../models/UPDATE/UpdateReviewForAsset'
 import fromNow from 'fromnow'
 import striptags from 'striptags'
 import { GetUserSavedAssets } from 'modules/pages/dashboard/models/GET/GetUserSavedAssets'
+import { GetSiteRestrictions } from 'modules/pages/admin/models/GET/GetSiteRestrictions'
 
 export class AssetService {
   /**
@@ -92,6 +93,12 @@ export class AssetService {
     const review = req.body.asset_review ?? ''
     const headline = req.body.asset_review_headline ?? ''
     const hasUserReviewedAsset = await GetHasUserReviewedAsset(authToken, assetId)
+
+    const siteRestrictions = await GetSiteRestrictions()
+
+    if (siteRestrictions?.disable_new_comments === true) {
+      throw new Error('Posting asset reviews are temporarily disabled')
+    }
 
     if (assetId === '') {
       throw new Error('Missing post ID')

@@ -24,13 +24,15 @@
       </div>
       <div>
         <label>
-          <input type="checkbox" name="disable_new_accounts">
+          <input type="checkbox" name="disable_new_accounts"
+            <%= it?.siteRestrictions?.disable_new_accounts ? 'checked' : '' %>>
           <span>Disable new accounts</span>
         </label>
       </div>
       <div>
         <label>
-          <input type="checkbox" name="disable_new_comments">
+          <input type="checkbox" name="disable_new_comments"
+            <%= it?.siteRestrictions?.disable_new_comments ? 'checked' : '' %>>
           <span>Disable new comments</span>
         </label>
       </div>
