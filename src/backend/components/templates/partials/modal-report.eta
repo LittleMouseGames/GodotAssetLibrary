@@ -16,9 +16,10 @@
         </select>
       </div>
       <div class="input-container">
-        <textarea id="report_notes" placeholder="" class="input" name="notes"></textarea>
+        <textarea id="report_notes" placeholder="" class="input" name="notes" maxlength="200"></textarea>
         <label for="report_notes" class="placeholder">Additional notes (optional)</label>
       </div>
+      <div class="note">Character limit is 200 characters</div>
       <button>Send Report</button>
     </form>
   </div>

@@ -176,7 +176,7 @@ export class AssetService {
     res.send()
   }
 
-  public reportComment (req: Request, res: Response): void {
+  public reportReview (req: Request, res: Response): void {
     const reasons = [
       'spam',
       'harrasement',
@@ -185,9 +185,14 @@ export class AssetService {
     ]
 
     const reason = req.body.reason
-    const notes = req.body.notes ?? ''
+    const notes = striptags(req.body.notes) ?? ''
+    const commentId = String(req.params.id) ?? ''
 
-    if (notes.length > 500) {
+    if (commentId.length === 0) {
+      throw new Error('Missing comment ID')
+    }
+
+    if (notes.length > 200) {
       throw new Error('Notes too long, please keep it under 500 characters')
     }
 
@@ -195,6 +200,6 @@ export class AssetService {
       throw new Error('Invalid or missing reason')
     }
 
-    console.log(notes, reason)
+    res.send('Review report sent successfully')
   }
 }
