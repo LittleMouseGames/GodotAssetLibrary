@@ -20,6 +20,7 @@ import striptags from 'striptags'
 import { GetUserSavedAssets } from 'modules/pages/dashboard/models/GET/GetUserSavedAssets'
 import { GetSiteRestrictions } from 'modules/pages/admin/models/GET/GetSiteRestrictions'
 import { GetIsAccountDisabledByToken } from '../models/GET/GetIsAccountDisabledByToken'
+import { InsertReviewReport } from '../models/INSERT/InsertReviewReport'
 
 export class AssetService {
   /**
@@ -176,7 +177,7 @@ export class AssetService {
     res.send()
   }
 
-  public reportReview (req: Request, res: Response): void {
+  public async reportReview (req: Request, res: Response): Promise<void> {
     const reasons = [
       'spam',
       'harrasement',
@@ -184,11 +185,12 @@ export class AssetService {
       'other'
     ]
 
-    const reason = req.body.reason
+    const reason = striptags(req.body.reason)
     const notes = striptags(req.body.notes) ?? ''
-    const commentId = String(req.params.id) ?? ''
+    const reviewId = striptags(req.params.id) ?? ''
+    const authToken = striptags(req.cookies['auth-token']) ?? ''
 
-    if (commentId.length === 0) {
+    if (reviewId.length === 0) {
       throw new Error('Missing comment ID')
     }
 
@@ -199,6 +201,21 @@ export class AssetService {
     if (reason === undefined || !reasons.includes(reason)) {
       throw new Error('Invalid or missing reason')
     }
+
+    let userId = 'not-logged-in'
+
+    if (authToken.length > 0) {
+      const tokenServices = TokenServices.getInstance()
+      const hashedToken = tokenServices.hashToken(authToken)
+
+      try {
+        userId = await GetUserIdByToken(hashedToken)
+      } catch (e) {
+        // ignore
+      }
+    }
+
+    void await InsertReviewReport(userId, reason, notes, reviewId)
 
     res.send('Review report sent successfully')
   }

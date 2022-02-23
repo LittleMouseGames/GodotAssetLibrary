@@ -260,7 +260,7 @@
     function openReportModal(event, commentId) {
       const modalSelector = document.querySelector('.modal.report')
       modalSelector.classList.add('active')
-      modalSelector.querySelector('form').setAttribute('action', `/asset/report/comment/${commentId}`)
+      modalSelector.querySelector('form').setAttribute('action', `/asset/report/review/${commentId}`)
       event.stopPropagation()
     }
   </script>
