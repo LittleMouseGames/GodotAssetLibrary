@@ -4,7 +4,7 @@
     <div class="head">
       <!-- close icon -->
     </div>
-    <form method="POST" action="">
+    <form method="POST" action="" onsubmit="window.godotLibrary.formTools.sendFormAjax(event, this)">
       <h2>Report comment</h2>
       <div class="name">Reason for reporting:</div>
       <div class="input-container">
