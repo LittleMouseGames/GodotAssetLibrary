@@ -175,4 +175,26 @@ export class AssetService {
 
     res.send()
   }
+
+  public reportComment (req: Request, res: Response): void {
+    const reasons = [
+      'spam',
+      'harrasement',
+      'illegal',
+      'other'
+    ]
+
+    const reason = req.body.reason
+    const notes = req.body.notes ?? ''
+
+    if (notes.length > 500) {
+      throw new Error('Notes too long, please keep it under 500 characters')
+    }
+
+    if (reason === undefined || !reasons.includes(reason)) {
+      throw new Error('Invalid or missing reason')
+    }
+
+    console.log(notes, reason)
+  }
 }

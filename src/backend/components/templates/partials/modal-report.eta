@@ -4,19 +4,19 @@
     <div class="head">
       <!-- close icon -->
     </div>
-    <form action="POST" method="">
+    <form method="POST" action="">
       <h2>Report comment</h2>
       <div class="name">Reason for reporting:</div>
       <div class="input-container">
-        <select class="input">
+        <select class="input" name="reason">
           <option value="spam">Spam</option>
-          <option value="Harrasement">Harrasement</option>
+          <option value="harrasement">Harrasement</option>
           <option value="illegal">Illegal Content</option>
           <option value="other">Other</option>
         </select>
       </div>
       <div class="input-container">
-        <textarea id="report_notes" placeholder="" class="input"></textarea>
+        <textarea id="report_notes" placeholder="" class="input" name="notes"></textarea>
         <label for="report_notes" class="placeholder">Additional notes (optional)</label>
       </div>
       <button>Send Report</button>
