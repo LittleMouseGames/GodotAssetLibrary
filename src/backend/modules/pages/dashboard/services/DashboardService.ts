@@ -62,7 +62,7 @@ export class DashboardService {
       // ignore
     }
 
-    return res.render('templates/pages/dashboard/reviews', { assets: assets, params: req.originalUrl, pageBanner: pageBanner })
+    return res.render('templates/pages/dashboard/reviews', { grid: assets, params: req.originalUrl, pageBanner: pageBanner })
   }
 
   public async renderManage (_req: Request, res: Response): Promise<void> {
@@ -102,7 +102,7 @@ export class DashboardService {
       info: 'View all assets you\'ve saved'
     }
 
-    return res.render('templates/pages/dashboard/reviews', { assets: assets, params: req.originalUrl, pageBanner: pageBanner })
+    return res.render('templates/pages/dashboard/reviews', { grid: assets, params: req.originalUrl, pageBanner: pageBanner })
   }
 
   public async updateInfo (req: Request, res: Response): Promise<void> {

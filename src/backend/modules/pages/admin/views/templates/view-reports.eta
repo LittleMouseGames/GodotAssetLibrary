@@ -1,17 +1,17 @@
 <% it.meta = {
-  title: 'Featured Posts | Godot Asset Library',
+  title: 'View Reports | Godot Asset Library',
   description: 'Find all <Search Query> Assets on Godot',
-  url: 'https://godotlibrary.com/admin/featured',
+  url: 'https://godotlibrary.com/dashboard/reviews',
   moduleName: 'admin'
 } %>
 <% layout('templates/components/layouts/promobar-nav-body-footer.eta') %>
 
-<section class="page-admin featured">
+<section class="page-admin reports">
   <div class="column">
     <div class="sidebar">
       <div class="item"><a href="/admin">Site Settings</a></div>
-      <div class="item active"><a href="/admin/featured/">Featured Assets</a></div>
-      <div class="item"><a href="/admin/reports/">View Reports</a></div>
+      <div class="item"><a href="/admin/featured/">Featured Assets</a></div>
+      <div class="item active"><a href="/admin/reports/">View Reports</a></div>
     </div>
   </div>
   <div class="column">

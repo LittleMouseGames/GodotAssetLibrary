@@ -11,6 +11,7 @@
     <div class="sidebar">
       <div class="item active"><a href="/admin">Site Settings</a></div>
       <div class="item"><a href="/admin/featured/">Featured Assets</a></div>
+      <div class="item"><a href="/admin/reports/">View Reports</a></div>
     </div>
   </div>
   <div class="column">

@@ -47,7 +47,7 @@
         </a>
         <% } %>
         <% var currentLimit = Number(params.get('limit')) === 0 ? 12 : Number(params.get('limit')) %>
-        <% if (it.assets?.length !== currentLimit) { %>
+        <% if (it.grid?.length !== currentLimit) { %>
         <button class="disabled">Next</button>
         <% } else { %>
         <% params.set('page', page + 1) %>
@@ -59,11 +59,11 @@
     </div>
   </div>
   <div class="results">
-    <% it.assets?.forEach(info => { %>
+    <% it.grid?.forEach(info => { %>
     <%~ includeFile('templates/components/partials/asset-card.eta', { info: info, _locals: it?._locals }) %>
     <% }) %>
   </div>
-  <% if(it?.assets?.length > 0) { %>
+  <% if(it?.grid?.length > 0) { %>
   <div class="bottom-bar">
     <div class="left">
       <label class="inline-dropdown">
@@ -98,7 +98,7 @@
         </a>
         <% } %>
         <% var currentLimit = Number(params.get('limit')) === 0 ? 12 : Number(params.get('limit')) %>
-        <% if (it.assets?.length !== currentLimit) { %>
+        <% if (it.grid?.length !== currentLimit) { %>
         <button class="disabled">Next</button>
         <% } else { %>
         <% params.set('page', page + 1) %>

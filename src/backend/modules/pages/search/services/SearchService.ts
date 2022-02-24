@@ -105,7 +105,7 @@ export class SearchService {
 
     return res.render('templates/pages/search/search', {
       filters: { category: categoryFilters, engine: engineFilters },
-      assets: assets,
+      grid: assets,
       params: req.originalUrl,
       pageBanner: pageBanner
     })
