@@ -1,0 +1,17 @@
+<div class="review-report">
+  <div class="report">
+    <p>Reason: <span><%= it?.report?.reason %></span></p>
+    <p>Notes: <span><%= it?.report?.notes %></span></p>
+    <p>Reported by: <span><%= it?.report?.user_id %></span></p>
+  </div>
+  <div class="review">
+    <p>Type: <span><%= it?.review?.review_type %></span></p>
+    <p>Username: <span><%= it?.review?.username %></span></p>
+    <p>Headline: <span><%= it?.review?.headline %></span></p>
+    <p>Text: <span><%= it?.review?.text %></span></p>
+  </div>
+  <div class="actions">
+    <button>Ignore</button>
+    <button>Remove Review</button>
+  </div>
+</div>

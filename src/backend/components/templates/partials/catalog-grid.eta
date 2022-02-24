@@ -60,7 +60,11 @@
   </div>
   <div class="results">
     <% it.grid?.forEach(info => { %>
+    <% if (it?.type && it?.type === 'reports') { %>
+    <%~ includeFile('templates/components/partials/review-report.eta', info) %>
+    <% } else { %>
     <%~ includeFile('templates/components/partials/asset-card.eta', { info: info, _locals: it?._locals }) %>
+    <% } %>
     <% }) %>
   </div>
   <% if(it?.grid?.length > 0) { %>
