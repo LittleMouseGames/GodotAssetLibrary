@@ -1,0 +1,14 @@
+@import "components/styles/utils/variables";
+@import "components/styles/utils/mixins";
+
+.review-report {
+  background: $color-brand-white;
+  border-radius: 6px;
+  box-shadow: $standard-shadow;
+  padding: 10px;
+  font-family: "DM Sans";
+
+  .field {
+    font-weight: 600;
+  }
+}

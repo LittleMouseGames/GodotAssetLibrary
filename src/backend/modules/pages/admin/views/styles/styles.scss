@@ -4,12 +4,34 @@
 @import "components/styles/partials/forms";
 @import "components/styles/partials/catalog-grid";
 @import "components/styles/partials/asset-card";
+@import "components/styles/partials/review-report";
 @include card-rating-styles;
 
 .page-admin {
   @include reset-header-spacing;
   @include sneaky-labels;
   @include disclaimer-styles;
+
+  &.reports {
+    .results {
+      grid-template-columns: 1fr 1fr 1fr;
+    }
+
+    .actions {
+      display: flex;
+      justify-content: space-between;
+
+      button {
+        padding: 10px;
+      }
+    }
+
+    p {
+      &:first-of-type {
+        margin-top: 0px;
+      }
+    }
+  }
 
   margin-top: 20px;
   display: grid;

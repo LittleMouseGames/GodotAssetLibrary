@@ -78,14 +78,16 @@ export class AdminService {
 
       combinedObject.report = {
         reason: report.reason,
-        notes: report.notes
+        notes: report.notes,
+        report_id: report.human_id
       }
 
       combinedObject.review = {
         username: reportedReview?.username,
         review_type: reportedReview?.review_type,
         headline: reportedReview?.headline,
-        text: reportedReview?.text
+        text: reportedReview?.text,
+        review_id: reportedReview?.human_id
       }
 
       reviewAndReportCombined.push(combinedObject)

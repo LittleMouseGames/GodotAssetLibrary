@@ -1,17 +1,20 @@
 <div class="review-report">
   <div class="report">
-    <p>Reason: <span><%= it?.report?.reason %></span></p>
-    <p>Notes: <span><%= it?.report?.notes %></span></p>
-    <p>Reported by: <span><%= it?.report?.user_id %></span></p>
+    <p><span class="field">Reason:</span> <span><%= it?.report?.reason %></span></p>
+    <p><span class="field">Notes:</span> <span><%= it?.report?.notes %></span></p>
   </div>
   <div class="review">
-    <p>Type: <span><%= it?.review?.review_type %></span></p>
-    <p>Username: <span><%= it?.review?.username %></span></p>
-    <p>Headline: <span><%= it?.review?.headline %></span></p>
-    <p>Text: <span><%= it?.review?.text %></span></p>
+    <p><span class="field">Type:</span> <span><%= it?.review?.review_type %></span></p>
+    <p><span class="field">Username:</span> <span><%= it?.review?.username %></span></p>
+    <p><span class="field">Headline:</span> <span><%= it?.review?.headline %></span></p>
+    <p><span class="field">Text:</span> <span><%= it?.review?.text %></span></p>
   </div>
   <div class="actions">
-    <button>Ignore</button>
-    <button>Remove Review</button>
+    <a href="/admin/report/ignore/<%= it?.report?.report_id %>"
+      onclick="window.godotLibrary.dropdown.callRouteAjax(event, '/admin/report/ignore/<%= it?.report?.report_id %>', 'Report successfully ignored')"><button>Ignore
+        Report</button></a>
+    <a href="/admin/report/approve/<%= it?.review?.review_id %>"
+      onclick="window.godotLibrary.dropdown.callRouteAjax(event, '/admin/report/approve/<%= it?.review?.review_id %>', 'Report successfully approved and comment removed')"><button>Remove
+        Review</button></a>
   </div>
 </div>

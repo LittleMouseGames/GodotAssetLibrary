@@ -58,7 +58,9 @@ window.godotLibrary = {
         dropdownElement.style.display = 'none'
       }
     },
-    callRouteAjax: function (route, message) {
+    callRouteAjax: function (event, route, message) {
+      event.preventDefault()
+
       fetch(route, {
         method: 'get'
       }).then(response => {
