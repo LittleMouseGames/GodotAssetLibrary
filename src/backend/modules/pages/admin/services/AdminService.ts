@@ -11,6 +11,13 @@ import { UpdateFeaturedAssetsRemove } from '../models/UPDATE/UpdateFeaturedAsset
 import { UpdatePromobarMessage } from '../models/UPDATE/UpdatePromobarMessage'
 import { UpdateSiteRestrictions } from '../models/UPDATE/UpdateSiteRestrictions'
 import { GetReviewsByIdList } from '../models/GET/GetReviewsByIdList'
+import { UpdateReportIgnoreById } from '../models/UPDATE/UpdateReportIgnoreById'
+import { GetReportById } from '../models/GET/GetReportById'
+import { UpdateReportApproveById } from '../models/UPDATE/UpdateReportApproveById'
+import { DeleteReviewById } from '../models/DELETE/DeleteReviewById'
+import { GetReviewById } from '../models/GET/GetReviewById'
+import { UpdatePositiveVotesRemoveOne } from 'modules/pages/asset/models/UPDATE/UpdatePositiveVotesRemoveOne'
+import { UpdateNegativeVotesRemoveOne } from 'modules/pages/asset/models/UPDATE/UpdateNegativeVotesRemoveOne'
 
 export class AdminService {
   public async render (_req: Request, res: Response): Promise<void> {
@@ -99,6 +106,40 @@ export class AdminService {
     }
 
     return res.render('templates/pages/admin/view-reports', { grid: reviewAndReportCombined, params: req.originalUrl, pageBanner: pageBanner, type: 'reports' })
+  }
+
+  public async ignoreReport (req: Request, res: Response): Promise<void> {
+    const reportId = striptags(req.params.id) ?? ''
+
+    if (reportId.length === 0) {
+      throw new Error('Missing report ID')
+    }
+
+    await UpdateReportIgnoreById(reportId)
+
+    res.send()
+  }
+
+  public async approveReport (req: Request, res: Response): Promise<void> {
+    const reportId = striptags(req.params.id) ?? ''
+
+    if (reportId.length === 0) {
+      throw new Error('Missing report ID')
+    }
+
+    const reportInfo = await GetReportById(reportId)
+    const reviewInfo = await GetReviewById(reportInfo.review_id)
+
+    if (reviewInfo.review_type === 'positive') {
+      await UpdatePositiveVotesRemoveOne(reviewInfo.asset_id)
+    } else {
+      await UpdateNegativeVotesRemoveOne(reviewInfo.asset_id)
+    }
+
+    await UpdateReportApproveById(reportId)
+    await DeleteReviewById(reportInfo.review_id)
+
+    res.send()
   }
 
   public async updateSiteSettings (req: Request, res: Response): Promise<void> {

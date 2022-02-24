@@ -13,8 +13,8 @@
     <a href="/admin/report/ignore/<%= it?.report?.report_id %>"
       onclick="window.godotLibrary.dropdown.callRouteAjax(event, '/admin/report/ignore/<%= it?.report?.report_id %>', 'Report successfully ignored')"><button>Ignore
         Report</button></a>
-    <a href="/admin/report/approve/<%= it?.review?.review_id %>"
-      onclick="window.godotLibrary.dropdown.callRouteAjax(event, '/admin/report/approve/<%= it?.review?.review_id %>', 'Report successfully approved and comment removed')"><button>Remove
+    <a href="/admin/report/approve/<%= it?.report?.report_id %>"
+      onclick="window.godotLibrary.dropdown.callRouteAjax(event, '/admin/report/approve/<%= it?.report?.report_id %>', 'Report successfully approved and comment removed')"><button>Remove
         Review</button></a>
   </div>
 </div>

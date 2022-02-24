@@ -24,6 +24,16 @@ export class AdminController {
     return await this.AdminService.renderReports(req, res)
   }
 
+  @Get('report/approve/:id')
+  private async approveReport (req: Request, res: Response): Promise<void> {
+    return await this.AdminService.approveReport(req, res)
+  }
+
+  @Get('report/ignore/:id')
+  private async ignoreReport (req: Request, res: Response): Promise<void> {
+    return await this.AdminService.ignoreReport(req, res)
+  }
+
   @Post('update/settings')
   private async updateSiteSettings (req: Request, res: Response): Promise<void> {
     return await this.AdminService.updateSiteSettings(req, res)
