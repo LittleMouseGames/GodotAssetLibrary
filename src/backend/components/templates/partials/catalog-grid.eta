@@ -3,13 +3,13 @@
     <div class="left">
       <div class="sort">
         <label class="inline-dropdown">
+          <% var params = new URLSearchParams(it.params?.includes('q=') ? it.params : it.params + '?q=') %>
           Sort By
           <div class="dropdown" onclick="window.godotLibrary.dropdown.showContent(event, this)">
-            <div class="value">Relevance</div>
+            <div class="value"><%= params.get('sort')?.replace(/_/g, ' ') ?? 'Relevance' %> </div>
             <span class="iconify" data-icon="bxs:chevron-down"></span>
             <div class="options">
-              <% var params = new URLSearchParams(it.params?.includes('q=') ? it.params : it.params + '?q=') %>
-              <% const sorts = ['Relevance', 'Rating', 'Newest', 'Last Modified'] %>
+              <% const sorts = ['Relevance', 'Asset Rating', 'Last Modified', 'Newest'] %>
               <% sorts.forEach(sort => { %>
               <% params.set('sort', sort.toLocaleLowerCase().replace(/\s/g, '_')) %>
               <% params.set('page', 0) %>

@@ -20,7 +20,7 @@ export class SearchService {
 
     const sortMap: {[key: string]: any} = {
       relevance: {},
-      rating: { upvotes: -1 },
+      asset_rating: { upvotes: -1 },
       newest: { added_date: -1 },
       last_modified: { modify_date: -1 }
     }
