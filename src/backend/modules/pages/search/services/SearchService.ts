@@ -14,8 +14,20 @@ export class SearchService {
     const categoryParams = req.query.category ?? ''
     const engineParams = req.query.engine ?? ''
     let limit = Number(req.query.limit ?? 12)
-    const page = Number(req.query.page) ?? 0
+    const page = Number(req.query.page ?? 0)
     const authToken = req.cookies['auth-token'] ?? ''
+    const sort = String(req.query.sort ?? 'relevance')
+
+    const sortMap: {[key: string]: any} = {
+      relevance: {},
+      rating: { upvotes: -1 },
+      newest: { added_date: -1 },
+      last_modified: { modify_date: -1 }
+    }
+
+    if (sort !== 'undefined' && !(sort in sortMap)) {
+      throw new Error('Invalid sort parameter, expeting nothing, `relevance`, `rating`, `newest`, or `last_modified`')
+    }
 
     if (limit > 36) {
       limit = 36
@@ -61,11 +73,11 @@ export class SearchService {
     // if no query we'll show all assets
     if (query === '' && categoryArray.length === 0 && engineArray.length === 0) {
       filters = await GetAllFilters()
-      assets = await GetAssetsWithoutQuery(limit, skip)
+      assets = await GetAssetsWithoutQuery(limit, skip, sortMap[sort])
       totalAssetsForQuery = await GetAssetsCountWithoutQuery()
     } else {
       filters = await GetSearchResultFilters(query)
-      assets = await GetAssetsFromQuery(query, limit, skip, categoryArray, engineArray)
+      assets = await GetAssetsFromQuery(query, limit, skip, sortMap[sort], categoryArray, engineArray)
       totalAssetsForQuery = await GetAssetsCountFromQuery(query, categoryArray, engineArray)
     }
 

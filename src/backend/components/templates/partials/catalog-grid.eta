@@ -8,10 +8,13 @@
             <div class="value">Relevance</div>
             <span class="iconify" data-icon="bxs:chevron-down"></span>
             <div class="options">
-              <a href="">Relevance</a>
-              <a href="">Rating</a>
-              <a href="">Newest</a>
-              <a href="">Oldest</a>
+              <% var params = new URLSearchParams(it.params?.includes('q=') ? it.params : it.params + '?q=') %>
+              <% const sorts = ['Relevance', 'Rating', 'Newest', 'Last Modified'] %>
+              <% sorts.forEach(sort => { %>
+              <% params.set('sort', sort.toLocaleLowerCase().replace(/\s/g, '_')) %>
+              <% params.set('page', 0) %>
+              <a href="<%= decodeURIComponent(params.toString()) %>"><%= sort %></a>
+              <% }) %>
             </div>
           </div>
         </label>

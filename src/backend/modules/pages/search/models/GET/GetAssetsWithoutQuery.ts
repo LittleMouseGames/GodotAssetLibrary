@@ -4,10 +4,11 @@ import { assetGridSchema } from 'utility/schema/assets-grid'
 
 interface ReturnedAssets extends WithId<Document>, assetGridSchema {}
 
-export async function GetAssetsWithoutQuery (limit: number = 12, skip: number): Promise<ReturnedAssets[]> {
+export async function GetAssetsWithoutQuery (limit: number = 12, skip: number, sort: any = {}): Promise<ReturnedAssets[]> {
   const mongo = MongoHelper.getDatabase()
   const operationObject = await mongo.collection('assets').find({}, {
     limit: limit,
+    sort: sort,
     projection: {
       category: 1,
       godot_version: 1,
@@ -24,6 +25,8 @@ export async function GetAssetsWithoutQuery (limit: number = 12, skip: number): 
       modify_date: 1
     }
   }).skip(skip).toArray() as ReturnedAssets[]
+
+  console.log(sort)
 
   if (operationObject === null || operationObject === undefined) {
     throw new Error('No assets found')
