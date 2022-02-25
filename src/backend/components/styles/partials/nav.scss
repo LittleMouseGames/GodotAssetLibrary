@@ -114,6 +114,22 @@ nav {
     }
   }
 
+  .categories {
+    .value {
+      &.mobile {
+        display: none;
+      }
+
+      @include tablet-styles {
+        display: none;
+
+        &.mobile {
+          display: block;
+        }
+      }
+    }
+  }
+
   .account {
     margin-left: auto;
     font-weight: 600;

@@ -8,7 +8,7 @@ export async function GetTrendingAssets (): Promise<ReturnedAssets[]> {
   const mongo = MongoHelper.getDatabase()
   const operationObject = await mongo.collection('assets').aggregate([{
     $sample: {
-      size: 5
+      size: 6
     }
   }, {
     $sort: {

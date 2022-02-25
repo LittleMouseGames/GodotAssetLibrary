@@ -25,8 +25,9 @@
       <a href="/search/?q=&category=3d+tools" class="link">3D Tools</a>
       <a href="/search/?q=&category=tools" class="link">Tools</a>
       <a href="/search/?q=&category=shaders" class="link">Shaders</a>
-      <div class="dropdown" onclick="window.godotLibrary.dropdown.showContent(event, this)">
+      <div class="dropdown categories" onclick="window.godotLibrary.dropdown.showContent(event, this)">
         <div class="value">More Categories</div>
+        <div class="value mobile">Categories</div>
         <span class="iconify" data-icon="bxs:chevron-down"></span>
         <div class="options">
           <a href="/search/?q=&category=materials">Materials</a>

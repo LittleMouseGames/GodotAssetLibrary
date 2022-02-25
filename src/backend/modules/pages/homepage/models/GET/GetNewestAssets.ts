@@ -7,7 +7,7 @@ interface ReturnedAssets extends WithId<Document>, assetGridSchema {}
 export async function GetNewestAssets (): Promise<ReturnedAssets[]> {
   const mongo = MongoHelper.getDatabase()
   const operationObject = await mongo.collection('assets').find({}, {
-    limit: 5,
+    limit: 6,
     projection: {
       category: 1,
       godot_version: 1,

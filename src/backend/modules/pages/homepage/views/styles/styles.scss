@@ -26,5 +26,21 @@
     grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
     column-gap: 20px;
     row-gap: 20px;
+
+    .asset-card {
+      &:last-of-type {
+        display: none;
+      }
+    }
+
+    @include tablet-styles {
+      grid-template-columns: 1fr 1fr 1fr;
+
+      .asset-card {
+        &:last-of-type {
+          display: flex;
+        }
+      }
+    }
   }
 }
