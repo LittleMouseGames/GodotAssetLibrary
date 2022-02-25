@@ -4,7 +4,7 @@ import { assetGridSchema } from 'utility/schema/assets-grid'
 
 interface ReturnedAssets extends WithId<Document>, assetGridSchema {}
 
-export async function GetAssetsByIdList (assetIdList: [string], limit: number = 12, skip: number): Promise<ReturnedAssets[]> {
+export async function GetAssetsByIdList (assetIdList: [string], limit: number = 12, skip: number, sort: any): Promise<ReturnedAssets[]> {
   const mongo = MongoHelper.getDatabase()
 
   const operationObject = await mongo.collection('assets').find({
@@ -13,6 +13,7 @@ export async function GetAssetsByIdList (assetIdList: [string], limit: number = 
     }
   }, {
     limit: limit,
+    sort: sort,
     projection: {
       category: 1,
       godot_version: 1,

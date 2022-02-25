@@ -39,6 +39,17 @@ export class AdminService {
   public async renderFeatured (req: Request, res: Response): Promise<void> {
     let limit = Number(req.query.limit ?? 12)
     const page = Number(req.query.page ?? 0)
+    const sort = String(req.query.sort ?? 'relevance')
+    const sortMap: {[key: string]: any} = {
+      relevance: {},
+      asset_rating: { upvotes: -1 },
+      newest: { added_date: -1 },
+      last_modified: { modify_date: -1 }
+    }
+
+    if (sort !== 'undefined' && !(sort in sortMap)) {
+      throw new Error('Invalid sort parameter, expeting nothing, `relevance`, `rating`, `newest`, or `last_modified`')
+    }
 
     if (limit > 36) {
       limit = 36
@@ -47,7 +58,7 @@ export class AdminService {
     const skip = limit * page
 
     const featuredAssetList = await GetFeaturedAssets() ?? []
-    const assets = await GetAssetsByIdList(featuredAssetList, limit, skip)
+    const assets = await GetAssetsByIdList(featuredAssetList, limit, skip, sortMap[sort])
 
     const pageBanner = {
       title: 'Featured Assets',
@@ -60,6 +71,17 @@ export class AdminService {
   public async renderReports (req: Request, res: Response): Promise<void> {
     let limit = Number(req.query.limit ?? 12)
     const page = Number(req.query.page ?? 0)
+    const sort = String(req.query.sort ?? 'relevance')
+    const sortMap: {[key: string]: any} = {
+      relevance: {},
+      asset_rating: { upvotes: -1 },
+      newest: { added_date: -1 },
+      last_modified: { modify_date: -1 }
+    }
+
+    if (sort !== 'undefined' && !(sort in sortMap)) {
+      throw new Error('Invalid sort parameter, expeting nothing, `relevance`, `rating`, `newest`, or `last_modified`')
+    }
 
     if (limit > 36) {
       limit = 36

@@ -37,6 +37,17 @@ export class DashboardService {
   public async renderReviews (req: Request, res: Response): Promise<void> {
     let limit = Number(req.query.limit ?? 12)
     const page = Number(req.query.page ?? 0)
+    const sort = String(req.query.sort ?? 'relevance')
+    const sortMap: {[key: string]: any} = {
+      relevance: {},
+      asset_rating: { upvotes: -1 },
+      newest: { added_date: -1 },
+      last_modified: { modify_date: -1 }
+    }
+
+    if (sort !== 'undefined' && !(sort in sortMap)) {
+      throw new Error('Invalid sort parameter, expeting nothing, `relevance`, `rating`, `newest`, or `last_modified`')
+    }
 
     if (limit > 36) {
       limit = 36
@@ -45,7 +56,7 @@ export class DashboardService {
     const skip = limit * page
 
     const reviewedAssetList = await GetUserReviewedAssets(req.body.hashedToken)
-    const assets = await GetUserAssetsFromQuery(limit, skip, reviewedAssetList)
+    const assets = await GetUserAssetsFromQuery(limit, skip, reviewedAssetList, sortMap[sort])
 
     const pageBanner = {
       title: 'Reviewed Assets',
@@ -77,6 +88,17 @@ export class DashboardService {
   public async renderSaved (req: Request, res: Response): Promise<void> {
     let limit = Number(req.query.limit ?? 12)
     const page = Number(req.query.page ?? 0)
+    const sort = String(req.query.sort ?? 'relevance')
+    const sortMap: {[key: string]: any} = {
+      relevance: {},
+      asset_rating: { upvotes: -1 },
+      newest: { added_date: -1 },
+      last_modified: { modify_date: -1 }
+    }
+
+    if (sort !== 'undefined' && !(sort in sortMap)) {
+      throw new Error('Invalid sort parameter, expeting nothing, `relevance`, `rating`, `newest`, or `last_modified`')
+    }
 
     if (limit > 36) {
       limit = 36
@@ -85,7 +107,7 @@ export class DashboardService {
     const skip = limit * page
 
     const reviewedAssetList = await GetUserSavedAssets(req.body.hashedToken) ?? []
-    const assets = await GetUserAssetsFromQuery(limit, skip, reviewedAssetList)
+    const assets = await GetUserAssetsFromQuery(limit, skip, reviewedAssetList, sortMap[sort])
 
     try {
       const userSaved = await GetUserSavedAssets(req.body.hashedToken)

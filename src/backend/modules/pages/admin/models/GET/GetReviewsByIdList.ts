@@ -4,7 +4,7 @@ import { assetGridSchema } from 'utility/schema/assets-grid'
 
 interface ReturnedAssets extends WithId<Document>, assetGridSchema {}
 
-export async function GetReviewsByIdList (reviewIdList: any[], limit: number = 12, skip: number): Promise<ReturnedAssets[]> {
+export async function GetReviewsByIdList (reviewIdList: any[], limit: number = 12, skip: number, sort: any): Promise<ReturnedAssets[]> {
   const mongo = MongoHelper.getDatabase()
 
   const operationObject = await mongo.collection('reviews').find({
@@ -12,7 +12,8 @@ export async function GetReviewsByIdList (reviewIdList: any[], limit: number = 1
       $in: reviewIdList
     }
   }, {
-    limit: limit
+    limit: limit,
+    sort: sort
   }).skip(skip).toArray() as ReturnedAssets[]
 
   if (operationObject === null || operationObject === undefined) {

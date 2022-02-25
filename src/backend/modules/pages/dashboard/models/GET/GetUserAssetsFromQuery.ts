@@ -12,19 +12,16 @@ interface ReturnedAssets extends WithId<Document>, assetGridSchema {}
  * @param {[string]} assetIds
  * @returns {ReturnedAssets[]}
  */
-export async function GetUserAssetsFromQuery (limit: number = 12, skip: number, assetIds: [string]): Promise<ReturnedAssets[]> {
+export async function GetUserAssetsFromQuery (limit: number = 12, skip: number, assetIds: [string], sort: any): Promise<ReturnedAssets[]> {
   const mongo = MongoHelper.getDatabase()
 
   const operationObject = await mongo.collection('assets').find({
-    $and: [
-      {
-        asset_id: {
-          $in: assetIds
-        }
-      }
-    ]
+    asset_id: {
+      $in: assetIds
+    }
   }, {
     limit: limit,
+    sort: sort,
     projection: {
       category: 1,
       godot_version: 1,
