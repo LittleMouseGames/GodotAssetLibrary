@@ -50,8 +50,25 @@ nav {
   z-index: 3;
   box-shadow: $standard-shadow;
 
-  @include tablet-styles() {
-    .links {
+  .brand {
+    margin-right: 40px;
+  }
+
+  .contents {
+    display: flex;
+    align-items: center;
+    max-width: $constrained-width;
+    margin: auto;
+    height: 100%;
+    padding: 0 15px;
+  }
+
+  .links {
+    display: flex;
+    align-items: center;
+    margin-left: 25px;
+
+    @include small-desktop-styles() {
       a {
         display: none;
       }
@@ -63,24 +80,10 @@ nav {
         }
       }
     }
-  }
 
-  .brand {
-    margin-right: 40px;
-  }
-
-  .contents {
-    display: flex;
-    align-items: center;
-    max-width: $constrained-width;
-    margin: auto;
-    height: 100%;
-  }
-
-  .links {
-    display: flex;
-    align-items: center;
-    margin-left: 25px;
+    @include tablet-styles {
+      display: none;
+    }
 
     .link {
       font-weight: 600;
@@ -120,7 +123,7 @@ nav {
         display: none;
       }
 
-      @include tablet-styles {
+      @include small-desktop-styles {
         display: none;
 
         &.mobile {
@@ -160,6 +163,10 @@ nav {
 
       .iconify {
         margin-right: 0;
+
+        &.chevron {
+          padding-right: 0;
+        }
       }
     }
   }

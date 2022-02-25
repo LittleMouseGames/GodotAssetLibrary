@@ -169,8 +169,26 @@
   }
 }
 
-@mixin tablet-styles {
+@mixin small-desktop-styles {
   @media (max-width: 1300px) {
+    @content;
+  }
+}
+
+@mixin tablet-styles {
+  @media (max-width: 950px) {
+    @content;
+  }
+}
+
+@mixin mobile-styles {
+  @media (max-width: 800px) {
+    @content;
+  }
+}
+
+@mixin small-mobile-styles {
+  @media (max-width: 500px) {
     @content;
   }
 }

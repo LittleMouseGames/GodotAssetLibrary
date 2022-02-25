@@ -19,6 +19,28 @@
     grid-template-columns: 1fr 1fr 1fr;
     column-gap: 20px;
     row-gap: 20px;
+
+    @include tablet-styles {
+      grid-template-columns: 1fr 1fr;
+
+      .asset-card,
+      .category-card-featured {
+        &:last-of-type {
+          display: none;
+        }
+      }
+    }
+
+    @include mobile-styles {
+      grid-template-columns: 1fr;
+
+      .asset-card,
+      .category-card-featured {
+        &:not(:first-of-type) {
+          display: none;
+        }
+      }
+    }
   }
 
   .five-wide {
@@ -33,7 +55,7 @@
       }
     }
 
-    @include tablet-styles {
+    @include small-desktop-styles {
       grid-template-columns: 1fr 1fr 1fr;
 
       .asset-card {
@@ -41,6 +63,14 @@
           display: flex;
         }
       }
+    }
+
+    @include mobile-styles {
+      grid-template-columns: 1fr 1fr;
+    }
+
+    @include small-mobile-styles {
+      grid-template-columns: 1fr;
     }
   }
 }
