@@ -1,7 +1,3 @@
-<% const params = new URLSearchParams(it.params?.includes('q=') ? it.params : it.params + '?q=') %>
-<% const currentLimit = Number(params.get('limit')) === 0 ? 12 : Number(params.get('limit')) %>
-<% const page = Number(params.get('page')) ?? 0 %>
-<% const limitOptions = ['12', '24', '36'] %>
 <div class="catalog-grid">
   <div class="top-bar">
     <div class="left">
@@ -25,10 +21,12 @@
       <label class="inline-dropdown">
         Results per Page
         <div class="dropdown" onclick="window.godotLibrary.dropdown.showContent(event, this)">
+          <% var params = new URLSearchParams(it.params?.includes('q=') ? it.params : it.params + '?q=') %>
           <div class="value"><%= params.get('limit') ?? '12' %></div>
           <span class="iconify" data-icon="bxs:chevron-down"></span>
           <div class="options">
             <% 
+            var limitOptions = ['12', '24', '36']
             limitOptions.forEach(option => { 
               params.set('limit', option) 
             %>
@@ -38,6 +36,9 @@
         </div>
       </label>
       <div class="buttons">
+        <% var params = new URLSearchParams(it.params?.includes('q=') ? it.params : it.params + '?q=') %>
+        <% var page = Number(params.get('page')) ?? 0 %>
+
         <% if (page === 0) { %>
         <button class="disabled">Back</button>
         <% } else { %>
@@ -46,6 +47,7 @@
           <button>Back</button>
         </a>
         <% } %>
+        <% var currentLimit = Number(params.get('limit')) === 0 ? 12 : Number(params.get('limit')) %>
         <% if (it.grid?.length !== currentLimit) { %>
         <button class="disabled">Next</button>
         <% } else { %>
@@ -72,10 +74,12 @@
       <label class="inline-dropdown">
         Results per Page
         <div class="dropdown" onclick="window.godotLibrary.dropdown.showContent(event, this)">
+          <% var params = new URLSearchParams(it.params?.includes('q=') ? it.params : it.params + '?q=') %>
           <div class="value"><%= params.get('limit') ?? '12' %></div>
           <span class="iconify" data-icon="bxs:chevron-down"></span>
           <div class="options">
             <% 
+            var limitOptions = ['12', '24', '36']
             limitOptions.forEach(option => { 
               params.set('limit', option) 
             %>
@@ -87,6 +91,9 @@
     </div>
     <div class="right">
       <div class="buttons">
+        <% var params = new URLSearchParams(it.params?.includes('q=') ? it.params : it.params + '?q=') %>
+        <% var page = Number(params.get('page')) ?? 0 %>
+
         <% if (page === 0) { %>
         <button class="disabled">Back</button>
         <% } else { %>
@@ -95,6 +102,7 @@
           <button>Back</button>
         </a>
         <% } %>
+        <% var currentLimit = Number(params.get('limit')) === 0 ? 12 : Number(params.get('limit')) %>
         <% if (it.grid?.length !== currentLimit) { %>
         <button class="disabled">Next</button>
         <% } else { %>
