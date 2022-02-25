@@ -168,3 +168,9 @@
     display: block;
   }
 }
+
+@mixin tablet-styles {
+  @media (max-width: 1300px) {
+    @content;
+  }
+}

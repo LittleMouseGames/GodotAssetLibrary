@@ -50,6 +50,21 @@ nav {
   z-index: 3;
   box-shadow: $standard-shadow;
 
+  @include tablet-styles() {
+    .links {
+      a {
+        display: none;
+      }
+
+      .dropdown {
+        margin-left: 0;
+        a {
+          display: block;
+        }
+      }
+    }
+  }
+
   .brand {
     margin-right: 40px;
   }

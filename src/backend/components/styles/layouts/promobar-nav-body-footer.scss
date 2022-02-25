@@ -10,5 +10,7 @@
   margin: 20px auto 0;
   flex-grow: 1;
   display: flex;
+  padding: 0 15px;
+  box-sizing: border-box;
   flex-direction: column;
 }
