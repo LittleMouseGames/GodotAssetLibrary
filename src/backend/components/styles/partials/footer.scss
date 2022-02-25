@@ -35,6 +35,14 @@
     display: flex;
     justify-content: space-between;
 
+    @include tablet-styles {
+      flex-direction: column;
+
+      .contents {
+        margin: 0;
+      }
+    }
+
     .trust-badge {
       display: flex;
       align-items: center;
@@ -106,6 +114,14 @@ footer {
     display: flex;
     margin: auto;
     max-width: $constrained-width;
+
+    @include tablet-styles {
+      flex-direction: column;
+
+      .brand {
+        margin-left: 0;
+      }
+    }
   }
 
   .column {
@@ -115,6 +131,14 @@ footer {
 
     &:not(:last-of-type) {
       margin-right: 138px;
+
+      @include tablet-styles {
+        margin-right: 0;
+      }
+    }
+
+    @include tablet-styles {
+      max-width: 100%;
     }
   }
 
