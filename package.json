@@ -1,5 +1,5 @@
 {
-  "name": "godot-library",
+  "name": "godot-asset-library",
   "version": "1.0.0",
   "description": "An Open Source (AGPLv3) Godot Asset Library",
   "main": "none",
@@ -63,7 +63,7 @@
   "scripts": {
     "devel": "mkdir -p dist/ && cp package.json dist/ && concurrently \"nodemon src/BuildTaskRunner.js\" \"webpack --watch\" \"nodemon dist/bundle.js\"",
     "lint": "eslint . --ext .js,.ts ; exit 0",
-    "prod": "webpack && node ./dist/bundle.js"
+    "prod": "mkdir -p dist/ && cp package.json dist/ && concurrently \"src/BuildTaskRunner.js\" \"webpack\" && NODE_ENV=production node ./dist/bundle.js"
   },
   "eslintConfig": {
     "rules": {
