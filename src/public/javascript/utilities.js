@@ -130,3 +130,11 @@ function closeAllModals () {
     element.classList.remove('active')
   })
 }
+
+window.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('img').forEach(image => {
+    image.addEventListener('error', function (e) {
+      e.target.src = '/images/noimage.png'
+    })
+  })
+})

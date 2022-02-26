@@ -7,14 +7,38 @@ import { CheckIfUserExistAndSendError } from 'utility/middleware/CheckIfUserExis
 
 const updateInfoRateLimit = rateLimit({
   windowMs: 60 * 60 * 1000, // 1 hour window
-  max: 7, // start blocking after 5 requests
+  max: 5, // start blocking after x requests
   message: JSON.stringify({ error: 'Too many account changes in time period, please try again later' })
 })
 
 const updatePasswordRateLimit = rateLimit({
   windowMs: 60 * 60 * 1000, // 1 hour window
-  max: 7, // start blocking after 5 requests
+  max: 5, // start blocking after x requests
   message: JSON.stringify({ error: 'Too many password changes in time period, please try again later' })
+})
+
+const downloadInfoRateLimit = rateLimit({
+  windowMs: 60 * 60 * 1000, // 1 hour window
+  max: 2, // start blocking after x requests
+  message: JSON.stringify({ error: 'Too many requests, please try again later' })
+})
+
+const deleteAccountRateLimit = rateLimit({
+  windowMs: 60 * 60 * 1000, // 1 hour window
+  max: 1, // start blocking after x requests
+  message: JSON.stringify({ error: 'Too many requests, please try again later' })
+})
+
+const saveAssetRateLimit = rateLimit({
+  windowMs: 60 * 60 * 1000, // 1 hour window
+  max: 100, // start blocking after x requests
+  message: JSON.stringify({ error: 'You\'re doing that too much, please try again later' })
+})
+
+const viewSavedAndReviewedRateLimit = rateLimit({
+  windowMs: 1000 * 60 * 15, // 15 minutes
+  max: 30, // start blocking after x requests
+  message: JSON.stringify({ error: 'You\'re doing that too much, please try again later' })
 })
 
 @Controller('dashboard')
@@ -28,7 +52,7 @@ export class DashboardController {
   }
 
   @Get('reviews/')
-  @Middleware([CheckIfUserExistAndRedirect('/register', false)])
+  @Middleware([viewSavedAndReviewedRateLimit, CheckIfUserExistAndRedirect('/register', false)])
   private async reviews (req: Request, res: Response): Promise<void> {
     return await this.DashboardService.renderReviews(req, res)
   }
@@ -40,7 +64,7 @@ export class DashboardController {
   }
 
   @Get('saved/')
-  @Middleware([CheckIfUserExistAndRedirect('/register', false)])
+  @Middleware([viewSavedAndReviewedRateLimit, CheckIfUserExistAndRedirect('/register', false)])
   private async saved (req: Request, res: Response): Promise<void> {
     return await this.DashboardService.renderSaved(req, res)
   }
@@ -58,19 +82,19 @@ export class DashboardController {
   }
 
   @Get('save/:id')
-  @Middleware([CheckIfUserExistAndSendError('Unable to save, are you logged in?')])
+  @Middleware([saveAssetRateLimit, CheckIfUserExistAndSendError('Unable to save, are you logged in?')])
   private async saveAsset (req: Request, res: Response): Promise<void> {
     return await this.DashboardService.saveAsset(req, res)
   }
 
   @Get('download')
-  @Middleware([CheckIfUserExistAndSendError('Unable to download information, are you logged in?')])
+  @Middleware([downloadInfoRateLimit, CheckIfUserExistAndSendError('Unable to download information, are you logged in?')])
   private async downloadInfo (req: Request, res: Response): Promise<void> {
     return await this.DashboardService.downloadInformation(req, res)
   }
 
   @Get('delete')
-  @Middleware([CheckIfUserExistAndSendError('Unable to delete account, are you logged in?')])
+  @Middleware([deleteAccountRateLimit, CheckIfUserExistAndSendError('Unable to delete account, are you logged in?')])
   private async delteAccount (req: Request, res: Response): Promise<void> {
     return await this.DashboardService.deleteAccount(req, res)
   }

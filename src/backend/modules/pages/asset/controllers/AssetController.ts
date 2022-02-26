@@ -47,6 +47,6 @@ export class AssetController {
 
   @Post('report/review/:id')
   private async reportReview (req: Request, res: Response): Promise<any> {
-    return this.AssetService.reportReview(req, res)
+    return await this.AssetService.reportReview(req, res)
   }
 }
