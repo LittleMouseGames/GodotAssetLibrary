@@ -17,6 +17,23 @@
   column-gap: 50px;
   margin-top: 20px;
 
+  @include mobile-styles {
+    display: flex;
+    flex-direction: column;
+    margin-top: 0;
+
+    .column {
+      &:first-of-type {
+        order: 1;
+      }
+
+      &:last-of-type {
+        order: 0;
+        margin-bottom: 40px;
+      }
+    }
+  }
+
   .card {
     @include set-styles(
       $head-height: 120px,
@@ -66,6 +83,12 @@
     .section {
       margin-top: 30px;
       margin-bottom: 30px;
+
+      @include mobile-styles {
+        &:first-of-type {
+          margin-top: 0px;
+        }
+      }
     }
 
     h2 {
@@ -264,7 +287,27 @@
     grid-template-columns: auto 80.5%;
     column-gap: 20px;
 
+    @include mobile-styles {
+      display: flex;
+      flex-direction: column;
+
+      .thumbnails {
+        order: 1;
+      }
+
+      .player {
+        order: 0;
+      }
+    }
+
     .thumbnails {
+      @include mobile-styles {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr 1fr;
+        margin-top: 10px;
+        column-gap: 10px;
+      }
+
       .image {
         padding-top: 56.25%;
         background: $color-brand-gray;
@@ -275,6 +318,10 @@
         cursor: pointer;
 
         &:not(:last-of-type) {
+          margin-bottom: 20px;
+        }
+
+        @include mobile-styles {
           margin-bottom: 20px;
         }
       }
