@@ -1,7 +1,5 @@
 /* eslint-disable no-undef */
 /**
- * Add PageMessage work to window object
- *
  * We attach and namespace our utulity functions to avoid
  * collisions and create a predictable pattern for accessing
  * the methods that we need or want to use
@@ -81,6 +79,12 @@ window.godotLibrary = {
         }
       })
     }
+  },
+  mobile: {
+    showSearch (event) {
+      document.querySelector('.search').classList.add('active')
+      event.stopPropagation()
+    }
   }
 }
 
@@ -108,6 +112,10 @@ document.addEventListener('click', function (event) {
 
   if (!inModal) {
     closeAllModals()
+  }
+
+  if (event.target.getAttribute('name') !== 'query') {
+    document.querySelector('.search').classList.remove('active')
   }
 })
 

@@ -16,6 +16,10 @@
     @include tablet-styles {
       grid-template-columns: 1fr 1fr;
     }
+
+    @include small-mobile-styles {
+      grid-template-columns: 1fr;
+    }
   }
 
   .top-bar,
@@ -33,6 +37,12 @@
 
     .right {
       display: flex;
+
+      @include tablet-styles {
+        .inline-dropdown {
+          display: none;
+        }
+      }
     }
 
     .inline-dropdown {

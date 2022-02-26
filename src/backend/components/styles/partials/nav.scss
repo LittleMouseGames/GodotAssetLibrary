@@ -92,9 +92,44 @@ nav {
     }
   }
 
+  .mobile-search {
+    display: none;
+
+    @include mobile-styles {
+      display: block;
+    }
+  }
+
   .search {
     position: relative;
     width: 425px;
+
+    @include mobile-styles {
+      display: none;
+    }
+
+    &.active {
+      display: flex;
+      position: absolute;
+      left: 0;
+      top: 0;
+      z-index: 3;
+      height: 100%;
+      align-items: center;
+      width: 100%;
+      padding: 15px;
+      box-sizing: border-box;
+
+      input {
+        width: 100%;
+      }
+
+      .iconify {
+        top: auto;
+        left: 30px;
+        margin-top: -1px;
+      }
+    }
 
     .iconify {
       position: absolute;
@@ -153,6 +188,17 @@ nav {
 
       .value {
         padding: 0;
+
+        @include small-mobile-styles {
+          display: none;
+        }
+      }
+
+      .options {
+        @include small-mobile-styles {
+          width: auto;
+          left: -100%;
+        }
       }
 
       .chevron {
@@ -163,6 +209,10 @@ nav {
 
       .iconify {
         margin-right: 0;
+
+        @include small-mobile-styles {
+          padding-right: 0;
+        }
 
         &.chevron {
           padding-right: 0;

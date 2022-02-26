@@ -39,7 +39,9 @@
         </div>
       </div>
     </div>
-    <div class="account">
+    <div class="account actions">
+      <span class="iconify mobile-search" data-icon="eva:search-outline"
+        onclick="window.godotLibrary.mobile.showSearch(event)"></span>
       <% if(it?._locals?.loggedIn === true) { %>
       <div class="dropdown" onclick="window.godotLibrary.dropdown.showContent(event, this)">
         <span class="iconify" data-icon="codicon:account"></span>
