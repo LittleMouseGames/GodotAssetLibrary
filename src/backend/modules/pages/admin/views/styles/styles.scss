@@ -71,6 +71,12 @@
   column-gap: 60px;
   grid-template-columns: auto 1fr;
 
+  .catalog-grid {
+    button {
+      padding: 0;
+    }
+  }
+
   h2 {
     font-size: 18px;
     font-weight: 600;
