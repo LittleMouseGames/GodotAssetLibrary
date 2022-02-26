@@ -39,7 +39,7 @@ export class AdminService {
   public async renderFeatured (req: Request, res: Response): Promise<void> {
     let limit = Number(req.query.limit ?? 12)
     const page = Number(req.query.page ?? 0)
-    const sort = String(req.query.sort ?? 'relevance')
+    const sort = striptags(String(req.query.sort ?? 'relevance'))
     const sortMap: {[key: string]: any} = {
       relevance: {},
       asset_rating: { upvotes: -1 },
@@ -71,7 +71,7 @@ export class AdminService {
   public async renderReports (req: Request, res: Response): Promise<void> {
     let limit = Number(req.query.limit ?? 12)
     const page = Number(req.query.page ?? 0)
-    const sort = String(req.query.sort ?? 'relevance')
+    const sort = striptags(String(req.query.sort ?? 'relevance'))
     const sortMap: {[key: string]: any} = {
       relevance: {},
       asset_rating: { upvotes: -1 },
@@ -131,7 +131,7 @@ export class AdminService {
   }
 
   public async ignoreReport (req: Request, res: Response): Promise<void> {
-    const reportId = striptags(req.params.id) ?? ''
+    const reportId = striptags(req.params.id ?? '')
 
     if (reportId.length === 0) {
       throw new Error('Missing report ID')
@@ -143,7 +143,7 @@ export class AdminService {
   }
 
   public async approveReport (req: Request, res: Response): Promise<void> {
-    const reportId = striptags(req.params.id) ?? ''
+    const reportId = striptags(req.params.id ?? '')
 
     if (reportId.length === 0) {
       throw new Error('Missing report ID')

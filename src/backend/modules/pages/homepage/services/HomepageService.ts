@@ -1,6 +1,7 @@
 import { Request, Response } from 'express'
 import { TokenServices } from 'modules/api/authentication/services/TokenServices'
 import { GetUserSavedAssets } from 'modules/pages/dashboard/models/GET/GetUserSavedAssets'
+import striptags from 'striptags'
 import { logger } from 'utility/logger'
 import { GetAllCategoriesAndTheirAssetCount } from '../models/GET/GetAllCategoriesAndTheirAssetCount'
 import { GetFourAssetsForHomepage } from '../models/GET/GetFeaturedAssetsForHomepage'
@@ -10,7 +11,7 @@ import { GetTrendingAssets } from '../models/GET/GetTrendingAssets'
 
 export class HomepageService {
   public async render (req: Request, res: Response): Promise<void> {
-    const authToken = req.cookies['auth-token'] ?? ''
+    const authToken = striptags(req.cookies['auth-token'] ?? '')
     try {
       const trendingAssets = await GetTrendingAssets()
       const featuredAssets = await GetFourAssetsForHomepage()

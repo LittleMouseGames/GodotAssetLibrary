@@ -31,8 +31,8 @@ export class AssetService {
    * @returns
    */
   public async render (req: Request, res: Response): Promise<any> {
-    const assetId = req.params.id ?? ''
-    const authToken = req.cookies['auth-token'] ?? ''
+    const assetId = striptags(req.params.id ?? '')
+    const authToken = striptags(req.cookies['auth-token'] ?? '')
 
     if (assetId === '') {
       throw new Error('Missing asset ID')
@@ -89,11 +89,11 @@ export class AssetService {
    * @param {Response} res
    */
   public async review (req: Request, res: Response): Promise<any> {
-    const rating = String(req.body.rating) ?? ''
-    const authToken = req.body.hashedToken ?? ''
-    const assetId = req.params.id ?? ''
-    const review = req.body.asset_review ?? ''
-    const headline = req.body.asset_review_headline ?? ''
+    const rating = striptags(req.body.rating ?? '')
+    const authToken = striptags(req.body.hashedToken ?? '')
+    const assetId = striptags(req.params.id ?? '')
+    const review = striptags(req.body.asset_review ?? '')
+    const headline = striptags(req.body.asset_review_headline ?? '')
     const hasUserReviewedAsset = await GetHasUserReviewedAsset(authToken, assetId)
     const isAccountDisabled = await GetIsAccountDisabledByToken(authToken)
     let siteRestrictions: any = {}
@@ -186,9 +186,9 @@ export class AssetService {
     ]
 
     const reason = striptags(req.body.reason)
-    const notes = striptags(req.body.notes) ?? ''
-    const reviewId = striptags(req.params.id) ?? ''
-    const authToken = striptags(req.cookies['auth-token']) ?? ''
+    const notes = striptags(req.body.notes ?? '')
+    const reviewId = striptags(req.params.id ?? '')
+    const authToken = striptags(req.cookies['auth-token'] ?? '')
 
     if (reviewId.length === 0) {
       throw new Error('Missing comment ID')

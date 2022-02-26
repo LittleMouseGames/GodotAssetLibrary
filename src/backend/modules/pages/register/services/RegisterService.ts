@@ -1,10 +1,11 @@
 import { Request, Response } from 'express'
 import { GetUserIdByToken } from 'modules/api/authentication/models/user/GET/GetUserIdByToken'
 import { TokenServices } from 'modules/api/authentication/services/TokenServices'
+import striptags from 'striptags'
 
 export class RegisterService {
-  public async render (_req: Request, res: Response): Promise<void> {
-    const authToken = _req.cookies['auth-token']
+  public async render (req: Request, res: Response): Promise<void> {
+    const authToken = striptags(req.cookies['auth-token'])
 
     const pageBanner = {
       title: 'Login or Register',

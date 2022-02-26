@@ -37,7 +37,7 @@ export class DashboardService {
   public async renderReviews (req: Request, res: Response): Promise<void> {
     let limit = Number(req.query.limit ?? 12)
     const page = Number(req.query.page ?? 0)
-    const sort = String(req.query.sort ?? 'relevance')
+    const sort = striptags(String(req.query.sort ?? 'relevance'))
     const sortMap: {[key: string]: any} = {
       relevance: {},
       asset_rating: { upvotes: -1 },
@@ -88,7 +88,7 @@ export class DashboardService {
   public async renderSaved (req: Request, res: Response): Promise<void> {
     let limit = Number(req.query.limit ?? 12)
     const page = Number(req.query.page ?? 0)
-    const sort = String(req.query.sort ?? 'relevance')
+    const sort = striptags(String(req.query.sort ?? 'relevance'))
     const sortMap: {[key: string]: any} = {
       relevance: {},
       asset_rating: { upvotes: -1 },
@@ -163,7 +163,7 @@ export class DashboardService {
     const currentPassword = striptags(req.body['password-current'] ?? '')
     const newPassword = striptags(req.body['new-password'] ?? '')
     const newPasswordConf = striptags(req.body['new-password-conf'] ?? '')
-    const hashedToken = req.body.hashedToken ?? ''
+    const hashedToken = striptags(req.body.hashedToken ?? '')
 
     if (currentPassword === '' || newPassword === '' || newPasswordConf === '' || hashedToken === '') {
       throw new Error('Missing required current password or new password')
@@ -195,7 +195,7 @@ export class DashboardService {
 
   public async saveAsset (req: Request, res: Response): Promise<void> {
     const asset = striptags(req.params.id ?? '')
-    const hashedToken = req.body.hashedToken ?? ''
+    const hashedToken = striptags(req.body.hashedToken ?? '')
 
     if (hashedToken === '') {
       throw new Error('Missing user auth')
@@ -221,7 +221,7 @@ export class DashboardService {
   }
 
   public async downloadInformation (req: Request, res: Response): Promise<void> {
-    const hashedToken = req.body.hashedToken ?? ''
+    const hashedToken = striptags(req.body.hashedToken ?? '')
 
     if (hashedToken === '') {
       throw new Error('Missing user auth')
@@ -243,7 +243,7 @@ export class DashboardService {
   }
 
   public async deleteAccount (req: Request, res: Response): Promise<void> {
-    const hashedToken = req.body.hashedToken ?? ''
+    const hashedToken = striptags(req.body.hashedToken ?? '')
 
     if (hashedToken === '') {
       throw new Error('Missing user auth')
