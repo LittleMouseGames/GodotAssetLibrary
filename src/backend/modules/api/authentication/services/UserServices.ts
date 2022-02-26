@@ -9,6 +9,7 @@ import { TokenServices } from 'modules/api/authentication/services/TokenServices
 import { GetDoesUsernameExist } from '../models/user/GET/GetDoesUsernameExist'
 import { GetIsUsernameReserved } from '../models/user/GET/GetIsUsernameReserved'
 import { GetSiteRestrictions } from 'modules/pages/admin/models/GET/GetSiteRestrictions'
+import striptags from 'striptags'
 
 export class UserServices {
   private static instance: UserServices
@@ -40,10 +41,10 @@ export class UserServices {
    * @throws {Error} Auth token missing error
    */
   public async register (req: Request): Promise<string> {
-    const username = req.body.username ?? ''
-    const password = req.body.password ?? ''
-    const passwordConf = req.body.passwordConf ?? ''
-    const email = req.body.email ?? ''
+    const username = striptags(req.body.username ?? '')
+    const password = striptags(req.body.password ?? '')
+    const passwordConf = striptags(req.body.passwordConf ?? '')
+    const email = striptags(req.body.email ?? '')
 
     let siteRestrictions: any = {}
     try {
@@ -111,13 +112,13 @@ export class UserServices {
       let password = ''
 
       if (authHeader.includes('Basic')) {
-        let authString = authHeader.split('Basic ')[1]
+        let authString = striptags(authHeader.split('Basic ')[1])
         authString = Buffer.from(authString, 'base64').toString('ascii')
         username = authString.split(':')[0] ?? ''
         password = authString.split(':')[1] ?? ''
       } else {
-        username = req.body.username ?? ''
-        password = req.body.password ?? ''
+        username = striptags(req.body.username ?? '')
+        password = striptags(req.body.password ?? '')
       }
 
       if (username === '' || password === '') {

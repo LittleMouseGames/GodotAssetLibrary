@@ -9,13 +9,13 @@ const urlencodedParser = bodyParser.urlencoded({ extended: false })
 
 const createAccountLimiter = rateLimit({
   windowMs: 60 * 60 * 1000, // 1 hour window
-  max: 10, // start blocking after 5 requests
+  max: 7, // start blocking after x requests
   message: JSON.stringify({ error: 'Too many registration attempts from this IP, please try again later' })
 })
 
 const accountLoginLimiter = rateLimit({
   windowMs: 60 * 60 * 1000, // 1 hour window
-  max: 10, // start blocking after 5 requests
+  max: 10, // start blocking after x requests
   message: JSON.stringify({ error: 'Too many login attempts from this IP, please try again later' })
 })
 
