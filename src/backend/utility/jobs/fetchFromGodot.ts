@@ -9,13 +9,13 @@ import { assetSchema } from 'utility/schema/assets'
 const host = 'godotengine.org'
 
 /**
- * Fetch asset listings from old library
+ * Fetch asset listings and mirror from old library
  *
  * Fetches the assets from godots old library
  * so that we can import / mirror them on our site
  *
- * While this isn't a very beefy (big) command or
- * request, its good to be good neighbours and try
+ * While this isn't a very beefy (big) command,
+ * its good to be good neighbours and try
  * to limit any potential impact by choosing very
  * off-hour times (as much as resonably possible)
  */
@@ -23,6 +23,16 @@ export const fetchAssetsFromGodot = new CronJob('0 1 * * *', function () {
   void importAssets()
 })
 
+/**
+ * What this does:
+ * - fetchs the links specified in `paths` variable
+ * - checks each entry in JSON there against what we have in the DB
+ *   - if we don't have it
+ *     - pull in that asset
+ *   - if we do have it
+ *     - if ours is newer, skip
+ *     - if theirs is newer, merge info
+ */
 async function importAssets (): Promise<void> {
   logger.log('info', 'Fetching data to mirror from Godot Asset Library')
 
