@@ -12,6 +12,39 @@
   @include sneaky-labels;
   @include disclaimer-styles;
 
+  @include mobile-styles {
+    margin-top: 0;
+    display: flex;
+    flex-direction: column;
+
+    .column {
+      &:not(:last-of-type) {
+        margin-bottom: 25px;
+      }
+    }
+
+    .top-bar,
+    .bottom-bar {
+      display: flex;
+      align-items: end;
+
+      .inline-dropdown {
+        display: flex;
+        flex-direction: column;
+        align-items: baseline;
+
+        .dropdown {
+          margin-top: 5px;
+          margin-left: 0;
+        }
+      }
+
+      .buttons {
+        margin-left: 0;
+      }
+    }
+  }
+
   &.reports {
     .results {
       grid-template-columns: 1fr 1fr 1fr;
@@ -78,6 +111,11 @@
       font-family: "Inter";
       font-weight: 600;
       width: 200px;
+
+      @include mobile-styles {
+        width: 100%;
+        box-sizing: border-box;
+      }
 
       &:not(:last-of-type) {
         border-bottom: 0;
