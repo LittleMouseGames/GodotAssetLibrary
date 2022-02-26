@@ -1,6 +1,6 @@
 <% it.meta = {
   title: 'Register | Godot Asset Library',
-  description: 'Find all <Search Query> Assets on Godot',
+  description: 'Create a new account or sign into an existing account on Godot Asset Library',
   url: 'https://godotlibrary.com/register',
   moduleName: 'register'
 } %>
