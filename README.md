@@ -6,7 +6,7 @@ An Open Source (AGPLv3) Godot Asset Library
 Features:
 * Asset mirroring from the default library
 * Asset review and rating system
-* User accounts and new asset adding
+* User accounts with bookmarking
 * Open Source 😎
   
 ## Running

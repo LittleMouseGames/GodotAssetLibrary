@@ -7,6 +7,12 @@ interface ReturnedAssets extends WithId<Document>, assetGridSchema {}
 export async function GetTrendingAssets (): Promise<ReturnedAssets[]> {
   const mongo = MongoHelper.getDatabase()
   const operationObject = await mongo.collection('assets').aggregate([{
+    $sort: {
+      upvotes: -1
+    }
+  }, {
+    $limit: 15
+  }, {
     $sample: {
       size: 6
     }
