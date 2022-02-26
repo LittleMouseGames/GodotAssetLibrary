@@ -11,7 +11,7 @@ export async function GetTrendingAssets (): Promise<ReturnedAssets[]> {
       upvotes: -1
     }
   }, {
-    $limit: 15
+    $limit: 20
   }, {
     $sample: {
       size: 6
