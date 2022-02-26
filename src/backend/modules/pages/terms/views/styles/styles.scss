@@ -28,32 +28,25 @@
   }
 
   .sidebar {
-    position: sticky;
-    top: 95px;
-
     .item {
+      padding: 15px;
       border: 3px solid $color-brand-gray;
       font-family: "Inter";
       font-weight: 600;
       width: 200px;
-      cursor: pointer;
-      transition: 0.02s;
+
+      @include mobile-styles {
+        width: 100%;
+        box-sizing: border-box;
+      }
 
       &:not(:last-of-type) {
         border-bottom: 0;
       }
+    }
 
-      &:hover,
-      &.active {
-        background: $color-brand-black;
-        color: $text-light-white;
-        border-color: $color-brand-black;
-      }
-
-      a {
-        padding: 15px;
-        display: block;
-      }
+    a {
+      color: inherit;
     }
   }
 }
