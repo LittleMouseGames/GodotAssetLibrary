@@ -13,6 +13,37 @@
   column-gap: 55px;
   margin-top: 25px;
 
+  @include mobile-styles {
+    margin-top: 0;
+    display: flex;
+    flex-direction: column;
+
+    .catalog-grid {
+      margin-top: 20px;
+    }
+
+    .top-bar,
+    .bottom-bar {
+      display: flex;
+      align-items: end;
+
+      .inline-dropdown {
+        display: flex;
+        flex-direction: column;
+        align-items: baseline;
+
+        .dropdown {
+          margin-top: 5px;
+          margin-left: 0;
+        }
+      }
+
+      .buttons {
+        margin-left: 0;
+      }
+    }
+  }
+
   .catalog-filters {
     @include reset-header-spacing;
     @include reset-ul;
