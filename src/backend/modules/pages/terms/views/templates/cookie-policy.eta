@@ -1,7 +1,7 @@
 <% it.meta = {
   title: 'Cookie Policy | Godot Asset Library',
-  description: 'Find all <Search Query> Assets on Godot',
-  url: 'https://godotlibrary.com/terms',
+  description: 'Godot Asset Library Cookie Policy',
+  url: 'https://godotlibrary.com/terms/cookie-policy',
   moduleName: 'terms'
 } %>
 <% layout('templates/components/layouts/promobar-nav-body-footer.eta') %>

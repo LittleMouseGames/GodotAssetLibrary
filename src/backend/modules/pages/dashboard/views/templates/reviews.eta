@@ -1,6 +1,6 @@
 <% it.meta = {
   title: 'My Reviews | Godot Asset Library',
-  description: 'Find all <Search Query> Assets on Godot',
+  description: 'Manage your Godot Asset Library experience',
   url: 'https://godotlibrary.com/dashboard/reviews',
   moduleName: 'dashboard'
 } %>

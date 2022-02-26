@@ -1,6 +1,6 @@
 <% it.meta = {
   title: '404 | Godot Asset Library',
-  description: '404 page not found',
+  description: 'Discover the best free and open source assets on Godot Asset Library',
   url: 'https://godotlibrary.com/404',
   moduleName: 'lost'
 } %>

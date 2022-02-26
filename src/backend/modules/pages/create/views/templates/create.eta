@@ -1,6 +1,6 @@
 <% it.meta = {
-  title: 'create | Godot Asset Library',
-  description: 'Find all <Search Query> Assets on Godot',
+  title: 'Create | Godot Asset Library',
+  description: 'Post a new asset to Godot Asset Library',
   url: 'https://godotlibrary.com/create',
   moduleName: 'create'
 } %>

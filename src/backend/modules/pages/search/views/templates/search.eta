@@ -1,7 +1,7 @@
 <% it.meta = {
   title: 'Search | Godot Asset Library',
-  description: 'Find all <Search Query> Assets on Godot',
-  url: 'https://godotlibrary.com/search/q?=<Search Query>',
+  description: `Find the best ${it?.originalQuery} Assets for Godot Engine on Godot Asset Library`,
+  url: `https://godotlibrary.com/${it?.params}`,
   moduleName: 'search'
 } %>
 <% layout('templates/components/layouts/promobar-nav-body-footer.eta') %>

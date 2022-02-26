@@ -1,7 +1,7 @@
 <% it.meta = {
   title: 'Terms of Service | Godot Asset Library',
-  description: 'Find all <Search Query> Assets on Godot',
-  url: 'https://godotlibrary.com/terms',
+  description: 'Godot Asset Library Terms of Service',
+  url: 'https://godotlibrary.com/terms/terms-of-service',
   moduleName: 'terms'
 } %>
 <% layout('templates/components/layouts/promobar-nav-body-footer.eta') %>

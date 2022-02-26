@@ -12,7 +12,7 @@ import { GetSearchResultFilters } from '../models/GET/GetSearchResultFilters'
 export class SearchService {
   public async render (req: Request, res: Response): Promise<void> {
     const query = striptags(String(req.query.q ?? ''))
-    const categoryParams = striptags(String(req.query.category) ?? '')
+    const categoryParams = striptags(String(req.query.category ?? ''))
     const engineParams = striptags(String(req.query.engine ?? ''))
     let limit = Number(req.query.limit ?? 12)
     const page = Number(req.query.page ?? 0)
@@ -120,7 +120,8 @@ export class SearchService {
       filters: { category: categoryFilters, engine: engineFilters },
       grid: assets,
       params: req.originalUrl,
-      pageBanner: pageBanner
+      pageBanner: pageBanner,
+      originalQuery: query
     })
   }
 

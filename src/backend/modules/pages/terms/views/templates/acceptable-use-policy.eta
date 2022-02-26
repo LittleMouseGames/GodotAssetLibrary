@@ -1,7 +1,7 @@
 <% it.meta = {
   title: 'Acceptable Use Policy | Godot Asset Library',
-  description: 'Find all <Search Query> Assets on Godot',
-  url: 'https://godotlibrary.com/terms',
+  description: 'Godot Asset Library Acceptable Use Policy',
+  url: 'https://godotlibrary.com/terms/acceptable-use-policy',
   moduleName: 'terms'
 } %>
 <% layout('templates/components/layouts/promobar-nav-body-footer.eta') %>

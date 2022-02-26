@@ -1,6 +1,6 @@
 <% it.meta = {
   title: 'Featured Posts | Godot Asset Library',
-  description: 'Find all <Search Query> Assets on Godot',
+  description: 'Manage Godot Asset Library settings',
   url: 'https://godotlibrary.com/admin/featured',
   moduleName: 'admin'
 } %>

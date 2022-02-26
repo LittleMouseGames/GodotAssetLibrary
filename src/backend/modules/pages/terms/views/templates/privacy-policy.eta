@@ -1,7 +1,7 @@
 <% it.meta = {
   title: 'Privacy Policy | Godot Asset Library',
-  description: 'Find all <Search Query> Assets on Godot',
-  url: 'https://godotlibrary.com/terms',
+  description: 'Godot Asset Library Privacy Policy',
+  url: 'https://godotlibrary.com/terms/privacy-policy',
   moduleName: 'terms'
 } %>
 <% layout('templates/components/layouts/promobar-nav-body-footer.eta') %>
