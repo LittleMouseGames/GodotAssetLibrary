@@ -2,9 +2,8 @@
   <div class="contents">
     <div class="about">
       <h2>About Godot Asset Library</h2>
-      <p>Godot Asset Library is a free and Open Source asset library for the Godot Engine, created by LittleMouseGames
-        and
-        maintained by the Godot Asset Library community on GitHub. Explore top assets created by the Godot Engine
+      <p>Godot Asset Library is a free and Open Source asset library for the Godot Engine maintained by the Godot Asset
+        Library community on GitHub. Explore assets created by the Godot Engine
         community,
         and
         kickstart your development with quality assets from Godot Asset Library</p>
@@ -45,15 +44,23 @@
   <div class="content">
     <section class="column">
       <h2 class="header">
-        Helpful Links
+        Site Terms
       </h2>
       <ul>
-        <li><a href="https://godotengine.org" target="_blank">Godot Website</a></li>
         <li><a href="/terms/privacy-policy">Privacy Policy</a></li>
-        <li class="gold"><a href="https://patreon.com/godotengine" target="_blank">Godot Patreon</a></li>
         <li><a href="/terms/terms-of-service">Terms of Service</a></li>
         <li><a href="/terms/cookie-policy">Cookie Policy</a></li>
         <li><a href="/terms/acceptable-use-policy">Acceptable Use Policy</a></li>
+      </ul>
+    </section>
+    <section class="column">
+      <h2 class="header">
+        Useful Links
+      </h2>
+      <ul>
+        <li class="gold"><a href="https://patreon.com/godotengine" target="_blank">Godot Patreon</a></li>
+        <li><a href="https://godotengine.org" target="_blank">Godot Website</a></li>
+        <li><a href="">Source Code</a></li>
       </ul>
     </section>
     <section class="column">
@@ -63,7 +70,8 @@
       <ul>
         <li><a href="/register">Login or Register</a></li>
         <li><a href="/dashboard">Account Dashboard</a></li>
-        <li><a href="">My Reviews</a></li>
+        <li><a href="/dashboard/reviews">My Reviews</a></li>
+        <li><a href="/dashboard/saved">My Saved Assets</a></li>
         <!-- We'll add this later, probably™️ <li><a href="/create">Upload a New Asset</a></li> -->
       </ul>
     </section>
@@ -73,7 +81,7 @@
       <div class="links">
         <div class="link">
           <span class="iconify" data-icon="ic:baseline-email"></span>
-          <a href="mailto:hello@godotlibrary.com">
+          <a href="mailto:hello@godotassetlibrary.com">
             <span>Email</span>
           </a>
         </div>

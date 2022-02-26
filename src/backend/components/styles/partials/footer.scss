@@ -130,11 +130,16 @@ footer {
     max-width: 330px;
 
     &:not(:last-of-type) {
-      margin-right: 138px;
+      margin-right: 75px;
 
       @include tablet-styles {
         margin-right: 0;
       }
+    }
+
+    ul,
+    p {
+      margin-top: 5px;
     }
 
     @include tablet-styles {
