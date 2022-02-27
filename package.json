@@ -24,20 +24,7 @@
     "sitemap": "^7.1.1",
     "striptags": "^3.2.0",
     "winston": "^3.4.0",
-    "winston-mongodb": "^5.0.7"
-  },
-  "devDependencies": {
-    "@overnightjs/core": "^1.7.6",
-    "@types/apicache": "^1.6.1",
-    "@types/compression": "^1.7.2",
-    "@types/cookie-parser": "^1.4.2",
-    "@types/cron": "^1.7.3",
-    "@types/express": "^4.17.13",
-    "@types/node": "^17.0.15",
-    "@types/nodemailer": "^6.4.4",
-    "@types/pubsub-js": "^1.8.3",
-    "@typescript-eslint/eslint-plugin": "^4.0.1",
-    "@typescript-eslint/parser": "^4.0.0",
+    "winston-mongodb": "^5.0.7",
     "concurrently": "^7.0.0",
     "csso": "^5.0.2",
     "eslint": "^7.18.0",
@@ -59,6 +46,19 @@
     "webpack": "^5.66.0",
     "webpack-cli": "^4.9.1",
     "webpack-node-externals": "^3.0.0"
+  },
+  "devDependencies": {
+    "@overnightjs/core": "^1.7.6",
+    "@types/apicache": "^1.6.1",
+    "@types/compression": "^1.7.2",
+    "@types/cookie-parser": "^1.4.2",
+    "@types/cron": "^1.7.3",
+    "@types/express": "^4.17.13",
+    "@types/node": "^17.0.15",
+    "@types/nodemailer": "^6.4.4",
+    "@types/pubsub-js": "^1.8.3",
+    "@typescript-eslint/eslint-plugin": "^4.0.1",
+    "@typescript-eslint/parser": "^4.0.0"
   },
   "scripts": {
     "devel": "mkdir -p dist/ && concurrently \"nodemon src/BuildTaskRunner.js\" \"webpack --watch\" \"nodemon dist/bundle.js\"",
