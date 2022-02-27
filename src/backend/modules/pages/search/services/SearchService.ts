@@ -67,15 +67,6 @@ export class SearchService {
       [key: string]: number
     } = {}
 
-    /** sort by key */
-    engineFilters = Object.keys(engineFilters).sort().reduce(
-      (obj: {[key: string]: number}, key) => {
-        obj[key] = engineFilters[key]
-        return obj
-      },
-      {}
-    )
-
     let filters = []
 
     let assets: any = []
@@ -104,6 +95,15 @@ export class SearchService {
         engineFilters[filter.godot_version] = 1
       }
     }
+
+    /** sort by key */
+    engineFilters = Object.keys(engineFilters).sort().reverse().reduce(
+      (obj: {[key: string]: number}, key) => {
+        obj[key] = engineFilters[key]
+        return obj
+      },
+      {}
+    )
 
     const pageBanner = {
       title: `Search results ${query === '' ? '' : 'for: ' + query}`,
