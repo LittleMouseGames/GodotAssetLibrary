@@ -13,6 +13,18 @@
   column-gap: 80px;
   margin-top: 20px;
 
+  @include mobile-styles {
+    display: flex;
+    flex-direction: column;
+    margin-top: 0;
+
+    &.column {
+      &:not(:last-of-type) {
+        margin-bottom: 20px;
+      }
+    }
+  }
+
   h2 {
     font-size: 18px;
     font-weight: 600;
