@@ -20,7 +20,7 @@ export class SearchService {
     const sort = striptags(String(req.query.sort ?? 'relevance'))
 
     const sortMap: {[key: string]: any} = {
-      relevance: {},
+      relevance: { godot_version: -1 },
       asset_rating: { upvotes: -1 },
       newest: { added_date: -1 },
       last_modified: { modify_date: -1 }

@@ -8,7 +8,8 @@ export async function GetTrendingAssets (): Promise<ReturnedAssets[]> {
   const mongo = MongoHelper.getDatabase()
   const operationObject = await mongo.collection('assets').aggregate([{
     $sort: {
-      upvotes: -1
+      upvotes: -1,
+      godot_version: -1
     }
   }, {
     $limit: 20
