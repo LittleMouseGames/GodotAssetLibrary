@@ -1,7 +1,7 @@
 /**
  * API exports
  */
-export * from './modules/api/authentication/jobs/index'
+export * from './modules/common/authentication/jobs/index'
 
 /**
  * Util exports

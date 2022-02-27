@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from 'express'
-import { GetUserRoleByToken } from 'modules/api/authentication/models/user/GET/GetUserRoleByToken'
+import { GetUserRoleByToken } from 'modules/common/authentication/models/user/GET/GetUserRoleByToken'
 
 export function CheckIfUserAdminAndRedirectIfNot (redirect: string): any {
   return (req: Request, res: Response, next: NextFunction) => {

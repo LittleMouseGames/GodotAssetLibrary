@@ -1,7 +1,7 @@
 import { StatusCodes } from 'http-status-codes'
 import { Controller, Post, Middleware, Get } from '@overnightjs/core'
 import { Request, Response } from 'express'
-import { UserServices } from 'modules/api/authentication/services/UserServices'
+import { UserServices } from 'modules/common/authentication/services/UserServices'
 import bodyParser from 'body-parser'
 import rateLimit from 'express-rate-limit'
 

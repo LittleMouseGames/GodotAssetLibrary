@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from 'express'
 import { StatusCodes } from 'http-status-codes'
-import { GetDoesUserExistByToken } from 'modules/api/authentication/models/user/GET/GetDoesUserExistByToken'
-import { TokenServices } from 'modules/api/authentication/services/TokenServices'
+import { GetDoesUserExistByToken } from 'modules/common/authentication/models/user/GET/GetDoesUserExistByToken'
+import { TokenServices } from 'modules/common/authentication/services/TokenServices'
 
 export function CheckIfUserExistAndSendError (error: string = 'User not found'): any {
   return async (req: Request, res: Response, next: NextFunction): Promise<any> => {

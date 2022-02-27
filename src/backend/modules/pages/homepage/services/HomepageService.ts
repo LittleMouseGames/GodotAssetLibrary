@@ -1,5 +1,5 @@
 import { Request, Response } from 'express'
-import { TokenServices } from 'modules/api/authentication/services/TokenServices'
+import { TokenServices } from 'modules/common/authentication/services/TokenServices'
 import { GetUserSavedAssets } from 'modules/pages/dashboard/models/GET/GetUserSavedAssets'
 import striptags from 'striptags'
 import { logger } from 'utility/logger'

@@ -1,6 +1,6 @@
 import { Request, Response } from 'express'
-import { GetUserIdByToken } from 'modules/api/authentication/models/user/GET/GetUserIdByToken'
-import { TokenServices } from 'modules/api/authentication/services/TokenServices'
+import { GetUserIdByToken } from 'modules/common/authentication/models/user/GET/GetUserIdByToken'
+import { TokenServices } from 'modules/common/authentication/services/TokenServices'
 import striptags from 'striptags'
 
 export class RegisterService {
