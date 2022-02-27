@@ -63,7 +63,7 @@
   "scripts": {
     "devel": "mkdir -p dist/ && concurrently \"nodemon src/BuildTaskRunner.js\" \"webpack --watch\" \"nodemon dist/bundle.js\"",
     "lint": "eslint . --ext .js,.ts ; exit 0",
-    "prod": "mkdir -p dist/ && node src/BuildTaskRunner.js && webpack && NODE_ENV=production node ./dist/bundle.js &"
+    "prod": "mkdir -p dist/ && (node src/BuildTaskRunner.js &) && webpack && NODE_ENV=production nodemon ./dist/bundle.js"
   },
   "eslintConfig": {
     "rules": {
