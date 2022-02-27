@@ -17,7 +17,7 @@
     <div class="section row grid-special">
       <div class="inputs">
         <div class="input-container">
-          <input class="input" id="asset-name" type="text" placeholder="" required>
+          <input class="input" id="asset-name" type="text" placeholder=" " required>
           <label for="asset-name" class="placeholder">Asset Name</label>
         </div>
         <select>
@@ -54,13 +54,13 @@
     <div class="section">
       <div class="row">
         <div class="input-container">
-          <input class="input" id="quick-about" type="text" placeholder="" required>
+          <input class="input" id="quick-about" type="text" placeholder=" " required>
           <label for="quick-about" class="placeholder">Quick about (used in listing cards)</label>
         </div>
       </div>
       <div class="row">
         <div class="input-container">
-          <input class="input" id="youtube-video" type="text" placeholder="">
+          <input class="input" id="youtube-video" type="text" placeholder=" ">
           <label for="youtube-video" class="placeholder">YouTube video (optional)</label>
         </div>
         <div class="note">
@@ -69,7 +69,7 @@
       </div>
       <div class="row">
         <div class="input-container">
-          <input class="input" id="banner-url" type="text" placeholder="" required>
+          <input class="input" id="banner-url" type="text" placeholder=" " required>
           <label for="banner-url" class="placeholder">Card banner image URL</label>
         </div>
         <div class="note">
@@ -80,7 +80,7 @@
       </div>
       <div class="row">
         <div class="input-container">
-          <input class="input" id="icon-url" type="text" placeholder="" required>
+          <input class="input" id="icon-url" type="text" placeholder=" " required>
           <label for="icon-url" class="placeholder">Icon URL</label>
         </div>
         <div class="note">
@@ -89,7 +89,7 @@
       </div>
       <div class="row">
         <div class="input-container">
-          <input class="input" id="asset-version" type="text" placeholder="" required>
+          <input class="input" id="asset-version" type="text" placeholder=" " required>
           <label for="asset-version" class="placeholder">Asset Version (ex 1.0.0)</label>
         </div>
       </div>
@@ -106,7 +106,7 @@
       </div>
       <div class="row">
         <div class="input-container">
-          <input class="input" id="git-url" type="text" placeholder="" required>
+          <input class="input" id="git-url" type="text" placeholder=" " required>
           <label for="git-url" class="placeholder">Asset Git URL</label>
         </div>
         <div class="note">
@@ -117,7 +117,7 @@
       </div>
       <div class="row">
         <div class="input-container">
-          <input class="input" id="download-hash-url" type="text" placeholder="" required>
+          <input class="input" id="download-hash-url" type="text" placeholder=" " required>
           <label for="download-hash-url" class="placeholder">Download commit hash</label>
         </div>
         <div class="note">
@@ -136,19 +136,19 @@
     <div class="section row grid-special section-media">
       <div class="inputs">
         <div class="input-container">
-          <input class="input" id="media-one" type="text" placeholder="" required>
+          <input class="input" id="media-one" type="text" placeholder=" " required>
           <label for="media-one" class="placeholder">Media URL</label>
         </div>
         <div class="input-container">
-          <input class="input" id="media-two" type="text" placeholder="">
+          <input class="input" id="media-two" type="text" placeholder=" ">
           <label for="media-two" class="placeholder">(optional) Media URL</label>
         </div>
         <div class="input-container">
-          <input class="input" id="media-three" type="text" placeholder="">
+          <input class="input" id="media-three" type="text" placeholder=" ">
           <label for="media-four" class="placeholder">(optional) Media URL</label>
         </div>
         <div class="input-container">
-          <input class="input" id="media-four" type="text" placeholder="">
+          <input class="input" id="media-four" type="text" placeholder=" ">
           <label for="media-four" class="placeholder">(optional) Media URL</label>
         </div>
       </div>

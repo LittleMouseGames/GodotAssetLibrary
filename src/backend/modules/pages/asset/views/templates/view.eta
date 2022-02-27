@@ -126,14 +126,14 @@
             </label>
             <div class="requirement">Headline must be at least 3 characters but not more than 50</div>
             <div class="input-container">
-              <input name="asset_review_headline" class="input" id="asset-review-headline" type="text" placeholder=""
+              <input name="asset_review_headline" class="input" id="asset-review-headline" type="text" placeholder=" "
                 value="<%= it?.usersAssetReview?.headline ? it?.usersAssetReview?.headline : '' %>">
               <label for="asset-review-headline" class="placeholder">Headline (optional)</label>
             </div>
             <div class="requirement">Review must be at least 5 characters but not more than 500</div>
             <div class="input-container">
               <textarea name="asset_review" class="input" id="asset-review" type="text"
-                placeholder=""><%= it?.usersAssetReview?.text ? it?.usersAssetReview?.text : '' %></textarea>
+                placeholder=" "><%= it?.usersAssetReview?.text ? it?.usersAssetReview?.text : '' %></textarea>
               <label for="asset-review" class="placeholder">Review (optional)</label>
             </div>
             <button type="submit"><%= it?.hasUserReviewedAsset ? 'Update' : 'Submit' %></button>
