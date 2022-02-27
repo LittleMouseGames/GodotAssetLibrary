@@ -6,7 +6,7 @@ COPY ["package.json", "package-lock.json*", "./"]
 
 RUN ping -c 2 google.ca
 
-RUN npm ci --prod
+RUN npm ci
 
 COPY . .
 
