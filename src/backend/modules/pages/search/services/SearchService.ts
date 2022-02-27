@@ -63,9 +63,18 @@ export class SearchService {
       [key: string]: number
     } = {}
 
-    const engineFilters: {
+    let engineFilters: {
       [key: string]: number
     } = {}
+
+    /** sort by key */
+    engineFilters = Object.keys(engineFilters).sort().reduce(
+      (obj: {[key: string]: number}, key) => {
+        obj[key] = engineFilters[key]
+        return obj
+      },
+      {}
+    )
 
     let filters = []
 
