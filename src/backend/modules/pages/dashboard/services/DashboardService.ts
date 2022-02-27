@@ -21,6 +21,7 @@ import { UpdatePositiveVotesRemoveOne } from 'modules/pages/asset/models/UPDATE/
 import { UpdateNegativeVotesRemoveOne } from 'modules/pages/asset/models/UPDATE/UpdateNegativeVotesRemoveOne'
 import { DeleteAllUserComments } from '../models/DELETE/DeleteAllUserComments copy'
 import { DeleteUserByUserId } from '../models/DELETE/DeleteUserById'
+import { GetUsernameByToken } from 'modules/common/authentication/models/user/GET/GetUsernameByToken'
 
 export class DashboardService {
   public async render (req: Request, res: Response): Promise<void> {
@@ -142,7 +143,7 @@ export class DashboardService {
       throw new Error('Username isn\'t valid')
     }
 
-    if (await GetDoesUsernameExist(username)) {
+    if (await GetDoesUsernameExist(username) && await GetUsernameByToken(hashedToken) !== username) {
       throw new Error('Username already in use')
     }
 
