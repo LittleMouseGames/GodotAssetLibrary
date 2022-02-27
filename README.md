@@ -1,5 +1,7 @@
 # Godot Asset Library
 
+![](example.png)
+
 **What is this:**
 An Open Source (AGPLv3) Godot Asset Library
 
