@@ -30,12 +30,11 @@
     <h2>Create a new Account</h2>
     <p>With a free Godot Asset Library account, you can:</p>
     <ul>
-      <li>Add new assets to the Library</li>
       <li>Leave ratings and reviews</li>
-      <li>Easily save assets for future lookup</li>
+      <li>Easily save assets for future reference</li>
     </ul>
     <form method="POST" action="/api/users/register" onsubmit="window.godotLibrary.formTools.sendFormAjax(event, this)">
-      <div class="requirement">Username must be at least 6 characters (but no more than 16)</div>
+      <div class="requirement">Username must be at least 3 characters</div>
       <div class="input-container">
         <input class="input" id="register-username" name="username" type="username" placeholder=" " required>
         <label for="register-username" class="placeholder">Username</label>

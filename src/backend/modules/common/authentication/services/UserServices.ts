@@ -13,7 +13,7 @@ import striptags from 'striptags'
 
 export class UserServices {
   private static instance: UserServices
-  private readonly USERNAME_REGEX: RegExp = /^[a-zA-Z0-9_-]{3,16}$/
+  private readonly USERNAME_REGEX: RegExp = /^[a-zA-Z0-9_-]{3,64}$/
   private readonly PASSWORD_REGEX: RegExp = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@$!%*#?&]{6,}$/
   private readonly TokenService: TokenServices = TokenServices.getInstance()
 
