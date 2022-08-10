@@ -14,6 +14,8 @@ export async function GetAssetsFromQuery (query: string, limit: number = 12, ski
     }
   }
 
+  console.log(categoryFilters)
+
   if (Array.isArray(engineFilters) && engineFilters.length > 0) {
     filters.godot_version = {
       $in: engineFilters

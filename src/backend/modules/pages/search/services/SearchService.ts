@@ -43,7 +43,7 @@ export class SearchService {
       if (categoryParams === '') {
         categoryArray = []
       } else {
-        categoryArray = [categoryParams]
+        categoryArray = categoryParams.split(',')
       }
     } else {
       categoryArray = categoryParams as any[]
@@ -53,7 +53,7 @@ export class SearchService {
       if (engineParams === '') {
         engineArray = []
       } else {
-        engineArray = [engineParams]
+        engineArray = engineParams.split(',')
       }
     } else {
       engineArray = engineParams as any[]
@@ -107,7 +107,7 @@ export class SearchService {
 
     const pageBanner = {
       title: `Search results ${query === '' ? '' : 'for: ' + query}`,
-      info: `Found <strong>${totalAssetsForQuery} assets</strong> from <strong>${Object.keys(categoryFilters).length} categories</strong>`
+      info: `Found <strong>${totalAssetsForQuery} assets</strong> for query`
     }
 
     if (authToken !== '') {
