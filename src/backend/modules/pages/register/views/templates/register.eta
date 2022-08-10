@@ -47,7 +47,7 @@
       <div class="requirement">Password must be at least 6 characters and contain at least 1 number</div>
       <div class="input-container">
         <input class="input" id="register-password" name="password" type="password" placeholder=" " required>
-        <label for="register-password" class="placeholder">Passwword</label>
+        <label for="register-password" class="placeholder">Password</label>
       </div>
       <div class="input-container">
         <input class="input" id="register-password-conf" name="passwordConf" type="password" placeholder=" " required>

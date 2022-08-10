@@ -1,6 +1,6 @@
-<% if (it.meta?.moduleName == 'homepage') { %>
 <section class="site-info">
   <div class="contents">
+    <% if (it.meta?.moduleName == 'homepage') { %>
     <div class="about">
       <h2>About Godot Asset Library</h2>
       <p>Godot Asset Library is a free and Open Source asset library for the Godot Engine maintained by the Godot Asset
@@ -9,6 +9,7 @@
         and
         kickstart your development with quality assets from Godot Asset Library</p>
     </div>
+    <% } %>
     <div class="trust-badges">
       <div class="trust-badge">
         <div class="icon">
@@ -40,7 +41,6 @@
     </div>
   </div>
 </section>
-<% } %>
 
 <footer>
   <div class="content">
