@@ -30,7 +30,7 @@
     <%~ it.body %>
   </section>
 
-  <%~ includeFile('templates/components/partials/footer.eta') %>
+  <%~ includeFile('templates/components/partials/footer.eta', it) %>
 </body>
 
 </html>

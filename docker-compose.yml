@@ -6,7 +6,7 @@ services:
       context: .
       dockerfile: Dockerfile
     image: nodejs
-    container_name: nodejs
+    container_name: gda_nodejs
     restart: unless-stopped
     env_file: .env
     environment:
@@ -30,7 +30,7 @@ services:
 
   db:
     image: mongo:5.0.5
-    container_name: db
+    container_name: gda_db
     restart: unless-stopped
     env_file: .env
     environment:
@@ -48,4 +48,3 @@ networks:
 volumes:
   dbdata:
   node_modules:
-    
