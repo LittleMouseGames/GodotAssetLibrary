@@ -65,12 +65,4 @@
       <%~ includeFile('templates/components/partials/asset-card.eta', { info: info, _locals: it?._locals }) %>
       <% }) %>
   </section>
-
-  <section>
-    <h2>Latest Imported Assets</h2>
-    <div class="container five-wide">
-      <% it.newestAssets?.forEach(info => { %>
-      <%~ includeFile('templates/components/partials/asset-card.eta', { info: info, _locals: it?._locals }) %>
-      <% }) %>
-  </section>
 </section>
