@@ -60,9 +60,11 @@
         Useful Links
       </h2>
       <ul>
-        <li class="gold"><a href="https://patreon.com/godotengine" target="_blank">Godot Patreon</a></li>
-        <li><a href="https://godotengine.org" target="_blank">Godot Website</a></li>
-        <li><a href="https://github.com/LittleMouseGames/GodotAssetLibrary" target="_blank">Source Code</a></li>
+        <li class="gold"><a href="https://patreon.com/godotengine" target="_blank" rel="noopener noreferrer">Godot
+            Patreon</a></li>
+        <li><a href="https://godotengine.org" target="_blank" rel="noopener noreferrer">Godot Website</a></li>
+        <li><a href="https://github.com/LittleMouseGames/GodotAssetLibrary" target="_blank"
+            rel="noopener noreferrer">Source Code</a></li>
       </ul>
     </section>
     <section class="column">
@@ -89,7 +91,7 @@
         </div>
         <div class="link">
           <span class="iconify" data-icon="fa-brands:twitter-square"></span>
-          <a href="https://twitter.com/LittleMouseDev" target="_blank">
+          <a href="https://twitter.com/LittleMouseDev" target="_blank" rel="noopener noreferrer">
             <span>Twitter</span>
           </a>
         </div>
@@ -99,8 +101,8 @@
     <section class="brand">
       <a href="/">
         <div class="title">Godot Asset Library</div>
-        <div class="subtitle">by <a href="https://twitter.com/LittleMouseDev" target="_blank" class="mouse-link"><span
-              class="strong">LittleMouseGames</span></a></div>
+        <div class="subtitle">by <a href="https://twitter.com/LittleMouseDev" target="_blank" class="mouse-link"
+            rel="noopener noreferrer"><span class="strong">LittleMouseGames</span></a></div>
       </a>
       <span class="copyright disclaimer">&copy; 2022 Godot Asset Library</span>
     </section>
