@@ -152,11 +152,10 @@
       <div class="card">
         <div class="banner">
           <div class="badges">
-            <a href="/search/?q=&category=<%= it?.info?.category?.toLocaleLowerCase() %>"
-              title="See assets in this category">
+            <a href="/category/<%= it?.info?.category?.toLocaleLowerCase() %>" title="See assets in this category">
               <div class="badge badge-blue"><%= it?.info?.category ?? 'ERR' %></div>
             </a>
-            <a href="/search/?q=&engine=<%= it?.info?.godot_version?.toLocaleLowerCase() %>"
+            <a href="/engine/<%= it?.info?.godot_version?.toLocaleLowerCase() %>"
               title="See assets for this engine version">
               <div class="badge badge-purple"><%= it?.info?.godot_version ?? 'ERR' %></div>
             </a>
