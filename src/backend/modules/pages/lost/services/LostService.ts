@@ -16,6 +16,6 @@ export class LostService {
       info: lostMessages[Math.floor(Math.random() * lostMessages.length)]
     }
 
-    return res.render('templates/pages/lost/not-found', { pageBanner: pageBanner })
+    return res.status(404).render('templates/pages/lost/not-found', { pageBanner: pageBanner })
   }
 }
