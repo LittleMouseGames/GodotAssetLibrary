@@ -23,7 +23,6 @@ services:
       - "8080:3000"
     volumes:
       - .:/app
-      - node_modules:/app/node_modules
     networks:
       - app-network
     command: npm run $RUN_MODE
@@ -47,4 +46,3 @@ networks:
 
 volumes:
   dbdata:
-  node_modules:
