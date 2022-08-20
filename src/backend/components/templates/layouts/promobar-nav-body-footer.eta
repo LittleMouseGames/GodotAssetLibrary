@@ -19,6 +19,19 @@
     <%~ JSON.stringify(it?.meta?.jsonLd) %> 
   </script>
   <% } %>
+  <script type="application/ld+json">
+    {
+    "@context": "http://schema.org",
+    "@type": "WebSite",
+    "name": "Godot Asset Library",
+    "url": "https://godotassetlibrary.com",
+    "potentialAction": {
+      "@type": "SearchAction",
+      "target": "https://godotassetlibrary.com/search/?q=test{search_term}",
+      "query-input": "required name=search_term"
+      }
+    }
+  </script>
 </head>
 
 
