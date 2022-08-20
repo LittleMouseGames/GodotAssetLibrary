@@ -165,7 +165,7 @@ async function fetchAssetInformationAndUpdate (assetIDs: any[]): Promise<void> {
         }
 
         await modelUpdateAssetObject(result.legacy_asset_id, newAssetInformation)
-        logger.info('info', `Updated asset ${striptags(result.title)} successfully`)
+        logger.log('info', `Updated asset ${striptags(result.title)} successfully`)
       }
     } catch (e: any) {
       logger.log('error', `[IMPORTER]: ${e.message}`, [e])
