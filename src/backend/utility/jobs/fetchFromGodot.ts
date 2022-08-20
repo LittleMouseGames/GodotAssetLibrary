@@ -5,6 +5,7 @@ import { customAlphabet } from 'nanoid/non-secure'
 import { MongoHelper } from 'MongoHelper'
 import { Db } from 'mongodb'
 import { assetSchema } from 'utility/schema/assets'
+import striptags from 'striptags'
 
 const host = 'godotengine.org'
 
@@ -45,7 +46,7 @@ async function importAssets (): Promise<void> {
 
 async function fetchAssetListings (): Promise<any[]> {
   const host = 'godotengine.org'
-  const env = process.env.RUN_MODE ?? 'devel'
+  const env = process.env.RUN_MODE ?? 'prod'
   let paths: string[] = []
 
   if (env === 'prod') {
@@ -141,7 +142,6 @@ async function fetchAssetInformationAndUpdate (assetIDs: any[]): Promise<void> {
 
       if (result.asset_id !== undefined) {
         const assetInformationWeHave = await modelGetAssetInformation(result.asset_id)
-        const newAssetInformation = { ...result, ...assetInformationWeHave }
 
         result.legacy_asset_id = result.asset_id
         result.asset_id = assetInformationWeHave.asset_id
@@ -150,13 +150,15 @@ async function fetchAssetInformationAndUpdate (assetIDs: any[]): Promise<void> {
         result.author_lowercase = result.author.toLocaleLowerCase()
         result.quick_description = result.description.trim().replace(/(\r\n|\n|\r|\t)/gm, '')
 
+        const newAssetInformation = { ...assetInformationWeHave, ...result }
+
         if (assetInformationWeHave.category !== result.category) {
           void updateCategoryCountInfoObject(assetInformationWeHave.category, -1)
           void updateCategoryCountInfoObject(result.category)
         }
 
         await modelUpdateAssetObject(result.legacy_asset_id, newAssetInformation)
-        logger.info('info', `Updated asset ${result.legacy_asset_id} successfully`)
+        logger.info('info', `Updated asset ${striptags(result.title)} successfully`)
       }
     } catch (e: any) {
       logger.log('error', `[IMPORTER]: ${e.message}`, [e])
