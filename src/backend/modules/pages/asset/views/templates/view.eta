@@ -138,7 +138,7 @@
             </div>
             <button type="submit"><%= it?.hasUserReviewedAsset ? 'Update' : 'Submit' %></button>
             <% } else { %>
-            Please <a href="/register">sign in</a> to add a review
+            Please <a href="/register" title="Go to login / register page">sign in</a> to add a review
             <% } %>
           </form>
         </div>
@@ -152,10 +152,12 @@
       <div class="card">
         <div class="banner">
           <div class="badges">
-            <a href="/search/?q=&category=<%= it?.info?.category?.toLocaleLowerCase() %>">
+            <a href="/search/?q=&category=<%= it?.info?.category?.toLocaleLowerCase() %>"
+              title="See assets in this category">
               <div class="badge badge-blue"><%= it?.info?.category ?? 'ERR' %></div>
             </a>
-            <a href="/search/?q=&engine=<%= it?.info?.godot_version?.toLocaleLowerCase() %>">
+            <a href="/search/?q=&engine=<%= it?.info?.godot_version?.toLocaleLowerCase() %>"
+              title="See assets for this engine version">
               <div class="badge badge-purple"><%= it?.info?.godot_version ?? 'ERR' %></div>
             </a>
             <div class="dropdown" onclick="window.godotLibrary.dropdown.showContent(event, this)">
@@ -163,24 +165,28 @@
               <div class="options">
                 <% if(it?.info?.saved === true) { %>
                 <a href="/dashboard/save/<%= it?.info?.asset_id %>"
-                  onclick="window.godotLibrary.dropdown.callRouteAjax(event, '/dashboard/save/<%= it?.info?.asset_id %>', 'Post successfully removed from saves')">
+                  onclick="window.godotLibrary.dropdown.callRouteAjax(event, '/dashboard/save/<%= it?.info?.asset_id %>', 'Post successfully removed from saves')"
+                  title="Add asset to saved list">
                   Unsave
                 </a>
                 <% } else { %>
                 <a href="/dashboard/save/<%= it?.info?.asset_id %>"
-                  onclick="window.godotLibrary.dropdown.callRouteAjax(event, '/dashboard/save/<%= it?.info?.asset_id %>', 'Post successfully added to saves')">
+                  onclick="window.godotLibrary.dropdown.callRouteAjax(event, '/dashboard/save/<%= it?.info?.asset_id %>', 'Post successfully added to saves')"
+                  title="Remove asset from saved list">
                   Save
                 </a>
                 <% } %>
                 <% if(it?._locals?.role === 'admin') { %>
                 <% if(it?.info?.featured === true) { %>
                 <a href="/admin/feature-post/<%= it?.info?.asset_id %>"
-                  onclick="window.godotLibrary.dropdown.callRouteAjax(event, '/admin/feature-post/<%= it?.info?.asset_id %>', 'Post successfully featured')">
+                  onclick="window.godotLibrary.dropdown.callRouteAjax(event, '/admin/feature-post/<%= it?.info?.asset_id %>', 'Post successfully featured')"
+                  title="Remove from 'Assets We Love' on homepage">
                   Unfeature
                 </a>
                 <% } else { %>
                 <a href="/admin/feature-post/<%= it?.info?.asset_id %>"
-                  onclick="window.godotLibrary.dropdown.callRouteAjax(event, '/admin/feature-post/<%= it?.info?.asset_id %>', 'Post successfully featured')">
+                  onclick="window.godotLibrary.dropdown.callRouteAjax(event, '/admin/feature-post/<%= it?.info?.asset_id %>', 'Post successfully featured')"
+                  title="Add to 'Assets We Love' on homepage">
                   Feature
                 </a>
                 <% } %>
@@ -233,12 +239,14 @@
             </div>
             <div class="row">
               <div class="property">Git URL</div>
-              <div class="value"><a href="<%= it?.info?.browse_url %>" target="_blank" rel="noopener noreferrer">Link to
+              <div class="value"><a href="<%= it?.info?.browse_url %>" target="_blank" rel="noopener noreferrer"
+                  title="Open asset Git repository">Link to
                   Git URL</a></div>
             </div>
             <div class="row">
               <div class="property">Issue URL</div>
-              <div class="value"><a href="<%= it?.info?.issues_url %>" target="_blank" rel="noopener noreferrer">Link to
+              <div class="value"><a href="<%= it?.info?.issues_url %>" target="_blank" rel="noopener noreferrer"
+                  title="Open asset issue tracker">Link to
                   Issues URL</a>
               </div>
             </div>

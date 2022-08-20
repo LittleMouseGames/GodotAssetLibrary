@@ -8,12 +8,7 @@
 
 <section class="page-dashboard">
   <div class="column">
-    <div class="sidebar">
-      <div class="item active"><a href="/dashboard">Account Information</a></div>
-      <div class="item"><a href="/dashboard/saved/">My Saved Assets</a></div>
-      <div class="item"><a href="/dashboard/reviews/">My Reviewed Assets</a></div>
-      <div class="item"><a href="/dashboard/manage/">Manage Information</a></div>
-    </div>
+    <%~ includeFile('./components/sidebar.eta') %>
   </div>
   <div class="column">
     <form method="POST" action="/dashboard/update/info"
@@ -29,8 +24,8 @@
       </div>
       <div class="disclaimer">
         By submitting this form you agree to our
-        <a href="/terms/privacy-plicy">Privacy Policy</a> and
-        <a href="/terms/terms-of-service">Terms of Service</a>
+        <a href="/terms/privacy-plicy" title="Open Privacy Policy page">Privacy Policy</a> and
+        <a href="/terms/terms-of-service" title="Open Terms of Service page">Terms of Service</a>
       </div>
       <button type="submit">Update</button>
     </form>
@@ -54,8 +49,8 @@
       </div>
       <div class="disclaimer">
         By submitting this form you agree to our
-        <a href="/terms/privacy-plicy">Privacy Policy</a> and
-        <a href="/terms/terms-of-service">Terms of Service</a>
+        <a href="/terms/privacy-plicy" title="Open Privacy Policy page">Privacy Policy</a> and
+        <a href="/terms/terms-of-service" title="Open Terms of Service page">Terms of Service</a>
       </div>
       <button type="submit">Update</button>
     </form>
