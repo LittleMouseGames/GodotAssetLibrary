@@ -15,30 +15,42 @@
         <div class="options">
           <ul>
             <% 
+              var sharedParams = []
+              var categoryOrEngineRegex = /(\/category\/|\/engine\/)/
+              var acceptedParams = ['category', 'engine', 'page', 'sort', 'order']
+              
+              if (categoryOrEngineRegex.test(it?.params)) {
+                var name = it?.params.split(categoryOrEngineRegex)[1]
+                sharedParams.push({name: name.replace(/\//g, ''), value: it.params.replace(categoryOrEngineRegex, '')})
+              }
+
               for (const [key, value] of Object.entries(filtersValue)) { %>
             <li>
               <label>
                 <% 
                     let filterParams = new URLSearchParams(it.params ?? '?q=')
-                    let currentParams = filterParams.getAll(filtersKey)
                     let filterAlreadyAdded = false
                     let filterLink = ''
-                    
                     
                     if (!Array.from(filterParams.keys())[0].includes('/search/')) {
                       var name = Array.from(filterParams.keys())[0]
                       filterParams.delete(name)
                       filterParams.set('/search/?q', '')
                     } 
+
+                    sharedParams.forEach(param => {
+                      filterParams.append(param.name, param.value)
+                    })
+
+                    Array.from(filterParams.keys()).forEach(key => {
+                      if(!acceptedParams.includes(key)) {
+                        filterParams.delete(key)
+                      }
+                    })
+
+                    let currentParams = filterParams.getAll(filtersKey)
                     
                     filterParams.set('page', 0)
-
-                    var categoryOrEngineRegex = /(\/category\/|\/engine\/)/
-                    if (categoryOrEngineRegex.test(it?.params)) {
-                      if(key.toLocaleLowerCase() == it.params.replace(categoryOrEngineRegex, '')) {
-                        filterAlreadyAdded = true
-                      }
-                    }
 
                     if (currentParams.includes(key.toLocaleLowerCase()) || currentParams.includes(key)) {
                       filterAlreadyAdded = true
