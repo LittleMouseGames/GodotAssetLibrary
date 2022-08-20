@@ -36,7 +36,7 @@ export class HomepageService {
 
       return res.render('templates/pages/homepage/index', { trendingAssets: trendingAssets, featuredAssets: featuredAssets, lastModifiedAssets: lastModifiedAssets, categoriesObject: categoriesObject })
     } catch (e: any) {
-      logger.log('error', 'Failed to retrieve assets', ...[e])
+      logger.log('error', 'Failed to retrieve assets', [e])
       return res.render('templates/pages/homepage/index')
     }
   }
