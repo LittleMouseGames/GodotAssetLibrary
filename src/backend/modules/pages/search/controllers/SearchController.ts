@@ -5,13 +5,13 @@ import { SearchService } from '../services/SearchService'
 
 const searchRedirectRateLimit = rateLimit({
   windowMs: 1000 * 60 * 15, // 15 minutes
-  max: 40, // start blocking after x requests
+  max: 50, // start blocking after x requests
   message: JSON.stringify({ error: 'You\'re doing that too much, please try again later' })
 })
 
 const searchRateLimit = rateLimit({
   windowMs: 1000 * 60 * 15, // 15 minutes
-  max: 40, // start blocking after x requests
+  max: 50, // start blocking after x requests
   message: JSON.stringify({ error: 'You\'re doing that too much, please try again later' })
 })
 
