@@ -165,7 +165,7 @@ export class AdminService {
   }
 
   public async updateSiteSettings (req: Request, res: Response): Promise<void> {
-    const message = striptags(req.body.message ?? '')
+    const message = striptags(req.body.message ?? '', ['a', 'strong', 'span'])
     const disableNewAccounts = Boolean(req.body.disable_new_accounts ?? false)
     const disableNewComments = Boolean(req.body.disable_new_comments ?? false)
 
