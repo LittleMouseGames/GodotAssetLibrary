@@ -1,19 +1,14 @@
 <% it.meta = {
   title: 'My Reviews | Godot Asset Library',
   description: 'Manage your Godot Asset Library experience',
-  url: 'https://godotlibrary.com/dashboard/reviews',
+  url: 'https://godotassetlibrary.com/dashboard/reviews',
   moduleName: 'dashboard'
 } %>
 <% layout('templates/components/layouts/promobar-nav-body-footer.eta') %>
 
 <section class="page-dashboard reviews">
   <div class="column">
-    <div class="sidebar">
-      <div class="item active"><a href="/dashboard">Account Information</a></div>
-      <div class="item"><a href="/dashboard/saved/">My Saved Assets</a></div>
-      <div class="item"><a href="/dashboard/reviews/">My Reviewed Assets</a></div>
-      <div class="item"><a href="/dashboard/manage/">Manage Information</a></div>
-    </div>
+    <%~ includeFile('./components/sidebar.eta') %>
   </div>
   <div class="column">
     <%~ includeFile('templates/components/partials/catalog-grid.eta', it) %>

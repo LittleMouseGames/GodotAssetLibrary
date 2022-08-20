@@ -1,0 +1,7 @@
+<div class="sidebar">
+  <div class="item"><a href="/terms/privacy-policy" title="Open Privacy Policy page">Privacy Policy</a></div>
+  <div class="item"><a href="/terms/terms-of-service" title="Open Terms of Service page">Terms of Service</a></div>
+  <div class="item"><a href="/terms/cookie-policy" title="Open Cookie Policy page">Cookie Policy</a></div>
+  <div class="item"><a href="/terms/acceptable-use-policy" title="Open Acceptable Use Policy page">Acceptable Use
+      Policy</a></div>
+</div>

@@ -1,3 +1,7 @@
+<% 
+var generateProxyUrl = it?._locals?.functions?.generateProxyUrl
+%>
+
 <div class="category-card-featured">
   <div class="head">
     <div>Featured Category</div>
@@ -7,7 +11,8 @@
     <div><%= it?.description %></div>
   </div>
   <div class="footer">
-    <a href="/search/?q=&category=<%= it?.name?.toLocaleLowerCase() %>"><button>Explore <%= it?.name %></button></a>
+    <a href="/category/<%= it?.name?.toLocaleLowerCase() %>" title="See assets in this category"><button>Explore
+        <%= it?.name %></button></a>
   </div>
   <div class="background">
     <div class="mask">

@@ -10,10 +10,24 @@
   }
 %>
 
+<% 
+var generateProxyUrl = it?._locals?.functions?.generateProxyUrl
+%>
+
+<% function returnYoutubeEmbedOrReturnUrl(url) {
+  if(url.includes('youtube.com')) {
+    return url.replace('watch?v=', 'embed/')
+  } else if(url.includes('youtu.be')) {
+    return url.replace('youtu.be/', 'youtube.com/embed/')
+  } else {
+    return url
+  }
+} %>
+
 <% it.meta = {
   title: `${it?.info?.title ?? 'Asset'} | Godot Asset Library`,
   description: it?.info?.quick_description ??  `Find out more about the FREE ${it?.info?.title} godot asset on Godot Asset Library.`,
-  url: `https://godotlibrary.com/asset/${it?.info?.asset_id}/${encodeURI(it?.info?.title.replace(/\s/g, '-')).toLocaleLowerCase()}`,
+  url: `https://godotassetlibrary.com/asset/${it?.info?.asset_id}/${encodeURI(it?.info?.title.replace(/\s/g, '-')).toLocaleLowerCase()}`,
   moduleName: 'asset',
   jsonLd: {
     "@context": "https://schema.org/",
@@ -41,21 +55,31 @@
         <% if(it?.info?.previews.length !== 0) { %>
         <% it?.info?.previews.forEach(preview => { %>
         <div class="image">
-          <img src="<%= preview.thumbnail %> " alt="" onclick="updatePlayerImage('<%= preview.link %>')">
+          <img src="<%= generateProxyUrl(preview.thumbnail) %> " alt=""
+            onclick="updatePlayerImage('<%= returnYoutubeEmbedOrReturnUrl(preview.link) %>', '<%= generateProxyUrl(preview.link, 1920, 1080) %>')">
         </div>
         <% }) %>
         <% } else { %>
         <div class="image">
-          <img src="<%= it?.info?.icon_url %>" alt="">
+          <img src="<%= generateProxyUrl(it?.info?.icon_url) %>" alt="">
         </div>
         <% } %>
       </div>
       <div class="player">
         <div class="container">
           <% if(it?.info?.previews.length !== 0) { %>
-          <img src="<%= it?.info?.previews[0].link %>" alt="">
+          <% var link = it?.info?.previews[0].link %>
+          <% if (returnYoutubeEmbedOrReturnUrl(link).includes('youtube')) { %>
+          <iframe width="100%" height="100%" src="<%= returnYoutubeEmbedOrReturnUrl(link) %>" frameborder="0"
+            allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+          <img style="display: none;" alt="">
           <% } else { %>
-          <img src="<%= it?.info?.icon_url %>" alt="">
+          <iframe width="100%" height="100%" frameborder="0" style="display: none;"
+            allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+          <img src="<%= generateProxyUrl(it?.info?.previews[0].link, 1920, 1080) %>" alt="">
+          <% } %>
+          <% } else { %>
+          <img src="<%= generateProxyUrl(it?.info?.icon_url, 1920, 1080) %>" alt="">
           <% } %>
         </div>
       </div>
@@ -138,7 +162,7 @@
             </div>
             <button type="submit"><%= it?.hasUserReviewedAsset ? 'Update' : 'Submit' %></button>
             <% } else { %>
-            Please <a href="/register">sign in</a> to add a review
+            Please <a href="/register" title="Go to login / register page">sign in</a> to add a review
             <% } %>
           </form>
         </div>
@@ -152,10 +176,11 @@
       <div class="card">
         <div class="banner">
           <div class="badges">
-            <a href="/search/?q=&category=<%= it?.info?.category?.toLocaleLowerCase() %>">
+            <a href="/category/<%= it?.info?.category?.toLocaleLowerCase() %>" title="See assets in this category">
               <div class="badge badge-blue"><%= it?.info?.category ?? 'ERR' %></div>
             </a>
-            <a href="/search/?q=&engine=<%= it?.info?.godot_version?.toLocaleLowerCase() %>">
+            <a href="/engine/<%= it?.info?.godot_version?.toLocaleLowerCase() %>"
+              title="See assets for this engine version">
               <div class="badge badge-purple"><%= it?.info?.godot_version ?? 'ERR' %></div>
             </a>
             <div class="dropdown" onclick="window.godotLibrary.dropdown.showContent(event, this)">
@@ -163,24 +188,28 @@
               <div class="options">
                 <% if(it?.info?.saved === true) { %>
                 <a href="/dashboard/save/<%= it?.info?.asset_id %>"
-                  onclick="window.godotLibrary.dropdown.callRouteAjax(event, '/dashboard/save/<%= it?.info?.asset_id %>', 'Post successfully removed from saves')">
+                  onclick="window.godotLibrary.dropdown.callRouteAjax(event, '/dashboard/save/<%= it?.info?.asset_id %>', 'Post successfully removed from saves')"
+                  title="Add asset to saved list">
                   Unsave
                 </a>
                 <% } else { %>
                 <a href="/dashboard/save/<%= it?.info?.asset_id %>"
-                  onclick="window.godotLibrary.dropdown.callRouteAjax(event, '/dashboard/save/<%= it?.info?.asset_id %>', 'Post successfully added to saves')">
+                  onclick="window.godotLibrary.dropdown.callRouteAjax(event, '/dashboard/save/<%= it?.info?.asset_id %>', 'Post successfully added to saves')"
+                  title="Remove asset from saved list">
                   Save
                 </a>
                 <% } %>
                 <% if(it?._locals?.role === 'admin') { %>
                 <% if(it?.info?.featured === true) { %>
                 <a href="/admin/feature-post/<%= it?.info?.asset_id %>"
-                  onclick="window.godotLibrary.dropdown.callRouteAjax(event, '/admin/feature-post/<%= it?.info?.asset_id %>', 'Post successfully featured')">
+                  onclick="window.godotLibrary.dropdown.callRouteAjax(event, '/admin/feature-post/<%= it?.info?.asset_id %>', 'Post successfully featured')"
+                  title="Remove from 'Assets We Love' on homepage">
                   Unfeature
                 </a>
                 <% } else { %>
                 <a href="/admin/feature-post/<%= it?.info?.asset_id %>"
-                  onclick="window.godotLibrary.dropdown.callRouteAjax(event, '/admin/feature-post/<%= it?.info?.asset_id %>', 'Post successfully featured')">
+                  onclick="window.godotLibrary.dropdown.callRouteAjax(event, '/admin/feature-post/<%= it?.info?.asset_id %>', 'Post successfully featured')"
+                  title="Add to 'Assets We Love' on homepage">
                   Feature
                 </a>
                 <% } %>
@@ -191,7 +220,7 @@
           <% if (!it?.featured) { %>
           <div class="background">
             <div class="mask">
-              <img src="<%= it?.info?.card_banner ?? it?.info?.icon_url %>" alt="">
+              <img src="<%= generateProxyUrl(it?.info?.card_banner ?? it?.info?.icon_url) %>" alt="">
             </div>
           </div>
           <% } %>
@@ -199,7 +228,8 @@
         <div class="body">
           <div class="top">
             <div class="icon">
-              <img src="<%= it?.info?.icon_url ?? 'https://avatars.githubusercontent.com/u/42072863?s=200&v=4' %>"
+              <img
+                src="<%= generateProxyUrl(it?.info?.icon_url ?? 'https://avatars.githubusercontent.com/u/42072863?s=200&v=4', 75, 75) %>"
                 alt="">
             </div>
             <div class="info">
@@ -233,11 +263,15 @@
             </div>
             <div class="row">
               <div class="property">Git URL</div>
-              <div class="value"><a href="<%= it?.info?.browse_url %>" target="_blank">Link to Git URL</a></div>
+              <div class="value"><a href="<%= it?.info?.browse_url %>" target="_blank" rel="noopener noreferrer"
+                  title="Open asset Git repository">Link to
+                  Git URL</a></div>
             </div>
             <div class="row">
               <div class="property">Issue URL</div>
-              <div class="value"><a href="<%= it?.info?.issues_url %>" target="_blank">Link to Issues URL</a>
+              <div class="value"><a href="<%= it?.info?.issues_url %>" target="_blank" rel="noopener noreferrer"
+                  title="Open asset issue tracker">Link to
+                  Issues URL</a>
               </div>
             </div>
           </div>
@@ -248,8 +282,16 @@
     </div>
   </div>
   <script>
-    function updatePlayerImage(image) {
-      document.querySelector('.player img').src = image;
+    function updatePlayerImage(image, proxied) {
+      if (image.includes('youtube')) {
+        document.querySelector('.player img').style.display = 'none';
+        document.querySelector('.player iframe').style.display = 'block';
+        document.querySelector('.player iframe').src = image;
+      } else {
+        document.querySelector('.player iframe').style.display = 'none';
+        document.querySelector('.player img').style.display = 'block';
+        document.querySelector('.player img').src = proxied;
+      }
     }
 
     function openInstallModal(event) {

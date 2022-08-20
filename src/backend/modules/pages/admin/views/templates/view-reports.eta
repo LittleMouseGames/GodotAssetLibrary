@@ -1,7 +1,7 @@
 <% it.meta = {
   title: 'View Reports | Godot Asset Library',
   description: 'Manage Godot Asset Library settings',
-  url: 'https://godotlibrary.com/dashboard/reviews',
+  url: 'https://godotassetlibrary.com/dashboard/reviews',
   moduleName: 'admin'
 } %>
 <% layout('templates/components/layouts/promobar-nav-body-footer.eta') %>

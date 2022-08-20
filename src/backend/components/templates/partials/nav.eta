@@ -9,7 +9,7 @@
 <nav>
   <div class="contents">
     <div class="brand">
-      <a href="/">
+      <a href="/" title="Go back to homepage">
         <div class="title">Asset Library</div>
         <div class="subtitle">an <span class="strong">Open Source</span> project</div>
       </a>
@@ -21,21 +21,21 @@
       </div>
     </form>
     <div class="links">
-      <a href="/search/?q=&category=2d+tools" class="link">2D Tools</a>
-      <a href="/search/?q=&category=3d+tools" class="link">3D Tools</a>
-      <a href="/search/?q=&category=tools" class="link">Tools</a>
-      <a href="/search/?q=&category=shaders" class="link">Shaders</a>
+      <a href="/category/2d+tools" class="link" title="See assets in this category">2D Tools</a>
+      <a href="/category/3d+tools" class="link" title="See assets in this category">3D Tools</a>
+      <a href="/category/tools" class="link" title="See assets in this category">Tools</a>
+      <a href="/category/shaders" class="link" title="See assets in this category">Shaders</a>
       <div class="dropdown categories" onclick="window.godotLibrary.dropdown.showContent(event, this)">
         <div class="value">More Categories</div>
         <div class="value mobile">Categories</div>
         <span class="iconify" data-icon="bxs:chevron-down"></span>
         <div class="options">
-          <a href="/search/?q=&category=materials">Materials</a>
-          <a href="/search/?q=&category=scripts">Scripts</a>
-          <a href="/search/?q=&category=misc">Misc</a>
-          <a href="/search/?q=&category=templates">Templates</a>
-          <a href="/search/?q=&category=projects">Projects</a>
-          <a href="/search/?q=&category=demos">Demos</a>
+          <a href="/category/materials" title="See assets in this category">Materials</a>
+          <a href="/category/scripts" title="See assets in this category">Scripts</a>
+          <a href="/category/misc" title="See assets in this category">Misc</a>
+          <a href="/category/templates" title="See assets in this category">Templates</a>
+          <a href="/category/projects" title="See assets in this category">Projects</a>
+          <a href="/category/demos" title="See assets in this category">Demos</a>
         </div>
       </div>
     </div>
@@ -48,11 +48,11 @@
         <div class="value">My Account</div>
         <span class="iconify chevron" data-icon="bxs:chevron-down"></span>
         <div class="options">
-          <a href="/dashboard">Dashboard</a>
-          <a href="/dashboard/saved/">Saved Assets</a>
-          <a href="/dashboard/reviews/">Reviewed Assets</a>
+          <a href="/dashboard" title="Visit account dashboard">Dashboard</a>
+          <a href="/dashboard/saved/" title="See my saved assets">Saved Assets</a>
+          <a href="/dashboard/reviews/" title="See my reviewed assets">Reviewed Assets</a>
           <% if (it?._locals?.role === 'admin') { %><a href="/admin">Admin Dashboard</a> <% } %>
-          <a href="/api/users/logout">Logout</a>
+          <a href="/api/users/logout" title="Sign out of account">Logout</a>
         </div>
       </div>
       <% } else { %>

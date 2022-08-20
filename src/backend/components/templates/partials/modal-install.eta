@@ -20,7 +20,8 @@
             You could also download the zip archive of the asset and manually install it into your
             <span class="code">addons/</span> folder
           </p>
-          <a href="<%= it?.downloadUrl %>"><button>Download zip</button></a>
+          <a href="<%= it?.downloadUrl %>" title="Download zip archive of asset"><button>Download
+              zip</button></a>
         </div>
       </div>
     </div>

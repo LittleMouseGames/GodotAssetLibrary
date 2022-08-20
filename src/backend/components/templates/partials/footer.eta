@@ -49,10 +49,11 @@
         Site Terms
       </h2>
       <ul>
-        <li><a href="/terms/privacy-policy">Privacy Policy</a></li>
-        <li><a href="/terms/terms-of-service">Terms of Service</a></li>
-        <li><a href="/terms/cookie-policy">Cookie Policy</a></li>
-        <li><a href="/terms/acceptable-use-policy">Acceptable Use Policy</a></li>
+        <li><a href="/terms/privacy-policy" title="Open Privacy Policy page">Privacy Policy</a></li>
+        <li><a href="/terms/terms-of-service" title="Open Terms of Service page">Terms of Service</a></li>
+        <li><a href="/terms/cookie-policy" title="Open Cookie Policy page">Cookie Policy</a></li>
+        <li><a href="/terms/acceptable-use-policy" title="Open Acceptable Use Policy page">Acceptable Use Policy</a>
+        </li>
       </ul>
     </section>
     <section class="column">
@@ -60,9 +61,13 @@
         Useful Links
       </h2>
       <ul>
-        <li class="gold"><a href="https://patreon.com/godotengine" target="_blank">Godot Patreon</a></li>
-        <li><a href="https://godotengine.org" target="_blank">Godot Website</a></li>
-        <li><a href="https://github.com/LittleMouseGames/GodotAssetLibrary" target="_blank">Source Code</a></li>
+        <li class="gold"><a href="https://patreon.com/godotengine" target="_blank" rel="noopener noreferrer"
+            title="Go to Godots Official Patreon">Godot
+            Patreon</a></li>
+        <li><a href="https://godotengine.org" target="_blank" rel="noopener noreferrer"
+            title="Go to the Official Godot website">Godot Website</a></li>
+        <li><a href="https://github.com/LittleMouseGames/GodotAssetLibrary" target="_blank" rel="noopener noreferrer"
+            title="Visit this websites Source Code">Source Code</a></li>
       </ul>
     </section>
     <section class="column">
@@ -70,10 +75,10 @@
         My Account
       </h2>
       <ul>
-        <li><a href="/register">Login or Register</a></li>
-        <li><a href="/dashboard">Account Dashboard</a></li>
-        <li><a href="/dashboard/reviews">My Reviews</a></li>
-        <li><a href="/dashboard/saved">My Saved Assets</a></li>
+        <li><a href="/register" title="Go to Login or Register page">Login or Register</a></li>
+        <li><a href="/dashboard" title="Visit my account dashboard">Account Dashboard</a></li>
+        <li><a href="/dashboard/reviews" title="See my reviewed assets">My Reviews</a></li>
+        <li><a href="/dashboard/saved" title="See my saved assets">My Saved Assets</a></li>
         <!-- We'll add this later, probably™️ <li><a href="/create">Upload a New Asset</a></li> -->
       </ul>
     </section>
@@ -83,13 +88,14 @@
       <div class="links">
         <div class="link">
           <span class="iconify" data-icon="ic:baseline-email"></span>
-          <a href="mailto:hello@godotassetlibrary.com">
+          <a href="mailto:hello@godotassetlibrary.com" title="Mail the website operator">
             <span>Email</span>
           </a>
         </div>
         <div class="link">
           <span class="iconify" data-icon="fa-brands:twitter-square"></span>
-          <a href="https://twitter.com/LittleMouseDev" target="_blank">
+          <a href="https://twitter.com/LittleMouseDev" target="_blank" rel="noopener noreferrer"
+            title="Visit the website operators twitter">
             <span>Twitter</span>
           </a>
         </div>
@@ -97,9 +103,10 @@
       <span class="disclaimer">Godot Asset Library is not affiliated with Godot Engine</span>
     </section>
     <section class="brand">
-      <a href="/">
+      <a href="/" title="Go to homepage">
         <div class="title">Godot Asset Library</div>
-        <div class="subtitle">by <a href="https://twitter.com/LittleMouseDev" target="_blank" class="mouse-link"><span
+        <div class="subtitle">by <a href="https://twitter.com/LittleMouseDev" target="_blank" class="mouse-link"
+            rel="noopener noreferrer" title="Visit LittleMouseGames twitter"><span
               class="strong">LittleMouseGames</span></a></div>
       </a>
       <span class="copyright disclaimer">&copy; 2022 Godot Asset Library</span>

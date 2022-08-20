@@ -1,19 +1,14 @@
 <% it.meta = {
   title: 'Acceptable Use Policy | Godot Asset Library',
   description: 'Godot Asset Library Acceptable Use Policy',
-  url: 'https://godotlibrary.com/terms/acceptable-use-policy',
+  url: 'https://godotassetlibrary.com/terms/acceptable-use-policy',
   moduleName: 'terms'
 } %>
 <% layout('templates/components/layouts/promobar-nav-body-footer.eta') %>
 
 <section class="page-terms">
   <div class="column">
-    <div class="sidebar">
-      <div class="item"><a href="/terms/privacy-policy">Privacy Policy</a></div>
-      <div class="item"><a href="/terms/terms-of-service">Terms of Service</a></div>
-      <div class="item"><a href="/terms/cookie-policy">Cookie Policy</a></div>
-      <div class="item active"><a href="/terms/acceptable-use-policy">Acceptable Use Policy</a></div>
-    </div>
+    <%~ includeFile('./components/sidebar.eta') %>
   </div>
   <div class="column">
     <h2>Acceptable Use Policy</h2>

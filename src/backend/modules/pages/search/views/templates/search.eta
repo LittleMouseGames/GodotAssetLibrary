@@ -1,7 +1,7 @@
 <% it.meta = {
   title: 'Search | Godot Asset Library',
   description: `Find the best ${it?.originalQuery} Assets for Godot Engine on Godot Asset Library`,
-  url: `https://godotlibrary.com/${it?.params}`,
+  url: `https://godotassetlibrary.com/${it?.params}`,
   moduleName: 'search'
 } %>
 <% layout('templates/components/layouts/promobar-nav-body-footer.eta') %>
@@ -19,13 +19,26 @@
               <label>
                 <% 
                     let filterParams = new URLSearchParams(it.params ?? '?q=')
-                    let currentParams = filterParams.getAll(filtersKey)
                     let filterAlreadyAdded = false
-                    let filterLink = '' 
+                    let filterLink = ''
+                    var categoryOrEngineRegex = /(\/category\/|\/engine\/)/
+
+                    Array.from(filterParams.keys()).forEach(filter => {
+                      if (categoryOrEngineRegex.test(filter)) {
+                        var split = filter.split(categoryOrEngineRegex)
+                        filterParams.delete(filter)
+                        filterParams.set(split[1].replace(/\//g, ''), split[2].replace('?q', ''))
+                      }
+                    })
+
+                    let currentParams = filterParams.getAll(filtersKey)
                     
                     filterParams.set('page', 0)
 
-                    if (currentParams.includes(key.toLocaleLowerCase()) || currentParams.includes(key)) {
+                    if (currentParams.includes(key.toLocaleLowerCase()) 
+                    || currentParams.includes(key) 
+                    || currentParams.includes(encodeURIComponent(key)) 
+                    || currentParams.includes(encodeURIComponent(key.toLocaleLowerCase()))) {
                       filterAlreadyAdded = true
 
                       const paramsToArray = decodeURIComponent(filterParams.toString()).split('&')
@@ -37,8 +50,12 @@
                       filterParams.append(filtersKey, String(key.toLocaleLowerCase()))
                       filterLink = decodeURIComponent(filterParams.toString())
                     }
+
+                    if (!Array.from(filterParams.keys())[0].includes('/search/')) {
+                      filterLink = '/search/?q=&' + filterLink
+                    } 
                   %>
-                <a href="<%= filterLink %>">
+                <a href="<%= filterLink %>" title="Add to filters">
                   <input type="checkbox" <%= filterAlreadyAdded ? 'checked' : '' %>>
                   <%= `${filtersKey == 'engine' ? 'Godot' : ''}  ${String(key)}` %> (<%= String(value) %>)
                 </a>

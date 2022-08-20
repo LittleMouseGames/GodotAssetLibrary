@@ -7,18 +7,26 @@
 <meta name="google" content="nositelinkssearchbox">
 <meta name="rating" content="General">
 <meta name="referrer" content="no-referrer">
-<!-- PLATFORM META -->
 <!-- FACEBOOK -->
 <meta property="og:type" content="website">
 <meta property="og:locale" content="en_US">
 <!-- TWITTER -->
 <meta name="twitter:card" content="summary">
-<!-- STYLESHEET -->
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<!-- STYLES -->
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="DNS-prefetch" href="https://fonts.googleapis.com" />
+<link rel="DNS-prefetch" href="https://fonts.gstatic.com" crossorigin />
 <link
     href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Inter:wght@500;600;700&family=Poppins:wght@400;500;600;700&family=Roboto&display=swap"
     rel="stylesheet">
 <link rel="icon" href="/favicon.ico">
+<link rel="preconnect" href="https://code.iconify.design" />
+<link rel="DNS-prefetch" href="https://code.iconify.design" />
 <script src="https://code.iconify.design/2/2.1.2/iconify.min.js"></script>
 <script src="/javascript/utilities.js"></script>
+<!-- FAVICON -->
+<link rel="apple-touch-icon" sizes="180x180" href="/images/favicon/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/images/favicon/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/images/favicon/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">

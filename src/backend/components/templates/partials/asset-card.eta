@@ -1,10 +1,14 @@
+<% 
+var generateProxyUrl = it?._locals?.functions?.generateProxyUrl
+%>
+
 <div class="asset-card <%= it?.featured ? 'featured' : 'normal' %>">
   <div class="head">
     <div class="badges">
-      <a href="/search/?q=&category=<%= it?.info?.category?.toLocaleLowerCase() %>">
+      <a href="/category/<%= it?.info?.category?.toLocaleLowerCase() %>" title="See assets in this category">
         <div class="badge badge-blue"><%= it?.info?.category ?? 'ERR' %></div>
       </a>
-      <a href="/search/?q=&engine=<%= it?.info?.godot_version?.toLocaleLowerCase() %>">
+      <a href="/engine/<%= it?.info?.godot_version?.toLocaleLowerCase() %>" title="See assets for this engine version">
         <div class="badge badge-purple"><%= it?.info?.godot_version ?? 'ERR' %></div>
       </a>
       <div class="dropdown" onclick="window.godotLibrary.dropdown.showContent(event, this)">
@@ -12,24 +16,28 @@
         <div class="options">
           <% if(it?.info?.saved === true) { %>
           <a href="/dashboard/save/<%= it?.info?.asset_id %>"
-            onclick="window.godotLibrary.dropdown.callRouteAjax(event, '/dashboard/save/<%= it?.info?.asset_id %>', 'Post successfully removed from saves')">
+            onclick="window.godotLibrary.dropdown.callRouteAjax(event, '/dashboard/save/<%= it?.info?.asset_id %>', 'Post successfully removed from saves')"
+            title="Unsave asset">
             Unsave
           </a>
           <% } else { %>
           <a href="/dashboard/save/<%= it?.info?.asset_id %>"
-            onclick="window.godotLibrary.dropdown.callRouteAjax(event, '/dashboard/save/<%= it?.info?.asset_id %>', 'Post successfully added to saves')">
+            onclick="window.godotLibrary.dropdown.callRouteAjax(event, '/dashboard/save/<%= it?.info?.asset_id %>', 'Post successfully added to saves')"
+            title="Save asset">
             Save
           </a>
           <% } %>
           <% if(it?._locals?.role === 'admin') { %>
           <% if(it?.info?.featured === true) { %>
           <a href="/admin/feature-post/<%= it?.info?.asset_id %>"
-            onclick="window.godotLibrary.dropdown.callRouteAjax(event, '/admin/feature-post/<%= it?.info?.asset_id %>', 'Post successfully featured')">
+            onclick="window.godotLibrary.dropdown.callRouteAjax(event, '/admin/feature-post/<%= it?.info?.asset_id %>', 'Post successfully featured')"
+            title="Remove from 'Assets We Love' on homepage">
             Unfeature
           </a>
           <% } else { %>
           <a href="/admin/feature-post/<%= it?.info?.asset_id %>"
-            onclick="window.godotLibrary.dropdown.callRouteAjax(event, '/admin/feature-post/<%= it?.info?.asset_id %>', 'Post successfully featured')">
+            onclick="window.godotLibrary.dropdown.callRouteAjax(event, '/admin/feature-post/<%= it?.info?.asset_id %>', 'Post successfully featured')"
+            title="Add to 'Assets We Love' on homepage">
             Feature
           </a>
           <% } %>
@@ -40,17 +48,20 @@
     <% if (!it?.featured) { %>
     <div class="background">
       <div class="mask">
-        <img src="<%= it?.info?.card_banner ?? it?.info?.icon_url %>" alt="">
+        <img src="<%= generateProxyUrl(it?.info?.card_banner ?? it?.info?.icon_url) %>" alt="">
       </div>
     </div>
     <% } %>
   </div>
   <a class="body"
-    href="<%= `/asset/${it?.info?.asset_id}/${encodeURI(it?.info?.title.replace(/\s/g, '-')).toLocaleLowerCase()}` %>">
+    href="<%= `/asset/${it?.info?.asset_id}/${encodeURI(it?.info?.title.replace(/\s/g, '-')).toLocaleLowerCase()}` %>"
+    title="Visit asset information page">
     <div>
       <div class="top">
         <div class="icon">
-          <img src="<%= it?.info?.icon_url ?? 'https://avatars.githubusercontent.com/u/42072863?s=200&v=4' %>" alt="">
+          <img
+            src="<%= generateProxyUrl(it?.info?.icon_url ?? 'https://avatars.githubusercontent.com/u/42072863?s=200&v=4', 75, 75) %>"
+            alt="">
         </div>
         <div class="info">
           <div class="author"><%= it?.info?.author ?? 'Failed to load'%></div>
@@ -87,7 +98,7 @@
   <% if (it?.featured) { %>
   <div class="background">
     <div class="mask">
-      <img src="<%= it?.info?.card_banner ?? it?.info?.icon_url %>" alt="">
+      <img src="<%= generateProxyUrl(it?.info?.card_banner) ?? it?.info?.icon_url %>" alt="">
     </div>
   </div>
   <% } %>
