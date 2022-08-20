@@ -1,4 +1,3 @@
-## Task Name
 Project Link
 
 ### Goal:
