@@ -17,12 +17,13 @@
             <% 
               var sharedParams = []
               var categoryOrEngineRegex = /(\/category\/|\/engine\/)/
-              var acceptedParams = ['category', 'engine', 'page', 'sort', 'order']
+              var acceptedParams = ['category', 'engine', 'page', 'sort', 'order', '/search/?q']
               
               if (categoryOrEngineRegex.test(it?.params)) {
                 var name = it?.params.split(categoryOrEngineRegex)[1]
-                sharedParams.push({name: name.replace(/\//g, ''), value: it.params.replace(categoryOrEngineRegex, '')})
+                sharedParams.push({name: name.replace(/\//g, ''), value: it.params.replace(categoryOrEngineRegex, '').toLocaleLowerCase()})
               }
+
 
               for (const [key, value] of Object.entries(filtersValue)) { %>
             <li>
@@ -52,7 +53,10 @@
                     
                     filterParams.set('page', 0)
 
-                    if (currentParams.includes(key.toLocaleLowerCase()) || currentParams.includes(key)) {
+                    if (currentParams.includes(key.toLocaleLowerCase()) 
+                    || currentParams.includes(key) 
+                    || currentParams.includes(encodeURIComponent(key)) 
+                    || currentParams.includes(encodeURIComponent(key.toLocaleLowerCase()))) {
                       filterAlreadyAdded = true
 
                       const paramsToArray = decodeURIComponent(filterParams.toString()).split('&')

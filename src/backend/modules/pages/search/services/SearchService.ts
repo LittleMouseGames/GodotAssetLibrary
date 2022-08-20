@@ -20,11 +20,11 @@ export class SearchService {
     const sort = striptags(String(req.query.sort ?? 'relevance'))
 
     if (req.params.category != null) {
-      categoryParams = striptags(req.params.category)
+      categoryParams = striptags(req.params.category.toLocaleLowerCase())
     }
 
     if (req.params.engine != null) {
-      engineParams = striptags(req.params.engine)
+      engineParams = striptags(req.params.engine.toLocaleLowerCase())
     }
 
     const sortMap: {[key: string]: any} = {
