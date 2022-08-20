@@ -14,6 +14,16 @@
 var generateProxyUrl = it?._locals?.functions?.generateProxyUrl
 %>
 
+<% function returnYoutubeEmbedOrReturnUrl(url) {
+  if(url.includes('youtube.com')) {
+    return url.replace('watch?v=', 'embed/')
+  } else if(url.includes('youtu.be')) {
+    return url.replace('youtu.be/', 'youtube.com/embed/')
+  } else {
+    return url
+  }
+} %>
+
 <% it.meta = {
   title: `${it?.info?.title ?? 'Asset'} | Godot Asset Library`,
   description: it?.info?.quick_description ??  `Find out more about the FREE ${it?.info?.title} godot asset on Godot Asset Library.`,
@@ -46,7 +56,7 @@ var generateProxyUrl = it?._locals?.functions?.generateProxyUrl
         <% it?.info?.previews.forEach(preview => { %>
         <div class="image">
           <img src="<%= generateProxyUrl(preview.thumbnail) %> " alt=""
-            onclick="updatePlayerImage('<%= preview.link %>', '<%= generateProxyUrl(preview.link, 1920, 1080) %>')">
+            onclick="updatePlayerImage('<%= returnYoutubeEmbedOrReturnUrl(preview.link) %>', '<%= generateProxyUrl(preview.link, 1920, 1080) %>')">
         </div>
         <% }) %>
         <% } else { %>
@@ -59,8 +69,8 @@ var generateProxyUrl = it?._locals?.functions?.generateProxyUrl
         <div class="container">
           <% if(it?.info?.previews.length !== 0) { %>
           <% var link = it?.info?.previews[0].link %>
-          <% if (link.includes('youtube')) { %>
-          <iframe width="100%" height="100%" src="<%= link.replace('watch?v=', 'embed/') %>" frameborder="0"
+          <% if (returnYoutubeEmbedOrReturnUrl(link).includes('youtube')) { %>
+          <iframe width="100%" height="100%" src="<%= returnYoutubeEmbedOrReturnUrl(link) %>" frameborder="0"
             allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
           <img style="display: none;" alt="">
           <% } else { %>
@@ -276,7 +286,7 @@ var generateProxyUrl = it?._locals?.functions?.generateProxyUrl
       if (image.includes('youtube')) {
         document.querySelector('.player img').style.display = 'none';
         document.querySelector('.player iframe').style.display = 'block';
-        document.querySelector('.player iframe').src = image.replace('watch?v=', 'embed/');
+        document.querySelector('.player iframe').src = image;
       } else {
         document.querySelector('.player iframe').style.display = 'none';
         document.querySelector('.player img').style.display = 'block';
