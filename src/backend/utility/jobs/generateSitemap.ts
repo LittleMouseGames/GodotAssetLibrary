@@ -27,7 +27,7 @@ async function generateSitemap (): Promise<void> {
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   for (const [key, value] of Object.entries(categories)) {
-    sitemap.write({ url: `/search/?q=&category=${key.toLocaleLowerCase()}`, changefreq: 'weekly' })
+    sitemap.write({ url: `/category/${key.toLocaleLowerCase()}`, changefreq: 'weekly' })
   }
 
   sitemap.end()
