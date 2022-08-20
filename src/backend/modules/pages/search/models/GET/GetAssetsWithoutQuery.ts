@@ -26,8 +26,6 @@ export async function GetAssetsWithoutQuery (limit: number = 12, skip: number, s
     }
   }).skip(skip).toArray() as ReturnedAssets[]
 
-  console.log(sort)
-
   if (operationObject === null || operationObject === undefined) {
     throw new Error('No assets found')
   }
