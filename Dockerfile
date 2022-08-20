@@ -4,8 +4,6 @@ WORKDIR /app
 
 COPY ["package.json", "package-lock.json*", "./"]
 
-RUN npm install
-
-COPY . .
+RUN npm ci
 
 EXPOSE 8080

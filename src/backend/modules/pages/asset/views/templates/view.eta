@@ -10,6 +10,10 @@
   }
 %>
 
+<% 
+var generateProxyUrl = it?._locals?.functions?.generateProxyUrl
+%>
+
 <% it.meta = {
   title: `${it?.info?.title ?? 'Asset'} | Godot Asset Library`,
   description: it?.info?.quick_description ??  `Find out more about the FREE ${it?.info?.title} godot asset on Godot Asset Library.`,
@@ -41,21 +45,22 @@
         <% if(it?.info?.previews.length !== 0) { %>
         <% it?.info?.previews.forEach(preview => { %>
         <div class="image">
-          <img src="<%= preview.thumbnail %> " alt="" onclick="updatePlayerImage('<%= preview.link %>')">
+          <img src="<%= generateProxyUrl(preview.thumbnail) %> " alt=""
+            onclick="updatePlayerImage('<%= generateProxyUrl(preview.link, 1920, 1080) %>')">
         </div>
         <% }) %>
         <% } else { %>
         <div class="image">
-          <img src="<%= it?.info?.icon_url %>" alt="">
+          <img src="<%= generateProxyUrl(it?.info?.icon_url) %>" alt="">
         </div>
         <% } %>
       </div>
       <div class="player">
         <div class="container">
           <% if(it?.info?.previews.length !== 0) { %>
-          <img src="<%= it?.info?.previews[0].link %>" alt="">
+          <img src="<%= generateProxyUrl(it?.info?.previews[0].link, 1920, 1080) %>" alt="">
           <% } else { %>
-          <img src="<%= it?.info?.icon_url %>" alt="">
+          <img src="<%= generateProxyUrl(it?.info?.icon_url, 1920, 1080) %>" alt="">
           <% } %>
         </div>
       </div>
@@ -191,7 +196,7 @@
           <% if (!it?.featured) { %>
           <div class="background">
             <div class="mask">
-              <img src="<%= it?.info?.card_banner ?? it?.info?.icon_url %>" alt="">
+              <img src="<%= generateProxyUrl(it?.info?.card_banner ?? it?.info?.icon_url) %>" alt="">
             </div>
           </div>
           <% } %>
@@ -199,7 +204,8 @@
         <div class="body">
           <div class="top">
             <div class="icon">
-              <img src="<%= it?.info?.icon_url ?? 'https://avatars.githubusercontent.com/u/42072863?s=200&v=4' %>"
+              <img
+                src="<%= generateProxyUrl(it?.info?.icon_url ?? 'https://avatars.githubusercontent.com/u/42072863?s=200&v=4', 75, 75) %>"
                 alt="">
             </div>
             <div class="info">

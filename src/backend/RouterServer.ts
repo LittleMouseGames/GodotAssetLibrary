@@ -10,6 +10,7 @@ import { GetDoesUserExistByToken } from 'modules/common/authentication/models/us
 import { GetUserRoleByToken } from 'modules/common/authentication/models/user/GET/GetUserRoleByToken'
 import { GetPromobarMessage } from 'modules/pages/admin/models/GET/GetPromobarMesasge'
 import { StatusCodes } from 'http-status-codes'
+import { generateProxyUrl } from 'utility/generateProxyUrl'
 require('express-async-errors')
 
 /**
@@ -58,6 +59,10 @@ class RouterServer extends Server {
         res.locals.promobarMessage = await GetPromobarMessage()
       } catch (e) {
         // ignore
+      }
+
+      res.locals.functions = {
+        generateProxyUrl: generateProxyUrl
       }
 
       next()
