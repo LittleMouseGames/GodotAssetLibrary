@@ -2,7 +2,6 @@ import RouterServer from 'RouterServer'
 import { MongoHelper } from 'MongoHelper'
 import { logger } from 'utility/logger'
 import * as cronJobs from 'jobs.index'
-import { generateProxyUrl } from 'utility/generateProxyUrl'
 
 // Connect to MongoDB Database
 MongoHelper.getInstance().connect().then(() => {
@@ -23,5 +22,3 @@ MongoHelper.getInstance().connect().then(() => {
 }).catch(error => {
   logger.log('error', error)
 })
-
-console.log(generateProxyUrl('https://teacherdanmax.files.wordpress.com/2013/09/school-test.png'))

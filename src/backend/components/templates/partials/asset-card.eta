@@ -1,3 +1,7 @@
+<% 
+var generateProxyUrl = it?._locals?.functions?.generateProxyUrl
+%>
+
 <div class="asset-card <%= it?.featured ? 'featured' : 'normal' %>">
   <div class="head">
     <div class="badges">
@@ -44,7 +48,7 @@
     <% if (!it?.featured) { %>
     <div class="background">
       <div class="mask">
-        <img src="<%= it?.info?.card_banner ?? it?.info?.icon_url %>" alt="">
+        <img src="<%= generateProxyUrl(it?.info?.card_banner ?? it?.info?.icon_url) %>" alt="">
       </div>
     </div>
     <% } %>
@@ -55,7 +59,9 @@
     <div>
       <div class="top">
         <div class="icon">
-          <img src="<%= it?.info?.icon_url ?? 'https://avatars.githubusercontent.com/u/42072863?s=200&v=4' %>" alt="">
+          <img
+            src="<%= generateProxyUrl(it?.info?.icon_url ?? 'https://avatars.githubusercontent.com/u/42072863?s=200&v=4', 75, 75) %>"
+            alt="">
         </div>
         <div class="info">
           <div class="author"><%= it?.info?.author ?? 'Failed to load'%></div>
@@ -92,7 +98,7 @@
   <% if (it?.featured) { %>
   <div class="background">
     <div class="mask">
-      <img src="<%= it?.info?.card_banner ?? it?.info?.icon_url %>" alt="">
+      <img src="<%= generateProxyUrl(it?.info?.card_banner) ?? it?.info?.icon_url %>" alt="">
     </div>
   </div>
   <% } %>
