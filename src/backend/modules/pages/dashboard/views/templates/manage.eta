@@ -1,7 +1,7 @@
 <% it.meta = {
   title: 'Dashboard | Godot Asset Library',
   description: 'Manage your Godot Asset Library experience',
-  url: 'https://godotlibrary.com/dashboard',
+  url: 'https://godotassetlibrary.com/dashboard',
   moduleName: 'dashboard'
 } %>
 <% layout('templates/components/layouts/promobar-nav-body-footer.eta') %>
@@ -13,7 +13,8 @@
   <div class="column">
     <h2>Download My Information</h2>
     <p>Download all the information that we have about you</p>
-    <a href="/dashboard/download/" download="GodotAssetLibrary_User_Information.json"><button>Download
+    <a href="/dashboard/download/" download="GodotAssetLibrary_User_Information.json"
+      title="Download the information associated with my account"><button>Download
         archive</button></a>
   </div>
   <div class="column">
@@ -21,7 +22,7 @@
     <p>Delete your account and its associated information like any reviews you've left on assets</p>
     <p><strong>Note: Clicking the button will not prompt for a confirmation. It will immediately delete your
         account</strong></p>
-    <a href="/dashboard/delete/"><button class="delete">Delete
+    <a href="/dashboard/delete/"><button class="delete" title="Delete all my data with no confirmation prompt">Delete
         account</button></a>
   </div>
 </section>

@@ -1,7 +1,7 @@
 <% it.meta = {
   title: 'Privacy Policy | Godot Asset Library',
   description: 'Godot Asset Library Privacy Policy',
-  url: 'https://godotlibrary.com/terms/privacy-policy',
+  url: 'https://godotassetlibrary.com/terms/privacy-policy',
   moduleName: 'terms'
 } %>
 <% layout('templates/components/layouts/promobar-nav-body-footer.eta') %>
@@ -15,7 +15,8 @@
     <p>Your privacy is important to us. It is Godot Asset Library&#39;s policy to respect your privacy and comply with
       any
       applicable law and regulation regarding any personal information we may collect about you, including across our
-      website, <a href="https://godotlibrary.com">https://godotlibrary.com</a>, and other sites we own and operate. </p>
+      website, <a href="https://godotassetlibrary.com">https://godotassetlibrary.com</a>, and other sites we own and
+      operate. </p>
     <p>Personal information is any information about you which can be used to identify you. This includes information
       about your devices, and even information about how you use a website or online service. </p>
     <p>In the event our site contains links to third-party sites and services, please be aware that those sites and

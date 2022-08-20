@@ -1,7 +1,7 @@
 <% it.meta = {
   title: 'Cookie Policy | Godot Asset Library',
   description: 'Godot Asset Library Cookie Policy',
-  url: 'https://godotlibrary.com/terms/cookie-policy',
+  url: 'https://godotassetlibrary.com/terms/cookie-policy',
   moduleName: 'terms'
 } %>
 <% layout('templates/components/layouts/promobar-nav-body-footer.eta') %>
@@ -13,13 +13,15 @@
   <div class="column">
     <h2>Cookie Policy</h2>
     <p>We use cookies to help improve your experience of our website at <a
-        href="https://godotlibrary.com">https://godotlibrary.com</a>. This cookie policy is part of Godot Asset
+        href="https://godotassetlibrary.com">https://godotassetlibrary.com</a>. This cookie policy is part of Godot
+      Asset
       Library&#39;s
       privacy policy. It covers the use of cookies between your device and our site. </p>
     <p>We also provide basic information on third-party services we may use, who may also use cookies as part of their
       service. This policy does not cover their cookies. </p>
     <p>If you don’t wish to accept cookies from us, you should instruct your browser to refuse cookies from <a
-        href="https://godotlibrary.com">https://godotlibrary.com</a>. In such a case, we may be unable to provide you
+        href="https://godotassetlibrary.com">https://godotassetlibrary.com</a>. In such a case, we may be unable to
+      provide you
       with some of your desired content and services. </p>
     <h3>What is a cookie?</h3>
     <p>A cookie is a small piece of data that a website stores on your device when you visit. It typically contains

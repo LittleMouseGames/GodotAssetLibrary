@@ -1,7 +1,7 @@
 <% it.meta = {
   title: 'Search | Godot Asset Library',
   description: `Find the best ${it?.originalQuery} Assets for Godot Engine on Godot Asset Library`,
-  url: `https://godotlibrary.com/${it?.params}`,
+  url: `https://godotassetlibrary.com/${it?.params}`,
   moduleName: 'search'
 } %>
 <% layout('templates/components/layouts/promobar-nav-body-footer.eta') %>
@@ -38,7 +38,7 @@
                       filterLink = decodeURIComponent(filterParams.toString())
                     }
                   %>
-                <a href="<%= filterLink %>">
+                <a href="<%= filterLink %>" title="Add to filters">
                   <input type="checkbox" <%= filterAlreadyAdded ? 'checked' : '' %>>
                   <%= `${filtersKey == 'engine' ? 'Godot' : ''}  ${String(key)}` %> (<%= String(value) %>)
                 </a>
