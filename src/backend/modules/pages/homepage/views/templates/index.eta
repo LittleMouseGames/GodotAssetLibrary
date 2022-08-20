@@ -1,6 +1,6 @@
 <% it.meta = {
-  title: 'Home | Godot Asset Library',
-  description: 'Find the best free and open source Godot Assets on Godot Asset Library',
+  title: 'Godot Asset Library - The Best Assets, All Free',
+  description: 'Kickstart your development with the best FREE Godot assets for your next game or project',
   url: 'https://godotlibrary.com',
   moduleName: 'homepage'
 } %>
