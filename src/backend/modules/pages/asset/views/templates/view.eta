@@ -15,6 +15,10 @@ var generateProxyUrl = it?._locals?.functions?.generateProxyUrl
 %>
 
 <% function returnYoutubeEmbedOrReturnUrl(url) {
+  if (url.includes('&t=')) {
+    url = url.split('&t=')[0]
+  }
+
   if(url.includes('youtube.com')) {
     return url.replace('watch?v=', 'embed/')
   } else if(url.includes('youtu.be')) {
