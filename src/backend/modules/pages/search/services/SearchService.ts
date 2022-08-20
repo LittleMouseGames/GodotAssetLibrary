@@ -19,11 +19,11 @@ export class SearchService {
     const authToken = striptags(req.cookies['auth-token'] ?? '')
     const sort = striptags(String(req.query.sort ?? 'relevance'))
 
-    if (req.params.category != null) {
+    if (req?.params?.category != null) {
       categoryParams = striptags(req.params.category.toLocaleLowerCase())
     }
 
-    if (req.params.engine != null) {
+    if (req?.params?.engine != null) {
       engineParams = striptags(req.params.engine.toLocaleLowerCase())
     }
 
@@ -113,8 +113,18 @@ export class SearchService {
       {}
     )
 
+    let title = `Search results ${query === '' ? '' : 'for: ' + query}`
+
+    if (req?.params?.category != null) {
+      title = `Assets in category: ${req.params.category}`
+    }
+
+    if (req?.params?.engine != null) {
+      title = `Assets for engine: ${req.params.engine}`
+    }
+
     const pageBanner = {
-      title: `Search results ${query === '' ? '' : 'for: ' + query}`,
+      title: title,
       info: `Found <strong>${totalAssetsForQuery} assets</strong> for query`
     }
 
