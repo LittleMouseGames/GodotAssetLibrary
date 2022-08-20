@@ -152,6 +152,13 @@ async function fetchAssetInformationAndUpdate (assetIDs: any[]): Promise<void> {
 
         const newAssetInformation = { ...assetInformationWeHave, ...result }
 
+        for (const preview of result.previews) {
+          if (preview !== undefined && (result.card_banner === '' || result.card_banner === undefined)) {
+            result.card_banner = preview.thumbnail
+            break
+          }
+        }
+
         if (assetInformationWeHave.category !== result.category) {
           void updateCategoryCountInfoObject(assetInformationWeHave.category, -1)
           void updateCategoryCountInfoObject(result.category)
