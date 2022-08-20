@@ -12,7 +12,7 @@
 
 <% it.meta = {
   title: `${it?.info?.title ?? 'Asset'} | Godot Asset Library`,
-  description: it?.info?.quick_description ??  'Find the best Godot Assets on Godot Asset Library',
+  description: it?.info?.quick_description ??  `Find out more about the FREE ${it?.info?.title} godot asset on Godot Asset Library.`,
   url: `https://godotlibrary.com/asset/${it?.info?.asset_id}/${encodeURI(it?.info?.title.replace(/\s/g, '-')).toLocaleLowerCase()}`,
   moduleName: 'asset',
   jsonLd: {
