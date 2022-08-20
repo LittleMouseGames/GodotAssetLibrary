@@ -233,11 +233,13 @@
             </div>
             <div class="row">
               <div class="property">Git URL</div>
-              <div class="value"><a href="<%= it?.info?.browse_url %>" target="_blank">Link to Git URL</a></div>
+              <div class="value"><a href="<%= it?.info?.browse_url %>" target="_blank" rel="noopener noreferrer">Link to
+                  Git URL</a></div>
             </div>
             <div class="row">
               <div class="property">Issue URL</div>
-              <div class="value"><a href="<%= it?.info?.issues_url %>" target="_blank">Link to Issues URL</a>
+              <div class="value"><a href="<%= it?.info?.issues_url %>" target="_blank" rel="noopener noreferrer">Link to
+                  Issues URL</a>
               </div>
             </div>
           </div>
