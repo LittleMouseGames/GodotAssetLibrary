@@ -13,6 +13,7 @@
   <meta name="twitter:url" content="<%= it.meta.url %>">
   <meta name="twitter:title" content="<%= it.meta.title %>">
   <link rel="stylesheet" href="/styles/<%= it.meta.moduleName %>/styles.css">
+  <link rel="canonical" href="<%= it.meta.url %>">
   <% if(it?.meta?.jsonLd) { %>
   <script type="application/ld+json">
     <%~ JSON.stringify(it?.meta?.jsonLd) %> 
