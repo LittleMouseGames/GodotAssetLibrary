@@ -7,7 +7,9 @@
     <div><%= it?.description %></div>
   </div>
   <div class="footer">
-    <a href="/search/?q=&category=<%= it?.name?.toLocaleLowerCase() %>"><button>Explore <%= it?.name %></button></a>
+    <a href="/search/?q=&category=<%= it?.name?.toLocaleLowerCase() %>"
+      title="See assets in this category"><button>Explore
+        <%= it?.name %></button></a>
   </div>
   <div class="background">
     <div class="mask">

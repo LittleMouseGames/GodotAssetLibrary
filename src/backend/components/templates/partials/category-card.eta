@@ -1,4 +1,5 @@
-<a class="category-card" href="/search/?q=&category=<%= it?.name?.toLocaleLowerCase() %>">
+<a class="category-card" href="/search/?q=&category=<%= it?.name?.toLocaleLowerCase() %>"
+  title="See assets in this category">
   <div class="container">
     <h3><%= it?.name %></h3>
     <span><%= it?.count %> assets</span>
