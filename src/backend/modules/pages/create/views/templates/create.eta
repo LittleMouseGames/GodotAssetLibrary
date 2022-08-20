@@ -1,7 +1,7 @@
 <% it.meta = {
   title: 'Create | Godot Asset Library',
   description: 'Post a new asset to Godot Asset Library',
-  url: 'https://godotlibrary.com/create',
+  url: 'https://godotassetlibrary.com/create',
   moduleName: 'create'
 } %>
 <% layout('templates/components/layouts/promobar-nav-body-footer.eta') %>

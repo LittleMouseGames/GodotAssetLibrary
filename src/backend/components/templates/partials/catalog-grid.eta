@@ -13,7 +13,7 @@
               <% sorts.forEach(sort => { %>
               <% params.set('sort', sort.toLocaleLowerCase().replace(/\s/g, '_')) %>
               <% params.set('page', 0) %>
-              <a href="<%= decodeURIComponent(params.toString()) %>"><%= sort %></a>
+              <a href="<%= decodeURIComponent(params.toString()) %>" title="sort by <%= sort %>"><%= sort %></a>
               <% }) %>
             </div>
           </div>
@@ -33,7 +33,8 @@
             limitOptions.forEach(option => { 
               params.set('limit', option) 
             %>
-            <a href="<%= decodeURIComponent(params.toString()) %>"><%= option %></a>
+            <a href="<%= decodeURIComponent(params.toString()) %>"
+              title="See <%= option %> assets per page"><%= option %></a>
             <% }) %>
           </div>
         </div>
@@ -46,7 +47,7 @@
         <button class="disabled">Back</button>
         <% } else { %>
         <% params.set('page', page - 1) %>
-        <a href="<%= decodeURIComponent(params.toString()) %>">
+        <a href="<%= decodeURIComponent(params.toString()) %>" title="Go back a page">
           <button>Back</button>
         </a>
         <% } %>
@@ -55,7 +56,7 @@
         <button class="disabled">Next</button>
         <% } else { %>
         <% params.set('page', page + 1) %>
-        <a href="<%= decodeURIComponent(params.toString()) %>">
+        <a href="<%= decodeURIComponent(params.toString()) %>" title="Go to next page">
           <button>Next</button>
         </a>
         <% } %>
@@ -86,7 +87,8 @@
             limitOptions.forEach(option => { 
               params.set('limit', option) 
             %>
-            <a href="<%= decodeURIComponent(params.toString()) %>"><%= option %></a>
+            <a href="<%= decodeURIComponent(params.toString()) %>"
+              title="See <%= option %> assets per page"><%= option %></a>
             <% }) %>
           </div>
         </div>
@@ -101,7 +103,7 @@
         <button class="disabled">Back</button>
         <% } else { %>
         <% params.set('page', page - 1) %>
-        <a href="<%= decodeURIComponent(params.toString()) %>">
+        <a href="<%= decodeURIComponent(params.toString()) %>" title="Go back a page">
           <button>Back</button>
         </a>
         <% } %>
@@ -110,7 +112,7 @@
         <button class="disabled">Next</button>
         <% } else { %>
         <% params.set('page', page + 1) %>
-        <a href="<%= decodeURIComponent(params.toString()) %>">
+        <a href="<%= decodeURIComponent(params.toString()) %>" title="Go to next page">
           <button>Next</button>
         </a>
         <% } %>

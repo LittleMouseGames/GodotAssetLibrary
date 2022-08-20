@@ -1,7 +1,7 @@
 <% it.meta = {
   title: 'Dashboard | Godot Asset Library',
   description: 'Manage your Godot Asset Library experience',
-  url: 'https://godotlibrary.com/dashboard',
+  url: 'https://godotassetlibrary.com/dashboard',
   moduleName: 'dashboard'
 } %>
 <% layout('templates/components/layouts/promobar-nav-body-footer.eta') %>

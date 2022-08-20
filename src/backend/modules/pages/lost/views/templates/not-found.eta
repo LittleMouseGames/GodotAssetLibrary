@@ -1,7 +1,7 @@
 <% it.meta = {
   title: '404 | Godot Asset Library',
   description: 'Discover the best free and open source assets on Godot Asset Library',
-  url: 'https://godotlibrary.com/404',
+  url: 'https://godotassetlibrary.com/404',
   moduleName: 'lost'
 } %>
 <% layout('templates/components/layouts/promobar-nav-body-footer.eta') %>

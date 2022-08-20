@@ -1,7 +1,7 @@
 <% it.meta = {
   title: 'Featured Posts | Godot Asset Library',
   description: 'Manage Godot Asset Library settings',
-  url: 'https://godotlibrary.com/admin/featured',
+  url: 'https://godotassetlibrary.com/admin/featured',
   moduleName: 'admin'
 } %>
 <% layout('templates/components/layouts/promobar-nav-body-footer.eta') %>

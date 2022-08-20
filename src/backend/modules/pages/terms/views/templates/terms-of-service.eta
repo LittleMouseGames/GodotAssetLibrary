@@ -1,7 +1,7 @@
 <% it.meta = {
   title: 'Terms of Service | Godot Asset Library',
   description: 'Godot Asset Library Terms of Service',
-  url: 'https://godotlibrary.com/terms/terms-of-service',
+  url: 'https://godotassetlibrary.com/terms/terms-of-service',
   moduleName: 'terms'
 } %>
 <% layout('templates/components/layouts/promobar-nav-body-footer.eta') %>
@@ -13,10 +13,12 @@
   <div class="column">
     <h2>Terms of Service</h2>
     <p>These Terms of Service govern your use of the website located at <a
-        href="https://godotlibrary.com">https://godotlibrary.com</a> and any related services provided by Godot Asset
+        href="https://godotassetlibrary.com">https://godotassetlibrary.com</a> and any related services provided by
+      Godot Asset
       Library.
     </p>
-    <p>By accessing <a href="https://godotlibrary.com">https://godotlibrary.com</a>, you agree to abide by these Terms
+    <p>By accessing <a href="https://godotassetlibrary.com">https://godotassetlibrary.com</a>, you agree to abide by
+      these Terms
       of Service and to comply with all applicable laws and regulations. If you do not agree with these Terms of
       Service, you are prohibited from using or accessing this website or using any other services provided by Godot
       Library. </p>

@@ -1,7 +1,7 @@
 <% it.meta = {
   title: 'Register | Godot Asset Library',
   description: 'Create a new account or sign into an existing account on Godot Asset Library',
-  url: 'https://godotlibrary.com/register',
+  url: 'https://godotassetlibrary.com/register',
   moduleName: 'register'
 } %>
 <% layout('templates/components/layouts/promobar-nav-body-footer.eta') %>
@@ -20,8 +20,8 @@
       </div>
       <div class="disclaimer">
         By submitting this form you agree to our
-        <a href="/terms/privacy-plicy">Privacy Policy</a> and
-        <a href="/terms/terms-of-service">Terms of Service</a>
+        <a href="/terms/privacy-plicy" title="Open Privacy Policy page">Privacy Policy</a> and
+        <a href="/terms/terms-of-service" title="Open Terms of Service page">Terms of Service</a>
       </div>
       <button action="submit">Login</button>
     </form>
@@ -54,8 +54,8 @@
       </div>
       <div class="disclaimer">
         By submitting this form you agree to our
-        <a href="/terms/privacy-plicy">Privacy Policy</a> and
-        <a href="/terms/terms-of-service">Terms of Service</a>
+        <a href="/terms/privacy-plicy" title="Open Privacy Policy page">Privacy Policy</a> and
+        <a href="/terms/terms-of-service" title="Open Terms of Service page">Terms of Service</a>
       </div>
       <button action="submit">Create account</button>
     </form>
