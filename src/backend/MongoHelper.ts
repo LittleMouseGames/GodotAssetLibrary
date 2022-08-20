@@ -61,7 +61,7 @@ export class MongoHelper {
       return
     } catch (e: any) {
       const message = e.message ?? 'Failed to connect to Mongo'
-      logger.log('warn', message, ...[e])
+      logger.log('warn', message, [e])
       throw new Error(e) // we want the app to crash if our DB is offline
     }
   }

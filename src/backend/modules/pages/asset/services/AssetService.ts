@@ -77,7 +77,7 @@ export class AssetService {
 
       return res.render('templates/pages/asset/view', { info: assetInfo, comments: comments, hasUserReviewedAsset: hasUserReviewedAsset, usersAssetReview: usersAssetReview, pageBanner: pageBanner })
     } catch (e) {
-      logger.log('error', 'Failed to load asset page', ...[e])
+      logger.log('error', 'Failed to load asset page', [e])
       return res.send({ error: 'Sorry, we\'re having issues loading this page right now' })
     }
   }

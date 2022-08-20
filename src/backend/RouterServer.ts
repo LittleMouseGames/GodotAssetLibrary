@@ -76,7 +76,7 @@ class RouterServer extends Server {
     this.setupControllers()
 
     this.app.use((err: Error, _req: Request, res: Response, _next: NextFunction) => {
-      logger.log('error', err.message, ...[err])
+      logger.log('error', err.message, [err])
       return res.status(StatusCodes.BAD_REQUEST).send({ error: err.message })
     })
   }

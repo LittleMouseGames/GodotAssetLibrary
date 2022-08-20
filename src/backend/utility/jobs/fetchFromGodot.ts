@@ -45,10 +45,10 @@ async function importAssets (): Promise<void> {
 
 async function fetchAssetListings (): Promise<any[]> {
   const host = 'godotengine.org'
-  const env = process?.env?.NODE_ENV ?? 'development'
-  let paths = []
+  const env = process.env.RUN_MODE ?? 'devel'
+  let paths: string[] = []
 
-  if (env === 'production') {
+  if (env === 'prod') {
     paths = [
       '/asset-library/api/asset?type=any&max_results=500&godot_version=2.2',
       '/asset-library/api/asset?type=any&max_results=500&godot_version=3.4&page=0',
@@ -56,7 +56,7 @@ async function fetchAssetListings (): Promise<any[]> {
       '/asset-library/api/asset?type=any&max_results=500&godot_version=3.4&page=2',
       '/asset-library/api/asset?type=any&max_results=500&godot_version=4.0'
     ]
-  } else {
+  } else if (env === 'devel') {
     paths = [
       '/asset-library/api/asset?type=any&max_results=50&godot_version=3.4&page=0'
     ]
@@ -92,7 +92,7 @@ async function fetchAssetListings (): Promise<any[]> {
         }
       }
     } catch (e: any) {
-      logger.log('error', e.message, ...[e])
+      logger.log('error', `[IMPORTER]: ${e.message}`, [e])
     }
   }
 
@@ -119,7 +119,7 @@ async function fetchAssetInformationAndInsert (assetIDs: any[]): Promise<void> {
         void updateCategoryCountInfoObject(result.category)
       }
     } catch (e: any) {
-      logger.log('error', e.message, ...[e])
+      logger.log('error', `[IMPORTER]: ${e.message}`, [e])
     }
   }
 }
@@ -156,10 +156,10 @@ async function fetchAssetInformationAndUpdate (assetIDs: any[]): Promise<void> {
         }
 
         await modelUpdateAssetObject(result.legacy_asset_id, newAssetInformation)
-        // console.log('updated asset', newAssetInformation)
+        logger.info('info', `Updated asset ${result.legacy_asset_id} successfully`)
       }
     } catch (e: any) {
-      logger.log('error', e.message, ...[e])
+      logger.log('error', `[IMPORTER]: ${e.message}`, [e])
     }
   }
 }
