@@ -31,3 +31,25 @@ export class SearchController {
     return this.SearchService.redirectToSearchUrl(req, res)
   }
 }
+
+@Controller('category')
+export class CategoryController {
+  private readonly SearchService: SearchService = new SearchService()
+
+  @Get(':category')
+  @Middleware(searchRateLimit)
+  private async index (req: Request, res: Response): Promise<void> {
+    return await this.SearchService.render(req, res)
+  }
+}
+
+@Controller('engine')
+export class EngineController {
+  private readonly SearchService: SearchService = new SearchService()
+
+  @Get(':engine')
+  @Middleware(searchRateLimit)
+  private async index (req: Request, res: Response): Promise<void> {
+    return await this.SearchService.render(req, res)
+  }
+}
