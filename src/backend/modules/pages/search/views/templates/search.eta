@@ -14,38 +14,20 @@
         <hr>
         <div class="options">
           <ul>
-            <% 
-              var sharedParams = []
-              var categoryOrEngineRegex = /(\/category\/|\/engine\/)/
-              var acceptedParams = ['category', 'engine', 'page', 'sort', 'order', '/search/?q']
-              
-              if (categoryOrEngineRegex.test(it?.params)) {
-                var name = it?.params.split(categoryOrEngineRegex)[1]
-                sharedParams.push({name: name.replace(/\//g, ''), value: it.params.replace(categoryOrEngineRegex, '').toLocaleLowerCase()})
-              }
-
-
-              for (const [key, value] of Object.entries(filtersValue)) { %>
+            <% for (const [key, value] of Object.entries(filtersValue)) { %>
             <li>
               <label>
                 <% 
                     let filterParams = new URLSearchParams(it.params ?? '?q=')
                     let filterAlreadyAdded = false
                     let filterLink = ''
-                    
-                    if (!Array.from(filterParams.keys())[0].includes('/search/')) {
-                      var name = Array.from(filterParams.keys())[0]
-                      filterParams.delete(name)
-                      filterParams.set('/search/?q', '')
-                    } 
+                    var categoryOrEngineRegex = /(\/category\/|\/engine\/)/
 
-                    sharedParams.forEach(param => {
-                      filterParams.append(param.name, param.value)
-                    })
-
-                    Array.from(filterParams.keys()).forEach(key => {
-                      if(!acceptedParams.includes(key)) {
-                        filterParams.delete(key)
+                    Array.from(filterParams.keys()).forEach(filter => {
+                      if (categoryOrEngineRegex.test(filter)) {
+                        var split = filter.split(categoryOrEngineRegex)
+                        filterParams.delete(filter)
+                        filterParams.set(split[1].replace(/\//g, ''), split[2].replace('?q', ''))
                       }
                     })
 
@@ -68,6 +50,10 @@
                       filterParams.append(filtersKey, String(key.toLocaleLowerCase()))
                       filterLink = decodeURIComponent(filterParams.toString())
                     }
+
+                    if (!Array.from(filterParams.keys())[0].includes('/search/')) {
+                      filterLink = '/search/?q=&' + filterLink
+                    } 
                   %>
                 <a href="<%= filterLink %>" title="Add to filters">
                   <input type="checkbox" <%= filterAlreadyAdded ? 'checked' : '' %>>
