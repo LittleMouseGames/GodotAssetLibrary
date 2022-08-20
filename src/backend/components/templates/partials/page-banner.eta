@@ -1,8 +1,9 @@
 <div class="page-banner">
   <div class="contents">
-    <h2 class="heading"><%= it?.pageBanner?.title ? it?.pageBanner?.title : 'Godot Asset Library' %></h2>
-    <span><%~ it?.pageBanner?.info ? it?.pageBanner?.info : `Discover free and open source <strong>Godot Assets</strong> on
-      <strong>Godot Asset Library</strong>` %></span>
+    <h1 class="heading">
+      <%= it?.pageBanner?.title ? it?.pageBanner?.title : 'Kickstart Projects with Free Godot Assets' %>
+    </h1>
+    <span><%~ it?.pageBanner?.info ? it?.pageBanner?.info : `Discover <strong>high quality</strong> and <strong>Open Source</strong> assets for your next <strong>Godot</strong> project` %></span>
   </div>
   <div class="background">
     <div class="block"></div>
