@@ -46,7 +46,7 @@ var generateProxyUrl = it?._locals?.functions?.generateProxyUrl
         <% it?.info?.previews.forEach(preview => { %>
         <div class="image">
           <img src="<%= generateProxyUrl(preview.thumbnail) %> " alt=""
-            onclick="updatePlayerImage('<%= generateProxyUrl(preview.link, 1920, 1080) %>')">
+            onclick="updatePlayerImage('<%= preview.link %>', '<%= generateProxyUrl(preview.link, 1920, 1080) %>')">
         </div>
         <% }) %>
         <% } else { %>
@@ -58,7 +58,16 @@ var generateProxyUrl = it?._locals?.functions?.generateProxyUrl
       <div class="player">
         <div class="container">
           <% if(it?.info?.previews.length !== 0) { %>
+          <% var link = it?.info?.previews[0].link %>
+          <% if (link.includes('youtube')) { %>
+          <iframe width="100%" height="100%" src="<%= link.replace('watch?v=', 'embed/') %>" frameborder="0"
+            allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+          <img style="display: none;" alt="">
+          <% } else { %>
+          <iframe width="100%" height="100%" frameborder="0" style="display: none;"
+            allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
           <img src="<%= generateProxyUrl(it?.info?.previews[0].link, 1920, 1080) %>" alt="">
+          <% } %>
           <% } else { %>
           <img src="<%= generateProxyUrl(it?.info?.icon_url, 1920, 1080) %>" alt="">
           <% } %>
@@ -263,8 +272,16 @@ var generateProxyUrl = it?._locals?.functions?.generateProxyUrl
     </div>
   </div>
   <script>
-    function updatePlayerImage(image) {
-      document.querySelector('.player img').src = image;
+    function updatePlayerImage(image, proxied) {
+      if (image.includes('youtube')) {
+        document.querySelector('.player img').style.display = 'none';
+        document.querySelector('.player iframe').style.display = 'block';
+        document.querySelector('.player iframe').src = image.replace('watch?v=', 'embed/');
+      } else {
+        document.querySelector('.player iframe').style.display = 'none';
+        document.querySelector('.player img').style.display = 'block';
+        document.querySelector('.player img').src = proxied;
+      }
     }
 
     function openInstallModal(event) {
