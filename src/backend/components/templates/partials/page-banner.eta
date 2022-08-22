@@ -3,7 +3,8 @@
     <h1 class="heading">
       <%~ it?.pageBanner?.title ? it?.pageBanner?.title : 'Kickstart Projects with Free Godot Assets' %>
     </h1>
-    <span class="subtitle"><%~ it?.pageBanner?.info ? it?.pageBanner?.info : `Discover <strong>high quality</strong> and <strong>Open Source</strong> assets for your next <strong>Godot</strong> project` %></span>
+    <span
+      class="subtitle"><%~ it?.pageBanner?.info ? it?.pageBanner?.info : `Discover <strong>high quality</strong> and <strong>Open Source</strong> assets for your next <strong>Godot</strong> project` %></span>
   </div>
   <div class="background">
     <div class="block"></div>

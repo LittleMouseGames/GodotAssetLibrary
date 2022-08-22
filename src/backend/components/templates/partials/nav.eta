@@ -17,7 +17,7 @@
     <form method="POST" action="/search">
       <div class="search">
         <span class="iconify" data-icon="eva:search-outline"></span>
-        <input placeholder="Search for assets and tools" name="query"
+        <input placeholder="Search for your next asset..." name="query"
           value="<%= it?.originalQuery ? it?.originalQuery : '' %>">
       </div>
     </form>
