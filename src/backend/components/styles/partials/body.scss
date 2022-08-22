@@ -26,6 +26,12 @@ a {
   }
 }
 
+.no-text-select {
+  -webkit-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
 .main {
   section {
     a {

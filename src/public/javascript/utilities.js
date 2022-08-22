@@ -146,11 +146,17 @@ window.addEventListener('DOMContentLoaded', () => {
   document.querySelectorAll('.accordion').forEach(accordion => {
     accordion.querySelector('.accordion-trigger').addEventListener('click', function (e) {
       const content = accordion.querySelector('.accordion-content')
+      const openIcon = accordion.querySelector('.icon-close')
+      const closeIcon = accordion.querySelector('.icon-expand')
 
       if (isHidden(content)) {
         content.style.display = 'block'
+        openIcon.style.display = 'block'
+        closeIcon.style.display = 'none'
       } else {
         content.style.display = 'none'
+        openIcon.style.display = 'none'
+        closeIcon.style.display = 'block'
       }
     })
   })

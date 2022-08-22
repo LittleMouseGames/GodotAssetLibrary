@@ -114,7 +114,7 @@ var generateProxyUrl = it?._locals?.functions?.generateProxyUrl
             <div class="review">
               <div class="header">
                 <span class="headline"><%= comment.headline %></span>
-                <div class="dropdown" onclick="window.godotLibrary.dropdown.showContent(event, this)">
+                <div class="dropdown no-text-select" onclick="window.godotLibrary.dropdown.showContent(event, this)">
                   <span class="iconify" data-icon="akar-icons:more-horizontal"></span>
                   <div class="options">
                     <div onclick="openReportModal(event, '<%= String(comment.human_id) %>')">Report</div>
@@ -187,7 +187,7 @@ var generateProxyUrl = it?._locals?.functions?.generateProxyUrl
               title="See assets for this engine version">
               <div class="badge badge-purple"><%= it?.info?.godot_version ?? 'ERR' %></div>
             </a>
-            <div class="dropdown" onclick="window.godotLibrary.dropdown.showContent(event, this)">
+            <div class="dropdown no-text-select" onclick="window.godotLibrary.dropdown.showContent(event, this)">
               <span class="iconify" data-icon="akar-icons:more-horizontal"></span>
               <div class="options">
                 <% if(it?.info?.saved === true) { %>

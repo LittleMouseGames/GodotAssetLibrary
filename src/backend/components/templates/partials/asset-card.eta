@@ -11,7 +11,7 @@ var generateProxyUrl = it?._locals?.functions?.generateProxyUrl
       <a href="/engine/<%= it?.info?.godot_version?.toLocaleLowerCase() %>" title="See assets for this engine version">
         <div class="badge badge-purple"><%= it?.info?.godot_version ?? 'ERR' %></div>
       </a>
-      <div class="dropdown" onclick="window.godotLibrary.dropdown.showContent(event, this)">
+      <div class="dropdown no-text-select" onclick="window.godotLibrary.dropdown.showContent(event, this)">
         <span class="iconify" data-icon="akar-icons:more-horizontal"></span>
         <div class="options">
           <% if(it?.info?.saved === true) { %>

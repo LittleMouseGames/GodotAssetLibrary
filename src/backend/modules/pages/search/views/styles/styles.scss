@@ -65,8 +65,18 @@
       background: #e4e4e4;
       cursor: pointer;
 
-      .close {
+      .icon-expand {
         display: none;
+
+        @include mobile-styles {
+          display: block;
+        }
+      }
+
+      .icon-close {
+        @include mobile-styles {
+          display: none;
+        }
       }
     }
 
@@ -101,6 +111,7 @@
       font-weight: 600;
       display: flex;
       justify-content: space-between;
+      align-items: center;
     }
 
     hr {

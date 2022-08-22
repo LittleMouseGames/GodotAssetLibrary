@@ -10,11 +10,11 @@
     <% for (const [filtersKey, filtersValue] of Object.entries(it.filters)) { %>
     <div class="catalog-filters">
       <div class="filter accordion">
-        <div class="accordion-trigger">
+        <div class="accordion-trigger no-text-select">
           <h2>
             <%= filtersKey === 'category' ? 'Category Filters' : 'Engine Filters' %>
-            <span class="iconify open" data-icon="bxs:chevron-down"></span>
-            <span class="iconify close" data-icon="bxs:chevron-up"></span>
+            <span class="iconify icon-close" data-icon="bxs:chevron-up"></span>
+            <span class="iconify icon-expand" data-icon="bxs:chevron-down"></span>
           </h2>
         </div>
         <div class="options accordion-content">
