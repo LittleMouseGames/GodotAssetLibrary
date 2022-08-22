@@ -97,6 +97,9 @@ var generateProxyUrl = it?._locals?.functions?.generateProxyUrl
         </ul>
       </div> -->
       <div class="details">
+        <div class="section mobile-quick-info">
+          <%~ includeFile('./quick-info.eta', it) %>
+        </div>
         <div class="section">
           <h2>Asset Description</h2>
           <% const descriptionFormatted = it?.info?.description?.replace(/\n/g, '<br>') %>
@@ -114,7 +117,7 @@ var generateProxyUrl = it?._locals?.functions?.generateProxyUrl
             <div class="review">
               <div class="header">
                 <span class="headline"><%= comment.headline %></span>
-                <div class="dropdown" onclick="window.godotLibrary.dropdown.showContent(event, this)">
+                <div class="dropdown no-text-select" onclick="window.godotLibrary.dropdown.showContent(event, this)">
                   <span class="iconify" data-icon="akar-icons:more-horizontal"></span>
                   <div class="options">
                     <div onclick="openReportModal(event, '<%= String(comment.human_id) %>')">Report</div>
@@ -173,117 +176,8 @@ var generateProxyUrl = it?._locals?.functions?.generateProxyUrl
       </div>
     </div>
   </div>
-  <div class="column">
-    <div class="quick-info">
-      <h2>Quick Information</h2>
-      <%~ includeFile('templates/components/partials/stars.eta', it) %>
-      <div class="card">
-        <div class="banner">
-          <div class="badges">
-            <a href="/category/<%= it?.info?.category?.toLocaleLowerCase() %>" title="See assets in this category">
-              <div class="badge badge-blue"><%= it?.info?.category ?? 'ERR' %></div>
-            </a>
-            <a href="/engine/<%= it?.info?.godot_version?.toLocaleLowerCase() %>"
-              title="See assets for this engine version">
-              <div class="badge badge-purple"><%= it?.info?.godot_version ?? 'ERR' %></div>
-            </a>
-            <div class="dropdown" onclick="window.godotLibrary.dropdown.showContent(event, this)">
-              <span class="iconify" data-icon="akar-icons:more-horizontal"></span>
-              <div class="options">
-                <% if(it?.info?.saved === true) { %>
-                <a href="/dashboard/save/<%= it?.info?.asset_id %>"
-                  onclick="window.godotLibrary.dropdown.callRouteAjax(event, '/dashboard/save/<%= it?.info?.asset_id %>', 'Post successfully removed from saves')"
-                  title="Add asset to saved list">
-                  Unsave
-                </a>
-                <% } else { %>
-                <a href="/dashboard/save/<%= it?.info?.asset_id %>"
-                  onclick="window.godotLibrary.dropdown.callRouteAjax(event, '/dashboard/save/<%= it?.info?.asset_id %>', 'Post successfully added to saves')"
-                  title="Remove asset from saved list">
-                  Save
-                </a>
-                <% } %>
-                <% if(it?._locals?.role === 'admin') { %>
-                <% if(it?.info?.featured === true) { %>
-                <a href="/admin/feature-post/<%= it?.info?.asset_id %>"
-                  onclick="window.godotLibrary.dropdown.callRouteAjax(event, '/admin/feature-post/<%= it?.info?.asset_id %>', 'Post successfully featured')"
-                  title="Remove from 'Assets We Love' on homepage">
-                  Unfeature
-                </a>
-                <% } else { %>
-                <a href="/admin/feature-post/<%= it?.info?.asset_id %>"
-                  onclick="window.godotLibrary.dropdown.callRouteAjax(event, '/admin/feature-post/<%= it?.info?.asset_id %>', 'Post successfully featured')"
-                  title="Add to 'Assets We Love' on homepage">
-                  Feature
-                </a>
-                <% } %>
-                <% } %>
-              </div>
-            </div>
-          </div>
-          <% if (!it?.featured) { %>
-          <div class="background">
-            <div class="mask">
-              <img src="<%= generateProxyUrl(it?.info?.card_banner ?? it?.info?.icon_url) %>" alt="">
-            </div>
-          </div>
-          <% } %>
-        </div>
-        <div class="body">
-          <div class="top">
-            <div class="icon">
-              <img
-                src="<%= generateProxyUrl(it?.info?.icon_url ?? 'https://avatars.githubusercontent.com/u/42072863?s=200&v=4', 75, 75) %>"
-                alt="">
-            </div>
-            <div class="info">
-              <div class="author"><%= it?.info?.author ?? 'Failed to load'%></div>
-              <div class="title"><%= it?.info?.title ?? 'Unable to load the asset 😿' %></div>
-            </div>
-          </div>
-          <p>
-            <%= it?.info?.quick_description ?? 'For some reason we\'re unable to load this asset information right now' %>
-          <div class="specs">
-            <div class="row">
-              <div class="property">Supported Engine Version</div>
-              <div class="value"><%= it?.info?.godot_version ?? 'Unknown' %></div>
-            </div>
-            <div class="row">
-              <div class="property">Version String</div>
-              <div class="value"><%= it?.info?.version_string ?? 'Unknown' %></div>
-            </div>
-            <div class="row">
-              <div class="property">License Version</div>
-              <div class="value"><%= it?.info?.cost ?? 'Unknown' %></div>
-            </div>
-            <div class="row">
-              <div class="property">Support Level</div>
-              <div class="value"><%= it?.info?.support_level ?? 'Unknown' %></div>
-            </div>
-            <div class="row">
-              <div class="property">Modified Date</div>
-              <div class="value" title="<%= it?.info?.modify_date ?? 'Unknown' %>">
-                <%= it?.info?.modify_date_pretty ?? 'Unknown' %></div>
-            </div>
-            <div class="row">
-              <div class="property">Git URL</div>
-              <div class="value"><a href="<%= it?.info?.browse_url %>" target="_blank" rel="noopener noreferrer"
-                  title="Open asset Git repository">Link to
-                  Git URL</a></div>
-            </div>
-            <div class="row">
-              <div class="property">Issue URL</div>
-              <div class="value"><a href="<%= it?.info?.issues_url %>" target="_blank" rel="noopener noreferrer"
-                  title="Open asset issue tracker">Link to
-                  Issues URL</a>
-              </div>
-            </div>
-          </div>
-          <button onclick="openInstallModal(event)">Add to
-            Project</button>
-        </div>
-      </div>
-    </div>
+  <div class="desktop-quick-info">
+    <%~ includeFile('./quick-info.eta', it) %>
   </div>
   <script>
     function updatePlayerImage(image, proxied) {

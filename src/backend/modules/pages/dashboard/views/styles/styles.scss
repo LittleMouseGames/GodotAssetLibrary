@@ -97,9 +97,9 @@
 
   .sidebar {
     .item {
+      @include inter-like-font();
       padding: 15px;
       border: 3px solid $color-brand-gray;
-      font-family: "Inter";
       font-weight: 600;
       width: 200px;
 

@@ -10,14 +10,15 @@
   <div class="contents">
     <div class="brand">
       <a href="/" title="Go back to homepage">
-        <div class="title">Asset Library</div>
+        <div class="title">Godot Asset Library</div>
         <div class="subtitle">an <span class="strong">Open Source</span> project</div>
       </a>
     </div>
     <form method="POST" action="/search">
       <div class="search">
         <span class="iconify" data-icon="eva:search-outline"></span>
-        <input placeholder="Search..." name="query" value="<%= it?.originalQuery ? it?.originalQuery : '' %>">
+        <input placeholder="Search for your next asset..." name="query"
+          value="<%= it?.originalQuery ? it?.originalQuery : '' %>">
       </div>
     </form>
     <div class="links">
@@ -25,7 +26,7 @@
       <a href="/category/3d+tools" class="link" title="See assets in this category">3D Tools</a>
       <a href="/category/tools" class="link" title="See assets in this category">Tools</a>
       <a href="/category/shaders" class="link" title="See assets in this category">Shaders</a>
-      <div class="dropdown categories" onclick="window.godotLibrary.dropdown.showContent(event, this)">
+      <div class="dropdown categories no-text-select" onclick="window.godotLibrary.dropdown.showContent(event, this)">
         <div class="value">More Categories</div>
         <div class="value mobile">Categories</div>
         <span class="iconify" data-icon="bxs:chevron-down"></span>
@@ -43,7 +44,7 @@
       <span class="iconify mobile-search" data-icon="eva:search-outline"
         onclick="window.godotLibrary.mobile.showSearch(event)"></span>
       <% if(it?._locals?.loggedIn === true) { %>
-      <div class="dropdown" onclick="window.godotLibrary.dropdown.showContent(event, this)">
+      <div class="dropdown no-text-select" onclick="window.godotLibrary.dropdown.showContent(event, this)">
         <span class="iconify" data-icon="codicon:account"></span>
         <div class="value">My Account</div>
         <span class="iconify chevron" data-icon="bxs:chevron-down"></span>

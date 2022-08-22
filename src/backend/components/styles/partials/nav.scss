@@ -39,7 +39,7 @@
 }
 
 nav {
-  @include brand-styles($title-color: $text-dark-darkest, $subtitle-color: $text-dark-deep-gray);
+  @include brand-styles($title-color: $text-dark-darkest, $subtitle-color: $text-dark-darker);
   @include dropdown-styles($padding: 12px, $background: $color-lighter-gray, $border-color: $color-brand-gray);
 
   height: 75px;
@@ -141,10 +141,10 @@ nav {
     }
 
     input {
+      @include inter-like-font();
       height: 45px;
       background: $color-lighter-gray;
       border-radius: 6px;
-      font-family: "Inter";
       border: none;
       padding-left: 40px;
       width: 100%;

@@ -127,10 +127,10 @@
     }
 
     .title {
+      @include inter-like-font();
       font-size: 15px;
       font-weight: 600;
       color: $title-color;
-      font-family: "Inter";
     }
 
     p {
@@ -166,8 +166,8 @@
       }
 
       span {
+        @include inter-like-font();
         font-size: 13px;
-        font-family: "Inter";
         font-weight: 500;
         color: $rating-color;
         cursor: default;

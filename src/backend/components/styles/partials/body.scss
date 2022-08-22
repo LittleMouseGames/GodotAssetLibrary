@@ -10,7 +10,6 @@ body {
   display: flex;
   flex-direction: column;
   min-height: 100%;
-
   font-family: "Poppins", sans-serif;
 }
 
@@ -25,6 +24,12 @@ a {
   &:hover {
     text-decoration: underline;
   }
+}
+
+.no-text-select {
+  -webkit-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }
 
 .main {

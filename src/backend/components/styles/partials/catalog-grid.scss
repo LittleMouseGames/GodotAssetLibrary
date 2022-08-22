@@ -51,7 +51,7 @@
     }
 
     label {
-      font-family: "Inter";
+      @include inter-like-font();
       font-weight: 500;
       font-size: 14px;
       color: $text-gray-darker;
@@ -65,9 +65,9 @@
       }
 
       button {
+        @include inter-like-font();
         background: $button-gray;
         border-radius: 6px;
-        font-family: "Inter";
         font-size: 14px;
         font-weight: 500;
         border: none;

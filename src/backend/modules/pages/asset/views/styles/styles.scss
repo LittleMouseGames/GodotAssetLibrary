@@ -21,15 +21,44 @@
     display: flex;
     flex-direction: column;
     margin-top: 0;
+  }
 
-    .column {
-      &:first-of-type {
-        order: 1;
+  .desktop-quick-info {
+    @include mobile-styles {
+      display: none;
+    }
+  }
+
+  .mobile-quick-info {
+    display: none;
+
+    @include mobile-styles {
+      display: block;
+    }
+
+    .rating,
+    button {
+      display: none;
+    }
+
+    .card {
+      .banner {
+        padding: 0px;
+        height: auto;
+        margin-bottom: 10px;
+        overflow: visible;
       }
 
-      &:last-of-type {
-        order: 0;
-        margin-bottom: 40px;
+      .iconify {
+        color: $text-dark-darkest !important;
+      }
+
+      .background {
+        display: none;
+      }
+
+      .body {
+        margin-top: 0px;
       }
     }
   }
@@ -130,8 +159,8 @@
     }
 
     .headline {
+      @include inter-like-font();
       font-weight: 600;
-      font-family: "Inter";
       font-size: 16px;
     }
 
@@ -158,8 +187,8 @@
   .reviews {
     @include dropdown-styles;
     .username {
+      @include inter-like-font();
       font-weight: 600;
-      font-family: Inter;
     }
 
     .header {
@@ -197,10 +226,10 @@
     }
 
     .rating-select {
+      @include inter-like-font();
       display: inline-block;
       margin-bottom: 20px;
       cursor: pointer;
-      font-family: "Inter";
 
       .label {
         color: gray;
@@ -220,15 +249,15 @@
   }
 
   h2 {
-    font-family: "Inter";
+    @include inter-like-font();
     font-weight: 700;
     font-size: 18px;
     margin-bottom: 3px;
   }
 
   .row {
+    @include inter-like-font();
     color: $text-dark-very-dark;
-    font-family: "Inter";
     font-weight: 600;
     display: flex;
     justify-content: space-between;
@@ -259,8 +288,8 @@
     }
 
     li {
+      @include inter-like-font();
       padding: 0 3px;
-      font-family: "Inter";
       font-weight: 600;
       padding-bottom: 2px;
       transition: 0.1s;
@@ -338,7 +367,8 @@
       }
     }
 
-    img, iframe {
+    img,
+    iframe {
       position: absolute;
       top: 0;
       left: 0;

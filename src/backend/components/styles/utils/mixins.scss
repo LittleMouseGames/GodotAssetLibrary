@@ -27,6 +27,7 @@
     cursor: pointer;
 
     .title {
+      @include inter-like-font();
       font-weight: bold;
       font-size: 22px;
       line-height: 25px;
@@ -34,6 +35,7 @@
     }
 
     .subtitle {
+      @include inter-like-font();
       font-weight: 500;
       font-size: 13px;
       color: $subtitle-color;
@@ -191,4 +193,8 @@
   @media (max-width: 500px) {
     @content;
   }
+}
+
+@mixin inter-like-font {
+  font-family: Inter, Calibri, "Helvetica Neue", Sans-Serif;
 }

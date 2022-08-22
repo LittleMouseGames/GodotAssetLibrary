@@ -11,20 +11,29 @@ import { GetSearchResultFilters } from '../models/GET/GetSearchResultFilters'
 
 export class SearchService {
   public async render (req: Request, res: Response): Promise<void> {
-    const query = striptags(String(req.query.q ?? ''))
+    const query = striptags(String(req.query.q ?? '').substr(0, 100))
     let categoryParams = striptags(String(req.query.category ?? ''))
     let engineParams = striptags(String(req.query.engine ?? ''))
     let limit = Number(req.query.limit ?? 12)
     const page = Number(req.query.page ?? 0)
     const authToken = striptags(req.cookies['auth-token'] ?? '')
     const sort = striptags(String(req.query.sort ?? 'relevance'))
+    let title = `Search results ${query === '' ? '' : 'for: ' + query}`
+    let plusToSpaceRegex = /\+|&plus;|%2b/
+    let inCategory = false
 
     if (req?.params?.category != null) {
-      categoryParams = striptags(req.params.category.toLocaleLowerCase())
+      var convertedCategory = striptags(req.params.category.toLocaleLowerCase().replace(plusToSpaceRegex, ' '))
+      categoryParams = convertedCategory
+      title = `Assets in category: <span>${convertedCategory}</span>`
+      inCategory = true
     }
 
     if (req?.params?.engine != null) {
-      engineParams = striptags(req.params.engine.toLocaleLowerCase())
+      var convertedEngine = striptags(req.params.engine.toLocaleLowerCase().replace(plusToSpaceRegex, ' '))
+      engineParams = convertedEngine
+      title = `Assets for engine: <span>${convertedEngine}</span>`
+      inCategory = true
     }
 
     const sortMap: {[key: string]: any} = {
@@ -113,19 +122,14 @@ export class SearchService {
       {}
     )
 
-    let title = `Search results ${query === '' ? '' : 'for: ' + query}`
-
-    if (req?.params?.category != null) {
-      title = `Assets in category: ${req.params.category}`
-    }
-
-    if (req?.params?.engine != null) {
-      title = `Assets for engine: ${req.params.engine}`
+    let info = `Found <strong>${totalAssetsForQuery} assets</strong> for query`
+    if (inCategory) {
+      info = `Showing <strong>${totalAssetsForQuery} assets</strong> in category`
     }
 
     const pageBanner = {
       title: title,
-      info: `Found <strong>${totalAssetsForQuery} assets</strong> for query`
+      info: info
     }
 
     if (authToken !== '') {

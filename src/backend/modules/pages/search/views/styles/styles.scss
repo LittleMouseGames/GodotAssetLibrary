@@ -50,10 +50,68 @@
     margin-left: 5px;
     margin-top: 6px;
 
+    &:not(:last-child) {
+      padding-bottom: 15px;
+    }
+
+    .filter {
+      border: 1px solid #cacaca;
+      border-radius: 3px;
+    }
+
+    .accordion-trigger {
+      padding: 11px 13px;
+      border-radius: 0;
+      background: #e4e4e4;
+      cursor: pointer;
+
+      .icon-expand {
+        display: none;
+
+        @include mobile-styles {
+          display: block;
+        }
+      }
+
+      .icon-close {
+        @include mobile-styles {
+          display: none;
+        }
+      }
+    }
+
+    .accordion-content {
+      display: block;
+
+      @include mobile-styles {
+        display: none;
+      }
+    }
+
+    .options {
+      padding: 0px 13px;
+    }
+
+    ul {
+      margin-top: 0px;
+      margin-bottom: 0px;
+
+      li {
+        margin-top: 7px;
+
+        &:not(:last-child) {
+          margin-bottom: 7px;
+        }
+      }
+    }
+
     h2 {
+      @include inter-like-font();
       font-size: 18px;
-      font-family: "Inter";
       font-weight: 600;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
     }
 
     hr {
@@ -69,7 +127,7 @@
     }
 
     label {
-      font-family: "Inter";
+      @include inter-like-font();
       font-weight: 400;
       cursor: pointer;
 

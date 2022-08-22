@@ -5,7 +5,7 @@
         <label class="inline-dropdown">
           <% var params = new URLSearchParams(it.params?.includes('q=') ? it.params : it.params + '?q=') %>
           Sort By
-          <div class="dropdown" onclick="window.godotLibrary.dropdown.showContent(event, this)">
+          <div class="dropdown no-text-select" onclick="window.godotLibrary.dropdown.showContent(event, this)">
             <div class="value"><%= params.get('sort')?.replace(/_/g, ' ') ?? 'Relevance' %> </div>
             <span class="iconify" data-icon="bxs:chevron-down"></span>
             <div class="options">
@@ -23,7 +23,7 @@
     <div class="right">
       <label class="inline-dropdown">
         Results per Page
-        <div class="dropdown" onclick="window.godotLibrary.dropdown.showContent(event, this)">
+        <div class="dropdown no-text-select" onclick="window.godotLibrary.dropdown.showContent(event, this)">
           <% var params = new URLSearchParams(it.params?.includes('q=') ? it.params : it.params + '?q=') %>
           <div class="value"><%= params.get('limit') ?? '12' %></div>
           <span class="iconify" data-icon="bxs:chevron-down"></span>

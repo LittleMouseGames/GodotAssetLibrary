@@ -21,16 +21,17 @@
     font-weight: 600;
   }
 
-  span {
+  .subtitle {
     display: block;
     margin-top: 2px;
     font-weight: 500;
     font-size: 13px;
     letter-spacing: 0.02rem;
+    text-shadow: 1px 1px 8px #000;
   }
 
   .block {
-    min-width: 380px;
+    min-width: 30%;
   }
 
   @include background-gradient-image(
