@@ -130,8 +130,8 @@
     }
 
     .headline {
+      @include inter-like-font();
       font-weight: 600;
-      font-family: "Inter";
       font-size: 16px;
     }
 
@@ -158,8 +158,8 @@
   .reviews {
     @include dropdown-styles;
     .username {
+      @include inter-like-font();
       font-weight: 600;
-      font-family: Inter;
     }
 
     .header {
@@ -197,10 +197,10 @@
     }
 
     .rating-select {
+      @include inter-like-font();
       display: inline-block;
       margin-bottom: 20px;
       cursor: pointer;
-      font-family: "Inter";
 
       .label {
         color: gray;
@@ -220,15 +220,15 @@
   }
 
   h2 {
-    font-family: "Inter";
+    @include inter-like-font();
     font-weight: 700;
     font-size: 18px;
     margin-bottom: 3px;
   }
 
   .row {
+    @include inter-like-font();
     color: $text-dark-very-dark;
-    font-family: "Inter";
     font-weight: 600;
     display: flex;
     justify-content: space-between;
@@ -259,8 +259,8 @@
     }
 
     li {
+      @include inter-like-font();
       padding: 0 3px;
-      font-family: "Inter";
       font-weight: 600;
       padding-bottom: 2px;
       transition: 0.1s;

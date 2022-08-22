@@ -9,9 +9,11 @@
   <section>
     <% for (const [filtersKey, filtersValue] of Object.entries(it.filters)) { %>
     <div class="catalog-filters">
-      <div class="filter">
-        <h2><%= filtersKey === 'category' ? 'Category Filters' : 'Engine Filters' %></h2>
-        <hr>
+      <div class="filter accordion">
+        <div class="accordion-trigger">
+          <h2><%= filtersKey === 'category' ? 'Category Filters' : 'Engine Filters' %></h2>
+          <hr>
+        </div>
         <div class="options">
           <ul>
             <% for (const [key, value] of Object.entries(filtersValue)) { %>

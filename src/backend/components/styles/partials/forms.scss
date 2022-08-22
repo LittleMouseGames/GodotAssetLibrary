@@ -2,13 +2,13 @@
 @import "components/styles/utils/mixins";
 
 @mixin _form-shared {
+  @include inter-like-font();
   background: $button-gray;
   color: $text-dark-darker;
   padding: 15px;
   border-radius: 4px;
   border: none;
   width: 100%;
-  font-family: "Inter";
   box-sizing: border-box;
   font-size: 14px;
 }
@@ -23,11 +23,11 @@
 }
 
 @mixin form-button {
+  @include inter-like-font();
   background: $button-very-dark;
   border: none;
   color: white;
   border-radius: 3px;
-  font-family: "Inter";
   font-weight: 600;
   padding: 12px 27px;
   cursor: pointer;
@@ -42,8 +42,8 @@
     position: relative;
 
     .placeholder {
+      @include inter-like-font();
       color: $text-dark-darker;
-      font-family: Inter;
       left: 17px;
       line-height: 14px;
       pointer-events: none;
@@ -189,13 +189,13 @@
     }
 
     h2 {
+      @include inter-like-font();
       margin-bottom: 5px;
       font-size: 18px;
-      font-family: "Inter";
     }
 
     h3 {
-      font-family: "Inter";
+      @include inter-like-font();
     }
 
     .name {

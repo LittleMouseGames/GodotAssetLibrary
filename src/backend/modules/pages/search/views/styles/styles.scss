@@ -51,8 +51,8 @@
     margin-top: 6px;
 
     h2 {
+      @include inter-like-font();
       font-size: 18px;
-      font-family: "Inter";
       font-weight: 600;
     }
 
@@ -69,7 +69,7 @@
     }
 
     label {
-      font-family: "Inter";
+      @include inter-like-font();
       font-weight: 400;
       cursor: pointer;
 

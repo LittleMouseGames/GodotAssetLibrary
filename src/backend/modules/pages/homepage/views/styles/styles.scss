@@ -7,7 +7,7 @@
 
 .page-home {
   h2 {
-    font-family: "Inter";
+    @include inter-like-font();
     font-weight: 700;
     font-size: 18px;
     margin-top: 20px;

@@ -18,7 +18,7 @@
     margin-bottom: 25px;
 
     h2 {
-      font-family: "Inter";
+      @include inter-like-font();
       font-size: 18px;
       font-weight: 700;
     }
