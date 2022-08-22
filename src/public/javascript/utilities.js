@@ -119,6 +119,11 @@ document.addEventListener('click', function (event) {
   }
 })
 
+function isHidden (el) {
+  const style = window.getComputedStyle(el)
+  return (style.display === 'none')
+}
+
 function closeAllDropdowns () {
   document.querySelectorAll('.dropdown .options').forEach(element => {
     element.style.display = 'none'
@@ -135,6 +140,18 @@ window.addEventListener('DOMContentLoaded', () => {
   document.querySelectorAll('img').forEach(image => {
     image.addEventListener('error', function (e) {
       e.target.src = '/images/noimage.png'
+    })
+  })
+
+  document.querySelectorAll('.accordion').forEach(accordion => {
+    accordion.querySelector('.accordion-trigger').addEventListener('click', function (e) {
+      const content = accordion.querySelector('.accordion-content')
+
+      if (isHidden(content)) {
+        content.style.display = 'block'
+      } else {
+        content.style.display = 'none'
+      }
     })
   })
 })

@@ -70,6 +70,14 @@
       }
     }
 
+    .accordion-content {
+      display: block;
+
+      @include mobile-styles {
+        display: none;
+      }
+    }
+
     .options {
       padding: 0px 13px;
     }

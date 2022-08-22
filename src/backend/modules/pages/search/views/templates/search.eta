@@ -17,7 +17,7 @@
             <span class="iconify close" data-icon="bxs:chevron-up"></span>
           </h2>
         </div>
-        <div class="options">
+        <div class="options accordion-content">
           <ul>
             <% for (const [key, value] of Object.entries(filtersValue)) { %>
             <li>
