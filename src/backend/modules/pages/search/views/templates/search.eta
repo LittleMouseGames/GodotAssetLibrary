@@ -11,8 +11,11 @@
     <div class="catalog-filters">
       <div class="filter accordion">
         <div class="accordion-trigger">
-          <h2><%= filtersKey === 'category' ? 'Category Filters' : 'Engine Filters' %></h2>
-          <hr>
+          <h2>
+            <%= filtersKey === 'category' ? 'Category Filters' : 'Engine Filters' %>
+            <span class="iconify open" data-icon="bxs:chevron-down"></span>
+            <span class="iconify close" data-icon="bxs:chevron-up"></span>
+          </h2>
         </div>
         <div class="options">
           <ul>
