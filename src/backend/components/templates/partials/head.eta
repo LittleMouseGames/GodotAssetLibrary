@@ -23,7 +23,6 @@
 <link rel="icon" href="/favicon.ico">
 <link rel="preconnect" href="https://code.iconify.design" crossorigin />
 <link rel="dns-prefetch" href="https://code.iconify.design" />
-<script src="https://code.iconify.design/2/2.1.2/iconify.min.js"></script>
 <script src="/javascript/utilities.js"></script>
 <!-- FAVICON -->
 <link rel="apple-touch-icon" sizes="180x180" href="/images/favicon/apple-touch-icon.png">
