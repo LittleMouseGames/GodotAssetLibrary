@@ -72,11 +72,6 @@ class RouterServer extends Server {
       next()
     })
 
-    this.app.use(function (_req, res, next) {
-      res.setHeader('X-Powered-By', 'Godot Asset Library, an AGPLv3 Software')
-      next()
-    })
-
     this.setupControllers()
 
     this.app.use((err: Error, _req: Request, res: Response, _next: NextFunction) => {
