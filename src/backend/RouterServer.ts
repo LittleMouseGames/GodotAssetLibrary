@@ -27,6 +27,7 @@ class RouterServer extends Server {
 
     const buildString = new Date().getTime().toString()
 
+    this.app.disable('x-powered-by')
     this.app.set('view engine', 'eta')
     this.app.set('views', path.join(__dirname, '/'))
     this.app.set('trust proxy', 1)
