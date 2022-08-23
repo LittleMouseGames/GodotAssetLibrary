@@ -49,7 +49,8 @@ var generateProxyUrl = it?._locals?.functions?.generateProxyUrl
     <div class="background">
       <div class="mask">
         <img src="<%= generateProxyUrl(it?.info?.card_banner ?? it?.info?.icon_url, 100, 100) %>"
-          data-src="<%= generateProxyUrl(it?.info?.card_banner ?? it?.info?.icon_url) %>" alt="" class="lazyload">
+          data-src="<%= generateProxyUrl(it?.info?.card_banner ?? it?.info?.icon_url) %>"
+          alt="<%= it?.info?.title %> background image" class="lazyload">
       </div>
     </div>
     <% } %>
@@ -62,7 +63,7 @@ var generateProxyUrl = it?._locals?.functions?.generateProxyUrl
         <div class="icon">
           <img
             src="<%= generateProxyUrl(it?.info?.icon_url ?? 'https://avatars.githubusercontent.com/u/42072863?s=200&v=4', 50, 50) %>"
-            alt="">
+            alt="<%= it?.info?.title %> icon image">
         </div>
         <div class="info">
           <div class="author"><%= it?.info?.author ?? 'Failed to load'%></div>
@@ -100,7 +101,8 @@ var generateProxyUrl = it?._locals?.functions?.generateProxyUrl
   <div class="background">
     <div class="mask">
       <img src="<%= generateProxyUrl(it?.info?.card_banner ?? it?.info?.icon_url, 100, 100) %>"
-        data-src="<%= generateProxyUrl(it?.info?.card_banner ?? it?.info?.icon_url) %>" alt="" class="lazyload">
+        data-src="<%= generateProxyUrl(it?.info?.card_banner ?? it?.info?.icon_url) %>"
+        alt="<%= it?.info?.title %> background image" class="lazyload">
     </div>
   </div>
   <% } %>

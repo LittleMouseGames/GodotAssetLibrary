@@ -15,7 +15,7 @@ var image = "https://images.unsplash.com/photo-1528724872435-8ce3a8ccbd9a?ixlib=
     <div class="block"></div>
     <div class="mask">
       <img src="<%= generateProxyUrl(image, 100, 100) %>" data-src="<%= generateProxyUrl(image, 1170, 780) %>"
-        class="lazyload" alt="">
+        class="lazyload" alt="The page banner background of a mountain and forest">
     </div>
   </div>
 </div>
