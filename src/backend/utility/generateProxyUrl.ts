@@ -18,7 +18,7 @@ const sign = (salt: string, target: string, secret: string): string => {
   return urlSafeBase64(hmac.digest())
 }
 
-export const generateProxyUrl = (url: any, width = 640, height = 360, resizingType = 'fit', gravity = 'no', enlarge = 0, extension = 'png'): string => {
+export const generateProxyUrl = (url: any, width = 640, height = 360, resizingType = 'fit', gravity = 'no', enlarge = 0, extension = 'webp'): string => {
   if (!ENABLED) {
     return url
   }
