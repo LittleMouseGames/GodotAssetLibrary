@@ -1,5 +1,7 @@
 <% 
 var generateProxyUrl = it?._locals?.functions?.generateProxyUrl
+var inDevelopment = process.env.RUN_MODE === 'devel'
+var projectBase = process.env.PROJECT_BASE_URL ?? 'https://godotassetlibrary.com'
 %>
 
 <div class="category-card-featured">
@@ -16,7 +18,12 @@ var generateProxyUrl = it?._locals?.functions?.generateProxyUrl
   </div>
   <div class="background">
     <div class="mask">
+      <% if (inDevelopment) { %>
       <img src="/images/<%= it?.image %>" alt="">
+      <% } else { %>
+      <img src="<%= generateProxyUrl(`${projectBase}/images/${it?.image}`, 100, 100) %>"
+        data-src="<%= generateProxyUrl(`${projectBase}/images/${it?.image}`) %>" alt="" class="lazyload">
+      <% } %>
     </div>
   </div>
 </div>

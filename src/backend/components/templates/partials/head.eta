@@ -13,16 +13,16 @@
 <!-- TWITTER -->
 <meta name="twitter:card" content="summary">
 <!-- STYLES -->
-<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.googleapis.com" crossorigin />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link rel="DNS-prefetch" href="https://fonts.googleapis.com" />
-<link rel="DNS-prefetch" href="https://fonts.gstatic.com" crossorigin />
+<link rel="dns-prefetch" href="https://fonts.googleapis.com" />
+<link rel="dns-prefetch" href="https://fonts.gstatic.com" />
 <link
-    href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Inter:wght@500;600;700&family=Poppins:wght@400;500;600;700&family=Roboto&display=swap"
+    href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500&family=Inter:wght@500;600;700&family=Poppins:wght@600;700&display=swap"
     rel="stylesheet">
 <link rel="icon" href="/favicon.ico">
-<link rel="preconnect" href="https://code.iconify.design" />
-<link rel="DNS-prefetch" href="https://code.iconify.design" />
+<link rel="preconnect" href="https://code.iconify.design" crossorigin />
+<link rel="dns-prefetch" href="https://code.iconify.design" />
 <script src="https://code.iconify.design/2/2.1.2/iconify.min.js"></script>
 <script src="/javascript/utilities.js"></script>
 <!-- FAVICON -->

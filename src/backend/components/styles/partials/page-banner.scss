@@ -22,8 +22,9 @@
   }
 
   .subtitle {
+    @include inter-like-font();
     display: block;
-    margin-top: 2px;
+    margin-top: 4px;
     font-weight: 500;
     font-size: 13px;
     letter-spacing: 0.02rem;

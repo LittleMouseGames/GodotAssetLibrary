@@ -27,6 +27,7 @@ class RouterServer extends Server {
 
     const buildString = new Date().getTime().toString()
 
+    this.app.disable('x-powered-by')
     this.app.set('view engine', 'eta')
     this.app.set('views', path.join(__dirname, '/'))
     this.app.set('trust proxy', 1)
@@ -69,11 +70,6 @@ class RouterServer extends Server {
 
       res.locals.buildString = buildString
 
-      next()
-    })
-
-    this.app.use(function (_req, res, next) {
-      res.setHeader('X-Powered-By', 'Godot Asset Library, an AGPLv3 Software')
       next()
     })
 
