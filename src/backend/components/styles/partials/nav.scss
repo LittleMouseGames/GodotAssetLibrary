@@ -42,13 +42,17 @@ nav {
   @include brand-styles($title-color: $text-dark-darkest, $subtitle-color: $text-dark-darkest);
   @include dropdown-styles($padding: 8px 13px, $border-color: $color-brand-gray);
 
-  height: 65px;
+  height: 70px;
   background: white;
   width: 100%;
   position: sticky;
   top: 0;
   z-index: 6;
   border-bottom: 1px solid #f0f0f0;
+
+  @include mobile-styles {
+    height: 65px;
+  }
 
   .brand {
     margin-right: 30px;
