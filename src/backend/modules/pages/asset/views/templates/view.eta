@@ -65,7 +65,8 @@ if (stars) {
 
 <section class="page-asset">
   <div class="column">
-    <div class="media">
+    <div class="media <% if(it?.info?.previews.length <= 1) { %>single-image<% } %>">
+      <% if(it?.info?.previews.length > 1) { %>
       <div class="thumbnails">
         <% if(it?.info?.previews.length !== 0) { %>
         <% it?.info?.previews.forEach(preview => { %>
@@ -81,6 +82,7 @@ if (stars) {
         </div>
         <% } %>
       </div>
+      <% } %>
       <div class="player">
         <div class="container">
           <% if(it?.info?.previews.length !== 0) { %>
