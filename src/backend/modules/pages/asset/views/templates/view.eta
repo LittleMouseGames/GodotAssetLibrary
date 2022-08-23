@@ -98,8 +98,9 @@ if (stars) {
             data-src="<%= generateProxyUrl(it?.info?.previews[0].link, 1920, 1080) %>" class="lazyload" alt="">
           <% } %>
           <% } else { %>
-          <img src="<%= generateProxyUrl(it?.info?.icon_url, 100, 100) %>"
-            data-src="<%= generateProxyUrl(it?.info?.icon_url, 1920, 1080) %>" class="lazyload" alt="">
+          <img src="<%= generateProxyUrl(it?.info?.card_banner ?? it?.info?.icon_url, 100, 100) %>"
+            data-src="<%= generateProxyUrl(it?.info?.card_banner ?? it?.info?.icon_url, 1920, 1080) %>" class="lazyload"
+            alt="">
           <% } %>
         </div>
       </div>
