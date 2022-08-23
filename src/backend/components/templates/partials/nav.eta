@@ -10,7 +10,8 @@
   <div class="contents">
     <div class="brand">
       <a href="/" title="Go back to Godot Asset Library homepage">
-        <img src="/images/logo-image.png" alt="">
+        <img src="/images/logo-image.png"
+          alt="Website logo image of a white letter A in a dark box with rounded corners">
         <div class="name">
           <div class="title">Godot A.L. 🎨</div>
           <div class="subtitle">an <span class="strong">Open Source</span> project</div>
