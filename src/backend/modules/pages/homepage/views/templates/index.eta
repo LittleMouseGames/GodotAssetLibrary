@@ -27,7 +27,7 @@
 
   <section>
     <h2>Explore more from Categories</h2>
-    <div class="container five-wide">
+    <div class="container five-wide categories">
       <% for (const [key, value] of Object.entries(it?.categoriesObject)) { %>
       <%~ includeFile('templates/components/partials/category-card.eta', {
         name: key,

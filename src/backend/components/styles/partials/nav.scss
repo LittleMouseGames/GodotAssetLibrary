@@ -214,6 +214,9 @@ nav {
     }
 
     .register {
+      display: flex;
+      align-items: center;
+
       .value {
         @include small-mobile-styles {
           display: none;
