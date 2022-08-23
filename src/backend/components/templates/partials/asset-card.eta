@@ -99,8 +99,8 @@ var generateProxyUrl = it?._locals?.functions?.generateProxyUrl
   <% if (it?.featured) { %>
   <div class="background">
     <div class="mask">
-      <img src="<%= generateProxyUrl(it?.info?.card_banner ?? it?.info?.icon_url, 100, 100) %>" data-
-        src="<%= generateProxyUrl(it?.info?.card_banner ?? it?.info?.icon_url) %>" alt="" class="lazyload">
+      <img src="<%= generateProxyUrl(it?.info?.card_banner ?? it?.info?.icon_url, 100, 100) %>"
+        data-src="<%= generateProxyUrl(it?.info?.card_banner ?? it?.info?.icon_url) %>" alt="" class="lazyload">
     </div>
   </div>
   <% } %>
