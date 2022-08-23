@@ -39,7 +39,7 @@
 }
 
 nav {
-  @include brand-styles($title-color: $text-dark-darkest, $subtitle-color: $text-dark-darker);
+  @include brand-styles($title-color: $text-dark-darkest, $subtitle-color: $text-dark-darkest);
   @include dropdown-styles($padding: 8px 13px, $border-color: $color-brand-gray);
 
   height: 75px;
@@ -51,7 +51,11 @@ nav {
   border-bottom: 1px solid #f0f0f0;
 
   .brand {
-    margin-right: 40px;
+    margin-right: 30px;
+
+    @include mobile-styles {
+      margin-right: 0;
+    }
 
     a {
       display: flex;
@@ -77,7 +81,7 @@ nav {
   .links {
     display: flex;
     align-items: center;
-    margin-left: 25px;
+    margin-right: 25px;
 
     @include small-desktop-styles() {
       a {
@@ -111,9 +115,16 @@ nav {
     }
   }
 
+  .search-container {
+    display: flex;
+    max-width: 440px;
+    flex: 1 1 auto;
+  }
+
   .search {
     position: relative;
-    width: 425px;
+    flex-grow: 1;
+    margin-right: 30px;
 
     @include mobile-styles {
       display: none;
@@ -130,6 +141,7 @@ nav {
       width: 100%;
       padding: 15px;
       box-sizing: border-box;
+      background: white;
 
       input {
         width: 100%;
@@ -139,6 +151,12 @@ nav {
         top: auto;
         left: 30px;
         margin-top: -1px;
+
+        &.close {
+          left: initial;
+          right: 30px;
+          display: block;
+        }
       }
     }
 
@@ -149,6 +167,10 @@ nav {
       width: 18px;
       height: auto;
       color: #818181;
+
+      &.close {
+        display: none;
+      }
     }
 
     input {
@@ -189,6 +211,14 @@ nav {
       width: 30px;
       height: auto;
       margin-right: 14px;
+    }
+
+    .register {
+      .value {
+        @include small-mobile-styles {
+          display: none;
+        }
+      }
     }
 
     .dropdown {

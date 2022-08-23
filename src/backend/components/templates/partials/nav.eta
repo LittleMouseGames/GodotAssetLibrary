@@ -12,16 +12,17 @@
       <a href="/" title="Go back to Godot Asset Library homepage">
         <img src="/images/logo-image.png" alt="">
         <div class="name">
-          <div class="title">Godot A.L. 🎮</div>
+          <div class="title">Godot A.L. 🎨</div>
           <div class="subtitle">an <span class="strong">Open Source</span> project</div>
         </div>
       </a>
     </div>
-    <form method="POST" action="/search">
+    <form method="POST" action="/search" class="search-container">
       <div class="search">
         <span class="iconify" data-icon="eva:search-outline"></span>
         <input placeholder="Search for your next asset..." name="query"
           value="<%= it?.originalQuery ? it?.originalQuery : '' %>">
+        <span class="iconify close" data-icon="carbon:close"></span>
       </div>
     </form>
     <div class="links">
@@ -61,7 +62,9 @@
       </div>
       <% } else { %>
       <span class="iconify" data-icon="codicon:account"></span>
-      <a href="/register"><span>Register / Login</span></a>
+      <a href="/register" class="register">
+        <div class="value">Register / Login</div>
+      </a>
       <% } %>
     </div>
   </div>
