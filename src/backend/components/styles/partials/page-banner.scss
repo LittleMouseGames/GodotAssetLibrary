@@ -40,4 +40,10 @@
     "img",
     #{linear-gradient(90deg, #010101 0.09%, rgba(255, 255, 255, 0.7) 42.21%, rgba(255, 255, 255, 0.49) 99.94%)}
   );
+
+  .mask {
+    @include mobile-styles {
+      display: none;
+    }
+  }
 }
