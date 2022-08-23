@@ -14,6 +14,10 @@
 var generateProxyUrl = it?._locals?.functions?.generateProxyUrl
 %>
 
+<% 
+var loggedIn = it?._locals?.loggedIn
+%>
+
 <% function returnYoutubeEmbedOrReturnUrl(url) {
   if (url.includes('&t=')) {
     url = url.split('&t=')[0]
@@ -148,19 +152,19 @@ if (stars) {
           <form method="PATCH" action="/asset/review/<%= it?.info?.asset_id %>" class="write-review"
             onsubmit="window.godotLibrary.formTools.sendFormAjax(event, this)">
             <h2>Your Rating</h2>
-            <% if(it?._locals?.loggedIn) { %>
             <label class="rating-select">
               <input type="radio" name="rating" value="positive" required
-                <%= it?.usersAssetReview?.review_type === 'positive' ? 'checked' : '' %>>
-              <div class="label">
+                <%= it?.usersAssetReview?.review_type === 'positive' ? 'checked' : '' %>
+                <% if(!loggedIn) { %>disabled<% } %>>
+              <div class="label <% if(!loggedIn) { %>disabled<% } %>">
                 <span class="iconify" data-icon="bi:hand-thumbs-up-fill"
                   <%= it?.usersAssetReview?.review_type === 'false' ? 'checked' : '' %>></span>
                 <span>This addon is good</span>
               </div>
             </label>
             <label class="rating-select">
-              <input type="radio" name="rating" value="negative" required>
-              <div class="label">
+              <input type="radio" name="rating" value="negative" required <% if(!loggedIn) { %>disabled<% } %>>
+              <div class="label <% if(!loggedIn) { %>disabled<% } %>">
                 <span class="iconify" data-icon="bi:hand-thumbs-down-fill"></span>
                 <span>This addon is not good</span>
               </div>
@@ -168,19 +172,26 @@ if (stars) {
             <div class="requirement">Headline must be at least 3 characters but not more than 50</div>
             <div class="input-container">
               <input name="asset_review_headline" class="input" id="asset-review-headline" type="text" placeholder=" "
-                value="<%= it?.usersAssetReview?.headline ? it?.usersAssetReview?.headline : '' %>">
+                value="<%= it?.usersAssetReview?.headline ? it?.usersAssetReview?.headline : '' %>"
+                <% if(!loggedIn) { %>disabled<% } %>>
               <label for="asset-review-headline" class="placeholder">Headline (optional)</label>
             </div>
             <div class="requirement">Review must be at least 5 characters but not more than 500</div>
             <div class="input-container">
-              <textarea name="asset_review" class="input" id="asset-review" type="text"
-                placeholder=" "><%= it?.usersAssetReview?.text ? it?.usersAssetReview?.text : '' %></textarea>
+              <textarea name="asset_review" class="input" id="asset-review" type="text" placeholder=" "
+                <% if(!loggedIn) { %>disabled<% } %>><%= it?.usersAssetReview?.text ? it?.usersAssetReview?.text : '' %></textarea>
               <label for="asset-review" class="placeholder">Review (optional)</label>
             </div>
-            <button type="submit"><%= it?.hasUserReviewedAsset ? 'Update' : 'Submit' %></button>
-            <% } else { %>
-            Please <a href="/register" title="Go to login / register page">sign in</a> to add a review
-            <% } %>
+            <div class="actions">
+              <% if(loggedIn) { %>
+              <button type="submit"><%= it?.hasUserReviewedAsset ? 'Update' : 'Submit' %></button>
+              <% } %>
+              <% if(!loggedIn) { %>
+              <div class="notice">
+                Please <a href="/register" title="Go to login / register page">sign in</a> to add a review
+              </div>
+              <% } %>
+            </div>
           </form>
         </div>
       </div>
