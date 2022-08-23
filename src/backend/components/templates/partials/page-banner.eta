@@ -1,3 +1,8 @@
+<% 
+var generateProxyUrl = it?._locals?.functions?.generateProxyUrl
+var image = "https://images.unsplash.com/photo-1528724872435-8ce3a8ccbd9a?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80"
+%>
+
 <div class="page-banner">
   <div class="contents">
     <h1 class="heading">
@@ -9,9 +14,8 @@
   <div class="background">
     <div class="block"></div>
     <div class="mask">
-      <img
-        src="https://images.unsplash.com/photo-1528724872435-8ce3a8ccbd9a?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80"
-        alt="">
+      <img src="<%= generateProxyUrl(image, 100, 100) %>" data-src="<%= generateProxyUrl(image, 1170, 780) %>"
+        class="lazyload" alt="">
     </div>
   </div>
 </div>
