@@ -38,14 +38,21 @@ var generateProxyUrl = it?._locals?.functions?.generateProxyUrl
     "@type": "Product",
     "name": it?.info?.title,
     "image": it?.info?.card_banner,
-    "description": it?.info?.quick_description,
-    "aggregateRating": {
-      "@type": "AggregateRating",
-      "ratingValue": stars ?? 0,
-      "reviewCount": total ?? 0
-    }
+    "description": it?.info?.quick_description
   }
-} %>
+} 
+
+if (stars) {
+  it.meta.jsonLd.aggregateRating = {
+    "@type": "AggregateRating",
+    "ratingValue": stars,
+    "bestRating": "5",
+    "worstRating": "0",
+    "ratingCount": total
+  }
+}
+
+%>
 <% layout('templates/components/layouts/promobar-nav-body-footer.eta') %>
 
 <%~ includeFile('templates/components/partials/modal-install.eta', {downloadUrl: it?.info?.download_url}) %>
