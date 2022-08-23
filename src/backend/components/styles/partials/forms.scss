@@ -90,7 +90,13 @@
   }
 }
 
-@mixin dropdown-styles($padding: 7px 13px, $background: $button-gray, $border-color: $text-light-gray) {
+@mixin dropdown-styles(
+  $padding: 7px 13px,
+  $background: transparent,
+  $border-color: $text-light-gray,
+  $content-background: white,
+  $hover-color: $text-light-lightest
+) {
   .dropdown {
     position: relative;
     border-radius: 6px;
@@ -103,6 +109,7 @@
     display: flex;
     align-items: center;
     cursor: pointer;
+    transition: 0.05s;
 
     .value,
     .iconify {
@@ -119,13 +126,14 @@
     }
 
     .options {
+      @include inter-like-font();
       position: absolute;
       width: 100%;
       display: flex;
       flex-direction: column;
       display: none;
       top: calc(100% + 5px);
-      background: $background;
+      background: $content-background;
       font-weight: 600;
       color: $text-dark-black;
       box-sizing: border-box;
@@ -143,7 +151,7 @@
         text-decoration: none;
 
         &:hover {
-          background: $text-light-gray;
+          background: $hover-color;
         }
       }
     }

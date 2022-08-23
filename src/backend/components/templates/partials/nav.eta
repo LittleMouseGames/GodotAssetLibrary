@@ -9,9 +9,12 @@
 <nav>
   <div class="contents">
     <div class="brand">
-      <a href="/" title="Go back to homepage">
-        <div class="title">Godot Asset Library</div>
-        <div class="subtitle">an <span class="strong">Open Source</span> project</div>
+      <a href="/" title="Go back to Godot Asset Library homepage">
+        <img src="/images/logo-image.png" alt="">
+        <div class="name">
+          <div class="title">Godot A.L. 🎮</div>
+          <div class="subtitle">an <span class="strong">Open Source</span> project</div>
+        </div>
       </a>
     </div>
     <form method="POST" action="/search">

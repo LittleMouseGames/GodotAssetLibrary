@@ -40,7 +40,7 @@
 
 nav {
   @include brand-styles($title-color: $text-dark-darkest, $subtitle-color: $text-dark-darker);
-  @include dropdown-styles($padding: 12px, $background: $color-lighter-gray, $border-color: $color-brand-gray);
+  @include dropdown-styles($padding: 8px 13px, $border-color: $color-brand-gray);
 
   height: 75px;
   background: white;
@@ -48,10 +48,20 @@ nav {
   position: sticky;
   top: 0;
   z-index: 3;
-  box-shadow: $standard-shadow;
+  border-bottom: 1px solid #f0f0f0;
 
   .brand {
     margin-right: 40px;
+
+    a {
+      display: flex;
+    }
+  }
+
+  img {
+    height: 45px;
+    margin-right: 10px;
+    border-radius: 3px;
   }
 
   .contents {
@@ -61,6 +71,7 @@ nav {
     margin: auto;
     height: 100%;
     padding: 0 15px;
+    box-sizing: border-box;
   }
 
   .links {

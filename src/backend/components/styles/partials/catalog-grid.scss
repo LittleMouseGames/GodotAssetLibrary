@@ -2,7 +2,7 @@
 @import "components/styles/utils/mixins";
 
 .catalog-grid {
-  @include dropdown-styles;
+  @include dropdown-styles();
   .results {
     display: grid;
     grid-template-columns: 1fr 1fr 1fr 1fr;
@@ -75,11 +75,13 @@
         text-align: center;
         width: 80px;
         cursor: pointer;
+        border: 1px solid #d5d5d5;
 
         &.disabled {
           color: $text-light-darker;
           background-color: $button-very-gray;
           cursor: not-allowed;
+          border-color: transparent;
         }
 
         &:not(:last-of-type) {
