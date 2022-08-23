@@ -76,7 +76,7 @@
       $cta-dark: "false",
       $padding-bottom-override: 0px
     );
-
+    border-radius: 0;
     padding: 0px;
 
     .banner {
@@ -312,20 +312,28 @@
   }
 
   .media {
-    display: grid;
-    grid-template-columns: auto 80.5%;
-    column-gap: 20px;
+    &:not(.single-image) {
+      display: grid;
+      grid-template-columns: auto 80.5%;
+      column-gap: 20px;
 
-    @include mobile-styles {
-      display: flex;
-      flex-direction: column;
+      @include mobile-styles {
+        display: flex;
+        flex-direction: column;
 
-      .thumbnails {
-        order: 1;
+        .thumbnails {
+          order: 1;
+        }
+
+        .player {
+          order: 0;
+        }
       }
+    }
 
-      .player {
-        order: 0;
+    &.single-image {
+      @include mobile-styles {
+        margin-bottom: 20px;
       }
     }
 

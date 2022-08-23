@@ -72,5 +72,11 @@
     @include small-mobile-styles {
       grid-template-columns: 1fr;
     }
+
+    &.categories {
+      @include small-mobile-styles {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
   }
 }

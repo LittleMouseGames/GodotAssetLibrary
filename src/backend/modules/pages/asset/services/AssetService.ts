@@ -136,10 +136,6 @@ export class AssetService {
       throw new Error('Headline too short, must be at least 3 characters')
     }
 
-    if (headline.length >= 3 && review.length < 5) {
-      throw new Error('If you add a headline you need a review, too')
-    }
-
     if (review.length > 5 && headline.length < 3) {
       throw new Error('If you add a review you need a headline, too')
     }

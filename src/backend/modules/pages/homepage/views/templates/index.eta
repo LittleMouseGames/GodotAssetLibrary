@@ -20,19 +20,18 @@
     <h2>Assets we Love</h2>
     <div class="container three-wide">
       <% it.featuredAssets?.forEach(info => { %>
-      <%~ includeFile('templates/components/partials/asset-card.eta', { info: info, _locals: it?._locals, featured: true, lazyLoad: true }) %>
+      <%~ includeFile('templates/components/partials/asset-card.eta', { info: info, _locals: it?._locals, featured: true }) %>
       <% }) %>
     </div>
   </section>
 
   <section>
     <h2>Explore more from Categories</h2>
-    <div class="container five-wide">
+    <div class="container five-wide categories">
       <% for (const [key, value] of Object.entries(it?.categoriesObject)) { %>
       <%~ includeFile('templates/components/partials/category-card.eta', {
         name: key,
-        count: value,
-        lazyLoad: true
+        count: value
       }) %>
       <% } %>
     </div>
@@ -44,20 +43,17 @@
       <%~ includeFile('templates/components/partials/category-card-featured.eta', {
         name: '2D Tools',
         description: 'Enhance your 2D experience',
-        image: 'category-2d.png',
-        lazyLoad: true
+        image: 'category-2d.png'
       }) %>
       <%~ includeFile('templates/components/partials/category-card-featured.eta', {
         name: '3D Tools',
         description: 'Level up your 3D world',
-        image: 'category-3d.png',
-        lazyLoad: true
+        image: 'category-3d.png'
       }) %>
       <%~ includeFile('templates/components/partials/category-card-featured.eta', {
         name: 'Tools',
         description: 'More Tools for a better Editor',
-        image: 'category-tools.png',
-        lazyLoad: true
+        image: 'category-tools.png'
       }) %>
     </div>
   </section>
@@ -66,7 +62,7 @@
     <h2>Newly Updated</h2>
     <div class="container five-wide">
       <% it.lastModifiedAssets?.forEach(info => { %>
-      <%~ includeFile('templates/components/partials/asset-card.eta', { info: info, _locals: it?._locals, lazyLoad: true }) %>
+      <%~ includeFile('templates/components/partials/asset-card.eta', { info: info, _locals: it?._locals }) %>
       <% }) %>
   </section>
 </section>
