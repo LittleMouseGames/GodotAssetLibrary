@@ -12,7 +12,7 @@
   <meta name="twitter:description" content="<%= it.meta.description %>">
   <meta name="twitter:url" content="<%= it.meta.url %>">
   <meta name="twitter:title" content="<%= it.meta.title %>">
-  <link rel="stylesheet" href="/styles/<%= it.meta.moduleName %>/styles.css">
+  <link rel="stylesheet" href="/styles/<%= it.meta.moduleName %>/styles.css?cache=<%= it._locals?.buildString %>">
   <link rel="canonical" href="<%= it.meta.url %>">
   <% if(it?.meta?.jsonLd) { %>
   <script type="application/ld+json">
