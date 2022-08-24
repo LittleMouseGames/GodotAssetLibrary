@@ -1,4 +1,7 @@
 <% 
+  const loggedIn = it?._locals?.loggedIn
+  const generateProxyUrl = it?._locals?.functions?.generateProxyUrl
+
   var upvotes = it?.info?.upvotes ?? 0
   var total = upvotes + it?.info?.downvotes ?? 0
   var percent = 0
@@ -8,54 +11,46 @@
     percent = Math.round((upvotes / total) * 100).toFixed(2)
     stars = Math.round((percent + 5) / 10).toFixed(1) / 2
   }
-%>
 
-<% 
-var generateProxyUrl = it?._locals?.functions?.generateProxyUrl
-%>
 
-<% 
-var loggedIn = it?._locals?.loggedIn
-%>
+  function returnYoutubeEmbedOrReturnUrl(url) {
+    if (url.includes('&t=')) {
+      url = url.split('&t=')[0]
+    }
 
-<% function returnYoutubeEmbedOrReturnUrl(url) {
-  if (url.includes('&t=')) {
-    url = url.split('&t=')[0]
+    if(url.includes('youtube.com')) {
+      return url.replace('watch?v=', 'embed/')
+    } else if(url.includes('youtu.be')) {
+      return url.replace('youtu.be/', 'youtube.com/embed/')
+    } else {
+      return url
+    }
   }
 
-  if(url.includes('youtube.com')) {
-    return url.replace('watch?v=', 'embed/')
-  } else if(url.includes('youtu.be')) {
-    return url.replace('youtu.be/', 'youtube.com/embed/')
-  } else {
-    return url
+  it.meta = {
+    title: `${it?.info?.title ?? 'Asset'} | Godot Asset Library`,
+    description: it?.info?.quick_description ??  `Find out more about the FREE ${it?.info?.title} godot asset on Godot Asset Library.`,
+    url: `https://godotassetlibrary.com/asset/${it?.info?.asset_id}/${encodeURI(it?.info?.title.replace(/\s/g, '-')).toLocaleLowerCase()}`,
+    moduleName: 'asset',
+    jsonLd: {
+      "@context": "https://schema.org/",
+      "@type": "Product",
+      "name": it?.info?.title,
+      "image": it?.info?.card_banner,
+      "description": it?.info?.quick_description
+    },
+    image: generateProxyUrl(it.info.card_banner ?? it.info.icon_url),
   }
-} %>
 
-<% it.meta = {
-  title: `${it?.info?.title ?? 'Asset'} | Godot Asset Library`,
-  description: it?.info?.quick_description ??  `Find out more about the FREE ${it?.info?.title} godot asset on Godot Asset Library.`,
-  url: `https://godotassetlibrary.com/asset/${it?.info?.asset_id}/${encodeURI(it?.info?.title.replace(/\s/g, '-')).toLocaleLowerCase()}`,
-  moduleName: 'asset',
-  jsonLd: {
-    "@context": "https://schema.org/",
-    "@type": "Product",
-    "name": it?.info?.title,
-    "image": it?.info?.card_banner,
-    "description": it?.info?.quick_description
+  if (stars > 0) {
+    it.meta.jsonLd.aggregateRating = {
+      "@type": "AggregateRating",
+      "ratingValue": stars,
+      "bestRating": "5",
+      "worstRating": "0",
+      "ratingCount": total
+    }
   }
-} 
-
-if (stars) {
-  it.meta.jsonLd.aggregateRating = {
-    "@type": "AggregateRating",
-    "ratingValue": stars,
-    "bestRating": "5",
-    "worstRating": "0",
-    "ratingCount": total
-  }
-}
-
 %>
 <% layout('templates/components/layouts/promobar-nav-body-footer.eta') %>
 
