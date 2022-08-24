@@ -1,0 +1,63 @@
+<% it.meta = {
+  title: 'Register | Godot Asset Library',
+  description: 'Create a new account or sign into an existing account on Godot Asset Library',
+  url: 'https://godotassetlibrary.com/register',
+  moduleName: 'register'
+} %>
+<% layout('templates/components/layouts/promobar-nav-body-footer.eta') %>
+
+<section class="page-register">
+  <div class="column">
+    <h2>Sign in to an existing Account</h2>
+    <form method="POST" action="/api/users/login" onsubmit="window.godotLibrary.formTools.sendFormAjax(event, this)">
+      <div class="input-container">
+        <input class="input" id="login-username" name="username" type="username" placeholder=" " required>
+        <label for="login-username" class="placeholder">Username</label>
+      </div>
+      <div class="input-container">
+        <input class="input" id="login-password" name="password" type="password" placeholder=" " required>
+        <label for="login-password" class="placeholder">Password</label>
+      </div>
+      <div class="disclaimer">
+        By submitting this form you agree to our
+        <a href="/terms/privacy-policy" title="Open Privacy Policy page">Privacy Policy</a> and
+        <a href="/terms/terms-of-service" title="Open Terms of Service page">Terms of Service</a>
+      </div>
+      <button action="submit">Login</button>
+    </form>
+  </div>
+  <div class="column">
+    <h2>Create a new Account</h2>
+    <p>With a free Godot Asset Library account, you can:</p>
+    <ul>
+      <li>Leave ratings and reviews</li>
+      <li>Easily save assets for future reference</li>
+    </ul>
+    <form method="POST" action="/api/users/register" onsubmit="window.godotLibrary.formTools.sendFormAjax(event, this)">
+      <div class="requirement">Username must be at least 3 characters</div>
+      <div class="input-container">
+        <input class="input" id="register-username" name="username" type="username" placeholder=" " required>
+        <label for="register-username" class="placeholder">Username</label>
+      </div>
+      <div class="input-container">
+        <input class="input" id="register-email" name="email" type="email" placeholder=" " required>
+        <label for="register-email" class="placeholder">Email Address</label>
+      </div>
+      <div class="requirement">Password must be at least 6 characters and contain at least 1 number</div>
+      <div class="input-container">
+        <input class="input" id="register-password" name="password" type="password" placeholder=" " required>
+        <label for="register-password" class="placeholder">Password</label>
+      </div>
+      <div class="input-container">
+        <input class="input" id="register-password-conf" name="passwordConf" type="password" placeholder=" " required>
+        <label for="register-password-conf" class="placeholder">Password Confirmation</label>
+      </div>
+      <div class="disclaimer">
+        By submitting this form you agree to our
+        <a href="/terms/privacy-policy" title="Open Privacy Policy page">Privacy Policy</a> and
+        <a href="/terms/terms-of-service" title="Open Terms of Service page">Terms of Service</a>
+      </div>
+      <button action="submit">Create account</button>
+    </form>
+  </div>
+</section>

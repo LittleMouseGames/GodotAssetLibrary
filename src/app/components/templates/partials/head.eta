@@ -1,0 +1,38 @@
+<!-- GENERAl META -->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- <meta name="theme-color" content="#12141c"> -->
+<meta name="robots" content="index,follow">
+<meta name="googlebot" content="index,follow">
+<meta name="google" content="nositelinkssearchbox">
+<meta name="rating" content="General">
+<meta name="referrer" content="no-referrer">
+<!-- FACEBOOK -->
+<meta property="og:type" content="website">
+<meta property="og:locale" content="en_US">
+<!-- TWITTER -->
+<meta name="twitter:card" content="summary">
+<!-- STYLES -->
+<link rel="preconnect" href="https://fonts.googleapis.com" crossorigin />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="dns-prefetch" href="https://fonts.googleapis.com" />
+<link rel="dns-prefetch" href="https://fonts.gstatic.com" />
+<link rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500&family=Inter:wght@400;500;600;700&family=Poppins:wght@400;600;700&display=swap"
+    media="print" onload="this.media='all'">
+<noscript>
+    <link
+        href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500&family=Inter:wght@500;600;700&family=Poppins:wght@400;600;700&display=swap"
+        rel="stylesheet">
+</noscript>
+<link rel="icon" href="/favicon.ico">
+<link rel="preconnect" href="https://code.iconify.design" crossorigin />
+<link rel="dns-prefetch" href="https://code.iconify.design" />
+<script src="/javascript/utilities.js"></script>
+<!-- FAVICON -->
+<link rel="apple-touch-icon" sizes="180x180" href="/images/favicon/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/images/favicon/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/images/favicon/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+<!-- SCRIPTS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/lazysizes/5.3.2/lazysizes.min.js"></script>

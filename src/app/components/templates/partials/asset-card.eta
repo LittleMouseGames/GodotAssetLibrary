@@ -1,0 +1,110 @@
+<% 
+var generateProxyUrl = it?._locals?.functions?.generateProxyUrl
+%>
+
+<div class="asset-card <%= it?.featured ? 'featured' : 'normal' %>">
+  <div class="head">
+    <div class="badges">
+      <a href="/category/<%= it?.info?.category?.toLocaleLowerCase() %>" title="See assets in this category">
+        <div class="badge badge-blue"><%= it?.info?.category ?? 'ERR' %></div>
+      </a>
+      <a href="/engine/<%= it?.info?.godot_version?.toLocaleLowerCase() %>" title="See assets for this engine version">
+        <div class="badge badge-purple"><%= it?.info?.godot_version ?? 'ERR' %></div>
+      </a>
+      <div class="dropdown no-text-select" onclick="window.godotLibrary.dropdown.showContent(event, this)">
+        <span class="iconify" data-icon="akar-icons:more-horizontal"></span>
+        <div class="options">
+          <% if(it?.info?.saved === true) { %>
+          <a href="/dashboard/save/<%= it?.info?.asset_id %>"
+            onclick="window.godotLibrary.dropdown.callRouteAjax(event, '/dashboard/save/<%= it?.info?.asset_id %>', 'Post successfully removed from saves')"
+            title="Unsave asset">
+            Unsave
+          </a>
+          <% } else { %>
+          <a href="/dashboard/save/<%= it?.info?.asset_id %>"
+            onclick="window.godotLibrary.dropdown.callRouteAjax(event, '/dashboard/save/<%= it?.info?.asset_id %>', 'Post successfully added to saves')"
+            title="Save asset">
+            Save
+          </a>
+          <% } %>
+          <% if(it?._locals?.role === 'admin') { %>
+          <% if(it?.info?.featured === true) { %>
+          <a href="/admin/feature-post/<%= it?.info?.asset_id %>"
+            onclick="window.godotLibrary.dropdown.callRouteAjax(event, '/admin/feature-post/<%= it?.info?.asset_id %>', 'Post successfully featured')"
+            title="Remove from 'Assets We Love' on homepage">
+            Unfeature
+          </a>
+          <% } else { %>
+          <a href="/admin/feature-post/<%= it?.info?.asset_id %>"
+            onclick="window.godotLibrary.dropdown.callRouteAjax(event, '/admin/feature-post/<%= it?.info?.asset_id %>', 'Post successfully featured')"
+            title="Add to 'Assets We Love' on homepage">
+            Feature
+          </a>
+          <% } %>
+          <% } %>
+        </div>
+      </div>
+    </div>
+    <% if (!it?.featured) { %>
+    <div class="background">
+      <div class="mask">
+        <img src="<%= generateProxyUrl(it?.info?.card_banner ?? it?.info?.icon_url, 100, 100) %>"
+          data-src="<%= generateProxyUrl(it?.info?.card_banner ?? it?.info?.icon_url) %>"
+          alt="<%= it?.info?.title %> background image" class="lazyload">
+      </div>
+    </div>
+    <% } %>
+  </div>
+  <a class="body"
+    href="<%= `/asset/${it?.info?.asset_id}/${encodeURI(it?.info?.title.replace(/\s/g, '-')).toLocaleLowerCase()}` %>"
+    title="Visit asset information page">
+    <div>
+      <div class="top">
+        <div class="icon">
+          <img
+            src="<%= generateProxyUrl(it?.info?.icon_url ?? 'https://avatars.githubusercontent.com/u/42072863?s=200&v=4', 50, 50) %>"
+            alt="<%= it?.info?.title %> icon image">
+        </div>
+        <div class="info">
+          <div class="author"><%= it?.info?.author ?? 'Failed to load'%></div>
+          <div class="title"><%= it?.info?.title ?? 'Unable to load the asset 😿' %></div>
+        </div>
+      </div>
+      <p><%= it?.info?.quick_description ?? 'For some reason we\'re unable to load this asset information right now' %>
+      </p>
+    </div>
+  </a>
+  <div class="footer">
+    <div class="rating">
+      <% 
+        // Convert votes to percentage, then to stars
+        var upvotes = it?.info?.upvotes
+        var total = upvotes + it?.info?.downvotes
+        var percent = Math.round((upvotes / total) * 100).toFixed(2)
+        var stars = Math.round((percent + 5) / 10).toFixed(1) / 2
+        %>
+      <ul class="stars" data-rating="<%= stars ? stars : 0 %>">
+        <li class="stars__item"></li>
+        <li class="stars__item"></li>
+        <li class="stars__item"></li>
+        <li class="stars__item"></li>
+        <li class="stars__item"></li>
+      </ul>
+      <span><%= it?.info?.upvotes + it?.info?.downvotes %> ratings</span>
+    </div>
+    <div class="actions">
+      <a
+        href="<%= `/asset/${it?.info?.asset_id}/${encodeURI(it?.info?.title.replace(/\s/g, '-')).toLocaleLowerCase()}` %>"><button>Open
+          Asset</button></a>
+    </div>
+  </div>
+  <% if (it?.featured) { %>
+  <div class="background">
+    <div class="mask">
+      <img src="<%= generateProxyUrl(it?.info?.card_banner ?? it?.info?.icon_url, 100, 100) %>"
+        data-src="<%= generateProxyUrl(it?.info?.card_banner ?? it?.info?.icon_url) %>"
+        alt="<%= it?.info?.title %> background image" class="lazyload">
+    </div>
+  </div>
+  <% } %>
+</div>

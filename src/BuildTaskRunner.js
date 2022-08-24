@@ -3,6 +3,9 @@ const fs = require('fs-extra')
 const path = require('path')
 const glob = require('glob')
 const sass = require('sass')
+const spawn = require('child_process').spawn
+const argv = require('minimist')(process.argv.slice(2))
+let appRunning = false
 
 /**
  * Goals:
@@ -62,11 +65,11 @@ function findTemplates () {
 
 function watchPublicFolders () {
   /** on first load */
-  movePublicFolderFile('public')
+  movePublicFolderFile('static')
 
-  watchFileOrFolder('public/images', 'image', movePublicFolderFile, 'image')
-  watchFileOrFolder('public/javascript', 'public javascript', movePublicFolderFile, 'javascript')
-  watchFileOrFolder('public', 'public general', movePublicFolderFile)
+  watchFileOrFolder('static/images', 'static image', movePublicFolderFile, 'image')
+  watchFileOrFolder('static/javascript', 'static javascript', movePublicFolderFile, 'javascript')
+  watchFileOrFolder('static', 'static general', movePublicFolderFile)
 }
 
 /**
@@ -98,11 +101,20 @@ function watchFileOrFolder (name, type, moveFunction, passAlongObject = {}) {
 }
 
 function compileAndMoveScss (file, allScssFiles = []) {
-  // if were a page type, just compile that file alone
-  if (file.includes('backend/modules/pages')) {
+  if (file.includes('components/') && allScssFiles.length > 0) {
+    /**
+     * If we're not a page we'll assume that we're instead a partial
+     * or something, and since we don't really know what files are
+     * using it (we *could* we just don't _now_) then we'll recompile
+     * all found page SCSS files *just in case*
+     */
+    allScssFiles.forEach(file => {
+      compileAndMoveScss(file)
+    })
+  } else if (file.includes('code/')) { // if were a page type, just compile that file alone
     /**
      * We want to change from:
-     * - src/backend/modules/pages/{module}/views/styles/{}.scss
+     * - src/core/code/{module}/views/styles/{}.scss
      * To:
      * - (in dist/public) `styles/{page}/*.css
      * Because:
@@ -116,28 +128,17 @@ function compileAndMoveScss (file, allScssFiles = []) {
     }
 
     const updatedFileName = file.replace('src/', '')
-      .replace('pages/', '')
-      .replace('backend/', '')
+      .replace('core/', '')
       .replace('views/', '')
       .replace('styles/', '')
-      .replace('modules/', 'styles/')
+      .replace('app/code/', 'styles/')
       .replace('.scss', '.css')
 
     const exportPath = path.join(path.join(__dirname, '../dist/public/'), updatedFileName)
-    const compiledCSS = sass.compile(path.join(file), { loadPaths: [path.join(__dirname, 'backend/')] })
+    const compiledCSS = sass.compile(path.join(file), { loadPaths: [path.join(__dirname, 'app')] })
 
     fs.mkdirSync(path.dirname(exportPath), { recursive: true })
     fs.writeFile(`${exportPath}`, minify.minify(compiledCSS.css).css)
-  } else if (file.includes('backend/components') && allScssFiles.length > 0) {
-    /**
-     * If we're not a page we'll assume that we're instead a partial
-     * or something, and since we don't really know what files are
-     * using it (we *could* we just don't _now_) then we'll recompile
-     * all found page SCSS files *just in case*
-     */
-    allScssFiles.forEach(file => {
-      compileAndMoveScss(file)
-    })
   }
 }
 
@@ -150,21 +151,21 @@ function compileAndMoveScss (file, allScssFiles = []) {
  * predictable and only includes the most relevant information
  *
  * Ex, from:
- * - backend/modules/pages/{module}/views/templates/{template}.eta
+ * - core/code/{module}/views/templates/{template}.eta
  * To:
  * - templates/pages/{module}/{template}.eta
  *
  * @param {string} file
  */
 function moveTemplates (file) {
-  if (file.includes('backend/modules/pages')) {
-    const moduleName = file.split('backend/modules/pages')[1]
+  if (file.includes('app/code')) {
+    const moduleName = file.split('app/code')[1]
       .replace('views', '')
       .replace('templates', '')
 
     fs.copySync(path.join(__dirname, file), path.join(__dirname, '../dist/templates/pages/', moduleName))
-  } else if (file.includes('backend/components')) {
-    fs.copySync(path.join(__dirname, '/backend/components/templates'), path.join(__dirname, '../dist/templates/components/'))
+  } else if (file.includes('components/')) {
+    fs.copySync(path.join(__dirname, '/app/components/templates'), path.join(__dirname, '../dist/templates/components/'))
   }
 }
 
@@ -179,3 +180,37 @@ makeDistFolder()
 findScss()
 findTemplates()
 watchPublicFolders()
+
+const webpackArgs = ['node_modules/webpack/bin/webpack.js']
+if (argv?.watch) {
+  webpackArgs.push('--watch')
+}
+
+const webpack = spawn('node', webpackArgs)
+webpack.stdout.on('data', function (data) {
+  process.stdout.write(data)
+  if (data.includes('successfully')) {
+    if (!appRunning) {
+      runApp()
+    }
+  }
+})
+
+webpack.stderr.on('data', function (data) {
+  process.stderr.write(data)
+})
+
+function runApp () {
+  const options = argv?.production ? { ...process.env, NODE_ENV: 'production' } : {}
+  const bundle = spawn('nodemon', ['dist/bundle.js'], options)
+
+  appRunning = true
+
+  bundle.stdout.on('data', function (data) {
+    process.stdout.write(data)
+  })
+
+  bundle.stderr.on('data', function (data) {
+    process.stderr.write(data)
+  })
+}

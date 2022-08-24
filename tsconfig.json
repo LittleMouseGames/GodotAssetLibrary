@@ -8,7 +8,7 @@
     "outDir": "./dist",
     "removeComments": true,
     "allowJs": false,
-    "baseUrl": "./src/backend",
+    "baseUrl": "src",
     "incremental": false,
     "emitDecoratorMetadata": true,
     "declaration": false,
@@ -22,16 +22,14 @@
     "noImplicitReturns": true,
     "allowSyntheticDefaultImports": true,
     "noUnusedLocals": false,
-    "rootDir": "./src/backend",
+    "rootDir": "src",
     "lib": [
       "es2015.promise"
     ]
   },
   "include": [
-    "./src/backend/**/*",
-    "src/backend/.d.ts"
-  ],
-  "exclude": [
-    "**/node_modules/"
+    "src/core/**/*",
+    "src/core/.d.ts",
+    "src/pages"
   ]
 }

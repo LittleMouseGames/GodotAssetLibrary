@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <%~ includeFile('templates/components/partials/head.eta') %>
+  <title><%= it.meta.title %></title>
+  <meta name="description" content="<%= it.meta.description %>">
+  <meta property="og:description" content="<%= it.meta.description %>">
+  <meta property="og:url" content="<%= it.meta.url %>">
+  <meta property="og:title" content="<%= it.meta.title %>">
+  <meta property="og:site_name" content="<%= it.meta.title %>">
+  <meta name="twitter:description" content="<%= it.meta.description %>">
+  <meta name="twitter:url" content="<%= it.meta.url %>">
+  <meta name="twitter:title" content="<%= it.meta.title %>">
+  <% if (it.meta.image) { %>
+  <meta property="og:image" content="<%= it.meta.image %>">
+  <meta name="twitter:image" content="<%= it.meta.image %>">
+  <% } %>
+  <link rel="stylesheet" href="/styles/<%= it.meta.moduleName %>/styles.css?cache=<%= it._locals?.buildString %>">
+  <link rel="canonical" href="<%= it.meta.url %>">
+  <% if(it?.meta?.jsonLd) { %>
+  <script type="application/ld+json">
+    <%~ JSON.stringify(it?.meta?.jsonLd) %> 
+  </script>
+  <% } %>
+  <script type="application/ld+json">
+    {
+    "@context": "http://schema.org",
+    "@type": "WebSite",
+    "name": "Godot Asset Library",
+    "url": "https://godotassetlibrary.com",
+    "potentialAction": {
+      "@type": "SearchAction",
+      "target": "https://godotassetlibrary.com/search/?q=test{search_term}",
+      "query-input": "required name=search_term"
+      }
+    }
+  </script>
+</head>
+
+
+<body>
+  <%~ includeFile('templates/components/partials/nav.eta', it) %>
+
+  <section class="main">
+    <%~ includeFile('templates/components/partials/page-banner.eta', it) %>
+    <%~ includeFile('templates/components/partials/page-message.eta') %>
+    <%~ it.body %>
+  </section>
+
+  <%~ includeFile('templates/components/partials/footer.eta', it) %>
+  <script src="https://code.iconify.design/2/2.1.2/iconify.min.js"></script>
+</body>
+
+</html>

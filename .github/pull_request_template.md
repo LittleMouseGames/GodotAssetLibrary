@@ -12,4 +12,4 @@ Relevant resources, ex design links, other info
 ### Checklist
 - [ ] The changes are scoped appropriately
 - [ ] The project builds and runs successfully
-- [ ] I have self reviewed the changes before assigning reviewer
+- [ ] I have self reviewed the changes
