@@ -115,7 +115,17 @@
           <%~ includeFile('./quick-info.eta', it) %>
         </div>
         <div class="section">
-          <h2>Asset Description</h2>
+          <label class="inline-dropdown">
+            <h2>Asset Description</h2>
+            <div class="dropdown no-text-select" onclick="window.godotLibrary.dropdown.showContent(event, this)">
+              <div class="value">README.md</div>
+              <span class="iconify" data-icon="bxs:chevron-down"></span>
+              <div class="options">
+                <div>README.md</div>
+                <div>Asset Library</div>
+              </div>
+            </div>
+          </label>
           <% const descriptionFormatted = it?.info?.description?.replace(/\n/g, '<br>') %>
           <p><%~ descriptionFormatted %></p>
         </div>

@@ -11,6 +11,7 @@
 .page-asset {
   @include reset-header-spacing;
   @include sneaky-labels;
+  @include dropdown-styles();
 
   display: grid;
   grid-template-columns: 67% auto;
@@ -121,6 +122,12 @@
 
     h2 {
       margin-bottom: 10px;
+    }
+
+    .inline-dropdown {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
     }
 
     .header {
