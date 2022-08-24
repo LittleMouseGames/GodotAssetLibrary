@@ -39,7 +39,7 @@
       </div>
       <div class="disclaimer">
         By submitting this form you agree to our
-        <a href="/terms/privacy-plicy">Privacy Policy</a> and
+        <a href="/terms/privacy-policy">Privacy Policy</a> and
         <a href="/terms/terms-of-service">Terms of Service</a>
       </div>
       <button type="submit">Update</button>
