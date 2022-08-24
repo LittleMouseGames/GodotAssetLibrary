@@ -131,6 +131,12 @@
       font-size: 15px;
       font-weight: 600;
       color: $title-color;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: initial;
+      display: -webkit-box;
+      -webkit-line-clamp: 1;
+      -webkit-box-orient: vertical;
     }
 
     p {
@@ -144,7 +150,7 @@
       text-overflow: ellipsis;
       white-space: initial;
       display: -webkit-box;
-      -webkit-line-clamp: 2;
+      -webkit-line-clamp: 3;
       -webkit-box-orient: vertical;
     }
   }
@@ -155,9 +161,15 @@
     z-index: 1;
     position: relative;
     align-items: center;
+    margin-top: 5px;
 
     button {
       @include asset-featured-button-styles($dark: $cta-dark);
+      background: #000000 !important;
+      color: white;
+      padding: 9px 13px;
+      height: auto;
+      width: auto;
     }
 
     .rating {
