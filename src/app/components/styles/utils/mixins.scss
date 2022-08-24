@@ -48,22 +48,21 @@
 }
 
 @mixin asset-featured-button-styles($dark: "true") {
-  height: 31px;
   border: none;
   border-radius: 3px;
   font-family: "Inter";
   font-weight: 600;
-  width: 63px;
+  padding: 9px 13px;
   cursor: pointer;
 
   @if $dark == "true" {
-    background: $button-dark-gray;
-    color: $text-light-white;
+    background: black;
+    color: white;
   }
 
   @if $dark == "false" {
-    background: $button-lighter-gray;
-    color: $text-gray-dark;
+    background: white;
+    color: black;
   }
 }
 
