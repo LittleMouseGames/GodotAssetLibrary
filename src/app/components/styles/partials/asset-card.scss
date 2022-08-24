@@ -162,7 +162,6 @@
     z-index: 1;
     position: relative;
     align-items: center;
-    margin-top: 5px;
 
     button {
       @include asset-featured-button-styles($dark: $cta-dark);
@@ -214,6 +213,10 @@
       $padding-size: 15px 15px 12px 16px,
       $padding-bottom-override: 12px
     );
+
+    p {
+      -webkit-line-clamp: 3;
+    }
   }
 
   &.normal {
@@ -229,5 +232,9 @@
       $cta-dark: "true",
       $padding-bottom-override: 12px
     );
+
+    .footer {
+      margin-top: 5px;
+    }
   }
 }
