@@ -3,7 +3,7 @@ const path = require('path')
 
 module.exports = {
   mode: 'development',
-  entry: './src/backend/start.ts',
+  entry: './src/core/start.ts',
   module: {
     rules: [
       {
@@ -20,7 +20,7 @@ module.exports = {
   },
   resolve: {
     extensions: ['.tsx', '.ts', '.js'],
-    modules: ['node_modules', path.join(__dirname, './src/backend')]
+    modules: ['node_modules', path.join(__dirname, './src')]
   },
   output: {
     filename: 'bundle.js',
