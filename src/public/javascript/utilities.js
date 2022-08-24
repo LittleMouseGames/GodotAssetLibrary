@@ -136,7 +136,7 @@ function closeAllModals () {
   })
 }
 
-window.addEventListener('DOMContentLoaded', () => {
+window.onload = function () {
   document.querySelectorAll('img').forEach(image => {
     image.addEventListener('error', function (e) {
       e.target.src = '/images/noimage.png'
@@ -160,4 +160,4 @@ window.addEventListener('DOMContentLoaded', () => {
       }
     })
   })
-})
+}
