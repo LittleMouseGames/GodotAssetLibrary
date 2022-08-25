@@ -98,10 +98,10 @@
   $hover-color: $text-light-lightest
 ) {
   .dropdown {
+    @include poppins-like-font;
     position: relative;
     border-radius: 6px;
     background: $background;
-    font-family: "Poppins";
     font-weight: 600;
     color: $text-dark-black;
     border: 1px solid $border-color;

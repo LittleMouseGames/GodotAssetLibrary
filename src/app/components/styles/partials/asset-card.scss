@@ -140,9 +140,9 @@
     }
 
     p {
+      @include poppins-like-font;
       font-size: 13px;
       font-weight: 400;
-      font-family: "Poppins";
       color: $desc-color;
       margin: 10px 0;
       line-height: 20px;
