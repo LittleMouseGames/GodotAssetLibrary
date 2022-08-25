@@ -97,8 +97,8 @@
           <% } else { %>
           <img src="<%= generateProxyUrl(it?.info?.card_banner ?? it?.info?.icon_url, 100, 100) %>"
             data-src="<%= generateProxyUrl(it?.info?.card_banner ?? it?.info?.icon_url, 1920, 1080) %>" class="lazyload"
-            data-fallback-image="<%= it?.info?.previews[0].link %>" alt="<%= it?.info?.title %> hero image"
-            alt="<%= it?.info?.title %> hero image">
+            data-fallback-image="<%= it?.info?.card_banner ?? it?.info?.icon_url %>"
+            alt="<%= it?.info?.title %> hero image" alt="<%= it?.info?.title %> hero image">
           <% } %>
         </div>
       </div>
