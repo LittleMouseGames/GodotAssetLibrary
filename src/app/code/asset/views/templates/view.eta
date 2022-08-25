@@ -12,7 +12,6 @@
     stars = Math.round((percent + 5) / 10).toFixed(1) / 2
   }
 
-
   function returnYoutubeEmbedOrReturnUrl(url) {
     if (url.includes('&t=')) {
       url = url.split('&t=')[0]
@@ -118,19 +117,26 @@
         <div class="section">
           <label class="inline-dropdown">
             <h2>Asset Description</h2>
-            <!--
+            <% if (it.info.readme) { %>
             <div class="dropdown no-text-select" onclick="window.godotLibrary.dropdown.showContent(event, this)">
               <div class="value">README.md</div>
               <span class="iconify" data-icon="bxs:chevron-down"></span>
               <div class="options">
                 <div>README.md</div>
-                <div>Asset Library</div>
+                <div>Description</div>
               </div>
             </div>
-            -->
+            <% } %>
           </label>
           <% const descriptionFormatted = it?.info?.description?.replace(/\n/g, '<br>') %>
+
+          <% if (it.info.readme) { %>
+          <div class="readme">
+            <%~ it.info.readme %>
+          </div>
+          <% } else { %>
           <p><%~ descriptionFormatted %></p>
+          <% } %>
         </div>
 
         <div class="section">

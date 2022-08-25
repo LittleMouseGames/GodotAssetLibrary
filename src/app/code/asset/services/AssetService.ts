@@ -15,12 +15,15 @@ import { GetAssetReviewByUserId } from '../models/GET/GetAssetReviewByUserId'
 import { UpdateNegativeVotesRemoveOne } from '../models/UPDATE/UpdateNegativeVotesRemoveOne'
 import { UpdatePositiveVotesRemoveOne } from '../models/UPDATE/UpdatePositiveVotesRemoveOne'
 import { UpdateReviewForAsset } from '../models/UPDATE/UpdateReviewForAsset'
-import fromNow from 'fromnow'
-import striptags from 'striptags'
 import { GetUserSavedAssets } from 'app/code/dashboard/models/GET/GetUserSavedAssets'
 import { GetSiteRestrictions } from 'app/code/admin/models/GET/GetSiteRestrictions'
 import { GetIsAccountDisabledByToken } from '../models/GET/GetIsAccountDisabledByToken'
 import { InsertReviewReport } from '../models/INSERT/InsertReviewReport'
+import DOMPurify from 'dompurify'
+import fromNow from 'fromnow'
+import striptags from 'striptags'
+import { marked } from 'marked'
+import { JSDOM } from 'jsdom'
 
 export class AssetService {
   /**
@@ -70,12 +73,27 @@ export class AssetService {
         }
       }
 
+      if ('readme' in assetInfo) {
+        const window = new JSDOM('<!DOCTYPE html>').window
+        // @ts-expect-error
+        const purify = DOMPurify(window)
+        const clean = purify.sanitize(marked.parse(assetInfo.readme))
+
+        assetInfo.readme = clean
+      }
+
       const pageBanner = {
         title: assetInfo.title,
         info: `An asset by <strong>${assetInfo.author}</strong>`
       }
 
-      return res.render('templates/pages/asset/view', { info: assetInfo, comments: comments, hasUserReviewedAsset: hasUserReviewedAsset, usersAssetReview: usersAssetReview, pageBanner: pageBanner })
+      return res.render('templates/pages/asset/view', {
+        info: assetInfo,
+        comments: comments,
+        hasUserReviewedAsset: hasUserReviewedAsset,
+        usersAssetReview: usersAssetReview,
+        pageBanner: pageBanner
+      })
     } catch (e) {
       logger.log('error', 'Failed to load asset page', [e])
       return res.send({ error: 'Sorry, we\'re having issues loading this page right now' })
