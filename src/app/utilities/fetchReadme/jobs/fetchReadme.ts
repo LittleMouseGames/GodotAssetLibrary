@@ -2,7 +2,7 @@ import { CronJob } from 'cron'
 import { GetAssetsWithoutReadme } from '../models/GET/GetAssetsWithoutReadme'
 import { FetchReadme } from '../services/FetchReadme'
 
-export const fetchReadmeCron = new CronJob('0 1 * * *', () => {
+export const fetchReadmeCron = new CronJob('1 */6 * * *', () => {
   void fetchReadme()
 })
 

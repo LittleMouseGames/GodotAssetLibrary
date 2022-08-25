@@ -14,7 +14,6 @@ export const FetchReadme = async function (assetId: string, url: string): Promis
 
       zipEntries.forEach((entry) => {
         if (hasReadme) return
-        console.log(entry.entryName)
 
         if (entry.entryName.match(/readme/i) != null) {
           hasReadme = true
