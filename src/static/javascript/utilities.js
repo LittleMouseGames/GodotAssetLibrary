@@ -145,9 +145,14 @@ document.addEventListener('DOMContentLoaded', function (_event) {
   document.querySelectorAll('img').forEach(image => {
     image.addEventListener('error', function (e) {
       if (e.target.classList.contains('lazyload')) {
-        e.target.src = '/images/placeholder.png'
+        if (e.target.hasAttribute('data-tried-lazy-fallback') && e.target.dataset.triedLazyFallback === 'true') {
+          e.target.src = '/images/noimage.png'
+        } else {
+          e.target.dataset.triedLazyFallback = 'true'
+          e.target.src = e.target.dataset.fallbackImage
+        }
       } else {
-        if (e.target.hasAttribute('data-tried-fallback')) {
+        if (e.target.hasAttribute('data-tried-fallback') && e.target.dataset.triedFallback === 'true') {
           e.target.src = '/images/noimage.png'
         } else {
           e.target.dataset.triedFallback = 'true'

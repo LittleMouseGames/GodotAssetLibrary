@@ -224,6 +224,11 @@
         document.querySelector('.player img').style.display = 'block';
         document.querySelector('.player img').src = proxied;
       }
+
+      document.querySelector('.player img').dataset.fallbackImage = image
+      document.querySelector('.player img').dataset.triedFallback = 'false'
+      document.querySelector('.player img').dataset.triedLazyFallback = 'false'
+      document.querySelector('.player img').dataset.triedFallback = 'false'
     }
 
     function openInstallModal(event) {
