@@ -114,7 +114,7 @@
         <div class="section mobile-quick-info">
           <%~ includeFile('./quick-info.eta', it) %>
         </div>
-        <div class="section">
+        <div class="section docs">
           <label class="inline-dropdown">
             <h2>Asset Description</h2>
             <% if (it.info.readme) { %>
@@ -122,8 +122,8 @@
               <div class="value">README.md</div>
               <span class="iconify" data-icon="bxs:chevron-down"></span>
               <div class="options">
-                <div>README.md</div>
-                <div>Description</div>
+                <div onclick="switchToReadme()">README.md</div>
+                <div onclick="switchToDescription()">Description</div>
               </div>
             </div>
             <% } %>
@@ -131,12 +131,13 @@
           <% const descriptionFormatted = it?.info?.description?.replace(/\n/g, '<br>') %>
 
           <% if (it.info.readme) { %>
-          <div class="readme">
+          <div class="readme active">
             <%~ it.info.readme %>
           </div>
-          <% } else { %>
-          <p><%~ descriptionFormatted %></p>
           <% } %>
+          <div class="description <%= it.info.readme ? '' : 'active' %>">
+            <p><%~ descriptionFormatted %></p>
+          </div>
         </div>
 
         <div class="section">
@@ -247,6 +248,18 @@
       modalSelector.classList.add('active')
       modalSelector.querySelector('form').setAttribute('action', `/asset/report/review/${commentId}`)
       event.stopPropagation()
+    }
+
+    function switchToReadme() {
+      document.querySelector('.readme').classList.add('active')
+      document.querySelector('.description').classList.remove('active')
+      document.querySelector('.docs .dropdown .value').innerText = "README.md"
+    }
+
+    function switchToDescription() {
+      document.querySelector('.readme').classList.remove('active')
+      document.querySelector('.description').classList.add('active')
+      document.querySelector('.docs .dropdown .value').innerText = "Description"
     }
   </script>
 </section>
