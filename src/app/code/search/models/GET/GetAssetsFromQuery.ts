@@ -1,6 +1,6 @@
 import { Document, WithId } from 'mongodb'
 import { MongoHelper } from 'core/MongoHelper'
-import { assetGridSchema } from 'core/modules/authentication/schema/assets-grid'
+import { assetGridSchema } from 'app/utilities/fetchFromGodot/schema/assets-grid'
 
 interface ReturnedAssets extends WithId<Document>, assetGridSchema {}
 
