@@ -10,8 +10,14 @@ export const FetchReadme = async function (assetId: string, url: string): Promis
       const zip = new AdmZip(buffer)
       const zipEntries = zip.getEntries()
 
+      let hasReadme = false
+
       zipEntries.forEach((entry) => {
+        if (hasReadme) return
+        console.log(entry.entryName)
+
         if (entry.entryName.match(/readme/i) != null) {
+          hasReadme = true
           const readme = zip.readAsText(entry)
 
           UpdateAssetReadme(assetId, readme).catch(err => {
