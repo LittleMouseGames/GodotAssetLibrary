@@ -2,7 +2,7 @@
 <html lang="en">
 
 <head>
-  <%~ includeFile('templates/components/partials/head.eta') %>
+  <%~ includeFile('templates/components/partials/head.eta', it) %>
   <title><%= it.meta.title %></title>
   <meta name="description" content="<%= it.meta.description %>">
   <meta property="og:description" content="<%= it.meta.description %>">

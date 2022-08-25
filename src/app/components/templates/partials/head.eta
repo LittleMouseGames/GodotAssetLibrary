@@ -28,7 +28,7 @@
 <link rel="icon" href="/favicon.ico">
 <link rel="preconnect" href="https://code.iconify.design" crossorigin />
 <link rel="dns-prefetch" href="https://code.iconify.design" />
-<script src="/javascript/utilities.js"></script>
+<script src="/javascript/utilities.js?cache=<%= it._locals?.buildString %>"></script>
 <!-- FAVICON -->
 <link rel="apple-touch-icon" sizes="180x180" href="/images/favicon/apple-touch-icon.png">
 <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon/favicon-32x32.png">
