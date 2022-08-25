@@ -144,7 +144,16 @@ document.addEventListener('DOMContentLoaded', function (_event) {
   console.log('sap')
   document.querySelectorAll('img').forEach(image => {
     image.addEventListener('error', function (e) {
-      e.target.src = '/images/noimage.png'
+      if (e.target.classList.contains('lazyload')) {
+        e.target.src = '/images/placeholder.png'
+      } else {
+        if (e.target.hasAttribute('data-tried-fallback')) {
+          e.target.src = '/images/noimage.png'
+        } else {
+          e.target.dataset.triedFallback = 'true'
+          e.target.src = e.target.dataset.fallbackImage
+        }
+      }
     })
   })
 

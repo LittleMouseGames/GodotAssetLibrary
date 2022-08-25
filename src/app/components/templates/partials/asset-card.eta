@@ -50,7 +50,8 @@ var generateProxyUrl = it?._locals?.functions?.generateProxyUrl
       <div class="mask">
         <img src="<%= generateProxyUrl(it?.info?.card_banner ?? it?.info?.icon_url, 100, 100) %>"
           data-src="<%= generateProxyUrl(it?.info?.card_banner ?? it?.info?.icon_url) %>"
-          alt="<%= it?.info?.title %> background image" class="lazyload">
+          data-fallback-image="<%= it?.info?.card_banner ?? it?.info?.icon_url %>"
+          alt="<%= it?.info?.title %> hero image" alt="<%= it?.info?.title %> background image" class="lazyload">
       </div>
     </div>
     <% } %>
@@ -103,6 +104,7 @@ var generateProxyUrl = it?._locals?.functions?.generateProxyUrl
     <div class="mask">
       <img src="<%= generateProxyUrl(it?.info?.card_banner ?? it?.info?.icon_url, 100, 100) %>"
         data-src="<%= generateProxyUrl(it?.info?.card_banner ?? it?.info?.icon_url) %>"
+        data-fallback-image="<%= it?.info?.card_banner ?? it?.info?.icon_url %>"
         alt="<%= it?.info?.title %> background image" class="lazyload">
     </div>
   </div>

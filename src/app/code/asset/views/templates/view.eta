@@ -68,7 +68,7 @@
         <div class="image">
           <img src="<%= generateProxyUrl(preview.thumbnail, 100, 100) %>"
             data-src="<%= generateProxyUrl(preview.thumbnail) %>" alt="<%= it?.info?.title %> thumbnail image"
-            class="lazyload"
+            data-fallback-image="<%= preview.thumbnail %>" class="lazyload"
             onclick="updatePlayerImage('<%= returnYoutubeEmbedOrReturnUrl(preview.link) %>', '<%= generateProxyUrl(preview.link, 1920, 1080) %>')">
         </div>
         <% }) %>
@@ -92,11 +92,12 @@
             allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
           <img src="<%= generateProxyUrl(it?.info?.previews[0].link, 100, 100) %>"
             data-src="<%= generateProxyUrl(it?.info?.previews[0].link, 1920, 1080) %>" class="lazyload"
-            alt="<%= it?.info?.title %> hero image">
+            data-fallback-image="<%= it?.info?.previews[0].link %>" alt="<%= it?.info?.title %> hero image">
           <% } %>
           <% } else { %>
           <img src="<%= generateProxyUrl(it?.info?.card_banner ?? it?.info?.icon_url, 100, 100) %>"
             data-src="<%= generateProxyUrl(it?.info?.card_banner ?? it?.info?.icon_url, 1920, 1080) %>" class="lazyload"
+            data-fallback-image="<%= it?.info?.previews[0].link %>" alt="<%= it?.info?.title %> hero image"
             alt="<%= it?.info?.title %> hero image">
           <% } %>
         </div>

@@ -24,7 +24,7 @@ const reportReviewRateLimit = rateLimit({
 
 const renderAssetRateLimit = rateLimit({
   windowMs: 1000 * 60 * 15, // 15 minutes
-  max: 30, // start blocking after x requests
+  max: 60, // start blocking after x requests
   message: JSON.stringify({ error: 'You\'re doing that too often, please try again later' })
 })
 

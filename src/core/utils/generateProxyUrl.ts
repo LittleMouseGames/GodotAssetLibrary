@@ -27,6 +27,10 @@ export const generateProxyUrl = (url: any, width = 640, height = 360, resizingTy
     return ''
   }
 
+  if (typeof url !== 'string' || url.includes('.mp4')) {
+    return url
+  }
+
   const encodedUrl = urlSafeBase64(url)
   const path = `/rs:${resizingType}:${width}:${height}:${enlarge}/g:${gravity}/${encodedUrl}.${extension}`
   const signature = sign(SALT, path, KEY)
