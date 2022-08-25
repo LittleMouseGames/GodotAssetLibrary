@@ -1,5 +1,5 @@
-@import "components/styles/utils/variables";
-@import "components/styles/utils/mixins";
+@import "components/utils/variables";
+@import "components/utils/mixins";
 
 .category-card-featured {
   @include background-gradient-image(".background", ".mask", "img", #{rgba(0, 0, 0, 0.4)});

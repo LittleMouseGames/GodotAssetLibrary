@@ -1,10 +1,10 @@
-@import "components/styles/layouts/promobar-nav-body-footer";
-@import "components/styles/partials/asset-card";
-@import "components/styles/partials/forms";
-@import "components/styles/utils/mixins";
-@import "components/styles/partials/modal-report";
-@import "components/styles/partials/modal-install";
-@import "components/styles/partials/modal-delete";
+@import "components/layouts/promobar-nav-body-footer/styles";
+@import "components/partials/asset-card/styles";
+@import "components/utils/forms";
+@import "components/utils/mixins";
+@import "components/partials/modal-report/styles";
+@import "components/partials/modal-install/styles";
+@import "components/partials/modal-delete/styles";
 
 @include card-rating-styles;
 

@@ -1,7 +1,7 @@
-@import "components/styles/layouts/promobar-nav-body-footer";
-@import "components/styles/partials/asset-card";
-@import "components/styles/partials/category-card-featured";
-@import "components/styles/partials/category-card";
+@import "components/layouts/promobar-nav-body-footer/styles";
+@import "components/partials/asset-card/styles";
+@import "components/partials/category-card-featured/styles";
+@import "components/partials/category-card/styles";
 
 @include card-rating-styles;
 
