@@ -1,0 +1,50 @@
+@import "components/utils/variables";
+@import "components/utils/mixins";
+
+html {
+  height: 100%;
+}
+
+body {
+  @include poppins-like-font;
+  margin: 0;
+  padding: 0;
+  background: #efefef;
+  font-size: 14px;
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+.mouse-link {
+  transition: 0.2s;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.no-text-select {
+  -webkit-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+.main {
+  section {
+    a {
+      color: #2081db;
+      transition: 0.01s;
+
+      &:hover {
+        color: #204f79;
+        text-decoration: underline;
+      }
+    }
+  }
+}

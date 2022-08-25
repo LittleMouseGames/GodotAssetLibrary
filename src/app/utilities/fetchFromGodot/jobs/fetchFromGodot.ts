@@ -6,6 +6,7 @@ import { MongoHelper } from 'core/MongoHelper'
 import { Db } from 'mongodb'
 import { assetSchema } from '../schema/assets'
 import striptags from 'striptags'
+import { FetchReadme } from 'app/utilities/fetchReadme/services/FetchReadme'
 
 const host = 'godotengine.org'
 
@@ -118,6 +119,7 @@ async function fetchAssetInformationAndInsert (assetIDs: any[]): Promise<void> {
       if (result.asset_id !== undefined) {
         await modelInsertAsset(result)
         void updateCategoryCountInfoObject(result.category)
+        await FetchReadme(result.asset_id, result.download_url)
       }
     } catch (e: any) {
       logger.log('error', `[IMPORTER]: ${e.message}`, [e])
@@ -163,6 +165,8 @@ async function fetchAssetInformationAndUpdate (assetIDs: any[]): Promise<void> {
           void updateCategoryCountInfoObject(assetInformationWeHave.category, -1)
           void updateCategoryCountInfoObject(result.category)
         }
+
+        await FetchReadme(result.asset_id, result.download_url)
 
         await modelUpdateAssetObject(result.legacy_asset_id, newAssetInformation)
         logger.log('info', `Updated asset ${striptags(result.title)} successfully`)

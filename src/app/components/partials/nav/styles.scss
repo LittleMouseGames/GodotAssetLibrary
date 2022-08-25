@@ -1,0 +1,272 @@
+@import "components/utils/variables";
+@import "components/utils/mixins";
+@import "components/utils/forms";
+
+.promobar {
+  width: 100%;
+  height: 41px;
+  background: $color-brand-black;
+  position: sticky;
+  top: 0;
+  font-weight: 600;
+  font-size: 12px;
+
+  .contents {
+    display: flex;
+    align-items: center;
+    text-align: center;
+    justify-items: right;
+    height: 100%;
+    max-width: $constrained-width;
+    margin: 0 auto;
+    color: $text-light-white;
+    position: relative;
+    justify-content: end;
+  }
+
+  .text {
+    width: 100%;
+    position: absolute;
+    z-index: 0;
+  }
+
+  .iconify {
+    width: 20px;
+    height: auto;
+    cursor: pointer;
+    z-index: 1;
+  }
+}
+
+nav {
+  @include brand-styles($title-color: $text-dark-darkest, $subtitle-color: $text-dark-darkest);
+  @include dropdown-styles($padding: 8px 13px, $border-color: $color-brand-gray);
+
+  height: 70px;
+  background: white;
+  width: 100%;
+  position: sticky;
+  top: 0;
+  z-index: 6;
+  border-bottom: 1px solid #f0f0f0;
+
+  @include mobile-styles {
+    height: 65px;
+  }
+
+  .brand {
+    margin-right: 30px;
+
+    @include mobile-styles {
+      margin-right: 0;
+    }
+
+    a {
+      display: flex;
+    }
+  }
+
+  img {
+    height: 45px;
+    width: 45px;
+    margin-right: 10px;
+    border-radius: 3px;
+  }
+
+  .contents {
+    display: flex;
+    align-items: center;
+    max-width: $constrained-width;
+    margin: auto;
+    height: 100%;
+    padding: 0 15px;
+    box-sizing: border-box;
+  }
+
+  .links {
+    display: flex;
+    align-items: center;
+    margin-right: 25px;
+
+    @include small-desktop-styles() {
+      a {
+        display: none;
+      }
+
+      .dropdown {
+        margin-left: 0;
+        a {
+          display: block;
+        }
+      }
+    }
+
+    @include tablet-styles {
+      display: none;
+    }
+
+    .link {
+      font-weight: 600;
+      margin-right: 20px;
+      cursor: pointer;
+    }
+  }
+
+  .mobile-search {
+    display: none;
+
+    @include mobile-styles {
+      display: block;
+    }
+  }
+
+  .search-container {
+    display: flex;
+    max-width: 440px;
+    flex: 1 1 auto;
+  }
+
+  .search {
+    position: relative;
+    flex-grow: 1;
+    margin-right: 30px;
+
+    @include mobile-styles {
+      display: none;
+    }
+
+    &.active {
+      display: flex;
+      position: absolute;
+      left: 0;
+      top: 0;
+      z-index: 3;
+      height: 100%;
+      align-items: center;
+      width: 100%;
+      padding: 15px;
+      box-sizing: border-box;
+      background: white;
+
+      input {
+        width: 100%;
+      }
+
+      .iconify {
+        top: auto;
+        left: 30px;
+        margin-top: -1px;
+
+        &.close {
+          left: initial;
+          right: 30px;
+          display: block;
+        }
+      }
+    }
+
+    .iconify {
+      position: absolute;
+      left: 14px;
+      top: 12.5px;
+      width: 18px;
+      height: auto;
+      color: #818181;
+
+      &.close {
+        display: none;
+      }
+    }
+
+    input {
+      @include inter-like-font();
+      height: 45px;
+      background: $color-lighter-gray;
+      border-radius: 6px;
+      border: none;
+      padding-left: 40px;
+      width: 100%;
+      box-sizing: border-box;
+    }
+  }
+
+  .categories {
+    .value {
+      &.mobile {
+        display: none;
+      }
+
+      @include small-desktop-styles {
+        display: none;
+
+        &.mobile {
+          display: block;
+        }
+      }
+    }
+  }
+
+  .account {
+    margin-left: auto;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+
+    .iconify {
+      width: 30px;
+      height: auto;
+      margin-right: 14px;
+    }
+
+    .register {
+      display: flex;
+      align-items: center;
+
+      .value {
+        @include small-mobile-styles {
+          display: none;
+        }
+      }
+    }
+
+    .dropdown {
+      margin-left: 0;
+      padding: 0;
+      background: inherit;
+      border: none;
+
+      .value {
+        padding: 0;
+
+        @include small-mobile-styles {
+          display: none;
+        }
+      }
+
+      .options {
+        @include small-mobile-styles {
+          width: auto;
+          left: -100%;
+        }
+      }
+
+      .chevron {
+        font-size: 14px;
+        width: auto;
+        margin-left: 10px;
+      }
+
+      .iconify {
+        margin-right: 0;
+
+        @include small-mobile-styles {
+          padding-right: 0;
+        }
+
+        &.chevron {
+          padding-right: 0;
+        }
+      }
+    }
+  }
+}

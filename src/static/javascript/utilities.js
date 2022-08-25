@@ -136,10 +136,28 @@ function closeAllModals () {
   })
 }
 
-window.onload = function () {
+document.addEventListener('error', function (event) {
+  console.log('event', event)
+})
+
+document.addEventListener('DOMContentLoaded', function (_event) {
   document.querySelectorAll('img').forEach(image => {
     image.addEventListener('error', function (e) {
-      e.target.src = '/images/noimage.png'
+      if (e.target.classList.contains('lazyload')) {
+        if (e.target.hasAttribute('data-tried-lazy-fallback') && e.target.dataset.triedLazyFallback === 'true') {
+          e.target.src = '/images/noimage.png'
+        } else {
+          e.target.dataset.triedLazyFallback = 'true'
+          e.target.src = e.target.dataset.fallbackImage
+        }
+      } else {
+        if (e.target.hasAttribute('data-tried-fallback') && e.target.dataset.triedFallback === 'true') {
+          e.target.src = '/images/noimage.png'
+        } else {
+          e.target.dataset.triedFallback = 'true'
+          e.target.src = e.target.dataset.fallbackImage
+        }
+      }
     })
   })
 
@@ -160,4 +178,4 @@ window.onload = function () {
       }
     })
   })
-}
+})

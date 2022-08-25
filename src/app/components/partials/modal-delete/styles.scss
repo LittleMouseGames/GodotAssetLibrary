@@ -1,0 +1,19 @@
+@import "components/utils/variables";
+@import "components/utils/forms";
+
+@include modal-styles;
+
+.modal-delete {
+  button {
+    display: block;
+    margin-left: auto;
+    margin-top: 20px;
+    background: #f04242;
+  }
+
+  p {
+    margin-top: 10px;
+    font-family: "DM Sans";
+    font-size: 15px;
+  }
+}

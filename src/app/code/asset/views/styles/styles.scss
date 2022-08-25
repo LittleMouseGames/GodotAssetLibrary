@@ -1,10 +1,10 @@
-@import "components/styles/layouts/promobar-nav-body-footer";
-@import "components/styles/partials/asset-card";
-@import "components/styles/partials/forms";
-@import "components/styles/utils/mixins";
-@import "components/styles/partials/modal-report";
-@import "components/styles/partials/modal-install";
-@import "components/styles/partials/modal-delete";
+@import "components/layouts/promobar-nav-body-footer/styles";
+@import "components/partials/asset-card/styles";
+@import "components/utils/forms";
+@import "components/utils/mixins";
+@import "components/partials/modal-report/styles";
+@import "components/partials/modal-install/styles";
+@import "components/partials/modal-delete/styles";
 
 @include card-rating-styles;
 
@@ -113,9 +113,30 @@
       margin-top: 30px;
       margin-bottom: 30px;
 
+      &.docs {
+        border: 1px solid #dbdbdb;
+        border-radius: 3px;
+        margin-top: 20px;
+      }
+
       @include mobile-styles {
         &:first-of-type {
           margin-top: 0px;
+        }
+      }
+
+      .readme,
+      .description {
+        padding: 10px 15px;
+        display: none;
+
+        &.active {
+          display: block;
+        }
+
+        img {
+          max-width: 100%;
+          display: block;
         }
       }
     }
@@ -128,6 +149,12 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
+      border-bottom: 1px solid #dbdbdb;
+      padding: 10px 15px;
+
+      h2 {
+        margin-bottom: 0px;
+      }
     }
 
     .header {
@@ -199,7 +226,7 @@
 
     .header {
       .rated {
-        font-family: "Poppins";
+        @include poppins-like-font;
       }
     }
 

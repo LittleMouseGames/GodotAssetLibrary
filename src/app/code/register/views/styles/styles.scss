@@ -1,7 +1,7 @@
-@import "components/styles/layouts/promobar-nav-body-footer";
-@import "components/styles/utils/mixins";
-@import "components/styles/utils/variables";
-@import "components/styles/partials/forms";
+@import "components/layouts/promobar-nav-body-footer/styles";
+@import "components/utils/mixins";
+@import "components/utils/variables";
+@import "components/utils/forms";
 
 .page-register {
   @include reset-header-spacing;

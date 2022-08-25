@@ -1,0 +1,233 @@
+@import "components/utils/variables";
+@import "components/utils/mixins";
+
+@mixin _form-shared {
+  @include inter-like-font();
+  background: $button-gray;
+  color: $text-dark-darker;
+  padding: 15px;
+  border-radius: 4px;
+  border: none;
+  width: 100%;
+  box-sizing: border-box;
+  font-size: 14px;
+}
+
+@mixin form-input {
+  @include _form-shared();
+}
+
+@mixin form-textarea {
+  @include _form-shared();
+  resize: vertical;
+}
+
+@mixin form-button {
+  @include inter-like-font();
+  background: $button-very-dark;
+  border: none;
+  color: white;
+  border-radius: 3px;
+  font-weight: 600;
+  padding: 12px 27px;
+  cursor: pointer;
+}
+
+@mixin form-select {
+  @include _form-shared();
+}
+
+@mixin sneaky-labels {
+  .input-container {
+    position: relative;
+
+    .placeholder {
+      @include inter-like-font();
+      color: $text-dark-darker;
+      left: 17px;
+      line-height: 14px;
+      pointer-events: none;
+      position: absolute;
+      transform-origin: 0 50%;
+      transition: transform 50ms, color 50ms, font-size 50ms, background 50ms;
+      top: 15px;
+      border-radius: 3px;
+    }
+
+    &:not(:last-of-type) {
+      margin-bottom: 15px;
+    }
+
+    .input:focus ~ .placeholder,
+    .input:not(:placeholder-shown) ~ .placeholder {
+      transform: translateY(-22px) translateX(-6px);
+      padding: 0px 6px 3px 6px;
+      background: #efefef;
+      font-size: 12px;
+      color: $text-dark-deep-gray;
+      border: 1px solid $text-light-gray;
+    }
+
+    .input:not(:placeholder-shown) ~ .placeholder {
+      color: $text-dark-deep-gray;
+    }
+  }
+
+  .requirement {
+    margin-bottom: 10px;
+  }
+}
+
+@mixin disclaimer-styles {
+  .disclaimer {
+    margin-top: 20px;
+    margin-bottom: 20px;
+
+    a {
+      color: $text-dark-darkest;
+      font-weight: 600;
+    }
+  }
+}
+
+@mixin dropdown-styles(
+  $padding: 7px 13px,
+  $background: transparent,
+  $border-color: $text-light-gray,
+  $content-background: white,
+  $hover-color: $text-light-lightest
+) {
+  .dropdown {
+    @include poppins-like-font;
+    position: relative;
+    border-radius: 6px;
+    background: $background;
+    font-weight: 600;
+    color: $text-dark-black;
+    border: 1px solid $border-color;
+    margin-left: 10px;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    transition: 0.05s;
+
+    .value,
+    .iconify {
+      padding: $padding;
+      text-transform: capitalize;
+    }
+
+    .iconify {
+      padding-left: 0;
+    }
+
+    .value {
+      cursor: pointer;
+    }
+
+    .options {
+      @include inter-like-font();
+      position: absolute;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      display: none;
+      top: calc(100% + 5px);
+      background: $content-background;
+      font-weight: 600;
+      color: $text-dark-black;
+      box-sizing: border-box;
+      left: 0;
+      border-radius: 6px;
+      overflow: hidden;
+      box-shadow: $standard-shadow;
+      border: 1px solid $border-color;
+      z-index: 2;
+
+      a,
+      div {
+        color: inherit;
+        padding: $padding;
+        text-decoration: none;
+
+        &:hover {
+          background: $hover-color;
+        }
+      }
+    }
+  }
+}
+
+@mixin modal-styles {
+  .modal {
+    @include reset-header-spacing;
+    @include sneaky-labels();
+
+    width: 100%;
+    height: 100%;
+    position: fixed;
+    z-index: 4;
+    display: none;
+    top: 0;
+    left: 0;
+
+    &.active {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .background {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+      background: rgba(0, 0, 0, 0.33);
+      z-index: 0;
+    }
+
+    .body {
+      border-radius: 6px;
+      background: white;
+      z-index: 1;
+      padding: 15px;
+      width: 600px;
+    }
+
+    h2 {
+      @include inter-like-font();
+      margin-bottom: 5px;
+      font-size: 18px;
+    }
+
+    h3 {
+      @include inter-like-font();
+    }
+
+    .name {
+      margin-bottom: 10px;
+    }
+
+    .input {
+      background: $color-lighter-gray;
+    }
+
+    .input-container {
+      margin-bottom: 15px;
+    }
+
+    textarea {
+      @include form-textarea();
+    }
+
+    button {
+      @include form-button();
+    }
+
+    select {
+      @include form-select();
+    }
+  }
+}

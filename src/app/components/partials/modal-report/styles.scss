@@ -1,0 +1,22 @@
+@import "components/utils/variables";
+@import "components/utils/forms";
+
+@include modal-styles;
+
+.modal-report {
+  button {
+    display: block;
+    margin-left: auto;
+  }
+
+  .note {
+    margin-bottom: 10px;
+  }
+
+  form {
+    .name,
+    h2 {
+      margin-bottom: 10px;
+    }
+  }
+}

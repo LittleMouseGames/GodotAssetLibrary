@@ -1,0 +1,203 @@
+@import "components/utils/variables";
+
+@mixin reset-ul {
+  ul {
+    list-style: none;
+    padding-left: 0;
+    margin-left: 0;
+  }
+}
+
+@mixin reset-header-spacing {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5 {
+    margin: 0;
+    padding: 0;
+  }
+}
+
+@mixin brand-styles($title-color, $subtitle-color) {
+  $title-color: $title-color;
+  $subtitle-color: $subtitle-color;
+
+  .brand {
+    cursor: pointer;
+
+    .title {
+      @include inter-like-font();
+      font-weight: bold;
+      font-size: 22px;
+      line-height: 25px;
+      color: $title-color;
+    }
+
+    .subtitle {
+      @include inter-like-font();
+      font-weight: 500;
+      font-size: 13px;
+      color: $subtitle-color;
+
+      .strong {
+        font-weight: 700;
+      }
+    }
+  }
+}
+
+@mixin asset-featured-button-styles($dark: "true") {
+  border: none;
+  border-radius: 3px;
+  font-family: "Inter";
+  font-weight: 600;
+  padding: 9px 13px;
+  cursor: pointer;
+
+  @if $dark == "true" {
+    background: black;
+    color: white;
+  }
+
+  @if $dark == "false" {
+    background: white;
+    color: black;
+  }
+}
+
+@mixin category-featured-button-styles {
+  height: 37px;
+  border: none;
+  border-radius: 3px;
+  font-family: "Poppins";
+  font-weight: 700;
+  width: 170px;
+  text-transform: uppercase;
+  cursor: pointer;
+  font-size: 11px;
+  background: $button-white;
+  color: $text-dark-darker;
+}
+
+@mixin card-rating-styles {
+  %full-star {
+    &:after {
+      content: url("https://api.iconify.design/fa/star.svg?color=%23ffc700&width=15&height=15");
+    }
+  }
+
+  %half-star {
+    &:before {
+      content: url("https://api.iconify.design/fa/star-half.svg?color=%23ffc700&width=15&height=15");
+      margin-right: -7.6px;
+    }
+    &:after {
+      content: url("https://api.iconify.design/fa/star-half.svg?color=lightgray&flip=horizontal&width=15&height=15");
+    }
+  }
+
+  .stars {
+    margin: 0;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    color: #900;
+    $this: &;
+
+    &__item {
+      display: block;
+
+      &::after {
+        content: url("https://api.iconify.design/fa/star.svg?color=lightgray&width=15&height=15");
+      }
+    }
+
+    @for $i from 0 to 6 {
+      &[data-rating="#{$i}"] {
+        #{$this}__item:nth-child(-n + #{$i}) {
+          @extend %full-star;
+        }
+      }
+
+      &[data-rating="#{$i + 0.5}"] {
+        #{$this}__item:nth-child(-n + #{$i}) {
+          @extend %full-star;
+        }
+
+        #{$this}__item:nth-child(#{$i + 1}) {
+          @extend %half-star;
+        }
+      }
+    }
+  }
+}
+
+@mixin background-gradient-image($background, $mask, $image, $gradient) {
+  #{$background} {
+    position: absolute;
+    border-radius: 6px;
+    width: 100%;
+    height: 100%;
+    left: 0;
+    top: 0;
+    z-index: 0;
+    display: flex;
+  }
+
+  #{$mask} {
+    position: relative;
+    width: 100%;
+
+    &:after {
+      position: absolute;
+      content: "";
+      height: 100%;
+      width: 100%;
+      top: 0;
+      left: 0;
+      background: $gradient;
+    }
+  }
+
+  #{$image} {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    margin-left: auto;
+    display: block;
+  }
+}
+
+@mixin small-desktop-styles {
+  @media (max-width: 1300px) {
+    @content;
+  }
+}
+
+@mixin tablet-styles {
+  @media (max-width: 950px) {
+    @content;
+  }
+}
+
+@mixin mobile-styles {
+  @media (max-width: 800px) {
+    @content;
+  }
+}
+
+@mixin small-mobile-styles {
+  @media (max-width: 500px) {
+    @content;
+  }
+}
+
+@mixin inter-like-font {
+  font-family: Inter, Calibri, "Helvetica Neue", Sans-Serif;
+}
+
+@mixin poppins-like-font {
+  font-family: Poppins, "Helvetica Neue", Sans-Serif;
+}

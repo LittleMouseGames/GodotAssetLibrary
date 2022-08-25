@@ -165,7 +165,7 @@ function moveTemplates (file) {
 
     fs.copySync(path.join(__dirname, file), path.join(__dirname, '../dist/templates/pages/', moduleName))
   } else if (file.includes('components/')) {
-    fs.copySync(path.join(__dirname, '/app/components/templates'), path.join(__dirname, '../dist/templates/components/'))
+    fs.copySync(path.join(__dirname, '/app/components'), path.join(__dirname, '../dist/templates/components/'))
   }
 }
 
