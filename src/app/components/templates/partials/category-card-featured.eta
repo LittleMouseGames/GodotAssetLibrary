@@ -19,7 +19,7 @@ var projectBase = process.env.PROJECT_BASE_URL ?? 'https://godotassetlibrary.com
   <div class="background">
     <div class="mask">
       <% if (inDevelopment) { %>
-      <img src="/images/<%= it?.image %>" alt="<%= it?.name %> category preview image">
+      <img class="lazyload" data-src="/images/<%= it?.image %>" alt="<%= it?.name %> category preview image">
       <% } else { %>
       <img src="<%= generateProxyUrl(`${projectBase}/images/${it?.image}`, 100, 100) %>"
         data-src="<%= generateProxyUrl(`${projectBase}/images/${it?.image}`) %>"

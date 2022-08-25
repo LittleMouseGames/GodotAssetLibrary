@@ -11,6 +11,7 @@ import { GetUserRoleByToken } from 'core/modules/authentication/models/user/GET/
 import { GetPromobarMessage } from 'app/code/admin/models/GET/GetPromobarMesasge'
 import { StatusCodes } from 'http-status-codes'
 import { generateProxyUrl } from 'core/utils/generateProxyUrl'
+import minifyHTML from 'express-minify-html-2'
 require('express-async-errors')
 
 /**
@@ -37,6 +38,19 @@ class RouterServer extends Server {
     this.app.use(cookieParser())
     this.app.use(express.urlencoded({
       extended: true
+    }))
+
+    this.app.use(minifyHTML({
+      override: true,
+      exception_url: false,
+      htmlMinifier: {
+        removeComments: true,
+        collapseWhitespace: true,
+        collapseBooleanAttributes: true,
+        removeAttributeQuotes: true,
+        removeEmptyAttributes: true,
+        minifyJS: true
+      }
     }))
 
     /**
