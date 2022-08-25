@@ -136,7 +136,12 @@ function closeAllModals () {
   })
 }
 
-window.onload = function () {
+document.addEventListener('error', function (event) {
+  console.log('event', event)
+})
+
+document.addEventListener('DOMContentLoaded', function (_event) {
+  console.log('sap')
   document.querySelectorAll('img').forEach(image => {
     image.addEventListener('error', function (e) {
       e.target.src = '/images/noimage.png'
@@ -160,4 +165,4 @@ window.onload = function () {
       }
     })
   })
-}
+})
