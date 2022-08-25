@@ -31,7 +31,7 @@
     "url": "https://godotassetlibrary.com",
     "potentialAction": {
       "@type": "SearchAction",
-      "target": "https://godotassetlibrary.com/search/?q=test{search_term}",
+      "target": "https://godotassetlibrary.com/search/?q={search_term}",
       "query-input": "required name=search_term"
       }
     }
