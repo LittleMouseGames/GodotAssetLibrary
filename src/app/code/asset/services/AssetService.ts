@@ -103,12 +103,7 @@ export class AssetService {
           }
         }
 
-        console.log(assetInfo)
-
         marked.use({ renderer })
-
-        // Run marked
-        console.log(marked.parse('![aaa](www.ca)'))
 
         const clean = purify.sanitize(marked.parse(assetInfo.readme))
 
