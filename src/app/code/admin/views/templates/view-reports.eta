@@ -15,6 +15,6 @@
     </div>
   </div>
   <div class="column">
-    <%~ includeFile('templates/components/partials/catalog-gird/catalog-grid.eta', it) %>
+    <%~ includeFile('templates/components/partials/catalog-grid/catalog-grid.eta', it) %>
   </div>
 </section>
