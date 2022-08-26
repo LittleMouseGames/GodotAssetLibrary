@@ -24,5 +24,7 @@ export const FetchReadme = async function (assetId: string, url: string): Promis
           })
         }
       })
+    }).catch(err => {
+      logger.error('error', err.message, ...[err])
     })
 }
