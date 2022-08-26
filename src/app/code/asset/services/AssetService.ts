@@ -122,8 +122,8 @@ export class AssetService {
         usersAssetReview: usersAssetReview,
         pageBanner: pageBanner
       })
-    } catch (e) {
-      logger.log('error', 'Failed to load asset page', [e])
+    } catch (e: any) {
+      logger.log('error', `Failed to load asset page: ${assetId}, ${e?.message}`, [e])
       return res.send({ error: 'Sorry, we\'re having issues loading this page right now' })
     }
   }
