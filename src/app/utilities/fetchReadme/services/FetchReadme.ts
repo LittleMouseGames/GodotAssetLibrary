@@ -7,22 +7,28 @@ export const FetchReadme = async function (assetId: string, url: string): Promis
   await fetch(url)
     .then(async res => await res.buffer())
     .then(buffer => {
-      const zip = new AdmZip(buffer)
-      const zipEntries = zip.getEntries()
+      try {
+        const zip = new AdmZip(buffer)
+        const zipEntries = zip.getEntries()
 
-      let hasReadme = false
+        let hasReadme = false
 
-      zipEntries.forEach((entry) => {
-        if (hasReadme) return
+        zipEntries.forEach((entry) => {
+          if (hasReadme) return
 
-        if (entry.entryName.match(/readme/i) != null) {
-          hasReadme = true
-          const readme = zip.readAsText(entry)
+          if (entry.entryName.match(/readme/i) != null) {
+            hasReadme = true
+            const readme = zip.readAsText(entry)
 
-          UpdateAssetReadme(assetId, readme).catch(err => {
-            logger.error('error', err.message, ...[err])
-          })
-        }
-      })
+            UpdateAssetReadme(assetId, readme).catch(err => {
+              logger.error('error', err.message, ...[err])
+            })
+          }
+        })
+      } catch (err) {
+        logger.error('error', err, ...[err])
+      }
+    }).catch(err => {
+      logger.error('error', err, ...[err])
     })
 }

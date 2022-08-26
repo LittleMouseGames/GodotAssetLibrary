@@ -36,6 +36,7 @@ export class AssetService {
   public async render (req: Request, res: Response): Promise<any> {
     const assetId = striptags(req.params.id ?? '')
     const authToken = striptags(req.cookies['auth-token'] ?? '')
+    logger.log('info', `Rendering asset page ${assetId}`)
 
     if (assetId === '') {
       throw new Error('Missing asset ID')
@@ -77,6 +78,33 @@ export class AssetService {
         const window = new JSDOM('<!DOCTYPE html>').window
         // @ts-expect-error
         const purify = DOMPurify(window)
+
+        // Override function
+        const renderer = {
+          image (href: string, title: string, text: string) {
+            let fallback = ''
+            let branch = 'master'
+
+            if (assetInfo.icon_url.includes('/main/')) {
+              branch = 'main'
+            }
+
+            if (assetInfo.browse_url.includes('gitlab.com') && !href.includes('gitlab.com')) {
+              fallback = `${assetInfo.browse_url}/-/raw/${branch}/${href}`
+            }
+
+            if (assetInfo.browse_url.includes('github.com') && !href.includes('github.com')) {
+              fallback = `${assetInfo.browse_url}/raw/${branch}/${href}`
+            }
+
+            return `
+            <img src="${href}" alt="README ${title ?? text}" data-fallback-image='${fallback}' />
+            `
+          }
+        }
+
+        marked.use({ renderer })
+
         const clean = purify.sanitize(marked.parse(assetInfo.readme))
 
         assetInfo.readme = clean

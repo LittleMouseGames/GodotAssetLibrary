@@ -117,6 +117,7 @@
         border: 1px solid #dbdbdb;
         border-radius: 3px;
         margin-top: 20px;
+        background: white;
       }
 
       @include mobile-styles {
@@ -127,8 +128,10 @@
 
       .readme,
       .description {
+        @include inter-like-font;
         padding: 10px 15px;
         display: none;
+        margin: revert;
 
         &.active {
           display: block;
@@ -138,11 +141,75 @@
           max-width: 100%;
           display: block;
         }
-      }
-    }
 
-    h2 {
-      margin-bottom: 10px;
+        pre {
+          padding: 16px;
+          overflow: auto;
+          font-size: 85%;
+          line-height: 1.45;
+          background-color: #f4f4f4;
+          border-radius: 6px;
+          word-wrap: normal;
+        }
+
+        code {
+          padding: 0.2em 0.4em;
+          margin: 0;
+          background-color: #f4f4f4;
+          border-radius: 6px;
+        }
+
+        table {
+          display: block;
+          width: 100%;
+          width: max-content;
+          max-width: 100%;
+          overflow: auto;
+          border-spacing: 0;
+          border-collapse: collapse;
+
+          tr {
+            &:nth-child(2n) {
+              background-color: #f4f4f4;
+            }
+          }
+
+          td,
+          th {
+            border: 1px solid #e3e3e3;
+            padding: 5px 10px;
+          }
+        }
+
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6 {
+          margin: revert;
+        }
+
+        h1 {
+          &:first-of-type {
+            margin-top: 5px;
+            font-size: 20px;
+          }
+        }
+
+        h2 {
+          padding-bottom: 5px;
+          border-bottom: 1px solid #cacaca;
+        }
+
+        p {
+          @include inter-like-font;
+
+          code {
+            font-size: 90%;
+          }
+        }
+      }
     }
 
     .inline-dropdown {
