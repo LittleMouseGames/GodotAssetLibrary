@@ -151,7 +151,12 @@ document.addEventListener('DOMContentLoaded', function (_event) {
           e.target.src = '/images/noimage.png'
         } else {
           e.target.dataset.triedFallback = 'true'
-          e.target.src = e.target.dataset.fallbackImage
+
+          if (e.target.hasAttribute('data-host')) {
+            e.target.src = e.target.dataset.host + e.target.getAttribute('src')
+          } else {
+            e.target.src = e.target.dataset.fallbackImage
+          }
         }
       }
     })
