@@ -51,11 +51,11 @@
     }
   }
 %>
-<% layout('templates/components/layouts/promobar-nav-body-footer.eta') %>
+<% layout('templates/components/layouts/promobar-nav-body-footer/promobar-nav-body-footer.eta') %>
 
-<%~ includeFile('templates/components/partials/modal-install.eta', {downloadUrl: it?.info?.download_url}) %>
-<%~ includeFile('templates/components/partials/modal-report.eta') %>
-<%~ includeFile('templates/components/partials/modal-delete.eta') %>
+<%~ includeFile('templates/components/partials/modal-install/modal-install.eta', {downloadUrl: it?.info?.download_url}) %>
+<%~ includeFile('templates/components/partials/modal-report/modal-report.eta') %>
+<%~ includeFile('templates/components/partials/modal-delete/modal-delete.eta') %>
 
 <section class="page-asset">
   <div class="column">
@@ -142,7 +142,7 @@
 
         <div class="section">
           <h2>Reviews</h2>
-          <%~ includeFile('templates/components/partials/stars.eta', it) %>
+          <%~ includeFile('templates/components/partials/stars/stars.eta', it) %>
 
           <div class="reviews">
             <% if (it?.comments) { %>

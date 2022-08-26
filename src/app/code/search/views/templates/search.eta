@@ -4,7 +4,8 @@
   url: `https://godotassetlibrary.com/${it?.params}`,
   moduleName: 'search'
 } %>
-<% layout('templates/components/layouts/promobar-nav-body-footer.eta') %>
+<% layout('templates/components/layouts/promobar-nav-body-footer/promobar-nav-body-footer.eta') %>
+
 <section class="page-search">
   <section>
     <% for (const [filtersKey, filtersValue] of Object.entries(it.filters)) { %>
@@ -75,6 +76,6 @@
   </section>
 
   <section>
-    <%~ includeFile('templates/components/partials/catalog-grid.eta', it) %>
+    <%~ includeFile('templates/components/partials/catalog-grid/catalog-grid.eta', it) %>
   </section>
 </section>

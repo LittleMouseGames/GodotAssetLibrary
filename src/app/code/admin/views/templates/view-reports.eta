@@ -4,7 +4,7 @@
   url: 'https://godotassetlibrary.com/dashboard/reviews',
   moduleName: 'admin'
 } %>
-<% layout('templates/components/layouts/promobar-nav-body-footer.eta') %>
+<% layout('templates/components/layouts/promobar-nav-body-footer/promobar-nav-body-footer.eta') %>
 
 <section class="page-admin reports">
   <div class="column">
@@ -15,6 +15,6 @@
     </div>
   </div>
   <div class="column">
-    <%~ includeFile('templates/components/partials/catalog-grid.eta', it) %>
+    <%~ includeFile('templates/components/partials/catalog-gird/catalog-grid.eta', it) %>
   </div>
 </section>

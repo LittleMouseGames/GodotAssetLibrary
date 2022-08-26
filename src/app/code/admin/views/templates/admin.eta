@@ -4,7 +4,7 @@
   url: 'https://godotassetlibrary.com/admin',
   moduleName: 'admin'
 } %>
-<% layout('templates/components/layouts/promobar-nav-body-footer.eta') %>
+<% layout('templates/components/layouts/promobar-nav-body-footer/promobar-nav-body-footer.eta') %>
 
 <section class="page-admin">
   <div class="column">

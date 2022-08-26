@@ -2,7 +2,7 @@
 <html lang="en">
 
 <head>
-  <%~ includeFile('templates/components/partials/head.eta', it) %>
+  <%~ includeFile('templates/components/partials/head/head.eta', it) %>
   <title><%= it.meta.title %></title>
   <meta name="description" content="<%= it.meta.description %>">
   <meta property="og:description" content="<%= it.meta.description %>">
@@ -40,15 +40,15 @@
 
 
 <body>
-  <%~ includeFile('templates/components/partials/nav.eta', it) %>
+  <%~ includeFile('templates/components/partials/nav/nav.eta', it) %>
 
   <section class="main">
-    <%~ includeFile('templates/components/partials/page-banner.eta', it) %>
-    <%~ includeFile('templates/components/partials/page-message.eta') %>
+    <%~ includeFile('templates/components/partials/page-banner/page-banner.eta', it) %>
+    <%~ includeFile('templates/components/partials/page-message/page-message.eta') %>
     <%~ it.body %>
   </section>
 
-  <%~ includeFile('templates/components/partials/footer.eta', it) %>
+  <%~ includeFile('templates/components/partials/footer/footer.eta', it) %>
   <script src="https://code.iconify.design/2/2.1.2/iconify.min.js"></script>
 </body>
 

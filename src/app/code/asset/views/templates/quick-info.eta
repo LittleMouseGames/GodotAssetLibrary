@@ -4,7 +4,7 @@ var generateProxyUrl = it?._locals?.functions?.generateProxyUrl
 
 <div class="quick-info">
   <h2>Quick Information</h2>
-  <%~ includeFile('templates/components/partials/stars.eta', it) %>
+  <%~ includeFile('templates/components/partials/stars/stars.eta', it) %>
   <div class="card">
     <div class="banner">
       <div class="badges">

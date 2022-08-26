@@ -4,7 +4,7 @@
   url: 'https://godotassetlibrary.com/register',
   moduleName: 'register'
 } %>
-<% layout('templates/components/layouts/promobar-nav-body-footer.eta') %>
+<% layout('templates/components/layouts/promobar-nav-body-footer/promobar-nav-body-footer.eta') %>
 
 <section class="page-register">
   <div class="column">
