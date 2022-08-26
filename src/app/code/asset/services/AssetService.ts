@@ -36,6 +36,7 @@ export class AssetService {
   public async render (req: Request, res: Response): Promise<any> {
     const assetId = striptags(req.params.id ?? '')
     const authToken = striptags(req.cookies['auth-token'] ?? '')
+    logger.log('info', `Rendering asset page ${assetId}`)
 
     if (assetId === '') {
       throw new Error('Missing asset ID')
