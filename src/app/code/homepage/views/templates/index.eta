@@ -4,14 +4,14 @@
   url: 'https://godotassetlibrary.com',
   moduleName: 'homepage'
 } %>
-<% layout('templates/components/layouts/promobar-nav-body-footer.eta') %>
+<% layout('templates/components/layouts/promobar-nav-body-footer/promobar-nav-body-footer.eta') %>
 
 <section class="page-home">
   <section>
     <h2>Whats popular</h2>
     <div class="container five-wide">
       <% it.trendingAssets?.forEach(info => { %>
-      <%~ includeFile('templates/components/partials/asset-card.eta', { info: info, _locals: it?._locals }) %>
+      <%~ includeFile('templates/components/partials/asset-card/asset-card.eta', { info: info, _locals: it?._locals }) %>
       <% }) %>
     </div>
   </section>
@@ -20,7 +20,7 @@
     <h2>Assets we Love</h2>
     <div class="container three-wide">
       <% it.featuredAssets?.forEach(info => { %>
-      <%~ includeFile('templates/components/partials/asset-card.eta', { info: info, _locals: it?._locals, featured: true }) %>
+      <%~ includeFile('templates/components/partials/asset-card/asset-card.eta', { info: info, _locals: it?._locals, featured: true }) %>
       <% }) %>
     </div>
   </section>
@@ -29,7 +29,7 @@
     <h2>Explore more from Categories</h2>
     <div class="container five-wide categories">
       <% for (const [key, value] of Object.entries(it?.categoriesObject)) { %>
-      <%~ includeFile('templates/components/partials/category-card.eta', {
+      <%~ includeFile('templates/components/partials/category-card/category-card.eta', {
         name: key,
         count: value
       }) %>
@@ -40,19 +40,19 @@
   <section>
     <h2>Featured Categories</h2>
     <div class="container three-wide">
-      <%~ includeFile('templates/components/partials/category-card-featured.eta', {
+      <%~ includeFile('templates/components/partials/category-card-featured/category-card-featured.eta', {
         _locals: it?._locals,
         name: '2D Tools',
         description: 'Enhance your 2D experience',
         image: 'category-2d.png'
       }) %>
-      <%~ includeFile('templates/components/partials/category-card-featured.eta', {
+      <%~ includeFile('templates/components/partials/category-card-featured/category-card-featured.eta', {
         _locals: it?._locals,
         name: '3D Tools',
         description: 'Level up your 3D world',
         image: 'category-3d.png'
       }) %>
-      <%~ includeFile('templates/components/partials/category-card-featured.eta', {
+      <%~ includeFile('templates/components/partials/category-card-featured/category-card-featured.eta', {
         _locals: it?._locals,
         name: 'Tools',
         description: 'More Tools for a better Editor',
@@ -65,7 +65,7 @@
     <h2>Newly Updated</h2>
     <div class="container five-wide">
       <% it.lastModifiedAssets?.forEach(info => { %>
-      <%~ includeFile('templates/components/partials/asset-card.eta', { info: info, _locals: it?._locals }) %>
+      <%~ includeFile('templates/components/partials/asset-card/asset-card.eta', { info: info, _locals: it?._locals }) %>
       <% }) %>
   </section>
 </section>

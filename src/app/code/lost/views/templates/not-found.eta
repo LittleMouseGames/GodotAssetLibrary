@@ -4,7 +4,7 @@
   url: 'https://godotassetlibrary.com/404',
   moduleName: 'lost'
 } %>
-<% layout('templates/components/layouts/promobar-nav-body-footer.eta') %>
+<% layout('templates/components/layouts/promobar-nav-body-footer/promobar-nav-body-footer.eta') %>
 
 <section class="page-not-found">
   <div class="center">

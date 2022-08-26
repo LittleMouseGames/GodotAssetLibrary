@@ -4,7 +4,7 @@
   url: 'https://godotassetlibrary.com/create',
   moduleName: 'create'
 } %>
-<% layout('templates/components/layouts/promobar-nav-body-footer.eta') %>
+<% layout('templates/components/layouts/promobar-nav-body-footer/promobar-nav-body-footer.eta') %>
 
 <section class="page-create">
   <form action="" onsubmit="window.godotLibrary.formTools.sendFormAjax(event, this)">
