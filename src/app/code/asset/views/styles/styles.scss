@@ -190,6 +190,13 @@
           margin: revert;
         }
 
+        h1 {
+          &:first-of-type {
+            margin-top: 5px;
+            font-size: 20px;
+          }
+        }
+
         h2 {
           padding-bottom: 5px;
           border-bottom: 1px solid #cacaca;
