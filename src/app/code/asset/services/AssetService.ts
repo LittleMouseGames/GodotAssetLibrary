@@ -79,27 +79,40 @@ export class AssetService {
         // @ts-expect-error
         const purify = DOMPurify(window)
 
+        let branch = 'master'
+
+        if (assetInfo.icon_url.includes('/main/')) {
+          branch = 'main'
+        }
+
         // Override function
         const renderer = {
           image (href: string, title: string, text: string) {
-            let fallback = ''
-            let branch = 'master'
-
-            if (assetInfo.icon_url.includes('/main/')) {
-              branch = 'main'
-            }
-
             if (assetInfo.browse_url.includes('gitlab.com') && !href.includes('gitlab.com')) {
-              fallback = `${assetInfo.browse_url}/-/raw/${branch}/${href}`
+              href = `${assetInfo.browse_url}/-/raw/${branch}/${href}`
             }
 
             if (assetInfo.browse_url.includes('github.com') && !href.includes('github.com')) {
-              fallback = `${assetInfo.browse_url}/raw/${branch}/${href}`
+              href = `${assetInfo.browse_url}/raw/${branch}/${href}`
             }
 
             return `
-            <img src="${href}" alt="README ${title ?? text}" data-fallback-image='${fallback}' />
+            <img src="${href}" alt="README ${title ?? text}" />
             `
+          },
+          html (html: string) {
+            console.log(html)
+            if (html.includes('<img')) {
+              if (assetInfo.browse_url.includes('gitlab.com')) {
+                html = html.replace(/<img/g, `<img data-host="${assetInfo.browse_url}/-/raw/${branch}/"`)
+              }
+
+              if (assetInfo.browse_url.includes('github.com')) {
+                html = html.replace(/<img/g, `<img data-host="${assetInfo.browse_url}/raw/${branch}/"`)
+              }
+            }
+
+            return html
           }
         }
 
