@@ -101,7 +101,6 @@ export class AssetService {
             `
           },
           html (html: string) {
-            console.log(html)
             if (html.includes('<img')) {
               if (assetInfo.browse_url.includes('gitlab.com')) {
                 html = html.replace(/<img/g, `<img data-host="${assetInfo.browse_url}/-/raw/${branch}/"`)
