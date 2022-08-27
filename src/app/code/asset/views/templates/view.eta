@@ -31,25 +31,25 @@
     description: it?.info?.quick_description ??  `Find out more about the FREE ${it?.info?.title} godot asset on Godot Asset Library.`,
     url: `https://godotassetlibrary.com/asset/${it?.info?.asset_id}/${encodeURI(it?.info?.title.replace(/\s/g, '-')).toLocaleLowerCase()}`,
     moduleName: 'asset',
-    jsonLd: {
-      "@context": "https://schema.org/",
-      "@type": "Product",
-      "name": it?.info?.title,
-      "image": it?.info?.card_banner,
-      "description": it?.info?.quick_description
-    },
+    // jsonLd: {
+    //   "@context": "https://schema.org/",
+    //   "@type": "Product",
+    //   "name": it?.info?.title,
+    //   "image": it?.info?.card_banner,
+    //   "description": it?.info?.quick_description
+    // },
     image: generateProxyUrl(it.info.card_banner ?? it.info.icon_url),
   }
 
-  if (stars > 0) {
-    it.meta.jsonLd.aggregateRating = {
-      "@type": "AggregateRating",
-      "ratingValue": stars,
-      "bestRating": "5",
-      "worstRating": "0",
-      "ratingCount": total
-    }
-  }
+  // if (stars > 0) {
+  //   it.meta.jsonLd.aggregateRating = {
+  //     "@type": "AggregateRating",
+  //     "ratingValue": stars,
+  //     "bestRating": "5",
+  //     "worstRating": "0",
+  //     "ratingCount": total
+  //   }
+  // }
 %>
 <% layout('templates/components/layouts/promobar-nav-body-footer/promobar-nav-body-footer.eta') %>
 
