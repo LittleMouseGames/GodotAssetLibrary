@@ -20,6 +20,6 @@ export async function DeleteExpiredResumeTokens (): Promise<any> {
       }
     }
   }).catch(e => {
-    logger.log('error', 'Error pulling resume token', [...e])
+    logger.log('error', 'Error pulling resume token', [e])
   })
 }
