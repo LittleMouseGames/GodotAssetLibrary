@@ -103,13 +103,6 @@
       </div>
     </div>
     <div class="info">
-      <!-- we'll implement this in the future probably™️ -->
-      <!-- <div class="tabs">
-        <ul>
-          <li class="active">Description from README file</li>
-          <li>Legacy Godot Asset Library Description</li>
-        </ul>
-      </div> -->
       <div class="details">
         <div class="section mobile-quick-info">
           <%~ includeFile('./quick-info.eta', it) %>
