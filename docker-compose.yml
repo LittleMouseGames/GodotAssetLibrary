@@ -20,7 +20,7 @@ services:
       - SMTP_USER=$SMTP_USER
       - SMTP_PASS=$SMTP_PASS
     ports:
-      - "3000:3000"
+      - "8080:3000"
     volumes:
       - .:/app
       #- node_modules:/app/node_modules
