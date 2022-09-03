@@ -88,11 +88,11 @@ export class AssetService {
         // Override function
         const renderer = {
           image (href: string, title: string, text: string) {
-            if (assetInfo.browse_url.includes('gitlab.com') && !href.includes('gitlab.com')) {
+            if (assetInfo.browse_url.includes('gitlab.com') && !href.includes('gitlab.com') && !href.includes('http')) {
               href = `${assetInfo.browse_url}/-/raw/${branch}/${href}`
             }
 
-            if (assetInfo.browse_url.includes('github.com') && !href.includes('github.com')) {
+            if (assetInfo.browse_url.includes('github.com') && !href.includes('github.com') && !href.includes('http')) {
               href = `${assetInfo.browse_url}/raw/${branch}/${href}`
             }
 

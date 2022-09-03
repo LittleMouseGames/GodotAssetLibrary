@@ -58,6 +58,10 @@
 <%~ includeFile('templates/components/partials/modal-delete/modal-delete.eta') %>
 
 <section class="page-asset">
+  <link rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.1.0/github-markdown-light.min.css"
+    integrity="sha512-zb2pp+R+czM7GAemdSUQt6jFmr3qCo6ikvBgVU6F5GvwEDR0C2sefFiPEJ9QUpmAKdD5EqDUdNRtbOYnbF/eyQ=="
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
   <div class="column">
     <div class="media <% if(it?.info?.previews.length <= 1) { %>single-image<% } %>">
       <% if(it?.info?.previews.length > 1) { %>
@@ -124,11 +128,11 @@
           <% const descriptionFormatted = it?.info?.description?.replace(/\n/g, '<br>') %>
 
           <% if (it.info.readme) { %>
-          <div class="readme active">
+          <div class="readme active markdown-body">
             <%~ it.info.readme %>
           </div>
           <% } %>
-          <div class="description <%= it.info.readme ? '' : 'active' %>">
+          <div class="description <%= it.info.readme ? '' : 'active' %> markdown-body">
             <p><%~ descriptionFormatted %></p>
           </div>
         </div>
