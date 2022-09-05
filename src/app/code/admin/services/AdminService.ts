@@ -158,8 +158,10 @@ export class AdminService {
       await UpdateNegativeVotesRemoveOne(reviewInfo.asset_id)
     }
 
-    await UpdateReportApproveById(reportId)
-    await DeleteReviewById(reportInfo.review_id)
+    await Promise.all([
+      UpdateReportApproveById(reportId),
+      DeleteReviewById(reportInfo.review_id)
+    ])
 
     res.send()
   }
@@ -173,8 +175,10 @@ export class AdminService {
       throw new Error('Promobar message too long, must be less than 100 characters')
     }
 
-    await UpdatePromobarMessage(message)
-    await UpdateSiteRestrictions(disableNewAccounts, disableNewComments)
+    await Promise.all([
+      UpdatePromobarMessage(message),
+      UpdateSiteRestrictions(disableNewAccounts, disableNewComments)
+    ])
 
     res.send()
   }
@@ -194,15 +198,21 @@ export class AdminService {
       const featuredAssets = await GetFeaturedAssets()
 
       if (featuredAssets?.includes(asset)) {
-        await UpdateFeaturedAssetsRemove(asset)
-        await UpdateAssetSetFeatured(asset, false)
+        await Promise.all([
+          UpdateFeaturedAssetsRemove(asset),
+          UpdateAssetSetFeatured(asset, false)
+        ])
       } else {
-        await UpdateFeaturedAssetsAdd(asset)
-        await UpdateAssetSetFeatured(asset, true)
+        await Promise.all([
+          UpdateFeaturedAssetsAdd(asset),
+          UpdateAssetSetFeatured(asset, true)
+        ])
       }
     } catch (e) {
-      await UpdateFeaturedAssetsAdd(asset)
-      await UpdateAssetSetFeatured(asset, true)
+      await Promise.all([
+        UpdateFeaturedAssetsAdd(asset),
+        UpdateAssetSetFeatured(asset, true)
+      ])
     }
 
     res.send()

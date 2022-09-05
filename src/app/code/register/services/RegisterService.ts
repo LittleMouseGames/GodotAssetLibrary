@@ -24,7 +24,7 @@ export class RegisterService {
        * no: go to register page
        */
       try {
-        await GetUserIdByToken(hashedToken)
+        void await GetUserIdByToken(hashedToken)
         res.redirect('/dashboard')
       } catch (e) {
         return res.render('templates/pages/register/register', { pageBanner: pageBanner })

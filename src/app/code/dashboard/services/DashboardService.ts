@@ -153,8 +153,10 @@ export class DashboardService {
 
     const userId = await GetUserIdByToken(hashedToken)
 
-    await UpdateUserInformtaion(hashedToken, username, email)
-    await UpdateReviewsInformationByUserId(userId, username)
+    await Promise.all([
+      UpdateUserInformtaion(hashedToken, username, email),
+      UpdateReviewsInformationByUserId(userId, username)
+    ])
 
     const info = await GetUserInfoByToken(req.body.hashedToken)
     return res.render('templates/pages/dashboard/dashboard', { info: info })
@@ -261,8 +263,10 @@ export class DashboardService {
       }
     }
 
-    await DeleteAllUserComments(userId)
-    await DeleteUserByUserId(userId)
+    await Promise.all([
+      DeleteAllUserComments(userId),
+      DeleteUserByUserId(userId)
+    ])
 
     res.clearCookie('auth-token')
     res.redirect('/')
