@@ -12,10 +12,17 @@ export class HomepageService {
   public async render (req: Request, res: Response): Promise<void> {
     const authToken = striptags(req.cookies['auth-token'] ?? '')
     try {
-      const trendingAssets = await GetTrendingAssets()
-      const featuredAssets = await GetFourAssetsForHomepage()
-      const lastModifiedAssets = await GetLastModifiedAssets()
-      const categoriesObject = await GetAllCategoriesAndTheirAssetCount()
+      const [
+        trendingAssets,
+        featuredAssets,
+        lastModifiedAssets,
+        categoriesObject
+      ] = await Promise.all([
+        GetTrendingAssets(),
+        GetFourAssetsForHomepage(),
+        GetLastModifiedAssets(),
+        GetAllCategoriesAndTheirAssetCount()
+      ])
 
       if (authToken !== '') {
         const tokenServices = TokenServices.getInstance()

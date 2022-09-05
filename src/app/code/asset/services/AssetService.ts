@@ -33,9 +33,10 @@ export class AssetService {
    * @param {Response} res
    * @returns
    */
-  public async render (req: Request, res: Response): Promise<any> {
+  public render = async (req: Request, res: Response): Promise<any> => {
     const assetId = striptags(req.params.id ?? '')
     const authToken = striptags(req.cookies['auth-token'] ?? '')
+
     logger.log('info', `Rendering asset page ${assetId}`)
 
     if (assetId === '') {
@@ -43,8 +44,14 @@ export class AssetService {
     }
 
     try {
-      const assetInfo = await GetAssetDisplayInformation(assetId)
-      const comments = await GetAssetReviewsById(assetId)
+      const [
+        assetInfo,
+        comments
+      ] = await Promise.all([
+        GetAssetDisplayInformation(assetId),
+        GetAssetReviewsById(assetId)
+      ])
+
       let hasUserReviewedAsset = false
       let usersAssetReview = {}
 
@@ -58,9 +65,15 @@ export class AssetService {
         const tokenServices = TokenServices.getInstance()
         const hashedToken = tokenServices.hashToken(authToken)
         try {
-          const userId = await GetUserIdByToken(hashedToken)
-          hasUserReviewedAsset = await GetHasUserReviewedAsset(hashedToken, assetId)
-          usersAssetReview = await GetAssetReviewByUserId(assetId, userId)
+          const userId = await GetUserIdByToken(hashedToken);
+
+          [
+            hasUserReviewedAsset,
+            usersAssetReview
+          ] = await Promise.all([
+            GetHasUserReviewedAsset(hashedToken, assetId),
+            GetAssetReviewByUserId(assetId, userId)
+          ])
         } catch (e) {
           // ignore
         }
@@ -152,8 +165,12 @@ export class AssetService {
     const assetId = striptags(req.params.id ?? '')
     const review = striptags(req.body.asset_review ?? '')
     const headline = striptags(req.body.asset_review_headline ?? '')
-    const hasUserReviewedAsset = await GetHasUserReviewedAsset(authToken, assetId)
-    const isAccountDisabled = await GetIsAccountDisabledByToken(authToken)
+
+    const [hasUserReviewedAsset, isAccountDisabled] = await Promise.all([
+      GetHasUserReviewedAsset(authToken, assetId),
+      GetIsAccountDisabledByToken(authToken)
+    ])
+
     let siteRestrictions: any = {}
 
     try {
@@ -212,17 +229,24 @@ export class AssetService {
         await UpdateNegativeVotesAddOne(assetId)
       }
 
-      await UpdateUserReviewedAssets(authToken, assetId)
-      await InsertReviewForAsset(userId, username, assetId, rating, striptags(review), striptags(headline))
+      await Promise.all([
+        UpdateUserReviewedAssets(authToken, assetId),
+        InsertReviewForAsset(userId, username, assetId, rating, striptags(review), striptags(headline))
+      ])
     } else {
       const oldReview = await GetAssetReviewByUserId(assetId, userId)
 
       if (oldReview.review_type === 'positive' && rating === 'negative') {
-        await UpdateNegativeVotesAddOne(assetId)
-        await UpdatePositiveVotesRemoveOne(assetId)
+        await Promise.all([
+          UpdateNegativeVotesAddOne(assetId),
+          UpdatePositiveVotesRemoveOne(assetId)
+        ])
       } else if (oldReview.review_type === 'negative' && rating === 'positive') {
-        await UpdatePositiveVotesAddOne(assetId)
-        await UpdateNegativeVotesRemoveOne(assetId)
+        await Promise.all([
+          UpdatePositiveVotesAddOne(assetId),
+          UpdateNegativeVotesRemoveOne(assetId)
+
+        ])
       }
 
       await UpdateReviewForAsset(userId, assetId, rating, striptags(review), striptags(headline))
