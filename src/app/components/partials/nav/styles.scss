@@ -28,6 +28,10 @@
     width: 100%;
     position: absolute;
     z-index: 0;
+    
+    a {
+      text-decoration: underline dashed;
+    }
   }
 
   .iconify {
