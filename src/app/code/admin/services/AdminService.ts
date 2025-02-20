@@ -20,7 +20,7 @@ import { UpdatePositiveVotesRemoveOne } from 'app/code/asset/models/UPDATE/Updat
 import { UpdateNegativeVotesRemoveOne } from 'app/code/asset/models/UPDATE/UpdateNegativeVotesRemoveOne'
 
 export class AdminService {
-  public async render (_req: Request, res: Response): Promise<void> {
+  public async render(_req: Request, res: Response): Promise<void> {
     const pageBanner = {
       title: 'Site Settings',
       info: 'Manage site settings like promobar message and featured posts'
@@ -36,11 +36,11 @@ export class AdminService {
     return res.render('templates/pages/admin/admin', { pageBanner: pageBanner, siteRestrictions: siteRestrictions })
   }
 
-  public async renderFeatured (req: Request, res: Response): Promise<void> {
+  public async renderFeatured(req: Request, res: Response): Promise<void> {
     let limit = Number(req.query.limit ?? 12)
     const page = Number(req.query.page ?? 0)
     const sort = striptags(String(req.query.sort ?? 'relevance'))
-    const sortMap: {[key: string]: any} = {
+    const sortMap: { [key: string]: any } = {
       relevance: {},
       asset_rating: { upvotes: -1 },
       newest: { added_date: -1 },
@@ -68,11 +68,11 @@ export class AdminService {
     return res.render('templates/pages/admin/featured', { grid: assets, params: req.originalUrl, pageBanner: pageBanner })
   }
 
-  public async renderReports (req: Request, res: Response): Promise<void> {
+  public async renderReports(req: Request, res: Response): Promise<void> {
     let limit = Number(req.query.limit ?? 12)
     const page = Number(req.query.page ?? 0)
     const sort = striptags(String(req.query.sort ?? 'relevance'))
-    const sortMap: {[key: string]: any} = {
+    const sortMap: { [key: string]: any } = {
       relevance: {},
       asset_rating: { upvotes: -1 },
       newest: { added_date: -1 },
@@ -101,7 +101,7 @@ export class AdminService {
     const reviewAndReportCombined: Array<{ [key: string]: { [key: string]: string } }> = []
 
     reportedReviewList.forEach(report => {
-      const combinedObject: {[key: string]: {[key: string]: string} } = {}
+      const combinedObject: { [key: string]: { [key: string]: string } } = {}
 
       const reportedReview = reviews.find(review => review.human_id === report.review_id)
 
@@ -130,7 +130,7 @@ export class AdminService {
     return res.render('templates/pages/admin/view-reports', { grid: reviewAndReportCombined, params: req.originalUrl, pageBanner: pageBanner, type: 'reports' })
   }
 
-  public async ignoreReport (req: Request, res: Response): Promise<void> {
+  public async ignoreReport(req: Request, res: Response): Promise<void> {
     const reportId = striptags(req.params.id ?? '')
 
     if (reportId.length === 0) {
@@ -142,7 +142,7 @@ export class AdminService {
     res.send()
   }
 
-  public async approveReport (req: Request, res: Response): Promise<void> {
+  public async approveReport(req: Request, res: Response): Promise<void> {
     const reportId = striptags(req.params.id ?? '')
 
     if (reportId.length === 0) {
@@ -164,13 +164,13 @@ export class AdminService {
     res.send()
   }
 
-  public async updateSiteSettings (req: Request, res: Response): Promise<void> {
+  public async updateSiteSettings(req: Request, res: Response): Promise<void> {
     const message = striptags(req.body.message ?? '', ['a', 'strong', 'span'])
     const disableNewAccounts = Boolean(req.body.disable_new_accounts ?? false)
     const disableNewComments = Boolean(req.body.disable_new_comments ?? false)
 
-    if (message.length > 100) {
-      throw new Error('Promobar message too long, must be less than 100 characters')
+    if (message.length > 150) {
+      throw new Error('Promobar message too long, must be less than 150 characters')
     }
 
     await UpdatePromobarMessage(message)
@@ -179,7 +179,7 @@ export class AdminService {
     res.send()
   }
 
-  public async featureAsset (req: Request, res: Response): Promise<void> {
+  public async featureAsset(req: Request, res: Response): Promise<void> {
     const asset = striptags(req.params.id ?? '')
 
     if (asset === '') {

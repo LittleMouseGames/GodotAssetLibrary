@@ -53,10 +53,16 @@ async function fetchAssetListings (): Promise<any[]> {
   if (env === 'prod') {
     paths = [
       '/asset-library/api/asset?type=any&max_results=500&godot_version=2.2',
-      '/asset-library/api/asset?type=any&max_results=500&godot_version=3.4&page=0',
-      '/asset-library/api/asset?type=any&max_results=500&godot_version=3.4&page=1',
-      '/asset-library/api/asset?type=any&max_results=500&godot_version=3.4&page=2',
-      '/asset-library/api/asset?type=any&max_results=500&godot_version=4.0'
+      '/asset-library/api/asset?type=any&max_results=500&godot_version=3.9&page=0',
+      '/asset-library/api/asset?type=any&max_results=500&godot_version=3.9&page=1',
+      '/asset-library/api/asset?type=any&max_results=500&godot_version=3.9&page=2',
+      '/asset-library/api/asset?type=any&max_results=500&godot_version=3.9&page=3',
+      '/asset-library/api/asset?type=any&max_results=500&godot_version=4.9&page=0',
+      '/asset-library/api/asset?type=any&max_results=500&godot_version=4.9&page=1',
+      '/asset-library/api/asset?type=any&max_results=500&godot_version=4.9&page=2',
+      '/asset-library/api/asset?type=any&max_results=500&godot_version=4.9&page=3',
+      '/asset-library/api/asset?type=any&max_results=500&godot_version=4.9&page=4',
+      '/asset-library/api/asset?type=any&max_results=500&godot_version=4.9&page=5'
     ]
   } else if (env === 'devel') {
     paths = [
