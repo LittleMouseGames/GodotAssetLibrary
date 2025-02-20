@@ -169,8 +169,8 @@ export class AdminService {
     const disableNewAccounts = Boolean(req.body.disable_new_accounts ?? false)
     const disableNewComments = Boolean(req.body.disable_new_comments ?? false)
 
-    if (message.length > 100) {
-      throw new Error('Promobar message too long, must be less than 100 characters')
+    if (message.length > 150) {
+      throw new Error('Promobar message too long, must be less than 150 characters')
     }
 
     await UpdatePromobarMessage(message)
