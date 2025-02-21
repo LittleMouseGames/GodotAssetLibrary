@@ -7,7 +7,7 @@ services:
       dockerfile: Dockerfile
     image: nodejs
     container_name: gda_nodejs
-    restart: on-failure
+    restart: always
     env_file: .env
     environment:
       - DB_USERNAME=$DB_USERNAME
