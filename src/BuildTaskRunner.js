@@ -202,7 +202,7 @@ webpack.stderr.on('data', function (data) {
 
 function runApp () {
   const options = argv?.production ? { ...process.env, NODE_ENV: 'production' } : {}
-  const bundle = spawn('nodemon', ['dist/bundle.js'], options)
+  const bundle = spawn(`${argv?.production ? 'node' : 'nodemon'}`, ['dist/bundle.js'], options)
 
   appRunning = true
 
