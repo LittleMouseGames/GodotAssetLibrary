@@ -106,6 +106,10 @@ class RouterServer extends Server {
       // res.send(this.FRONT_END_MSG)
     })
 
+    this.app.get('/health', (_req: Request, res: Response) => {
+      res.send('OK')
+    })
+
     this.app.listen(port, () => {
       logger.log('info', `Running on port: ${port}`)
     })
