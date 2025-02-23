@@ -101,13 +101,13 @@ class RouterServer extends Server {
    * @param port {Number} declare the server port
    */
   public start (port: number): void {
+    this.app.get('/health', (_req: Request, res: Response) => {
+      res.send('OK')
+    })
+
     this.app.get('*', (_req: Request, res: Response) => {
       res.redirect('/lost')
       // res.send(this.FRONT_END_MSG)
-    })
-
-    this.app.get('/health', (_req: Request, res: Response) => {
-      res.send('OK')
     })
 
     this.app.listen(port, () => {
