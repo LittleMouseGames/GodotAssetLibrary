@@ -6,11 +6,27 @@ import { createWriteStream } from 'fs'
 import { SitemapStream } from 'sitemap'
 import path from 'path'
 
+let generating = false
+
 // eslint-disable-next-line @typescript-eslint/no-misused-promises
 export const generateSitemapCron = new CronJob('0 1 * * *', () => {
-  logger.log('info', 'Generating sitemap')
-  void generateSitemap()
+  void runGenerateSitemap()
 })
+
+export async function runGenerateSitemap (): Promise<void> {
+  if (generating) {
+    logger.log('warn', 'Skipping sitemap generation because the previous run is still active')
+    return
+  }
+
+  generating = true
+  try {
+    logger.log('info', 'Generating sitemap')
+    await generateSitemap()
+  } finally {
+    generating = false
+  }
+}
 
 async function generateSitemap (): Promise<void> {
   const categories = await GetAllCategoriesAndTheirAssetCount()

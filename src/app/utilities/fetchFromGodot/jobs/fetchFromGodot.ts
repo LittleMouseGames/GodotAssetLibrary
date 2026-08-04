@@ -9,6 +9,7 @@ import striptags from 'striptags'
 import { FetchReadme } from 'app/utilities/fetchReadme/services/FetchReadme'
 
 const host = 'godotengine.org'
+let importRunning = false
 
 /**
  * Fetch asset listings and mirror from old library
@@ -22,7 +23,7 @@ const host = 'godotengine.org'
  * off-hour times (as much as resonably possible)
  */
 export const fetchAssetsFromGodot = new CronJob('0 1 * * *', function () {
-  void importAssets()
+  void runImportAssets()
 })
 
 /**
@@ -35,6 +36,20 @@ export const fetchAssetsFromGodot = new CronJob('0 1 * * *', function () {
  *     - if ours is newer, skip
  *     - if theirs is newer, merge info
  */
+export async function runImportAssets (): Promise<void> {
+  if (importRunning) {
+    logger.log('warn', 'Skipping asset import because the previous run is still active')
+    return
+  }
+
+  importRunning = true
+  try {
+    await importAssets()
+  } finally {
+    importRunning = false
+  }
+}
+
 async function importAssets (): Promise<void> {
   logger.log('info', 'Fetching data to mirror from Godot Asset Library')
 
@@ -273,4 +288,5 @@ async function modelGetAssetInformation (legacyAssetID: string): Promise<any> {
   return operationObject
 }
 
-void importAssets()
+// The initial import is intentionally started from core/start after MongoDB connects.
+
