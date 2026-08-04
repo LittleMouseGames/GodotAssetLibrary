@@ -17,13 +17,13 @@ export const FetchReadme = async function (assetId: string, url: string): Promis
     })
 
     if (!response.ok) {
-      response.body.destroy()
+      response.body?.destroy()
       throw new Error(`Archive download returned HTTP ${response.status}`)
     }
 
     const contentLength = Number(response.headers.get('content-length'))
     if (Number.isFinite(contentLength) && contentLength > MAX_ARCHIVE_BYTES) {
-      response.body.destroy()
+      response.body?.destroy()
       throw new Error(`Archive exceeds ${MAX_ARCHIVE_BYTES} byte limit`)
     }
 

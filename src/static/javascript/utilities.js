@@ -104,6 +104,7 @@ window.godotLibrary = {
       const type = button.getAttribute('data-media-type')
       const mediaUrl = button.getAttribute('data-media-url')
       const imageUrl = button.getAttribute('data-media-image-url')
+      const displayUrl = button.getAttribute('data-media-display-url')
 
       document.querySelectorAll('.thumbnail-btn').forEach(item => {
         item.classList.remove('active')
@@ -124,7 +125,7 @@ window.godotLibrary = {
         iframe.src = 'about:blank'
         iframe.style.display = 'none'
         image.style.display = 'block'
-        image.src = imageUrl
+        image.src = displayUrl || imageUrl
         image.dataset.fallbackImage = imageUrl
         image.dataset.mediaUrl = imageUrl
         image.dataset.mediaIndex = index
@@ -142,7 +143,7 @@ window.godotLibrary = {
       if (url === null || url === undefined || url === '') return
 
       image.src = url
-      image.dataset.fallbackImage = url
+      image.dataset.fallbackImage = '/images/noimage.png'
       image.dataset.triedFallback = 'false'
       image.alt = button?.querySelector('img')?.alt ?? fallbackAlt ?? 'Asset preview image'
       lightbox.dataset.mediaIndex = index
@@ -155,7 +156,7 @@ window.godotLibrary = {
       if (lightbox === null || image === null || index === undefined || index === '') return
 
       this.activeTrigger = trigger
-  this.showLightboxImage(index, trigger.dataset.mediaUrl ?? trigger.dataset.fallbackImage ?? trigger.currentSrc, trigger.alt)
+      this.showLightboxImage(index, trigger.dataset.mediaUrl ?? trigger.dataset.fallbackImage ?? trigger.currentSrc, trigger.alt)
       lightbox.classList.add('active')
       lightbox.setAttribute('aria-hidden', 'false')
       document.body.style.overflow = 'hidden'
@@ -298,7 +299,12 @@ document.addEventListener('error', function (event) {
   if (host !== undefined && source !== '' && !/^(https?:|data:|\/)/i.test(source)) {
     image.src = `${host}${source}`
   } else if (fallback !== undefined && fallback !== '') {
-    image.src = fallback
+    if (new URL(fallback, document.baseURI).href === new URL(source, document.baseURI).href) {
+      image.src = '/images/noimage.png'
+      image.dataset.triedFallback = 'complete'
+    } else {
+      image.src = fallback
+    }
   } else {
     image.src = '/images/noimage.png'
   }

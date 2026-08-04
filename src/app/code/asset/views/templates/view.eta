@@ -60,7 +60,9 @@
         <button type="button" class="thumbnail-btn<%= index === 0 ? ' active' : '' %>"
           data-media-index="<%= index %>" data-media-type="<%= item.type %>"
           data-media-url="<%= item.type === 'video' ? item.embedUrl : item.url %>"
-          data-media-image-url="<%= item.url %>" aria-current="<%= index === 0 ? 'true' : 'false' %>"
+          data-media-image-url="<%= item.url %>"
+          data-media-display-url="<%= item.type === 'image' ? generateProxyUrl(item.url, 1920, 1080) : '' %>"
+          aria-current="<%= index === 0 ? 'true' : 'false' %>"
           aria-label="View media <%= index + 1 %>">
           <img src="<%= generateProxyUrl(item.thumbnail, 150, 84) %>"
             data-fallback-image="<%= item.thumbnail %>" alt="<%= it?.info?.title %> thumbnail <%= index + 1 %>"
