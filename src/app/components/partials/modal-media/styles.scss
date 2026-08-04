@@ -1,0 +1,70 @@
+@import "components/utils/forms";
+@import "components/utils/mixins";
+
+@include modal-styles;
+
+.modal.media-lightbox {
+  z-index: 10;
+
+  .modal-media.body {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: center;
+    width: min(96vw, 1200px);
+    max-height: 94vh;
+    padding: 12px;
+    background: rgba(20, 20, 20, 0.96);
+  }
+
+  .image-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 0;
+    max-height: calc(94vh - 24px);
+  }
+
+  img {
+    display: block;
+    max-width: 100%;
+    max-height: calc(94vh - 24px);
+    object-fit: contain;
+  }
+
+  button {
+    width: auto;
+    margin: 0;
+    border: 0;
+    background: transparent;
+    color: white;
+    font-size: 42px;
+    line-height: 1;
+    padding: 8px 12px;
+  }
+
+  .close {
+    position: absolute;
+    top: 4px;
+    right: 10px;
+    z-index: 1;
+    font-size: 36px;
+  }
+
+  @include mobile-styles {
+    .modal-media.body {
+      width: 100vw;
+      min-height: 100vh;
+      max-height: 100vh;
+      border-radius: 0;
+    }
+
+    img {
+      max-height: 88vh;
+    }
+
+    button {
+      font-size: 34px;
+      padding: 8px;
+    }
+  }
+}

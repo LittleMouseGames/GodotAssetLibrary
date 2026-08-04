@@ -21,6 +21,7 @@ import { GetIsAccountDisabledByToken } from '../models/GET/GetIsAccountDisabledB
 import { InsertReviewReport } from '../models/INSERT/InsertReviewReport'
 import fromNow from 'fromnow'
 import striptags from 'striptags'
+import { getFallbackImage, normalizePreviews } from 'core/utils/mediaHelpers'
 import { renderReadme } from 'core/utils/readmeRenderer'
 
 export class AssetService {
@@ -80,13 +81,18 @@ export class AssetService {
         title: assetInfo.title,
         info: `An asset by <strong>${assetInfo.author}</strong>`
       }
+      const mediaItems = normalizePreviews(assetInfo.previews)
+      const fallbackImage = getFallbackImage(assetInfo)
 
       return res.render('templates/pages/asset/view', {
         info: assetInfo,
         comments: comments,
         hasUserReviewedAsset: hasUserReviewedAsset,
         usersAssetReview: usersAssetReview,
-        pageBanner: pageBanner
+        pageBanner: pageBanner,
+        mediaItems: mediaItems,
+        primaryMedia: mediaItems[0] ?? null,
+        fallbackImage: fallbackImage
       })
     } catch (e: any) {
       logger.log('error', `Failed to load asset page: ${assetId}, ${e?.message}`, [e])

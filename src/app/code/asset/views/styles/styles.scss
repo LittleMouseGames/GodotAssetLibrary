@@ -5,6 +5,7 @@
 @import "components/partials/modal-report/styles";
 @import "components/partials/modal-install/styles";
 @import "components/partials/modal-delete/styles";
+@import "components/partials/modal-media/styles";
 
 @include card-rating-styles;
 
@@ -373,14 +374,24 @@
         column-gap: 10px;
       }
 
-      .image {
+      .thumbnail-btn {
+        display: block;
+        border: 2px solid transparent;
+        padding: 0;
         padding-top: 56.25%;
+        margin-top: 0;
         background: $color-brand-gray;
         width: 100%;
         border-radius: 3px;
         position: relative;
         overflow: hidden;
         cursor: pointer;
+
+        &.active,
+        &:focus-visible {
+          border-color: $color-brand-black;
+          outline: none;
+        }
 
         &:not(:last-of-type) {
           margin-bottom: 20px;
