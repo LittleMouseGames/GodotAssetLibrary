@@ -32,12 +32,10 @@ export interface assetSchema {
   'featured': boolean
   'card_banner': string
   'modify_date_pretty': string
-  'previews': [
-    {
+  'previews': Array<{
       'preview_id': string
       'type': string
       'link': string
       'thumbnail': string
-    }
-  ]
+  }>
 }

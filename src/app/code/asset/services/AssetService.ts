@@ -19,11 +19,10 @@ import { GetUserSavedAssets } from 'app/code/dashboard/models/GET/GetUserSavedAs
 import { GetSiteRestrictions } from 'app/code/admin/models/GET/GetSiteRestrictions'
 import { GetIsAccountDisabledByToken } from '../models/GET/GetIsAccountDisabledByToken'
 import { InsertReviewReport } from '../models/INSERT/InsertReviewReport'
-import DOMPurify from 'dompurify'
 import fromNow from 'fromnow'
 import striptags from 'striptags'
-import { marked } from 'marked'
-import { JSDOM } from 'jsdom'
+import { getFallbackImage, normalizePreviews } from 'core/utils/mediaHelpers'
+import { renderReadme } from 'core/utils/readmeRenderer'
 
 export class AssetService {
   /**
@@ -74,65 +73,26 @@ export class AssetService {
         }
       }
 
-      if ('readme' in assetInfo) {
-        const window = new JSDOM('<!DOCTYPE html>').window
-        // @ts-expect-error
-        const purify = DOMPurify(window)
-
-        let branch = 'master'
-
-        if (assetInfo.icon_url.includes('/main/')) {
-          branch = 'main'
-        }
-
-        // Override function
-        const renderer = {
-          image (href: string, title: string, text: string) {
-            if (assetInfo.browse_url.includes('gitlab.com') && !href.includes('gitlab.com') && !href.includes('http')) {
-              href = `${assetInfo.browse_url}/-/raw/${branch}/${href}`
-            }
-
-            if (assetInfo.browse_url.includes('github.com') && !href.includes('github.com') && !href.includes('http')) {
-              href = `${assetInfo.browse_url}/raw/${branch}/${href}`
-            }
-
-            return `
-            <img src="${href}" alt="README ${title ?? text}" />
-            `
-          },
-          html (html: string) {
-            if (html.includes('<img')) {
-              if (assetInfo.browse_url.includes('gitlab.com')) {
-                html = html.replace(/<img/g, `<img data-host="${assetInfo.browse_url}/-/raw/${branch}/"`)
-              }
-
-              if (assetInfo.browse_url.includes('github.com')) {
-                html = html.replace(/<img/g, `<img data-host="${assetInfo.browse_url}/raw/${branch}/"`)
-              }
-            }
-
-            return html
-          }
-        }
-
-        marked.use({ renderer })
-
-        const clean = purify.sanitize(marked.parse(assetInfo.readme))
-
-        assetInfo.readme = clean
+      if (typeof assetInfo.readme === 'string' && assetInfo.readme !== '') {
+        assetInfo.readme = renderReadme(assetInfo.readme, assetInfo)
       }
 
       const pageBanner = {
         title: assetInfo.title,
         info: `An asset by <strong>${assetInfo.author}</strong>`
       }
+      const mediaItems = normalizePreviews(assetInfo.previews)
+      const fallbackImage = getFallbackImage(assetInfo)
 
       return res.render('templates/pages/asset/view', {
         info: assetInfo,
         comments: comments,
         hasUserReviewedAsset: hasUserReviewedAsset,
         usersAssetReview: usersAssetReview,
-        pageBanner: pageBanner
+        pageBanner: pageBanner,
+        mediaItems: mediaItems,
+        primaryMedia: mediaItems[0] ?? null,
+        fallbackImage: fallbackImage
       })
     } catch (e: any) {
       logger.log('error', `Failed to load asset page: ${assetId}, ${e?.message}`, [e])
