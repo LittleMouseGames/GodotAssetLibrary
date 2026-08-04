@@ -131,20 +131,20 @@ window.godotLibrary = {
         image.dataset.triedFallback = 'false'
       }
     },
-    showLightboxImage: function (index) {
+    showLightboxImage: function (index, fallbackUrl, fallbackAlt) {
       const lightbox = this.getLightbox()
       const image = lightbox?.querySelector('[data-media-lightbox-image]')
       const button = document.querySelector(`.thumbnail-btn[data-media-index="${index}"]`)
 
-      if (lightbox === null || image === null || button === null) return
+      if (lightbox === null || image === null) return
 
-      const url = button.getAttribute('data-media-image-url')
-      if (url === null) return
+      const url = button?.getAttribute('data-media-image-url') ?? fallbackUrl
+      if (url === null || url === undefined || url === '') return
 
       image.src = url
       image.dataset.fallbackImage = url
       image.dataset.triedFallback = 'false'
-      image.alt = button.querySelector('img')?.alt ?? 'Asset preview image'
+      image.alt = button?.querySelector('img')?.alt ?? fallbackAlt ?? 'Asset preview image'
       lightbox.dataset.mediaIndex = index
     },
     openLightbox: function (trigger) {
@@ -155,7 +155,7 @@ window.godotLibrary = {
       if (lightbox === null || image === null || index === undefined || index === '') return
 
       this.activeTrigger = trigger
-      this.showLightboxImage(index)
+  this.showLightboxImage(index, trigger.dataset.mediaUrl ?? trigger.dataset.fallbackImage ?? trigger.currentSrc, trigger.alt)
       lightbox.classList.add('active')
       lightbox.setAttribute('aria-hidden', 'false')
       document.body.style.overflow = 'hidden'

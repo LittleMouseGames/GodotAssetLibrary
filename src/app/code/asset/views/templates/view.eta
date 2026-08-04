@@ -80,6 +80,7 @@
             style="<%= primaryMedia?.type === 'video' ? 'display: none;' : '' %>"
             src="<%= generateProxyUrl(primaryMedia?.type === 'image' ? primaryMedia.url : fallbackImage, 1920, 1080) %>"
             data-fallback-image="<%= primaryMedia?.type === 'image' ? primaryMedia.url : fallbackImage %>"
+            data-media-url="<%= primaryMedia?.type === 'image' ? primaryMedia.url : fallbackImage %>"
             data-media-index="<%= primaryMedia?.type === 'image' ? 0 : '' %>"
             alt="<%= it?.info?.title %> preview image" loading="lazy" decoding="async">
         </div>
