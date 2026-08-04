@@ -3,7 +3,10 @@ import createHmac from 'create-hmac'
 const KEY = process.env.IMGPROXY_KEY ?? ''
 const SALT = process.env.IMGPROXY_SALT ?? ''
 const HOST = process.env.IMGPROXY_HOST ?? ''
-const ENABLED = process.env.IMGPROXY_ENABLED === 'true'
+// A partially configured proxy generates signed URLs that always fail (usually
+// as HTTP 403). In that case, load the original image rather than forcing the
+// browser through a broken proxy first.
+const ENABLED = process.env.IMGPROXY_ENABLED === 'true' && KEY !== '' && SALT !== '' && HOST !== ''
 
 const urlSafeBase64 = (string: Buffer | string): string => {
   return Buffer.from(string).toString('base64').replace(/=/g, '').replace(/\+/g, '-').replace(/\//g, '_')
