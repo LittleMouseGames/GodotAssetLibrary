@@ -42,7 +42,7 @@ export class SearchService {
     }
 
     if (sort !== 'undefined' && !(sort in sortMap)) {
-      throw new Error('Invalid sort parameter, expeting nothing, `relevance`, `rating`, `newest`, or `last_modified`')
+      throw new Error('Invalid sort parameter. Expected empty, `relevance`, `asset_rating`, `newest`, or `last_modified`')
     }
 
     // clamp limit to [1, 36]; reject non-integers, zero, and negatives

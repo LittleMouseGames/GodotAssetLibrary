@@ -54,9 +54,14 @@ export class MongoHelper {
     const url = `mongodb://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@${process.env.DB_HOST}:${process.env.DB_PORT}/${process.env.DB_NAME}?authSource=admin`
 
     try {
+      const parsedMax = Number.parseInt(process.env.MONGO_MAX_POOL ?? '', 10)
+      const maxPoolSize = Number.isFinite(parsedMax) && parsedMax > 0 ? parsedMax : 10
+      const parsedMin = Number.parseInt(process.env.MONGO_MIN_POOL ?? '', 10)
+      const minPoolSize = Number.isFinite(parsedMin) && parsedMin >= 0 ? Math.min(parsedMin, maxPoolSize) : 2
+
       const client = await MongoClient.connect(url, {
-        maxPoolSize: Number(process.env.MONGO_MAX_POOL ?? 10),
-        minPoolSize: Number(process.env.MONGO_MIN_POOL ?? 2),
+        maxPoolSize,
+        minPoolSize,
         waitQueueTimeoutMS: 5000,
         serverSelectionTimeoutMS: 5000,
         socketTimeoutMS: 30_000,

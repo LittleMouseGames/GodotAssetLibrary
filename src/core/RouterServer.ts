@@ -71,12 +71,12 @@ class RouterServer extends Server {
       if (promoCacheExpiresAt > now) {
         res.locals.promobarMessage = promoCachedMessage
       } else {
+        promoCacheExpiresAt = now + PROMO_TTL_MS
         try {
           promoCachedMessage = await GetPromobarMessage()
         } catch (e) {
           // ignore; serve stale value on error
         }
-        promoCacheExpiresAt = now + PROMO_TTL_MS
         res.locals.promobarMessage = promoCachedMessage
       }
 

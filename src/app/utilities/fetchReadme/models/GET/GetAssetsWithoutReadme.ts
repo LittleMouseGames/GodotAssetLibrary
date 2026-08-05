@@ -8,7 +8,7 @@ interface AssetReadmeRef {
 
 export function GetAssetsWithoutReadme (): FindCursor<AssetReadmeRef> {
   const mongo = MongoHelper.getDatabase()
-  return mongo.collection('assets').find({ readme: null }, {
+  return mongo.collection<AssetReadmeRef>('assets').find({ readme: null }, {
     projection: { download_url: 1, asset_id: 1 }
-  }) as unknown as FindCursor<AssetReadmeRef>
+  })
 }
