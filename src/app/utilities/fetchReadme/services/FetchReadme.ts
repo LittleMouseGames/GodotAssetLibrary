@@ -46,6 +46,9 @@ export const FetchReadme = async function (assetId: string, url: string): Promis
     }
 
     const readme = zip.readAsText(readmeEntry)
+    if (Buffer.byteLength(readme, 'utf8') > MAX_README_BYTES) {
+      throw new Error(`README actual content exceeds ${MAX_README_BYTES} byte limit`)
+    }
     await UpdateAssetReadme(assetId, readme)
   } catch (error: any) {
     logger.log('error', `Failed to fetch README for asset ${assetId}: ${error?.message ?? error}`, [error])
