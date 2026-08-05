@@ -2,12 +2,10 @@ import { Request, Response } from 'express'
 import { TokenServices } from 'core/modules/authentication/services/TokenServices'
 import { GetUserSavedAssets } from 'app/code/dashboard/models/GET/GetUserSavedAssets'
 import striptags from 'striptags'
-import { GetAllFilters } from '../models/GET/GetAllFilters'
 import { GetAssetsCountFromQuery } from '../models/GET/GetAssetsCountFromQuery'
-import { GetAssetsCountWithoutQuery } from '../models/GET/GetAssetsCountWithoutQuery'
 import { GetAssetsFromQuery } from '../models/GET/GetAssetsFromQuery'
-import { GetAssetsWithoutQuery } from '../models/GET/GetAssetsWithoutQuery'
-import { GetSearchResultFilters } from '../models/GET/GetSearchResultFilters'
+import { GetSearchFacets } from '../models/GET/GetSearchFacets'
+import { buildSearchFilter } from '../models/GET/buildSearchFilter'
 
 export class SearchService {
   public async render (req: Request, res: Response): Promise<void> {
@@ -15,7 +13,7 @@ export class SearchService {
     let categoryParams = striptags(String(req.query.category ?? ''))
     let engineParams = striptags(String(req.query.engine ?? ''))
     let limit = Number(req.query.limit ?? 12)
-    const page = Number(req.query.page ?? 0)
+    const pageParam = Number(req.query.page ?? 0)
     const authToken = striptags(req.cookies['auth-token'] ?? '')
     const sort = striptags(String(req.query.sort ?? 'relevance'))
     let title = `Search results ${query === '' ? '' : 'for: ' + query}`
@@ -47,14 +45,18 @@ export class SearchService {
       throw new Error('Invalid sort parameter, expeting nothing, `relevance`, `rating`, `newest`, or `last_modified`')
     }
 
+    // clamp limit to [1, 36]; reject non-integers, zero, and negatives
+    if (!Number.isInteger(limit) || limit < 1) {
+      limit = 12
+    }
     if (limit > 36) {
       limit = 36
     }
-
+    const page = Number.isInteger(pageParam) && pageParam >= 0 ? pageParam : 0
     const skip = limit * page
+
     let categoryArray: any[] = []
     let engineArray: any[] = []
-    let totalAssetsForQuery = 0
 
     if (typeof categoryParams === 'string') {
       if (categoryParams === '') {
@@ -76,51 +78,13 @@ export class SearchService {
       engineArray = engineParams as any[]
     }
 
-    const categoryFilters: {
-      [key: string]: number
-    } = {}
+    const filter = buildSearchFilter(query, categoryArray, engineArray)
 
-    let engineFilters: {
-      [key: string]: number
-    } = {}
-
-    let filters = []
-
-    let assets: any = []
-
-    // if no query we'll show all assets
-    if (query === '' && categoryArray.length === 0 && engineArray.length === 0) {
-      filters = await GetAllFilters()
-      assets = await GetAssetsWithoutQuery(limit, skip, sortMap[sort])
-      totalAssetsForQuery = await GetAssetsCountWithoutQuery()
-    } else {
-      filters = await GetSearchResultFilters(query)
-      assets = await GetAssetsFromQuery(query, limit, skip, sortMap[sort], categoryArray, engineArray)
-      totalAssetsForQuery = await GetAssetsCountFromQuery(query, categoryArray, engineArray)
-    }
-
-    for (const filter of filters) {
-      if (filter.category in categoryFilters) {
-        categoryFilters[filter.category] = categoryFilters[filter.category] + 1
-      } else {
-        categoryFilters[filter.category] = 1
-      }
-
-      if (filter.godot_version in engineFilters) {
-        engineFilters[filter.godot_version] = engineFilters[filter.godot_version] + 1
-      } else {
-        engineFilters[filter.godot_version] = 1
-      }
-    }
-
-    /** sort by key */
-    engineFilters = Object.keys(engineFilters).sort().reverse().reduce(
-      (obj: {[key: string]: number}, key) => {
-        obj[key] = engineFilters[key]
-        return obj
-      },
-      {}
-    )
+    const [assets, totalAssetsForQuery, { categoryFilters, engineFilters }] = await Promise.all([
+      GetAssetsFromQuery(query, limit, skip, sortMap[sort], categoryArray, engineArray),
+      GetAssetsCountFromQuery(query, categoryArray, engineArray),
+      GetSearchFacets(filter)
+    ])
 
     let info = `Found <strong>${totalAssetsForQuery} assets</strong> for query`
     if (inCategory) {
