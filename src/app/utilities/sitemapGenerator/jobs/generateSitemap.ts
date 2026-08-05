@@ -1,15 +1,17 @@
 import { CronJob } from 'cron'
 import { GetAllCategoriesAndTheirAssetCount } from 'app/code/homepage/models/GET/GetAllCategoriesAndTheirAssetCount'
-import { GetAssetsWithoutQuery } from 'app/code/search/models/GET/GetAssetsWithoutQuery'
+import { MongoHelper } from 'core/MongoHelper'
 import { logger } from 'core/utils/logger'
 import { createWriteStream } from 'fs'
+import { rename } from 'fs/promises'
+import { pipeline as streamPipeline } from 'stream/promises'
 import { SitemapStream } from 'sitemap'
 import path from 'path'
 
 let generating = false
 
 // eslint-disable-next-line @typescript-eslint/no-misused-promises
-export const generateSitemapCron = new CronJob('0 1 * * *', () => {
+export const generateSitemapCron = new CronJob('0 2 * * *', () => {
   void runGenerateSitemap()
 })
 
@@ -29,22 +31,35 @@ export async function runGenerateSitemap (): Promise<void> {
 }
 
 async function generateSitemap (): Promise<void> {
+  const mongo = MongoHelper.getDatabase()
   const categories = await GetAllCategoriesAndTheirAssetCount()
-  const assets = await GetAssetsWithoutQuery(0, 0)
 
+  const tmpPath = path.join(__dirname, '../dist/public/sitemap.xml.tmp')
+  const finalPath = path.join(__dirname, '../dist/public/sitemap.xml')
   const sitemap = new SitemapStream({ hostname: 'http://godotassetlibrary.com' })
-  const writeStream = createWriteStream(path.join(__dirname, '../dist/public/sitemap.xml'))
+  const writeStream = createWriteStream(tmpPath)
+  const pipePromise = streamPipeline(sitemap, writeStream)
 
-  sitemap.pipe(writeStream)
-
-  assets.forEach(asset => {
-    sitemap.write({ url: `/asset/${asset.asset_id}/${encodeURI(asset.title.replace(/\s/g, '-')).toLocaleLowerCase()}`, changefreq: 'monthly', lastmod: asset.modify_date })
+  const cursor = mongo.collection('assets').find({}, {
+    projection: { asset_id: 1, title: 1, modify_date: 1 }
   })
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  for (const [key, value] of Object.entries(categories)) {
+  for await (const asset of cursor) {
+    const ok = sitemap.write({
+      url: `/asset/${asset.asset_id}/${encodeURI(String(asset.title).replace(/\s/g, '-')).toLocaleLowerCase()}`,
+      changefreq: 'monthly',
+      lastmod: asset.modify_date
+    })
+    if (!ok) {
+      await new Promise<void>(resolve => sitemap.once('drain', resolve))
+    }
+  }
+
+  for (const [key] of Object.entries(categories)) {
     sitemap.write({ url: `/category/${key.toLocaleLowerCase()}`, changefreq: 'weekly' })
   }
 
   sitemap.end()
+  await pipePromise
+  await rename(tmpPath, finalPath)
 }
