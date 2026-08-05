@@ -1,37 +1,15 @@
 import { Document, WithId } from 'mongodb'
 import { MongoHelper } from 'core/MongoHelper'
 import { assetGridSchema } from 'app/utilities/fetchFromGodot/schema/assets-grid'
+import { buildSearchFilter } from './buildSearchFilter'
 
 interface ReturnedAssets extends WithId<Document>, assetGridSchema {}
 
 export async function GetAssetsFromQuery (query: string, limit: number = 12, skip: number, sort: any = {}, categoryFilters: any[], engineFilters: any[]): Promise<ReturnedAssets[]> {
   const mongo = MongoHelper.getDatabase()
-  const filters: any = {}
+  const filter = buildSearchFilter(query, categoryFilters, engineFilters)
 
-  if (Array.isArray(categoryFilters) && categoryFilters.length > 0) {
-    filters.category_lowercase = {
-      $in: categoryFilters
-    }
-  }
-
-  if (Array.isArray(engineFilters) && engineFilters.length > 0) {
-    filters.godot_version = {
-      $in: engineFilters
-    }
-  }
-
-  if (query !== '') {
-    filters.$text = {
-      $search: query,
-      $caseSensitive: false
-    }
-  }
-
-  const operationObject = await mongo.collection('assets').find({
-    $and: [
-      filters
-    ]
-  }, {
+  const operationObject = await mongo.collection('assets').find(filter, {
     limit: limit,
     sort: sort,
     projection: {
@@ -46,7 +24,8 @@ export async function GetAssetsFromQuery (query: string, limit: number = 12, ski
       featured: 1,
       asset_id: 1,
       previews: 1,
-      card_banner: 1
+      card_banner: 1,
+      modify_date: 1
     }
   }).skip(skip).toArray() as ReturnedAssets[]
 

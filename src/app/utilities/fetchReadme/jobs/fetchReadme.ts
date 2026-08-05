@@ -17,11 +17,13 @@ export async function runFetchReadme (): Promise<void> {
 
   running = true
   try {
-    const assets = await GetAssetsWithoutReadme()
-
-    for (const asset of assets) {
+    const cursor = GetAssetsWithoutReadme()
+    let processed = 0
+    for await (const asset of cursor) {
       await FetchReadme(asset.asset_id, asset.download_url)
+      processed++
     }
+    logger.log('info', `README fetch complete, processed ${processed} assets`)
   } finally {
     running = false
   }

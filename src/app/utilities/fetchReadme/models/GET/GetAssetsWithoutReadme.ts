@@ -1,17 +1,14 @@
+import { FindCursor } from 'mongodb'
 import { MongoHelper } from 'core/MongoHelper'
 
-export async function GetAssetsWithoutReadme (): Promise<any[]> {
+interface AssetReadmeRef {
+  asset_id: string
+  download_url: string
+}
+
+export function GetAssetsWithoutReadme (): FindCursor<AssetReadmeRef> {
   const mongo = MongoHelper.getDatabase()
-  const operationObject = await mongo.collection('assets').find({ readme: null }, {
-    projection: {
-      download_url: 1,
-      asset_id: 1
-    }
-  }).toArray() as any[]
-
-  if (operationObject === null || operationObject === undefined) {
-    throw new Error('No assets found')
-  }
-
-  return operationObject
+  return mongo.collection<AssetReadmeRef>('assets').find({ readme: null }, {
+    projection: { download_url: 1, asset_id: 1 }
+  })
 }
