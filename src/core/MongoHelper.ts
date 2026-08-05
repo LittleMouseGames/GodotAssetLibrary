@@ -54,7 +54,14 @@ export class MongoHelper {
     const url = `mongodb://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@${process.env.DB_HOST}:${process.env.DB_PORT}/${process.env.DB_NAME}?authSource=admin`
 
     try {
-      const client = await MongoClient.connect(url)
+      const client = await MongoClient.connect(url, {
+        maxPoolSize: Number(process.env.MONGO_MAX_POOL ?? 10),
+        minPoolSize: Number(process.env.MONGO_MIN_POOL ?? 2),
+        waitQueueTimeoutMS: 5000,
+        serverSelectionTimeoutMS: 5000,
+        socketTimeoutMS: 30_000,
+        connectTimeoutMS: 10_000
+      })
       MongoHelper.client = client
       MongoHelper.db = client.db(process.env.DB_NAME)
 
