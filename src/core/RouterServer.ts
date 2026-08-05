@@ -13,6 +13,10 @@ import { StatusCodes } from 'http-status-codes'
 import { generateProxyUrl } from 'core/utils/generateProxyUrl'
 require('express-async-errors')
 
+let promoCachedMessage: string | null = null
+let promoCacheExpiresAt = 0
+const PROMO_TTL_MS = 60_000
+
 /**
  * Starts the server
  */
@@ -39,6 +43,11 @@ class RouterServer extends Server {
       extended: true
     }))
 
+    // health check bypasses all database middleware
+    this.app.get('/health', (_req: Request, res: Response) => {
+      res.send('OK')
+    })
+
     /**
      * Inject into all routes _locals space
      */
@@ -58,10 +67,17 @@ class RouterServer extends Server {
         }
       }
 
-      try {
-        res.locals.promobarMessage = await GetPromobarMessage()
-      } catch (e) {
-        // ignore
+      const now = Date.now()
+      if (promoCacheExpiresAt > now) {
+        res.locals.promobarMessage = promoCachedMessage
+      } else {
+        try {
+          promoCachedMessage = await GetPromobarMessage()
+        } catch (e) {
+          // ignore; serve stale value on error
+        }
+        promoCacheExpiresAt = now + PROMO_TTL_MS
+        res.locals.promobarMessage = promoCachedMessage
       }
 
       res.locals.functions = {
@@ -101,10 +117,6 @@ class RouterServer extends Server {
    * @param port {Number} declare the server port
    */
   public start (port: number): void {
-    this.app.get('/health', (_req: Request, res: Response) => {
-      res.send('OK')
-    })
-
     this.app.get('*', (_req: Request, res: Response) => {
       res.redirect('/lost')
       // res.send(this.FRONT_END_MSG)
