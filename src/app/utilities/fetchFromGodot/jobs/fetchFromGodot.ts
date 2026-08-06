@@ -139,7 +139,7 @@ async function fetchAssetInformationAndInsert (assetIDs: any[]): Promise<void> {
 
       if (result.asset_id !== undefined) {
         await modelInsertAsset(result)
-        void updateCategoryCountInfoObject(result.category)
+        await updateCategoryCountInfoObject(result.category)
         await FetchReadme(result.asset_id, result.download_url)
       }
     } catch (e: any) {
@@ -183,14 +183,13 @@ async function fetchAssetInformationAndUpdate (assetIDs: any[]): Promise<void> {
         }
 
         if (assetInformationWeHave.category !== result.category) {
-          void updateCategoryCountInfoObject(assetInformationWeHave.category, -1)
-          void updateCategoryCountInfoObject(result.category)
+          await updateCategoryCountInfoObject(assetInformationWeHave.category, -1)
+          await updateCategoryCountInfoObject(result.category)
         }
 
         await FetchReadme(result.asset_id, result.download_url)
 
         await modelUpdateAssetObject(result.legacy_asset_id, newAssetInformation)
-        logger.log('info', `Updated asset ${striptags(result.title)} successfully`)
       }
     } catch (e: any) {
       logger.log('error', `[IMPORTER]: ${e.message}`, [e])
