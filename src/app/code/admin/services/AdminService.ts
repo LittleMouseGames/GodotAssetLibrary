@@ -18,6 +18,7 @@ import { DeleteReviewById } from '../models/DELETE/DeleteReviewById'
 import { GetReviewById } from '../models/GET/GetReviewById'
 import { UpdatePositiveVotesRemoveOne } from 'app/code/asset/models/UPDATE/UpdatePositiveVotesRemoveOne'
 import { UpdateNegativeVotesRemoveOne } from 'app/code/asset/models/UPDATE/UpdateNegativeVotesRemoveOne'
+import { parsePagination } from 'core/utils/pagination'
 
 export class AdminService {
   public async render (_req: Request, res: Response): Promise<void> {
@@ -37,8 +38,7 @@ export class AdminService {
   }
 
   public async renderFeatured (req: Request, res: Response): Promise<void> {
-    let limit = Number(req.query.limit ?? 12)
-    const page = Number(req.query.page ?? 0)
+    const { limit, skip } = parsePagination(req.query.limit, req.query.page)
     const sort = striptags(String(req.query.sort ?? 'relevance'))
     const sortMap: {[key: string]: any} = {
       relevance: {},
@@ -50,12 +50,6 @@ export class AdminService {
     if (sort !== 'undefined' && !(sort in sortMap)) {
       throw new Error('Invalid sort parameter, expeting nothing, `relevance`, `rating`, `newest`, or `last_modified`')
     }
-
-    if (limit > 36) {
-      limit = 36
-    }
-
-    const skip = limit * page
 
     const featuredAssetList = await GetFeaturedAssets() ?? []
     const assets = await GetAssetsByIdList(featuredAssetList, limit, skip, sortMap[sort])
@@ -69,8 +63,7 @@ export class AdminService {
   }
 
   public async renderReports (req: Request, res: Response): Promise<void> {
-    let limit = Number(req.query.limit ?? 12)
-    const page = Number(req.query.page ?? 0)
+    const { limit, skip } = parsePagination(req.query.limit, req.query.page)
     const sort = striptags(String(req.query.sort ?? 'relevance'))
     const sortMap: {[key: string]: any} = {
       relevance: {},
@@ -83,12 +76,6 @@ export class AdminService {
       throw new Error('Invalid sort parameter, expeting nothing, `relevance`, `rating`, `newest`, or `last_modified`')
     }
 
-    if (limit > 36) {
-      limit = 36
-    }
-
-    const skip = limit * page
-
     const reportedReviewList = await GetReviewReportList(limit, skip)
     const reportedReviewIdList: any[] = []
 
@@ -96,7 +83,7 @@ export class AdminService {
       reportedReviewIdList.push(report.review_id)
     })
 
-    const reviews = await GetReviewsByIdList(reportedReviewIdList, limit, skip)
+    const reviews = await GetReviewsByIdList(reportedReviewIdList, limit, 0)
 
     const reviewAndReportCombined: Array<{ [key: string]: { [key: string]: string } }> = []
 

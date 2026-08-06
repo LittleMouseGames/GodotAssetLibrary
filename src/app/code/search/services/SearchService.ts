@@ -6,30 +6,31 @@ import { GetAssetsCountFromQuery } from '../models/GET/GetAssetsCountFromQuery'
 import { GetAssetsFromQuery } from '../models/GET/GetAssetsFromQuery'
 import { GetSearchFacets } from '../models/GET/GetSearchFacets'
 import { buildSearchFilter } from '../models/GET/buildSearchFilter'
+import { parsePagination } from 'core/utils/pagination'
 
 export class SearchService {
   public async render (req: Request, res: Response): Promise<void> {
     const query = striptags(String(req.query.q ?? '').substr(0, 100))
     let categoryParams = striptags(String(req.query.category ?? ''))
     let engineParams = striptags(String(req.query.engine ?? ''))
-    let limit = Number(req.query.limit ?? 12)
-    const pageParam = Number(req.query.page ?? 0)
+    const { limit, skip } = parsePagination(req.query.limit, req.query.page)
     const authToken = striptags(req.cookies['auth-token'] ?? '')
     // || so an empty string also falls back to the default
-    const sort = striptags(String(req.query.sort || 'relevance'))
+    const requestedSort = striptags(String(req.query.sort ?? ''))
+    const sort = requestedSort === '' ? 'relevance' : requestedSort
     let title = `Search results ${query === '' ? '' : 'for: ' + query}`
-    let plusToSpaceRegex = /\+|&plus;|%2b/
+    const plusToSpaceRegex = /\+|&plus;|%2b/
     let inCategory = false
 
     if (req?.params?.category != null) {
-      var convertedCategory = striptags(req.params.category.toLocaleLowerCase().replace(plusToSpaceRegex, ' '))
+      const convertedCategory = striptags(req.params.category.toLocaleLowerCase().replace(plusToSpaceRegex, ' '))
       categoryParams = convertedCategory
       title = `Assets in category: <span>${convertedCategory}</span>`
       inCategory = true
     }
 
     if (req?.params?.engine != null) {
-      var convertedEngine = striptags(req.params.engine.toLocaleLowerCase().replace(plusToSpaceRegex, ' '))
+      const convertedEngine = striptags(req.params.engine.toLocaleLowerCase().replace(plusToSpaceRegex, ' '))
       engineParams = convertedEngine
       title = `Assets for engine: <span>${convertedEngine}</span>`
       inCategory = true
@@ -44,16 +45,6 @@ export class SearchService {
 
     // unknown values fall back to relevance rather than returning a 400
     const sortOrder = sortMap[sort] ?? sortMap.relevance
-
-    // clamp limit to [1, 36]; reject non-integers, zero, and negatives
-    if (!Number.isInteger(limit) || limit < 1) {
-      limit = 12
-    }
-    if (limit > 36) {
-      limit = 36
-    }
-    const page = Number.isInteger(pageParam) && pageParam >= 0 ? pageParam : 0
-    const skip = limit * page
 
     let categoryArray: any[] = []
     let engineArray: any[] = []
