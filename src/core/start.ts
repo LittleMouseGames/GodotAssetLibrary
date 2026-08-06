@@ -2,7 +2,7 @@ import RouterServer from 'core/RouterServer'
 import { MongoHelper } from 'core/MongoHelper'
 import { logger } from 'core/utils/logger'
 import * as cronJobs from 'core/jobs.index'
-import { runImportAssets } from 'app/utilities/fetchFromGodot/jobs/fetchFromGodot'
+import { ensureIndexes } from 'core/ensureIndexes'
 
 // Connect to MongoDB Database
 MongoHelper.getInstance().connect().then(() => {
@@ -13,6 +13,8 @@ MongoHelper.getInstance().connect().then(() => {
   const server: RouterServer = new RouterServer()
   server.start(3000)
 
+  void ensureIndexes()
+
   // init all our cron jobs
   for (const name of Object.keys(cronJobs)) {
     const job = (cronJobs as any)[name]
@@ -20,9 +22,6 @@ MongoHelper.getInstance().connect().then(() => {
       job.start()
     }
   }
-
-  // delay startup import to let the connection pool warm up first
-  setTimeout(() => { void runImportAssets() }, 30_000)
 }).catch(error => {
   logger.log('error', 'Error durring startup', error)
 })
