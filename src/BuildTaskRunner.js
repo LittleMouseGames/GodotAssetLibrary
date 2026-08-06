@@ -6,6 +6,7 @@ const sass = require('sass')
 const spawn = require('child_process').spawn
 const argv = require('minimist')(process.argv.slice(2))
 let appRunning = false
+const watchedPaths = new Set()
 
 /**
  * Goals:
@@ -29,15 +30,14 @@ function makeDistFolder () {
  * Find our SCSS in the project
  */
 function findScss () {
-  glob(path.join(__dirname, '/**/*.scss'), {}, (_err, files) => {
-    files.forEach(file => {
-      compileAndMoveScss(file)
+  const files = glob.sync(path.join(__dirname, '/**/*.scss'))
+  files.forEach(file => {
+    compileAndMoveScss(file)
 
-      // in case there is a path prefixed, lets lob it off
-      file = file.split('src/')[1]
+    // in case there is a path prefixed, lets lob it off
+    file = file.split('src/')[1]
 
-      watchFileOrFolder(file, 'scss', compileAndMoveScss, files)
-    })
+    watchFileOrFolder(file, 'scss', compileAndMoveScss, files)
   })
 }
 
@@ -45,16 +45,15 @@ function findScss () {
  * Find all ETA templates in projects
  */
 function findTemplates () {
-  glob(path.join(__dirname, '/**/*.eta'), {}, (_err, files) => {
-    files.forEach(file => {
-      // in case there is a path prefixed, lets lob it off
-      file = file.split('src/')[1]
+  const files = glob.sync(path.join(__dirname, '/**/*.eta'))
+  files.forEach(file => {
+    // in case there is a path prefixed, lets lob it off
+    file = file.split('src/')[1]
 
-      watchFileOrFolder(file, 'template', moveTemplates)
+    watchFileOrFolder(file, 'template', moveTemplates)
 
-      /** on first start */
-      moveTemplates(file)
-    })
+    /** on first start */
+    moveTemplates(file)
   })
 }
 
@@ -85,7 +84,17 @@ function watchPublicFolders () {
  * @param {any} passAlongObject the optional data object to pass along to the function
  */
 function watchFileOrFolder (name, type, moveFunction, passAlongObject = {}) {
-  fs.watch(path.join(__dirname, name), function (eventType) {
+  if (!argv?.watch) {
+    return
+  }
+
+  const watchPath = path.join(__dirname, name)
+  if (watchedPaths.has(watchPath)) {
+    return
+  }
+  watchedPaths.add(watchPath)
+
+  fs.watch(watchPath, function (eventType) {
     if (eventType === 'change') {
       try {
         if (passAlongObject !== {}) {
@@ -176,6 +185,9 @@ function movePublicFolderFile (file, type = '') {
   fs.copySync(path.join(__dirname, file), path.join(__dirname, `../dist/public/${type}`))
 }
 
+if (argv?.production && argv?.['build-only']) {
+  fs.emptyDirSync(path.join(__dirname, '../dist'))
+}
 makeDistFolder()
 findScss()
 findTemplates()
@@ -186,10 +198,12 @@ if (argv?.watch) {
   webpackArgs.push('--watch')
 }
 
-const webpack = spawn('node', webpackArgs)
+const webpack = spawn('node', webpackArgs, {
+  env: argv?.production ? { ...process.env, NODE_ENV: 'production' } : process.env
+})
 webpack.stdout.on('data', function (data) {
   process.stdout.write(data)
-  if (data.includes('successfully')) {
+  if (!argv?.['build-only'] && data.includes('successfully')) {
     if (!appRunning) {
       runApp()
     }
@@ -201,7 +215,7 @@ webpack.stderr.on('data', function (data) {
 })
 
 function runApp () {
-  const options = argv?.production ? { ...process.env, NODE_ENV: 'production' } : {}
+  const options = argv?.production ? { env: { ...process.env, NODE_ENV: 'production' } } : {}
   const bundle = spawn(`${argv?.production ? 'node' : 'nodemon'}`, ['dist/bundle.js'], options)
 
   appRunning = true

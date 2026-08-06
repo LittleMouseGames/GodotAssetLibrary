@@ -1,10 +1,12 @@
+import { FindCursor } from 'mongodb'
 import { MongoHelper } from 'core/MongoHelper'
 
-export async function GetAllUserComments (userId: string): Promise<any> {
+export function GetAllUserComments (userId: string): FindCursor {
   const mongo = MongoHelper.getDatabase()
-  const operationObject = await mongo.collection('reviews').find({
+  return mongo.collection('reviews').find({
     user_id: userId
-  }).toArray()
-
-  return operationObject
+  }, {
+    projection: { _id: 0 },
+    batchSize: 100
+  })
 }

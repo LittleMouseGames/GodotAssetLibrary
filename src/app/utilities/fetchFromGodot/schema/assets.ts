@@ -33,9 +33,9 @@ export interface assetSchema {
   'card_banner': string
   'modify_date_pretty': string
   'previews': Array<{
-      'preview_id': string
-      'type': string
-      'link': string
-      'thumbnail': string
+    'preview_id': string
+    'type': string
+    'link': string
+    'thumbnail': string
   }>
 }

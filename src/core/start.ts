@@ -5,15 +5,15 @@ import * as cronJobs from 'core/jobs.index'
 import { ensureIndexes } from 'core/ensureIndexes'
 
 // Connect to MongoDB Database
-MongoHelper.getInstance().connect().then(() => {
+MongoHelper.getInstance().connect().then(async () => {
   const startTime: Date = new Date()
   logger.log('info', `Successfull startup at ${startTime}`)
+
+  await ensureIndexes()
 
   // Start our server
   const server: RouterServer = new RouterServer()
   server.start(3000)
-
-  void ensureIndexes()
 
   // init all our cron jobs
   for (const name of Object.keys(cronJobs)) {
@@ -31,7 +31,7 @@ process.on('uncaughtException', (err) => {
   process.exit(1)
 })
 
-process.on('unhandledRejection', (reason, promise) => {
+process.on('unhandledRejection', (reason) => {
   console.error('Unhandled Rejection:', reason)
   process.exit(1)
 })

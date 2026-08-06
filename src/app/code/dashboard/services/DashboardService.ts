@@ -17,11 +17,40 @@ import striptags from 'striptags'
 import { UpdateUserSavedAssetsRemove } from '../models/UPDATE/UpdateUserSavedAssetsRemove'
 import { GetAllUserInformation } from '../models/GET/GetAllUserInformation'
 import { GetAllUserComments } from '../models/GET/GetAllUserComments'
-import { UpdatePositiveVotesRemoveOne } from 'app/code/asset/models/UPDATE/UpdatePositiveVotesRemoveOne'
-import { UpdateNegativeVotesRemoveOne } from 'app/code/asset/models/UPDATE/UpdateNegativeVotesRemoveOne'
-import { DeleteAllUserComments } from '../models/DELETE/DeleteAllUserComments copy'
 import { DeleteUserByUserId } from '../models/DELETE/DeleteUserById'
 import { GetUsernameByToken } from 'core/modules/authentication/models/user/GET/GetUsernameByToken'
+import { parsePagination } from 'core/utils/pagination'
+import { DeleteUserReviewsAndAdjustVotes } from '../models/DELETE/DeleteUserReviewsAndAdjustVotes'
+
+async function writeResponseChunk (res: Response, chunk: string): Promise<void> {
+  if (res.write(chunk)) {
+    return
+  }
+
+  await new Promise<void>((resolve, reject) => {
+    const cleanup = (): void => {
+      res.off('drain', onDrain)
+      res.off('close', onClose)
+      res.off('error', onError)
+    }
+    const onDrain = (): void => {
+      cleanup()
+      resolve()
+    }
+    const onClose = (): void => {
+      cleanup()
+      reject(new Error('Client disconnected during account export'))
+    }
+    const onError = (error: Error): void => {
+      cleanup()
+      reject(error)
+    }
+
+    res.once('drain', onDrain)
+    res.once('close', onClose)
+    res.once('error', onError)
+  })
+}
 
 export class DashboardService {
   public async render (req: Request, res: Response): Promise<void> {
@@ -36,8 +65,7 @@ export class DashboardService {
   }
 
   public async renderReviews (req: Request, res: Response): Promise<void> {
-    let limit = Number(req.query.limit ?? 12)
-    const page = Number(req.query.page ?? 0)
+    const { limit, skip } = parsePagination(req.query.limit, req.query.page)
     const sort = striptags(String(req.query.sort ?? 'relevance'))
     const sortMap: {[key: string]: any} = {
       relevance: {},
@@ -49,12 +77,6 @@ export class DashboardService {
     if (sort !== 'undefined' && !(sort in sortMap)) {
       throw new Error('Invalid sort parameter, expeting nothing, `relevance`, `rating`, `newest`, or `last_modified`')
     }
-
-    if (limit > 36) {
-      limit = 36
-    }
-
-    const skip = limit * page
 
     const reviewedAssetList = await GetUserReviewedAssets(req.body.hashedToken)
     const assets = await GetUserAssetsFromQuery(limit, skip, reviewedAssetList ?? [], sortMap[sort])
@@ -87,8 +109,7 @@ export class DashboardService {
   }
 
   public async renderSaved (req: Request, res: Response): Promise<void> {
-    let limit = Number(req.query.limit ?? 12)
-    const page = Number(req.query.page ?? 0)
+    const { limit, skip } = parsePagination(req.query.limit, req.query.page)
     const sort = striptags(String(req.query.sort ?? 'relevance'))
     const sortMap: {[key: string]: any} = {
       relevance: {},
@@ -100,12 +121,6 @@ export class DashboardService {
     if (sort !== 'undefined' && !(sort in sortMap)) {
       throw new Error('Invalid sort parameter, expeting nothing, `relevance`, `rating`, `newest`, or `last_modified`')
     }
-
-    if (limit > 36) {
-      limit = 36
-    }
-
-    const skip = limit * page
 
     const reviewedAssetList = await GetUserSavedAssets(req.body.hashedToken) ?? []
     const assets = await GetUserAssetsFromQuery(limit, skip, reviewedAssetList, sortMap[sort])
@@ -230,17 +245,24 @@ export class DashboardService {
 
     const userObject = await GetAllUserInformation(hashedToken)
     const userId = await GetUserIdByToken(hashedToken)
-    const userComments = await GetAllUserComments(userId)
+    const userComments = GetAllUserComments(userId)
 
-    const downloadObject = {
-      user_object: userObject,
-      user_comments: userComments
+    res.status(200)
+    res.setHeader('Content-Type', 'application/json; charset=utf-8')
+    res.setHeader('Content-Disposition', 'attachment; filename="account-data.json"')
+    await writeResponseChunk(res, `{"user_object":${JSON.stringify(userObject)},"user_comments":[`)
+
+    let first = true
+    try {
+      for await (const comment of userComments) {
+        await writeResponseChunk(res, `${first ? '' : ','}${JSON.stringify(comment)}`)
+        first = false
+      }
+    } finally {
+      await userComments.close()
     }
 
-    const downloadJson = JSON.stringify(downloadObject)
-
-    res.writeHead(200, { 'Content-Type': 'application/json' })
-    res.end(downloadJson, 'ascii')
+    res.end(']}')
   }
 
   public async deleteAccount (req: Request, res: Response): Promise<void> {
@@ -251,17 +273,7 @@ export class DashboardService {
     }
 
     const userId = await GetUserIdByToken(hashedToken)
-    const userComments = await GetAllUserComments(userId)
-
-    for (const comment of userComments) {
-      if (comment.review_type === 'positive') {
-        await UpdatePositiveVotesRemoveOne(comment.asset_id)
-      } else {
-        await UpdateNegativeVotesRemoveOne(comment.asset_id)
-      }
-    }
-
-    await DeleteAllUserComments(userId)
+    await DeleteUserReviewsAndAdjustVotes(userId)
     await DeleteUserByUserId(userId)
 
     res.clearCookie('auth-token')

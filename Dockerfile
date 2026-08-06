@@ -8,4 +8,4 @@ COPY ["package.json", "package-lock.json*", "./"]
 RUN apk add --no-cache python3 make g++ \
 	&& npm ci
 
-EXPOSE 8080
+EXPOSE 3000
