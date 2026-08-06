@@ -21,7 +21,8 @@ MongoHelper.getInstance().connect().then(() => {
     }
   }
 
-  void runImportAssets()
+  // delay startup import to let the connection pool warm up first
+  setTimeout(() => { void runImportAssets() }, 30_000)
 }).catch(error => {
   logger.log('error', 'Error durring startup', error)
 })
