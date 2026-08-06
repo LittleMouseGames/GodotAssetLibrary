@@ -59,7 +59,6 @@ export class MongoHelper {
 
       const client = await MongoClient.connect(url, {
         maxPoolSize,
-        waitQueueTimeoutMS: 30_000,
         serverSelectionTimeoutMS: 5000,
         socketTimeoutMS: 30_000,
         connectTimeoutMS: 10_000
