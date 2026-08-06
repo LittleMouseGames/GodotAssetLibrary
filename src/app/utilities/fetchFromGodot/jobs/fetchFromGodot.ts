@@ -5,7 +5,6 @@ import { customAlphabet } from 'nanoid/non-secure'
 import { MongoHelper } from 'core/MongoHelper'
 import { Db } from 'mongodb'
 import { assetSchema } from '../schema/assets'
-import striptags from 'striptags'
 import { FetchReadme } from 'app/utilities/fetchReadme/services/FetchReadme'
 
 const host = 'godotengine.org'
@@ -23,7 +22,9 @@ let importRunning = false
  * off-hour times (as much as resonably possible)
  */
 export const fetchAssetsFromGodot = new CronJob('0 1 * * *', function () {
-  void runImportAssets()
+  void runImportAssets().catch((error: any) => {
+    logger.log('error', `Asset import failed: ${error?.message ?? error}`)
+  })
 })
 
 /**
@@ -61,7 +62,6 @@ async function importAssets (): Promise<void> {
 }
 
 async function fetchAssetListings (): Promise<any[]> {
-  const host = 'godotengine.org'
   const env = process.env.RUN_MODE ?? 'prod'
   let paths: string[] = []
 
@@ -90,16 +90,12 @@ async function fetchAssetListings (): Promise<any[]> {
 
   for (const path of paths) {
     try {
-    /**
-     * We run these sequentially so as to
-     * minimize any potential negative impact
-     * to their servers
-     */
-      const response = await nodeFetch({
-        host: host,
-        path: path
-      })
-
+      /**
+       * We run these sequentially so as to
+       * minimize any potential negative impact
+       * to their servers
+       */
+      const response = await nodeFetch({ host, path })
       const result = JSON.parse(response).result
 
       for (const asset of result) {
@@ -125,13 +121,13 @@ async function fetchAssetListings (): Promise<any[]> {
 async function fetchAssetInformationAndInsert (assetIDs: any[]): Promise<void> {
   for (const assetID of assetIDs) {
     try {
-    /**
-     * We run these sequentially so as to
-     * minimize any potential negative impact
-     * to their servers
-     */
+      /**
+       * We run these sequentially so as to
+       * minimize any potential negative impact
+       * to their servers
+       */
       const response = await nodeFetch({
-        host: host,
+        host,
         path: `/asset-library/api/asset/${assetID}`
       })
 
@@ -151,13 +147,13 @@ async function fetchAssetInformationAndInsert (assetIDs: any[]): Promise<void> {
 async function fetchAssetInformationAndUpdate (assetIDs: any[]): Promise<void> {
   for (const assetID of assetIDs) {
     try {
-    /**
-     * We run these sequentially so as to
-     * minimize any potential negative impact
-     * to their servers
-     */
+      /**
+       * We run these sequentially so as to
+       * minimize any potential negative impact
+       * to their servers
+       */
       const response = await nodeFetch({
-        host: host,
+        host,
         path: `/asset-library/api/asset/${assetID}`
       })
 
@@ -173,8 +169,6 @@ async function fetchAssetInformationAndUpdate (assetIDs: any[]): Promise<void> {
         result.author_lowercase = result.author.toLocaleLowerCase()
         result.quick_description = result.description.trim().replace(/(\r\n|\n|\r|\t)/gm, '')
 
-        const newAssetInformation = { ...assetInformationWeHave, ...result }
-
         for (const preview of result.previews) {
           if (preview !== undefined && (result.card_banner === '' || result.card_banner === undefined)) {
             result.card_banner = preview.thumbnail
@@ -188,8 +182,7 @@ async function fetchAssetInformationAndUpdate (assetIDs: any[]): Promise<void> {
         }
 
         await FetchReadme(result.asset_id, result.download_url)
-
-        await modelUpdateAssetObject(result.legacy_asset_id, newAssetInformation)
+        await modelUpdateAssetObject(result.legacy_asset_id, result)
       }
     } catch (e: any) {
       logger.log('error', `[IMPORTER]: ${e.message}`, [e])
@@ -273,19 +266,18 @@ async function modelInsertAsset (asset: assetSchema): Promise<any> {
     }
   }
 
-  const insertObj = await mongo.collection('assets').insertOne(asset)
-
-  return insertObj
+  return await mongo.collection('assets').insertOne(asset)
 }
 
 async function modelGetAssetInformation (legacyAssetID: string): Promise<any> {
   const mongo: Db = MongoHelper.getDatabase()
-  const operationObject = await mongo.collection('assets').findOne({
+  return await mongo.collection('assets').findOne({
     legacy_asset_id: legacyAssetID
+  }, {
+    projection: {
+      _id: 0,
+      asset_id: 1,
+      category: 1
+    }
   })
-
-  return operationObject
 }
-
-// The initial import is intentionally started from core/start after MongoDB connects.
-

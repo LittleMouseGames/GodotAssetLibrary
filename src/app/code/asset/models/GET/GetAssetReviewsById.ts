@@ -1,6 +1,6 @@
 import { Document, WithId } from 'mongodb'
 import { MongoHelper } from 'core/MongoHelper'
-import { reviews } from 'core/modules/authentication/schema/reviews'
+import { reviews } from 'app/utilities/fetchFromGodot/schema/reviews'
 
 interface ReturnedReviews extends WithId<Document>, reviews {}
 

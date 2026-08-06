@@ -17,13 +17,15 @@ export const FetchReadme = async function (assetId: string, url: string): Promis
     })
 
     if (!response.ok) {
-      response.body?.destroy()
+      const body = response.body as NodeJS.ReadableStream & { destroy?: () => void }
+      body?.destroy?.()
       throw new Error(`Archive download returned HTTP ${response.status}`)
     }
 
     const contentLength = Number(response.headers.get('content-length'))
     if (Number.isFinite(contentLength) && contentLength > MAX_ARCHIVE_BYTES) {
-      response.body?.destroy()
+      const body = response.body as NodeJS.ReadableStream & { destroy?: () => void }
+      body?.destroy?.()
       throw new Error(`Archive exceeds ${MAX_ARCHIVE_BYTES} byte limit`)
     }
 
@@ -37,6 +39,7 @@ export const FetchReadme = async function (assetId: string, url: string): Promis
 
     const readmeEntry = entries.find(entry => /(^|\/)readme(?:\.[^/]+)?$/i.test(entry.entryName))
     if (readmeEntry === undefined) {
+      await UpdateAssetReadme(assetId, '')
       return
     }
 

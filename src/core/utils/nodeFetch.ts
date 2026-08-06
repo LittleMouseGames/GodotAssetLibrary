@@ -13,9 +13,13 @@ export const nodeFetch = async function nodeFetch (options: NodeFetchOptions): P
 
   return await new Promise<string>((resolve, reject) => {
     let settled = false
+    const requestState: { totalTimer?: NodeJS.Timeout } = {}
     const settle = (callback: () => void): void => {
       if (!settled) {
         settled = true
+        if (requestState.totalTimer !== undefined) {
+          clearTimeout(requestState.totalTimer)
+        }
         callback()
       }
     }
@@ -30,6 +34,13 @@ export const nodeFetch = async function nodeFetch (options: NodeFetchOptions): P
       if (response.statusCode < 200 || response.statusCode > 299) {
         response.resume()
         settle(() => reject(new Error(`Non-2xx status code: ${response.statusCode}`)))
+        return
+      }
+
+      const contentLength = Number(response.headers['content-length'])
+      if (Number.isFinite(contentLength) && contentLength > maxResponseSize) {
+        response.destroy()
+        settle(() => reject(new Error(`Response exceeds ${maxResponseSize} byte limit`)))
         return
       }
 
@@ -52,6 +63,7 @@ export const nodeFetch = async function nodeFetch (options: NodeFetchOptions): P
 
     request.on('error', (error) => settle(() => reject(error)))
     request.setTimeout(timeoutMs, () => request.destroy(new Error(`Request timed out after ${timeoutMs}ms`)))
+    requestState.totalTimer = setTimeout(() => request.destroy(new Error(`Request exceeded ${timeoutMs}ms total deadline`)), timeoutMs)
     request.end()
   })
 }

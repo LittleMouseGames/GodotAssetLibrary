@@ -6,7 +6,9 @@ import { FetchReadme } from '../services/FetchReadme'
 let running = false
 
 export const fetchReadmeCron = new CronJob('1 */6 * * *', () => {
-  void runFetchReadme()
+  void runFetchReadme().catch((error: any) => {
+    logger.log('error', `README fetch job failed: ${error?.message ?? error}`)
+  })
 })
 
 export async function runFetchReadme (): Promise<void> {
@@ -18,12 +20,16 @@ export async function runFetchReadme (): Promise<void> {
   running = true
   try {
     const cursor = GetAssetsWithoutReadme()
-    let processed = 0
-    for await (const asset of cursor) {
-      await FetchReadme(asset.asset_id, asset.download_url)
-      processed++
+    try {
+      let processed = 0
+      for await (const asset of cursor) {
+        await FetchReadme(asset.asset_id, asset.download_url)
+        processed++
+      }
+      logger.log('info', `README fetch complete, processed ${processed} assets`)
+    } finally {
+      await cursor.close()
     }
-    logger.log('info', `README fetch complete, processed ${processed} assets`)
   } finally {
     running = false
   }
