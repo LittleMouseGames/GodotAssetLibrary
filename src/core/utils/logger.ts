@@ -1,13 +1,7 @@
 import winston from 'winston'
-require('winston-mongodb')
-const transports: any = winston.transports
 
 export const logger = winston.createLogger({
   transports: [
-    new transports.MongoDB({
-      db: `mongodb://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@${process.env.DB_HOST}:${process.env.DB_PORT}/${process.env.DB_NAME}?authSource=admin`,
-      capped: true
-    }),
     new winston.transports.Console({
       format: winston.format.combine(
         winston.format.colorize(),

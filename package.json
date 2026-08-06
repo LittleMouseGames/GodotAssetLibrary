@@ -49,8 +49,7 @@
     "webpack": "^5.66.0",
     "webpack-cli": "^4.9.1",
     "webpack-node-externals": "^3.0.0",
-    "winston": "^3.4.0",
-    "winston-mongodb": "^5.0.7"
+    "winston": "^3.4.0"
   },
   "devDependencies": {
     "@overnightjs/core": "^1.7.6",
@@ -73,8 +72,10 @@
   },
   "scripts": {
     "devel": "mkdir -p dist/ && node src/BuildTaskRunner.js --watch",
+    "build": "mkdir -p dist/ && node src/BuildTaskRunner.js --production --build-only",
+    "start": "node dist/bundle.js",
     "lint": "eslint . --ext .js,.ts ; exit 0",
-    "prod": "mkdir -p dist/ && node src/BuildTaskRunner.js --watch --production"
+    "prod": "npm run build && npm start"
   },
   "eslintConfig": {
     "rules": {

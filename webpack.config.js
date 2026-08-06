@@ -2,7 +2,7 @@ const nodeExternals = require('webpack-node-externals')
 const path = require('path')
 
 module.exports = {
-  mode: 'development',
+  mode: process.env.NODE_ENV === 'production' ? 'production' : 'development',
   entry: './src/core/start.ts',
   module: {
     rules: [
