@@ -15,7 +15,12 @@ Features:
 ### Docker based envrionment
 Run:
 ```
-docker compose up -d
+docker compose up -d --build
+```
+
+For local development with source watching:
+```
+docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d --build
 ```
 
 To tail nodejs:

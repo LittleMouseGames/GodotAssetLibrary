@@ -1,0 +1,10 @@
+services:
+  nodejs:
+    volumes:
+      - .:/app
+      # Native modules such as argon2 must be built for Linux, not macOS.
+      - node_modules:/app/node_modules
+    command: sh -c 'npm ci && npm run devel'
+
+volumes:
+  node_modules:
