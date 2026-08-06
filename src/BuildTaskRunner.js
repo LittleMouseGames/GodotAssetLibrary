@@ -214,6 +214,13 @@ webpack.stderr.on('data', function (data) {
   process.stderr.write(data)
 })
 
+webpack.on('close', function (code, signal) {
+  if (argv?.['build-only'] && (code !== 0 || signal != null)) {
+    console.error(`Webpack build failed${signal != null ? ` with signal ${signal}` : ` with exit code ${code}`}`)
+    process.exitCode = code ?? 1
+  }
+})
+
 function runApp () {
   const options = argv?.production ? { env: { ...process.env, NODE_ENV: 'production' } } : {}
   const bundle = spawn(`${argv?.production ? 'node' : 'nodemon'}`, ['dist/bundle.js'], options)
