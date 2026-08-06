@@ -2,6 +2,7 @@ import RouterServer from 'core/RouterServer'
 import { MongoHelper } from 'core/MongoHelper'
 import { logger } from 'core/utils/logger'
 import * as cronJobs from 'core/jobs.index'
+import { ensureIndexes } from 'core/ensureIndexes'
 
 // Connect to MongoDB Database
 MongoHelper.getInstance().connect().then(() => {
@@ -11,6 +12,8 @@ MongoHelper.getInstance().connect().then(() => {
   // Start our server
   const server: RouterServer = new RouterServer()
   server.start(3000)
+
+  void ensureIndexes()
 
   // init all our cron jobs
   for (const name of Object.keys(cronJobs)) {
