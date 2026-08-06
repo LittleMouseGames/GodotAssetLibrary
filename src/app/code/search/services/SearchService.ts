@@ -15,7 +15,8 @@ export class SearchService {
     let limit = Number(req.query.limit ?? 12)
     const pageParam = Number(req.query.page ?? 0)
     const authToken = striptags(req.cookies['auth-token'] ?? '')
-    const sort = striptags(String(req.query.sort ?? 'relevance'))
+    // || so an empty string also falls back to the default
+    const sort = striptags(String(req.query.sort || 'relevance'))
     let title = `Search results ${query === '' ? '' : 'for: ' + query}`
     let plusToSpaceRegex = /\+|&plus;|%2b/
     let inCategory = false
@@ -41,9 +42,8 @@ export class SearchService {
       last_modified: { modify_date: -1 }
     }
 
-    if (sort !== 'undefined' && !(sort in sortMap)) {
-      throw new Error('Invalid sort parameter. Expected empty, `relevance`, `asset_rating`, `newest`, or `last_modified`')
-    }
+    // unknown values fall back to relevance rather than returning a 400
+    const sortOrder = sortMap[sort] ?? sortMap.relevance
 
     // clamp limit to [1, 36]; reject non-integers, zero, and negatives
     if (!Number.isInteger(limit) || limit < 1) {
@@ -81,7 +81,7 @@ export class SearchService {
     const filter = buildSearchFilter(query, categoryArray, engineArray)
 
     const [assets, totalAssetsForQuery, { categoryFilters, engineFilters }] = await Promise.all([
-      GetAssetsFromQuery(query, limit, skip, sortMap[sort], categoryArray, engineArray),
+      GetAssetsFromQuery(query, limit, skip, sortOrder, categoryArray, engineArray),
       GetAssetsCountFromQuery(query, categoryArray, engineArray),
       GetSearchFacets(filter)
     ])
