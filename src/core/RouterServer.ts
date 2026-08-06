@@ -6,8 +6,7 @@ import compression from 'compression'
 import path from 'path'
 import cookieParser from 'cookie-parser'
 import { TokenServices } from 'core/modules/authentication/services/TokenServices'
-import { GetDoesUserExistByToken } from 'core/modules/authentication/models/user/GET/GetDoesUserExistByToken'
-import { GetUserRoleByToken } from 'core/modules/authentication/models/user/GET/GetUserRoleByToken'
+import { GetUserContextByToken } from 'core/modules/authentication/models/user/GET/GetUserContextByToken'
 import { GetPromobarMessage } from 'app/code/admin/models/GET/GetPromobarMesasge'
 import { StatusCodes } from 'http-status-codes'
 import { generateProxyUrl } from 'core/utils/generateProxyUrl'
@@ -15,7 +14,25 @@ require('express-async-errors')
 
 let promoCachedMessage: string | null = null
 let promoCacheExpiresAt = 0
+let promoRefresh: Promise<void> | null = null
 const PROMO_TTL_MS = 60_000
+const parsedMaxRequests = Number.parseInt(process.env.MAX_CONCURRENT_REQUESTS ?? '', 10)
+const MAX_CONCURRENT_REQUESTS = Number.isFinite(parsedMaxRequests) && parsedMaxRequests > 0 ? parsedMaxRequests : 100
+let activeRequests = 0
+
+function refreshPromoMessage (): void {
+  if (promoRefresh !== null) {
+    return
+  }
+
+  promoRefresh = GetPromobarMessage().then(message => {
+    promoCachedMessage = message
+  }).catch(() => {
+    // Keep serving the stale value when the database is temporarily unavailable.
+  }).finally(() => {
+    promoRefresh = null
+  })
+}
 
 /**
  * Starts the server
@@ -48,6 +65,27 @@ class RouterServer extends Server {
       res.send('OK')
     })
 
+    // Bound request state retained during traffic spikes or database pressure.
+    this.app.use((_req: Request, res: Response, next: NextFunction) => {
+      if (activeRequests >= MAX_CONCURRENT_REQUESTS) {
+        res.setHeader('Retry-After', '1')
+        res.status(StatusCodes.SERVICE_UNAVAILABLE).send({ error: 'Server is busy, please try again shortly' })
+        return
+      }
+
+      activeRequests++
+      let released = false
+      const release = (): void => {
+        if (!released) {
+          released = true
+          activeRequests--
+        }
+      }
+      res.once('finish', release)
+      res.once('close', release)
+      next()
+    })
+
     /**
      * Inject into all routes _locals space
      */
@@ -60,8 +98,9 @@ class RouterServer extends Server {
         const hashedToken = tokenServices.hashToken(authToken)
 
         try {
-          res.locals.loggedIn = await GetDoesUserExistByToken(hashedToken)
-          res.locals.role = await GetUserRoleByToken(hashedToken)
+          const user = await GetUserContextByToken(hashedToken)
+          res.locals.loggedIn = user.loggedIn
+          res.locals.role = user.role
         } catch (e) {
           // ignore
         }
@@ -72,11 +111,7 @@ class RouterServer extends Server {
         res.locals.promobarMessage = promoCachedMessage
       } else {
         promoCacheExpiresAt = now + PROMO_TTL_MS
-        try {
-          promoCachedMessage = await GetPromobarMessage()
-        } catch (e) {
-          // ignore; serve stale value on error
-        }
+        refreshPromoMessage()
         res.locals.promobarMessage = promoCachedMessage
       }
 

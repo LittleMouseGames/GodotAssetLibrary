@@ -9,7 +9,12 @@ import { MongoHelper } from 'core/MongoHelper'
 export async function GetDoesUserExistByToken (token: string): Promise<boolean> {
   const mongo = MongoHelper.getDatabase()
   const operationObject = await mongo.collection('users').findOne({
-    'resume_tokens.token': token
+    resume_tokens: {
+      $elemMatch: {
+        token,
+        expires: { $gt: new Date() }
+      }
+    }
   }, {
     projection: {
       human_id: 1

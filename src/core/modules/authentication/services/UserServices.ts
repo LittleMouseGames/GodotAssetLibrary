@@ -1,4 +1,3 @@
-import * as argon2 from 'argon2'
 import { logger } from 'core/utils/logger'
 import { InsertUser } from 'core/modules/authentication/models/user/INSERT/InserUser'
 import { Request } from 'express'
@@ -8,11 +7,12 @@ import { GetUserIdByToken } from 'core/modules/authentication/models/user/GET/Ge
 import { TokenServices } from 'core/modules/authentication/services/TokenServices'
 import { GetDoesUsernameExist } from '../models/user/GET/GetDoesUsernameExist'
 import striptags from 'striptags'
+import { hashPassword, PasswordHasherBusyError, verifyPassword } from './PasswordHasher'
 
 export class UserServices {
   private static instance: UserServices
   private readonly USERNAME_REGEX: RegExp = /^[a-zA-Z0-9_-]{3,16}$/
-  private readonly PASSWORD_REGEX: RegExp = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@$!%*#?&]{6,}$/
+  private readonly PASSWORD_REGEX: RegExp = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@$!%*#?&]{6,128}$/
   private readonly TokenService: TokenServices = TokenServices.getInstance()
 
   /**
@@ -50,7 +50,7 @@ export class UserServices {
       throw new Error('Password failed validation. Is it too short?')
     } else if (password !== passwordConf) {
       throw new Error('Password mismatch')
-    } else if (email === '') {
+    } else if (email === '' || email.length > 254) {
       throw new Error('Email validation failed or none supplied')
     }
 
@@ -61,7 +61,7 @@ export class UserServices {
     const tokenExpires = this.TokenService.generateExpiry()
     const token = this.TokenService.generateToken()
     const tokenHash = this.TokenService.hashToken(token)
-    const passwordHash = await argon2.hash(password)
+    const passwordHash = await hashPassword(password)
 
     try {
       await InsertUser(username, email, passwordHash, tokenHash, tokenExpires)
@@ -108,9 +108,13 @@ export class UserServices {
         throw new Error('Missing auth params')
       }
 
+      if (username.length > 16 || password.length > 128) {
+        throw new Error('Invalid credentials')
+      }
+
       try {
         const passwordHash = await GetPasswordHash(username)
-        const verify = await argon2.verify(passwordHash, password)
+        const verify = await verifyPassword(passwordHash, password)
 
         if (!verify) {
           throw new Error('Invalid credentials')
@@ -144,6 +148,9 @@ export class UserServices {
         return token
       } catch (e: any) {
         logger.log('error', e.message)
+        if (e instanceof PasswordHasherBusyError) {
+          throw e
+        }
         throw new Error(e.message)
       }
     }
@@ -187,7 +194,7 @@ export class UserServices {
    * @returns {Promise<boolean>}
    */
   public async doesPasswordMatchHash (hash: string, password: string): Promise<boolean> {
-    return await argon2.verify(hash, password)
+    return await verifyPassword(hash, password)
   }
 
   /**
@@ -197,6 +204,6 @@ export class UserServices {
    * @returns {Promise<string>}
    */
   public async hashPassword (password: string): Promise<string> {
-    return await argon2.hash(password)
+    return await hashPassword(password)
   }
 }

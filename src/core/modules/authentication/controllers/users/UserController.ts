@@ -4,6 +4,7 @@ import { Request, Response } from 'express'
 import { UserServices } from 'core/modules/authentication/services/UserServices'
 import bodyParser from 'body-parser'
 import rateLimit from 'express-rate-limit'
+import { PasswordHasherBusyError } from 'core/modules/authentication/services/PasswordHasher'
 
 const urlencodedParser = bodyParser.urlencoded({ extended: false })
 
@@ -48,7 +49,8 @@ export class UserController {
 
       return res.status(StatusCodes.OK).cookie('auth-token', registerService, this.cookieOptons).send({ token: registerService })
     } catch (e: any) {
-      return res.status(StatusCodes.BAD_REQUEST).send({ error: e.message })
+      const status = e instanceof PasswordHasherBusyError ? StatusCodes.SERVICE_UNAVAILABLE : StatusCodes.BAD_REQUEST
+      return res.status(status).send({ error: e.message })
     }
   }
 
@@ -66,7 +68,8 @@ export class UserController {
       const loginService = await this.AuthService.login(req)
       return res.status(StatusCodes.OK).cookie('auth-token', loginService, this.cookieOptons).send({ token: loginService })
     } catch (e: any) {
-      return res.status(StatusCodes.BAD_REQUEST).send({ error: e.message })
+      const status = e instanceof PasswordHasherBusyError ? StatusCodes.SERVICE_UNAVAILABLE : StatusCodes.BAD_REQUEST
+      return res.status(status).send({ error: e.message })
     }
   }
 

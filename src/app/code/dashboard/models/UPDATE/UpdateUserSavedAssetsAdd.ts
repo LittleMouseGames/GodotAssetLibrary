@@ -11,7 +11,7 @@ export async function UpdateUserSavedAssetsAdd (hashedToken: string, assetId: St
   const operationObject = await mongo.collection('users').updateOne({
     'resume_tokens.token': hashedToken
   }, {
-    $push: {
+    $addToSet: {
       saved_assets: assetId
     }
   })

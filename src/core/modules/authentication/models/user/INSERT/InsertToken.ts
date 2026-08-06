@@ -14,8 +14,11 @@ export async function InsertToken (username: string, token: string, tokenExpires
   const userObj = await mongo.collection('users').updateOne({ username: username }, {
     $push: {
       resume_tokens: {
-        token: token,
-        expires: tokenExpires
+        $each: [{
+          token: token,
+          expires: tokenExpires
+        }],
+        $slice: -10
       }
     }
   })
