@@ -6,6 +6,7 @@ import { GetPasswordHash } from 'core/modules/authentication/models/user/GET/Get
 import { GetUserIdByToken } from 'core/modules/authentication/models/user/GET/GetUserIdByToken'
 import { TokenServices } from 'core/modules/authentication/services/TokenServices'
 import { GetDoesUsernameExist } from '../models/user/GET/GetDoesUsernameExist'
+import { GetSiteRestrictions } from 'app/code/admin/models/GET/GetSiteRestrictions'
 import striptags from 'striptags'
 import { hashPassword, PasswordHasherBusyError, verifyPassword } from './PasswordHasher'
 
@@ -39,6 +40,18 @@ export class UserServices {
    * @throws {Error} Auth token missing error
    */
   public async register (req: Request): Promise<string> {
+    // Honor the admin "disable new accounts" setting before doing any work so
+    // registration is genuinely blocked, not just hidden from the UI.
+    let siteRestrictions: any = {}
+    try {
+      siteRestrictions = await GetSiteRestrictions()
+    } catch (e) {
+      // ignore
+    }
+    if (siteRestrictions?.disable_new_accounts === true) {
+      throw new Error('New account registration is temporarily disabled')
+    }
+
     const username = striptags(req.body.username ?? '')
     const password = striptags(req.body.password ?? '')
     const passwordConf = striptags(req.body.passwordConf ?? '')
