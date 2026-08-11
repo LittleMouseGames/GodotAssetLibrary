@@ -69,6 +69,22 @@
       itemListElement: breadcrumbItems
     }
   }
+
+  // Related guide links chosen by the asset's category, for deep internal
+  // linking between the catalog and the guides.
+  var guideLinks = []
+  var categoryKey = String(it?.info?.category_lowercase ?? '').toLocaleLowerCase()
+  if (categoryKey === 'shaders' || categoryKey === 'materials') {
+    guideLinks.push({ url: '/guides/how-to-use-shaders-in-godot', label: 'How to use shaders in Godot' })
+  }
+  if (categoryKey === 'tools' || categoryKey === '2d tools' || categoryKey === '3d tools' || categoryKey === 'scripts') {
+    guideLinks.push({ url: '/guides/how-to-install-godot-plugins', label: 'How to install Godot plugins' })
+  }
+  if (categoryKey === 'templates' || categoryKey === 'projects' || categoryKey === 'demos') {
+    guideLinks.push({ url: '/guides/how-to-install-godot-assets', label: 'How to install Godot assets' })
+  }
+  guideLinks.push({ url: '/guides/how-to-choose-a-godot-asset', label: 'How to choose a Godot asset' })
+  it.guideLinks = guideLinks
 %>
 <% layout('templates/components/layouts/promobar-nav-body-footer/promobar-nav-body-footer.eta') %>
 
@@ -273,6 +289,19 @@
       <%~ includeFile('templates/components/partials/asset-card/asset-card.eta', { info: info, _locals: it?._locals }) %>
       <% }) %>
     </div>
+  </div>
+  <% } %>
+  <% if (it?.guideLinks?.length > 0) { %>
+  <div class="related-guides">
+    <div class="section-head">
+      <h2>Related Guides</h2>
+      <a class="view-all" href="/guides" title="All guides">All guides</a>
+    </div>
+    <ul class="guide-links">
+      <% it.guideLinks.forEach(link => { %>
+      <li><a href="<%= link.url %>" title="<%= link.label %>"><%= link.label %></a></li>
+      <% }) %>
+    </ul>
   </div>
   <% } %>
 </section>

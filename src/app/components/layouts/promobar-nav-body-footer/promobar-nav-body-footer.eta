@@ -28,6 +28,11 @@
     <%~ it?._locals?.functions?.safeJsonLd(it?.meta?.jsonLdBreadcrumb) %>
   </script>
   <% } %>
+  <% if(it?.meta?.jsonLdItemList) { %>
+  <script type="application/ld+json">
+    <%~ it?._locals?.functions?.safeJsonLd(it?.meta?.jsonLdItemList) %>
+  </script>
+  <% } %>
   <script type="application/ld+json">
     {
     "@context": "http://schema.org",
