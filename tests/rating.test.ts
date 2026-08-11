@@ -5,7 +5,6 @@ import { wilsonScore } from '../src/core/utils/ratingScore'
 describe('wilsonScore', () => {
   it('returns 0 when there are no votes', () => {
     assert.equal(wilsonScore(0, 0), 0)
-    assert.equal(wilsonScore(0, 0), 0)
   })
 
   it('never exceeds 1', () => {

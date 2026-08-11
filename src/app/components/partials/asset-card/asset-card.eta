@@ -7,11 +7,10 @@ if (typeof cardImage !== 'string' || /(?:youtube\.com|youtu\.be|\.(?:mp4|webm|mo
 }
 
 var assetId = it?.info?.asset_id ?? ''
-var assetSlug = encodeURI(String(it?.info?.title ?? '').replace(/\s/g, '-')).toLocaleLowerCase()
-var assetHref = `/asset/${assetId}/${assetSlug}`
-if (it?.sourceUrl != null && it.sourceUrl !== '') {
-  assetHref += '?from=' + encodeURIComponent(it.sourceUrl)
-}
+var buildAssetUrlWithReturn = it?._locals?.functions?.buildAssetUrlWithReturn
+var assetHref = typeof buildAssetUrlWithReturn === 'function'
+  ? buildAssetUrlWithReturn(assetId, String(it?.info?.title ?? ''), it?.sourceUrl ?? '')
+  : `/asset/${assetId}`
 
 var upvotes = Number(it?.info?.upvotes) || 0
 var downvotes = Number(it?.info?.downvotes) || 0

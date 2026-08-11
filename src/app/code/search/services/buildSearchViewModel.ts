@@ -77,7 +77,11 @@ export function buildSearchUrl (state: UrlState): string {
   for (const type of state.types) params.append('type', type)
   for (const support of state.supports) params.append('support', support)
   if (state.featured) params.set('featured', 'true')
-  if (state.sort !== 'relevance') params.set('sort', state.sort)
+  // Omit the context-aware default sort: "relevance" (query mode) or
+  // "last_modified" with an empty query (browse mode), so default views keep
+  // canonical URLs.
+  const omitSort = state.sort === 'relevance' || (state.query === '' && state.sort === 'last_modified')
+  if (!omitSort) params.set('sort', state.sort)
   if (state.limit !== DEFAULT_LIMIT) params.set('limit', String(state.limit))
   if (state.page !== 0) params.set('page', String(state.page))
   const queryString = params.toString()
@@ -125,7 +129,7 @@ export function buildSearchViewModel (
   }))
 
   const categoriesOptions = toFacetOptions(facets.categories, categories)
-  const enginesOptions = toFacetOptions(facets.engines, engines).sort((a, b) => compareVersions(a.value, b.value))
+  const enginesOptions = toFacetOptions(facets.engines, engines).sort((a, b) => compareVersions(b.value, a.value))
   const typesOptions = toFacetOptions(facets.types, types)
   const supportsOptions = toFacetOptions(facets.supports, supports)
 

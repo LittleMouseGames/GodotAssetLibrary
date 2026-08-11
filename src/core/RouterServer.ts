@@ -10,6 +10,7 @@ import { GetUserContextByToken } from 'core/modules/authentication/models/user/G
 import { GetPromobarMessage } from 'app/code/admin/models/GET/GetPromobarMesasge'
 import { StatusCodes } from 'http-status-codes'
 import { generateProxyUrl } from 'core/utils/generateProxyUrl'
+import { buildAssetUrl, buildAssetUrlWithReturn } from 'core/utils/assetUrl'
 require('express-async-errors')
 
 let promoCachedMessage: string | null = null
@@ -156,7 +157,9 @@ class RouterServer extends Server {
       }
 
       res.locals.functions = {
-        generateProxyUrl: generateProxyUrl
+        generateProxyUrl: generateProxyUrl,
+        buildAssetUrl: buildAssetUrl,
+        buildAssetUrlWithReturn: buildAssetUrlWithReturn
       }
 
       res.locals.buildString = buildString
@@ -190,7 +193,10 @@ class RouterServer extends Server {
           }
         })
       }
-      return res.status(statusCode).send({ error: err.message })
+      // Never leak internal error details on 5xx responses; keep the detailed
+      // message only for explicit 4xx errors (e.g. BadRequestError).
+      const message = statusCode >= 500 ? 'Internal server error' : err.message
+      return res.status(statusCode).send({ error: message })
     })
   }
 
