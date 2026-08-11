@@ -22,14 +22,16 @@ export function getWorkerCount (): number {
 /**
  * Default per-process MongoDB pool ceiling.
  *
- * Every cluster worker (and the primary) owns its own MongoClient, so this
- * sizes each pool so the TOTAL worst-case connections stay bounded regardless
- * of cluster size (~1500 across the whole cluster): 1 worker -> 1500, 2 ->
- * 750 each, 4 -> 375 each, etc. This keeps MongoDB from being hit with
- * `workers x 1500` connections by accident. An explicit MONGO_MAX_POOL env
+ * Every cluster worker AND the primary owns its own MongoClient (the primary
+ * connects for bootstrap and cron), so this sizes each pool so the TOTAL
+ * worst-case connections stay bounded regardless of cluster size (~1500 across
+ * the whole cluster): 1 worker -> 750 each (worker + primary), 4 workers ->
+ * 300 each (4 workers + primary), etc. This keeps MongoDB from being hit with
+ * `processes x pool` connections by accident. An explicit MONGO_MAX_POOL env
  * override always wins.
  */
 export function getDefaultMongoPool (): number {
   const workerCount = getWorkerCount()
-  return Math.max(200, Math.round(1500 / workerCount))
+  // +1 includes the primary process, which also connects to MongoDB.
+  return Math.max(200, Math.round(1500 / (workerCount + 1)))
 }

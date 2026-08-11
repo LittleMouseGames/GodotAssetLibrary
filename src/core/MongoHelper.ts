@@ -60,9 +60,10 @@ export class MongoHelper {
       // needed" rather than holding connections. Search requests now run 2
       // MongoDB ops instead of 6 (results+count and all four facets are
       // consolidated into $facet aggregations) and the homepage ~4. Under
-      // cluster mode every worker owns its own pool, so the default ceiling is
-      // scaled per worker (clusterConfig) to keep the TOTAL worst-case
-      // connections bounded (~1500) no matter how many workers run; an
+      // cluster mode every worker AND the primary owns its own pool, so the
+      // default ceiling is scaled per process (clusterConfig) to keep the
+      // TOTAL worst-case connections bounded (~1500) no matter how many
+      // workers run; an
       // explicit MONGO_MAX_POOL always wins. Idle connections are reaped after
       // MONGO_MAX_IDLE_MS, so steady state stays low. The 5s wait-queue
       // timeout stays as a fail-fast backstop for genuine overload.

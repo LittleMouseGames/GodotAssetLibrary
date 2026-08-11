@@ -66,16 +66,29 @@ if (cluster.isPrimary) {
     logger.log('info', `Forked ${workerCount} worker(s)`)
 
     // Auto-heal: replace a worker that crashed or was killed. A short delay
-    // avoids a tight refork loop if something is wrong at boot.
+    // avoids a tight refork loop if something is wrong at boot, and reforking
+    // is suppressed during an intentional shutdown so we never spin up workers
+    // that were just SIGTERM'd.
+    let shuttingDown = false
     cluster.on('exit', (worker, code, signal) => {
+      if (shuttingDown) {
+        return
+      }
       logger.log('warn', `Worker ${worker.process.pid} exited (code=${code}, signal=${signal}); forking replacement`)
       setTimeout(() => {
-        cluster.fork()
+        if (!shuttingDown) {
+          cluster.fork()
+        }
       }, 1000)
     })
 
-    // Let Docker/systemd stop the cluster cleanly.
+    // Let Docker/systemd stop the cluster cleanly. Idempotent so a SIGTERM and
+    // SIGINT arriving together only trigger one shutdown.
     const shutdown = (): void => {
+      if (shuttingDown) {
+        return
+      }
+      shuttingDown = true
       logger.log('info', 'Primary shutting down; terminating workers')
       for (const id of Object.keys(cluster.workers ?? {})) {
         cluster.workers?.[id]?.kill('SIGTERM')

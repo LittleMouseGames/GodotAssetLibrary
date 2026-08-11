@@ -52,13 +52,15 @@ describe('clusterConfig', () => {
     })
   })
 
-  it('scales the default Mongo pool per worker to keep the total bounded', () => {
+  it('scales the default Mongo pool per process to keep the total bounded', () => {
     withWorkerCount('4', () => {
-      // 1500 / 4 = 375 per worker, so the whole cluster stays ~1500 worst-case.
-      assert.equal(getDefaultMongoPool(), 375)
+      // 1500 / (4 workers + 1 primary) = 300 per process, so the whole cluster
+      // (workers + primary) stays ~1500 worst-case.
+      assert.equal(getDefaultMongoPool(), 300)
     })
     withWorkerCount('2', () => {
-      assert.equal(getDefaultMongoPool(), 750)
+      // 1500 / (2 workers + 1 primary) = 500 per process.
+      assert.equal(getDefaultMongoPool(), 500)
     })
     // Never below the 200 floor, even with many workers.
     withWorkerCount('16', () => {
