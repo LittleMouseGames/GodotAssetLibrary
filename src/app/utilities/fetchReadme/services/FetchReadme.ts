@@ -1,5 +1,6 @@
 import { logger } from 'core/utils/logger'
 import { UpdateAssetReadme } from '../models/UPDATE/UpdateAssetReadme'
+import { UpdateAssetReadmeState } from '../models/UPDATE/UpdateAssetReadmeState'
 import fetch from 'node-fetch'
 import AdmZip from 'adm-zip'
 
@@ -8,7 +9,22 @@ const MAX_README_BYTES = 2 * 1024 * 1024
 const MAX_ZIP_ENTRIES = 10_000
 const FETCH_TIMEOUT_MS = 30_000
 
+/** Only allow http(s) URLs to reduce SSRF/redirect risk in background fetches. */
+function isSafeDownloadUrl (rawUrl: string): boolean {
+  try {
+    const parsed = new URL(rawUrl)
+    return (parsed.protocol === 'https:' || parsed.protocol === 'http:') && parsed.hostname !== ''
+  } catch (e) {
+    return false
+  }
+}
+
 export const FetchReadme = async function (assetId: string, url: string): Promise<void> {
+  if (typeof url !== 'string' || !isSafeDownloadUrl(url)) {
+    await UpdateAssetReadmeState(assetId, { status: 'error', error: 'Unsafe or invalid download URL' })
+    return
+  }
+
   try {
     const response = await fetch(url, {
       timeout: FETCH_TIMEOUT_MS,
@@ -40,6 +56,7 @@ export const FetchReadme = async function (assetId: string, url: string): Promis
     const readmeEntry = entries.find(entry => /(^|\/)readme(?:\.[^/]+)?$/i.test(entry.entryName))
     if (readmeEntry === undefined) {
       await UpdateAssetReadme(assetId, '')
+      await UpdateAssetReadmeState(assetId, { status: 'missing' })
       return
     }
 
@@ -53,7 +70,9 @@ export const FetchReadme = async function (assetId: string, url: string): Promis
       throw new Error(`README actual content exceeds ${MAX_README_BYTES} byte limit`)
     }
     await UpdateAssetReadme(assetId, readme)
+    await UpdateAssetReadmeState(assetId, { status: 'ok' })
   } catch (error: any) {
     logger.log('error', `Failed to fetch README for asset ${assetId}: ${error?.message ?? error}`, [error])
+    await UpdateAssetReadmeState(assetId, { status: 'error', error: error?.message ?? 'Unknown error' })
   }
 }

@@ -38,14 +38,19 @@ async function generateSitemap (): Promise<void> {
 
   const tmpPath = path.join(__dirname, '../dist/public/sitemap.xml.tmp')
   const finalPath = path.join(__dirname, '../dist/public/sitemap.xml')
-  const sitemap = new SitemapStream({ hostname: 'http://godotassetlibrary.com' })
+  const sitemap = new SitemapStream({ hostname: 'https://godotassetlibrary.com' })
   const writeStream = createWriteStream(tmpPath)
   let pipelineError = ''
   const pipePromise = streamPipeline(sitemap, writeStream).catch((error: Error) => {
     pipelineError = error.message
   })
 
-  const cursor = mongo.collection('assets').find({}, {
+  // Exclude assets that are no longer available upstream or were marked
+  // non-searchable, so crawlers don't index stale/tombstoned pages.
+  const cursor = mongo.collection('assets').find({
+    source_status: { $ne: 'unavailable' },
+    searchable: { $ne: 'false' }
+  }, {
     projection: { asset_id: 1, title: 1, modify_date: 1 }
   })
 
