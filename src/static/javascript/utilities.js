@@ -169,6 +169,16 @@ window.godotLibrary = {
       e.preventDefault()
     }
   },
+  siteFiles: {
+    addRow: function () {
+      const container = document.getElementById('site-files')
+      const template = document.getElementById('site-file-row-template')
+      if (container === null || template === null) return
+      container.appendChild(template.content.cloneNode(true))
+      const rows = container.querySelectorAll('.site-file-row')
+      rows[rows.length - 1]?.querySelector('input')?.focus()
+    }
+  },
   clipboard: {
     copyText: function (text) {
       if (navigator.clipboard && window.isSecureContext) {

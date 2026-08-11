@@ -5,11 +5,14 @@ import { GetAssetsByIdList } from '../models/GET/GetAssetsByIdList'
 import { GetReviewReportList } from '../models/GET/GetReviewReportList'
 import { GetFeaturedAssets } from '../models/GET/GetFeaturedAssets'
 import { GetSiteRestrictions } from '../models/GET/GetSiteRestrictions'
+import { GetSiteFiles, SiteFileEntry } from '../models/GET/GetSiteFiles'
 import { UpdateAssetSetFeatured } from '../models/UPDATE/UpdateAssetSetFeatured'
 import { UpdateFeaturedAssetsAdd } from '../models/UPDATE/UpdateFeaturedAssetsAdd'
 import { UpdateFeaturedAssetsRemove } from '../models/UPDATE/UpdateFeaturedAssetsRemove'
 import { UpdatePromobarMessage } from '../models/UPDATE/UpdatePromobarMessage'
 import { UpdateSiteRestrictions } from '../models/UPDATE/UpdateSiteRestrictions'
+import { UpdateSiteFiles } from '../models/UPDATE/UpdateSiteFiles'
+import { invalidateSiteFileCache } from 'core/utils/siteFiles'
 import { GetReviewsByIdList } from '../models/GET/GetReviewsByIdList'
 import { UpdateReportIgnoreById } from '../models/UPDATE/UpdateReportIgnoreById'
 import { GetReportById } from '../models/GET/GetReportById'
@@ -34,7 +37,18 @@ export class AdminService {
       // ignore
     }
 
-    return res.render('templates/pages/admin/admin', { pageBanner: pageBanner, siteRestrictions: siteRestrictions })
+    let siteFiles: SiteFileEntry[] = []
+    try {
+      siteFiles = await GetSiteFiles()
+    } catch (e) {
+      // ignore
+    }
+
+    return res.render('templates/pages/admin/admin', {
+      pageBanner: pageBanner,
+      siteRestrictions: siteRestrictions,
+      siteFiles: siteFiles
+    })
   }
 
   public async renderFeatured (req: Request, res: Response): Promise<void> {
@@ -156,12 +170,50 @@ export class AdminService {
     const disableNewAccounts = Boolean(req.body.disable_new_accounts ?? false)
     const disableNewComments = Boolean(req.body.disable_new_comments ?? false)
 
+    // Site files arrive as parallel arrays of routes and contents; each row in
+    // the admin form contributes one entry.
+    const rawRoutes = req.body.site_file_route
+    const rawContents = req.body.site_file_content
+    const routes = Array.isArray(rawRoutes) ? rawRoutes : (rawRoutes === undefined ? [] : [rawRoutes])
+    const contents = Array.isArray(rawContents) ? rawContents : (rawContents === undefined ? [] : [rawContents])
+
+    if (routes.length > 50) {
+      throw new Error('Too many site files, maximum is 50')
+    }
+
+    const siteFiles: SiteFileEntry[] = []
+    for (let i = 0; i < routes.length; i++) {
+      const route = String(routes[i] ?? '').replace(/^\/+/, '').trim()
+      const content = String(contents[i] ?? '')
+      if (route === '' || content.length === 0) {
+        continue
+      }
+      if (route.length > 200) {
+        throw new Error('Site file route too long, must be less than 200 characters')
+      }
+      // Allowlist instead of blocklist: letters, digits and a small set of
+      // safe path characters. This rejects whitespace, ?/#, control characters
+      // and anything else that could confuse routing.
+      if (route.includes('..') || !/^[A-Za-z0-9._/-]+$/.test(route)) {
+        throw new Error(`Invalid site file route: ${route}`)
+      }
+      if (content.length > 10_000) {
+        throw new Error('Site file content too long, must be less than 10000 characters per file')
+      }
+      siteFiles.push({ route, content })
+    }
+
     if (message.length > 150) {
       throw new Error('Promobar message too long, must be less than 150 characters')
     }
 
     await UpdatePromobarMessage(message)
     await UpdateSiteRestrictions(disableNewAccounts, disableNewComments)
+    await UpdateSiteFiles(siteFiles)
+
+    // Drop the in-memory cache so the public routes pick up the new content
+    // immediately instead of waiting out the TTL.
+    invalidateSiteFileCache()
 
     res.send()
   }
