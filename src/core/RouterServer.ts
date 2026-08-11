@@ -139,8 +139,17 @@ class RouterServer extends Server {
     })
 
     // Prometheus-format telemetry. Registered before the active-request cap so
-    // it stays reachable while the app is under load, like /health.
-    this.app.get('/metrics', (_req: Request, res: Response) => {
+    // it stays reachable while the app is under load, like /health. Process and
+    // system metrics are only sensitive if someone can reach this route, so it
+    // is gated behind an optional bearer token for production; leaving
+    // METRICS_TOKEN unset keeps it open (e.g. local dev).
+    this.app.get('/metrics', (req: Request, res: Response) => {
+      const metricsToken = process.env.METRICS_TOKEN
+      if (metricsToken !== undefined && metricsToken !== '' &&
+          req.get('authorization') !== `Bearer ${metricsToken}`) {
+        res.status(StatusCodes.FORBIDDEN).send('Forbidden')
+        return
+      }
       res.set('Content-Type', 'text/plain; version=0.0.4; charset=utf-8')
       res.set('Cache-Control', 'no-store')
       res.send(telemetry.prometheusText())
@@ -151,9 +160,10 @@ class RouterServer extends Server {
     // increment a counter and are logged (throttled) so capacity limits stay
     // visible in the logs and on /metrics.
     this.app.use((req: Request, res: Response, next: NextFunction) => {
-      telemetry.requestStart()
-
       if (activeRequests >= MAX_CONCURRENT_REQUESTS) {
+        // Rejected requests never enter telemetry's active gauge or totals, so
+        // http_peak_active_requests can't exceed the cap and http_requests_total
+        // only counts work the server actually admitted.
         telemetry.requestRejectedByActiveCap()
         rejectedSinceLastLog++
         const now = Date.now()
@@ -173,6 +183,7 @@ class RouterServer extends Server {
         return
       }
 
+      telemetry.requestStart()
       activeRequests++
       let released = false
       const startedAt = Date.now()

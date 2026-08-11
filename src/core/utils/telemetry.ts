@@ -98,15 +98,31 @@ export function requestEnd (durationMs: number, statusCode: number): void {
     const removed = durations.shift()
     if (removed !== undefined) {
       durationSum -= removed
+      // An evicted sample can no longer define the window's min/max, so
+      // recompute them to keep the reported range reflecting the current
+      // bounded sample buffer instead of evicted values.
+      if (removed === durationMin || removed === durationMax) {
+        durationMin = Number.POSITIVE_INFINITY
+        durationMax = 0
+        for (const sample of durations) {
+          if (sample < durationMin) {
+            durationMin = sample
+          }
+          if (sample > durationMax) {
+            durationMax = sample
+          }
+        }
+      }
     }
   }
 }
 
-/** Record a request rejected by the active-request cap (the 503 backstop). */
+/**
+ * Record a request rejected by the active-request cap (the 503 backstop).
+ * Rejected requests never entered the active gauge (requestStart runs only
+ * for admitted requests), so this only bumps the rejection counters.
+ */
 export function requestRejectedByActiveCap (): void {
-  if (activeRequests > 0) {
-    activeRequests--
-  }
   totalRejected++
   rejectedByActiveCap++
 }
