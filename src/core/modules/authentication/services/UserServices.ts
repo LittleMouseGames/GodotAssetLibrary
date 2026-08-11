@@ -113,7 +113,21 @@ export class UserServices {
       }
 
       try {
-        const passwordHash = await GetPasswordHash(username)
+        // Unknown usernames get a dummy Argon2 verification so response time
+        // does not reveal whether an account exists.
+        const DUMMY_HASH = '$argon2i$v=19$m=4096,t=3,p=1$k+w0GR4hC69YTWrXgRyrPA$SU8kc8Wgeu2TFv1bb3wHVXxo31HmGkDKptKQzT/CeM8'
+        let passwordHash: string | null = null
+        try {
+          passwordHash = await GetPasswordHash(username)
+        } catch (e) {
+          // user not found; verified below against the dummy hash
+        }
+
+        if (passwordHash === null) {
+          await verifyPassword(DUMMY_HASH, password)
+          throw new Error('Invalid credentials')
+        }
+
         const verify = await verifyPassword(passwordHash, password)
 
         if (!verify) {

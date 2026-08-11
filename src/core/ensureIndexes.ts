@@ -1,5 +1,6 @@
 import { MongoHelper } from 'core/MongoHelper'
 import { logger } from 'core/utils/logger'
+import { TEXT_INDEX_NAME } from 'core/migrations/0001-create-text-index'
 
 export async function ensureIndexes (): Promise<void> {
   try {
@@ -22,12 +23,16 @@ export async function ensureIndexes (): Promise<void> {
       async () => await assets.createIndex({ added_date: -1 }),
       async () => await assets.createIndex({ modify_date: -1 }),
       async () => await assets.createIndex({ upvotes: -1, godot_version: -1 }),
+      async () => await assets.createIndex({ rating_score: -1, asset_id: 1 }),
+      async () => await assets.createIndex({ modify_date_at: -1, asset_id: 1 }),
+      async () => await assets.createIndex({ category_lowercase: 1, godot_version: 1, rating_score: -1, asset_id: 1 }),
       async () => await users.createIndex({ 'resume_tokens.token': 1 }),
       async () => await users.createIndex({ username: 1 }),
       async () => await users.createIndex({ username_lowercase: 1 }),
       async () => await users.createIndex({ human_id: 1 }),
       async () => await reviews.createIndex({ asset_id: 1 }),
       async () => await reviews.createIndex({ user_id: 1, asset_id: 1 }),
+      async () => await reviews.createIndex({ asset_id: 1, date: -1 }),
       async () => await reviews.createIndex({ human_id: 1 }),
       async () => await reports.createIndex({ type: 1, ignored: 1, approved: 1 }),
       async () => await reports.createIndex({ human_id: 1 }),
@@ -36,6 +41,19 @@ export async function ensureIndexes (): Promise<void> {
 
     for (const createIndex of indexOperations) {
       await createIndex()
+    }
+
+    // The weighted text index is deployment-managed through `npm run migrate`
+    // because MongoDB only allows one text index per collection. Verify here so
+    // readiness fails clearly instead of surfacing "text index required" at query time.
+    const existingIndexes = await assets.indexes()
+    const hasTextIndex = existingIndexes.some(index =>
+      index.key !== undefined && Object.values(index.key).some(value => value === 'text')
+    )
+    if (!hasTextIndex) {
+      logger.log('warn', `Text index (${TEXT_INDEX_NAME}) is missing. Run "npm run migrate" before relying on search.`)
+    } else {
+      logger.log('info', `Text index (${TEXT_INDEX_NAME}) verified`)
     }
 
     logger.log('info', 'Indexes verified')

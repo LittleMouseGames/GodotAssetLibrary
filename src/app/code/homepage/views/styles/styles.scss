@@ -14,6 +14,140 @@
     margin-bottom: 13px;
   }
 
+  .section-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-top: 20px;
+    margin-bottom: 13px;
+
+    h2 {
+      margin-top: 0;
+      margin-bottom: 0;
+    }
+
+    .view-all {
+      @include inter-like-font();
+      font-size: 13px;
+      font-weight: 600;
+      color: #2081db;
+      text-decoration: none;
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+  }
+
+  .section-empty {
+    @include inter-like-font();
+    grid-column: 1 / -1;
+    padding: 16px;
+    background: #ffffff;
+    border-radius: 6px;
+    color: $text-gray-darker;
+    border: 1px solid #dbdbdb;
+
+    a {
+      color: #2081db;
+      text-decoration: underline;
+    }
+  }
+
+  .home-note {
+    margin: $space-4 0;
+    padding: $space-3 $space-4;
+    background: rgba(47, 105, 255, 0.08);
+    border: 1px solid rgba(47, 105, 255, 0.25);
+    border-radius: $border-radius-md;
+
+    p {
+      margin: 0;
+      font-family: "Inter", sans-serif;
+      font-size: 14px;
+      color: $text-secondary;
+    }
+  }
+
+  .category-rail {
+    display: flex;
+    flex-wrap: wrap;
+    gap: $space-2;
+    margin: 0 0 $space-2;
+
+    .category-chip {
+      @include inter-like-font();
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 14px;
+      background: #ffffff;
+      border: 1px solid $border-color;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 600;
+      color: $text-dark-darkest;
+      text-decoration: none;
+
+      .count {
+        color: $text-gray-darker;
+        font-weight: 500;
+        font-size: 12px;
+      }
+
+      &:hover {
+        background: $color-lighter-gray;
+      }
+    }
+  }
+
+  .home-note {
+    margin: $space-4 0;
+    padding: $space-3 $space-4;
+    background: rgba(47, 105, 255, 0.08);
+    border: 1px solid rgba(47, 105, 255, 0.25);
+    border-radius: $border-radius-md;
+
+    p {
+      margin: 0;
+      font-family: "Inter", sans-serif;
+      font-size: 14px;
+      color: $text-secondary;
+    }
+  }
+
+  .category-rail {
+    display: flex;
+    flex-wrap: wrap;
+    gap: $space-2;
+    margin: 0 0 $space-2;
+
+    .category-chip {
+      @include inter-like-font();
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 14px;
+      background: #ffffff;
+      border: 1px solid $border-color;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 600;
+      color: $text-dark-darkest;
+      text-decoration: none;
+
+      .count {
+        color: $text-gray-darker;
+        font-weight: 500;
+        font-size: 12px;
+      }
+
+      &:hover {
+        background: $color-lighter-gray;
+      }
+    }
+  }
+
   .three-wide {
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
@@ -22,47 +156,40 @@
 
     @include tablet-styles {
       grid-template-columns: 1fr 1fr;
-
-      .asset-card,
-      .category-card-featured {
-        &:last-of-type {
-          display: none;
-        }
-      }
     }
 
     @include mobile-styles {
       grid-template-columns: 1fr;
+    }
+  }
 
-      .asset-card,
-      .category-card-featured {
-        &:not(:first-of-type) {
-          display: none;
-        }
-      }
+  .four-wide {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    column-gap: 20px;
+    row-gap: 20px;
+
+    @include small-desktop-styles {
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    @include tablet-styles {
+      grid-template-columns: 1fr 1fr;
+    }
+
+    @include mobile-styles {
+      grid-template-columns: 1fr;
     }
   }
 
   .five-wide {
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+    grid-template-columns: repeat(5, 1fr);
     column-gap: 20px;
     row-gap: 20px;
 
-    .asset-card {
-      &:last-of-type {
-        display: none;
-      }
-    }
-
     @include small-desktop-styles {
-      grid-template-columns: 1fr 1fr 1fr;
-
-      .asset-card {
-        &:last-of-type {
-          display: flex;
-        }
-      }
+      grid-template-columns: repeat(3, 1fr);
     }
 
     @include mobile-styles {

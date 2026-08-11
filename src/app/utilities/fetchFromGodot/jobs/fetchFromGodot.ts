@@ -53,69 +53,127 @@ export async function runImportAssets (): Promise<void> {
 
 async function importAssets (): Promise<void> {
   logger.log('info', 'Fetching data to mirror from Godot Asset Library')
+  const syncedAt = new Date()
 
-  const [newAssetIDs, updateAssetIDs] = await fetchAssetListings()
+  const { newAssetIDs, updateAssetIDs, seenIDs, partialRun } = await fetchAssetListings()
   await fetchAssetInformationAndInsert(newAssetIDs)
   await fetchAssetInformationAndUpdate(updateAssetIDs)
 
-  logger.log('info', 'All imported assets processed')
-}
-
-async function fetchAssetListings (): Promise<any[]> {
-  const env = process.env.RUN_MODE ?? 'prod'
-  let paths: string[] = []
-
-  if (env === 'prod') {
-    paths = [
-      '/asset-library/api/asset?type=any&max_results=500&godot_version=2.2',
-      '/asset-library/api/asset?type=any&max_results=500&godot_version=3.9&page=0',
-      '/asset-library/api/asset?type=any&max_results=500&godot_version=3.9&page=1',
-      '/asset-library/api/asset?type=any&max_results=500&godot_version=3.9&page=2',
-      '/asset-library/api/asset?type=any&max_results=500&godot_version=3.9&page=3',
-      '/asset-library/api/asset?type=any&max_results=500&godot_version=4.9&page=0',
-      '/asset-library/api/asset?type=any&max_results=500&godot_version=4.9&page=1',
-      '/asset-library/api/asset?type=any&max_results=500&godot_version=4.9&page=2',
-      '/asset-library/api/asset?type=any&max_results=500&godot_version=4.9&page=3',
-      '/asset-library/api/asset?type=any&max_results=500&godot_version=4.9&page=4',
-      '/asset-library/api/asset?type=any&max_results=500&godot_version=4.9&page=5'
-    ]
-  } else if (env === 'devel') {
-    paths = [
-      '/asset-library/api/asset?type=any&max_results=50&godot_version=3.4&page=0'
-    ]
+  if (partialRun) {
+    // Do not advance missing-run counters or tombstone anything when the
+    // listing was incomplete; that would wrongly hide healthy assets.
+    logger.log('warn', 'Asset listing was partial; skipping source-status marking')
+  } else {
+    await markSourceStatus(seenIDs, syncedAt)
   }
 
-  const newAssetIDs = []
-  const updateAssetIDs = []
+  logger.log('info', `All imported assets processed (${newAssetIDs.length} new, ${updateAssetIDs.length} updated)`)
+}
 
-  for (const path of paths) {
-    try {
-      /**
-       * We run these sequentially so as to
-       * minimize any potential negative impact
-       * to their servers
-       */
-      const response = await nodeFetch({ host, path })
-      const result = JSON.parse(response).result
+async function fetchAssetListings (): Promise<{ newAssetIDs: string[], updateAssetIDs: string[], seenIDs: Set<string>, partialRun: boolean }> {
+  const env = process.env.RUN_MODE ?? 'prod'
+  const maxResults = env === 'devel' ? 50 : 500
+  const versionWindows = (env === 'devel'
+    ? ['3.4']
+    : (process.env.IMPORT_GODOT_VERSIONS ?? '2.2,3.9,4.9').split(',')).map(v => v.trim()).filter(Boolean)
+
+  const newAssetIDs = new Set<string>()
+  const updateAssetIDs = new Set<string>()
+  const seenIDs = new Set<string>()
+
+  // A failed version window means `seenIDs` is incomplete. Marking source
+  // status from a partial set would wrongly tombstone healthy assets, so the
+  // caller must skip availability marking when this is true.
+  let anyWindowFailed = false
+
+  for (const version of versionWindows) {
+    let page = 0
+    while (page < 100) {
+      const path = `/asset-library/api/asset?type=any&max_results=${maxResults}&godot_version=${encodeURIComponent(version)}&page=${page}`
+      let result: any[]
+      try {
+        /**
+         * We run these sequentially so as to
+         * minimize any potential negative impact
+         * to their servers
+         */
+        const response = await nodeFetch({ host, path })
+        result = JSON.parse(response).result
+      } catch (e: any) {
+        logger.log('error', `[IMPORTER]: ${e.message}`, [e])
+        anyWindowFailed = true
+        break
+      }
+
+      if (!Array.isArray(result) || result.length === 0) break
 
       for (const asset of result) {
-        if (asset.asset_id !== undefined) {
-          if (!(await modelDoesAssetAlreadyExist(asset.asset_id))) {
-            newAssetIDs.push(asset.asset_id)
-          } else {
-            const assetModifedDate = await modelGetAssetModifiedDate(asset.asset_id)
-            if (new Date(asset.modify_date) > new Date(assetModifedDate)) {
-              updateAssetIDs.push(asset.asset_id)
-            }
+        if (asset.asset_id === undefined) continue
+        seenIDs.add(asset.asset_id)
+        if (!(await modelDoesAssetAlreadyExist(asset.asset_id))) {
+          newAssetIDs.add(asset.asset_id)
+        } else {
+          const assetModifiedDate = await modelGetAssetModifiedDate(asset.asset_id)
+          if (new Date(asset.modify_date) > new Date(assetModifiedDate)) {
+            updateAssetIDs.add(asset.asset_id)
           }
         }
       }
-    } catch (e: any) {
-      logger.log('error', `[IMPORTER]: ${e.message}`, [e])
+
+      // A short (or empty) page means we reached the end of this version window.
+      if (result.length < maxResults) break
+      page++
     }
   }
 
-  return [newAssetIDs, updateAssetIDs]
+  return {
+    newAssetIDs: Array.from(newAssetIDs),
+    updateAssetIDs: Array.from(updateAssetIDs),
+    seenIDs,
+    partialRun: anyWindowFailed
+  }
+}
+
+/** Record freshness/source-status fields on an asset before persisting it. */
+function normalizeAssetForSync (asset: any, isNew: boolean): void {
+  asset.source_last_seen_at = new Date()
+  asset.source_last_synced_at = new Date()
+  asset.source_status = 'active'
+  if (isNew) {
+    asset.source_missing_runs = 0
+  }
+  const modifyDate = new Date(asset.modify_date)
+  if (!isNaN(modifyDate.getTime())) {
+    asset.modify_date_at = modifyDate
+  }
+}
+
+/**
+ * After a complete import, mark seen assets active/synced and tombstone assets
+ * that several consecutive imports no longer list.
+ */
+async function markSourceStatus (seenIDs: Set<string>, syncedAt: Date): Promise<void> {
+  const mongo: Db = MongoHelper.getDatabase()
+  const assets = mongo.collection('assets')
+  const seen = Array.from(seenIDs)
+
+  await assets.updateMany(
+    { legacy_asset_id: { $in: seen } },
+    {
+      $set: { source_status: 'active', source_last_seen_at: syncedAt, source_last_synced_at: syncedAt },
+      $unset: { source_missing_runs: '' }
+    }
+  )
+
+  await assets.updateMany(
+    { legacy_asset_id: { $nin: seen }, source_status: { $ne: 'unavailable' } },
+    { $inc: { source_missing_runs: 1 } }
+  )
+
+  await assets.updateMany(
+    { legacy_asset_id: { $nin: seen }, source_missing_runs: { $gte: 3 } },
+    { $set: { source_status: 'unavailable' } }
+  )
 }
 
 async function fetchAssetInformationAndInsert (assetIDs: any[]): Promise<void> {
@@ -134,6 +192,7 @@ async function fetchAssetInformationAndInsert (assetIDs: any[]): Promise<void> {
       const result = JSON.parse(response) as assetSchema
 
       if (result.asset_id !== undefined) {
+        normalizeAssetForSync(result, true)
         await modelInsertAsset(result)
         await updateCategoryCountInfoObject(result.category)
         await FetchReadme(result.asset_id, result.download_url)
@@ -181,6 +240,7 @@ async function fetchAssetInformationAndUpdate (assetIDs: any[]): Promise<void> {
           await updateCategoryCountInfoObject(result.category)
         }
 
+        normalizeAssetForSync(result, false)
         await FetchReadme(result.asset_id, result.download_url)
         await modelUpdateAssetObject(result.legacy_asset_id, result)
       }
@@ -253,6 +313,7 @@ async function modelInsertAsset (asset: assetSchema): Promise<any> {
   asset.quick_description = asset.description.trim().replace(/(\r\n|\n|\r|\t)/gm, '')
   asset.upvotes = 0
   asset.downvotes = 0
+  asset.rating_score = 0
   asset.featured = false
   asset.title = asset.title.trim()
   asset.category_lowercase = asset.category.toLocaleLowerCase()

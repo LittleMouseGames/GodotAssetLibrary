@@ -90,4 +90,107 @@
       }
     }
   }
+
+  .query-link {
+    @include inter-like-font();
+    background: $button-gray;
+    color: $text-dark-darker;
+    padding: 8px 10px;
+    border-radius: 4px;
+    border: 1px solid #d5d5d5;
+    font-size: 13px;
+    margin-left: 8px;
+    cursor: pointer;
+  }
+
+  .pagination-btn {
+    @include inter-like-font();
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: $button-gray;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    border: 1px solid #d5d5d5;
+    height: 35px;
+    text-align: center;
+    width: 80px;
+    cursor: pointer;
+    box-sizing: border-box;
+    text-decoration: none;
+    color: $text-dark-darker;
+
+    &.disabled {
+      color: $text-light-darker;
+      background-color: $button-very-gray;
+      cursor: not-allowed;
+      border-color: transparent;
+    }
+
+    &:not(:last-of-type) {
+      margin-right: 10px;
+    }
+  }
+
+  .results-summary {
+    @include inter-like-font();
+    font-size: 13px;
+    color: $text-gray-darker;
+    margin-bottom: 15px;
+  }
+
+  .page-numbers {
+    display: flex;
+    gap: 6px;
+
+    .page-number {
+      @include inter-like-font();
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 32px;
+      height: 32px;
+      padding: 0 8px;
+      border-radius: 4px;
+      border: 1px solid #d5d5d5;
+      font-size: 13px;
+      text-decoration: none;
+      color: $text-dark-darker;
+
+      &.current {
+        background: $button-very-dark;
+        color: #ffffff;
+        border-color: $button-very-dark;
+      }
+    }
+  }
+
+  .no-results {
+    @include inter-like-font();
+    padding: 30px 10px;
+    text-align: center;
+    color: $text-gray-darker;
+
+    .no-results-icon {
+      font-size: 40px;
+      color: $text-light-darker;
+    }
+
+    h2 {
+      margin: 8px 0 0;
+      color: $text-primary;
+      font-weight: 700;
+    }
+
+    p {
+      margin-bottom: 12px;
+    }
+
+    a {
+      color: #2081db;
+      text-decoration: underline;
+      margin: 0 6px;
+    }
+  }
 }

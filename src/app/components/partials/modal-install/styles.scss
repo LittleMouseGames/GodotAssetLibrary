@@ -3,49 +3,221 @@
 
 @include modal-styles;
 
-.modal {
-  &.install {
+.modal-install {
+  /* Title + close button on one line, no extra top space. */
+  .install-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 6px;
+
     h2 {
-      margin-bottom: 15px;
+      margin: 0;
+      font-size: 20px;
+      flex: 1;
+      min-width: 0;
+
+      .asset-name {
+        word-break: break-word;
+      }
+    }
+
+    .close {
+      flex-shrink: 0;
+      background: transparent;
+      border: none;
+      color: $text-gray-darker;
+      font-family: "Inter", sans-serif;
+      font-size: 26px;
+      line-height: 1;
+      padding: 2px 8px;
+      min-height: 0;
+      width: auto;
+      margin: 0;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 400;
+
+      &:hover {
+        background: $color-lighter-gray;
+        color: $text-dark-darkest;
+      }
     }
   }
-}
 
-.modal-install {
-  .grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    column-gap: 15px;
+  /* Compatibility / license meta line */
+  .compat {
+    margin: 0 0 18px;
+    font-family: "Inter", sans-serif;
+    font-size: 13px;
+    color: $text-muted;
   }
 
-  .column {
-    border-radius: 6px;
-    border: 1px solid #f2f2f2;
-    padding: 12px 15px 15px;
+  /* Highlighted "quickest way" callout */
+  .install-quick {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 16px;
+    margin-bottom: 22px;
+    border-radius: $border-radius-md;
+    background: rgba(47, 105, 255, 0.07);
+    border: 1px solid rgba(47, 105, 255, 0.22);
+
+    .install-quick-icon {
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background: $badge-blue;
+      color: #fff;
+      font-size: 18px;
+    }
+
+    .install-quick-body {
+      flex: 1;
+      min-width: 0;
+
+      h3 {
+        font-family: "Inter", sans-serif;
+        font-size: 14px;
+        font-weight: 700;
+        margin: 0 0 4px;
+        color: $text-primary;
+      }
+
+      p {
+        margin: 0;
+        font-family: "DM Sans", sans-serif;
+        font-size: 14px;
+        color: $text-secondary;
+        line-height: 1.5;
+      }
+    }
+
+    .copy-btn {
+      flex-shrink: 0;
+      min-height: 34px;
+      padding: 6px 14px;
+      margin: 0;
+      font-family: "Inter", sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      border-radius: $border-radius-md;
+      background: #fff;
+      border: 1px solid $border-color-strong;
+      color: $text-dark-darkest;
+      cursor: pointer;
+      white-space: nowrap;
+
+      &:hover {
+        background: $color-lighter-gray;
+      }
+    }
   }
 
-  .container {
+  /* Numbered manual-install steps */
+  .install-steps {
     display: flex;
     flex-direction: column;
-    height: 100%;
+    gap: 18px;
   }
 
-  button {
-    margin-top: auto;
-    width: 100%;
+  .install-step {
+    display: flex;
+    gap: 14px;
+
+    .step-number {
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: $button-very-dark;
+      color: #fff;
+      font-family: "Inter", sans-serif;
+      font-size: 13px;
+      font-weight: 700;
+      margin-top: 2px;
+    }
+
+    .step-body {
+      flex: 1;
+      min-width: 0;
+
+      h3 {
+        font-family: "Inter", sans-serif;
+        font-size: 14px;
+        font-weight: 700;
+        margin: 0 0 6px;
+        color: $text-primary;
+      }
+
+      p {
+        margin: 0 0 10px;
+        font-family: "DM Sans", sans-serif;
+        font-size: 14px;
+        color: $text-secondary;
+        line-height: 1.5;
+      }
+
+      .copy-btn {
+        min-height: 34px;
+        padding: 6px 14px;
+        margin: 0;
+        font-family: "Inter", sans-serif;
+        font-size: 13px;
+        font-weight: 600;
+        border-radius: $border-radius-md;
+        background: #fff;
+        border: 1px solid $border-color-strong;
+        color: $text-dark-darkest;
+        cursor: pointer;
+
+        &:hover {
+          background: $color-lighter-gray;
+        }
+      }
+    }
   }
 
-  p {
-    margin-top: 15px;
-    font-family: "DM Sans";
-    font-size: 15px;
-    margin-bottom: 20px;
+  .download {
+    @include form-button();
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-height: 44px;
+    padding: 10px 22px;
+    margin: 0;
+    text-decoration: none;
+    box-sizing: border-box;
+    border-radius: $border-radius-md;
+    font-family: "Inter", sans-serif;
+    font-weight: 600;
+
+    .hint {
+      font-weight: 500;
+      opacity: 0.75;
+      font-size: 12px;
+    }
+  }
+
+  .no-download {
+    color: $text-muted;
+    font-style: italic;
   }
 
   .code {
-    padding: 4px 9px;
+    padding: 2px 7px;
     background: $color-lighter-gray;
-    border-radius: 3px;
+    border-radius: $border-radius-sm;
     font-size: 12px;
     font-weight: 500;
   }

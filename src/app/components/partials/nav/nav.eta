@@ -18,12 +18,13 @@
         </div>
       </a>
     </div>
-    <form method="POST" action="/search" class="search-container">
+    <form method="GET" action="/search/" class="search-container" role="search">
       <div class="search">
         <span class="iconify" data-icon="eva:search-outline"></span>
-        <input placeholder="Search for your next asset..." name="query"
+        <label class="visually-hidden" for="site-search">Search for your next asset</label>
+        <input id="site-search" type="search" placeholder="Search for your next asset..." name="q" autocomplete="off"
           value="<%= it?.originalQuery ? it?.originalQuery : '' %>">
-        <span class="iconify close" data-icon="carbon:close"></span>
+        <button type="button" class="iconify close" data-icon="carbon:close" aria-label="Close search"></button>
       </div>
     </form>
     <div class="links">
@@ -31,11 +32,15 @@
       <a href="/category/3d+tools" class="link" title="See assets in this category">3D Tools</a>
       <a href="/category/tools" class="link" title="See assets in this category">Tools</a>
       <a href="/category/shaders" class="link" title="See assets in this category">Shaders</a>
-      <div class="dropdown categories no-text-select" onclick="window.godotLibrary.dropdown.showContent(event, this)">
-        <div class="value">More Categories</div>
-        <div class="value mobile">Categories</div>
-        <span class="iconify" data-icon="bxs:chevron-down"></span>
-        <div class="options">
+      <div class="dropdown categories no-text-select">
+        <button type="button" class="dropdown-trigger" aria-haspopup="true" aria-expanded="false"
+          aria-controls="nav-categories-panel"
+          onclick="window.godotLibrary.dropdown.showContent(event, this)">
+          <span class="value">More Categories</span>
+          <span class="value mobile">Categories</span>
+          <span class="iconify" data-icon="bxs:chevron-down"></span>
+        </button>
+        <div class="options" id="nav-categories-panel">
           <a href="/category/materials" title="See assets in this category">Materials</a>
           <a href="/category/scripts" title="See assets in this category">Scripts</a>
           <a href="/category/misc" title="See assets in this category">Misc</a>
@@ -46,19 +51,27 @@
       </div>
     </div>
     <div class="account actions">
-      <span class="iconify mobile-search" data-icon="eva:search-outline"
-        onclick="window.godotLibrary.mobile.showSearch(event)"></span>
+      <button type="button" class="mobile-search-btn" aria-label="Open search" aria-expanded="false"
+        aria-controls="site-search" onclick="window.godotLibrary.mobile.toggleSearch(event)">
+        <span class="iconify" data-icon="eva:search-outline"></span>
+      </button>
       <% if(it?._locals?.loggedIn === true) { %>
-      <div class="dropdown no-text-select" onclick="window.godotLibrary.dropdown.showContent(event, this)">
-        <span class="iconify" data-icon="codicon:account"></span>
-        <div class="value">My Account</div>
-        <span class="iconify chevron" data-icon="bxs:chevron-down"></span>
-        <div class="options">
+      <div class="dropdown no-text-select">
+        <button type="button" class="dropdown-trigger" aria-haspopup="true" aria-expanded="false"
+          aria-controls="nav-account-panel"
+          onclick="window.godotLibrary.dropdown.showContent(event, this)">
+          <span class="iconify" data-icon="codicon:account"></span>
+          <span class="value">My Account</span>
+          <span class="iconify chevron" data-icon="bxs:chevron-down"></span>
+        </button>
+        <div class="options" id="nav-account-panel">
           <a href="/dashboard" title="Visit account dashboard">Dashboard</a>
           <a href="/dashboard/saved/" title="See my saved assets">Saved Assets</a>
           <a href="/dashboard/reviews/" title="See my reviewed assets">Reviewed Assets</a>
           <% if (it?._locals?.role === 'admin') { %><a href="/admin">Admin Dashboard</a> <% } %>
-          <a href="/api/users/logout" title="Sign out of account">Logout</a>
+          <form method="POST" action="/api/users/logout" class="logout-form">
+            <button type="submit" title="Sign out of account">Logout</button>
+          </form>
         </div>
       </div>
       <% } else { %>

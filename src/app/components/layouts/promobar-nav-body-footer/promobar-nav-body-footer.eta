@@ -40,13 +40,14 @@
 
 
 <body>
+  <a class="skip-link" href="#main-content">Skip to main content</a>
   <%~ includeFile('templates/components/partials/nav/nav.eta', it) %>
 
-  <section class="main">
+  <main id="main-content" class="main">
     <%~ includeFile('templates/components/partials/page-banner/page-banner.eta', it) %>
     <%~ includeFile('templates/components/partials/page-message/page-message.eta') %>
     <%~ it.body %>
-  </section>
+  </main>
 
   <%~ includeFile('templates/components/partials/footer/footer.eta', it) %>
   <script src="https://code.iconify.design/2/2.1.2/iconify.min.js"></script>

@@ -75,6 +75,13 @@
     "build": "mkdir -p dist/ && node src/BuildTaskRunner.js --production --build-only",
     "start": "node dist/bundle.js",
     "lint": "eslint . --ext .js,.ts ; exit 0",
+    "lint:check": "eslint . --ext .js,.ts",
+    "typecheck": "tsc --noEmit",
+    "audit:catalog": "ts-node --transpile-only -r tsconfig-paths/register src/core/maintenance/runCatalogAudit.ts",
+    "reconcile:ratings": "ts-node --transpile-only -r tsconfig-paths/register src/core/maintenance/runReconcileRatings.ts",
+    "migrate": "ts-node --transpile-only -r tsconfig-paths/register src/core/migrations/runMigrations.ts",
+    "test:build": "tsc -p tsconfig.test.json",
+    "test": "npm run test:build && node --test --require ./tests/bootstrap.cjs \"dist-test/tests/*.test.js\"",
     "prod": "npm run build && npm start"
   },
   "eslintConfig": {

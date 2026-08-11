@@ -1,5 +1,6 @@
 import { Controller, Get, Middleware, Post } from '@overnightjs/core'
 import { Request, Response } from 'express'
+import { StatusCodes } from 'http-status-codes'
 import { CheckIfUserExistAndRedirect } from 'core/modules/authentication/middleware/CheckIfUserExistAndRedirect'
 import { DashboardService } from '../services/DashboardService'
 import rateLimit from 'express-rate-limit'
@@ -84,7 +85,16 @@ export class DashboardController {
   @Get('save/:id')
   @Middleware([saveAssetRateLimit, CheckIfUserExistAndSendError('Unable to save, are you logged in?')])
   private async saveAsset (req: Request, res: Response): Promise<void> {
-    return await this.DashboardService.saveAsset(req, res)
+    // Deprecated: this used to be a state-changing GET toggle (prone to
+    // prefetch/crawler toggling). It is now non-mutating; use the explicit
+    // POST /dashboard/assets/:id/saved endpoint instead.
+    return res.redirect(StatusCodes.MOVED_TEMPORARILY, `/asset/${req.params.id}`)
+  }
+
+  @Post('assets/:id/saved')
+  @Middleware([saveAssetRateLimit, CheckIfUserExistAndSendError('Unable to save, are you logged in?')])
+  private async setSavedAsset (req: Request, res: Response): Promise<void> {
+    return await this.DashboardService.setSavedAsset(req, res)
   }
 
   @Get('download')
@@ -94,8 +104,16 @@ export class DashboardController {
   }
 
   @Get('delete')
+  @Middleware([CheckIfUserExistAndRedirect('/register', false)])
+  private async delteAccountPage (_req: Request, res: Response): Promise<void> {
+    // Deleting is now a POST action with password + confirmation. The GET URL
+    // is kept only as a compatibility redirect to the confirmation page.
+    return res.redirect(StatusCodes.MOVED_TEMPORARILY, '/dashboard/manage/')
+  }
+
+  @Post('delete')
   @Middleware([deleteAccountRateLimit, CheckIfUserExistAndSendError('Unable to delete account, are you logged in?')])
-  private async delteAccount (req: Request, res: Response): Promise<void> {
+  private async deleteAccount (req: Request, res: Response): Promise<void> {
     return await this.DashboardService.deleteAccount(req, res)
   }
 }

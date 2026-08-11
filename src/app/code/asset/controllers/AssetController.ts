@@ -2,6 +2,7 @@ import { Controller, Get, Middleware, Post, Patch } from '@overnightjs/core'
 import { Request, Response } from 'express'
 import rateLimit from 'express-rate-limit'
 import { CheckIfUserExistAndSendError } from 'core/modules/authentication/middleware/CheckIfUserExistAndSendError'
+import { rateLimitHandler } from 'core/utils/rateLimitHandler'
 import { AssetService } from '../services/AssetService'
 
 const reviewAssetRateLimit = rateLimit({
@@ -25,7 +26,7 @@ const reportReviewRateLimit = rateLimit({
 const renderAssetRateLimit = rateLimit({
   windowMs: 1000 * 60 * 15, // 15 minutes
   max: 60, // start blocking after x requests
-  message: JSON.stringify({ error: 'You\'re doing that too often, please try again later' })
+  handler: rateLimitHandler('You\'re doing that too often, please try again later')
 })
 
 @Controller('asset')

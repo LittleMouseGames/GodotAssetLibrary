@@ -1,13 +1,121 @@
 <div class="catalog-grid">
+  <% if (it?.search != null) { %>
+  <div class="top-bar">
+    <div class="left">
+      <label class="inline-dropdown">
+        Sort By
+        <div class="dropdown no-text-select">
+          <button type="button" class="dropdown-trigger" aria-haspopup="true" aria-expanded="false"
+            onclick="window.godotLibrary.dropdown.showContent(event, this)">
+            <span class="value"><%= it.search.currentSortLabel %></span>
+            <span class="iconify" data-icon="bxs:chevron-down"></span>
+          </button>
+          <div class="options">
+            <% for (const option of it.search.sortOptions) { %>
+            <a href="<%= option.url %>" title="Sort by <%= option.label %>"><%= option.label %></a>
+            <% } %>
+          </div>
+        </div>
+      </label>
+    </div>
+    <div class="right">
+      <label class="inline-dropdown">
+        Results per Page
+        <div class="dropdown no-text-select">
+          <button type="button" class="dropdown-trigger" aria-haspopup="true" aria-expanded="false"
+            onclick="window.godotLibrary.dropdown.showContent(event, this)">
+            <span class="value"><%= it.search.currentLimit %></span>
+            <span class="iconify" data-icon="bxs:chevron-down"></span>
+          </button>
+          <div class="options">
+            <% for (const option of it.search.limitOptions) { %>
+            <a href="<%= option.url %>" title="Show <%= option.label %> assets per page"><%= option.label %></a>
+            <% } %>
+          </div>
+        </div>
+      </label>
+      <div class="buttons">
+        <% if (it.search.pagination.hasPrev) { %>
+        <a class="pagination-btn" href="<%= it.search.pagination.prevUrl %>" rel="prev" title="Go back a page">Back</a>
+        <% } else { %>
+        <span class="pagination-btn disabled" aria-disabled="true">Back</span>
+        <% } %>
+        <% if (it.search.pagination.hasNext) { %>
+        <a class="pagination-btn" href="<%= it.search.pagination.nextUrl %>" rel="next" title="Go to next page">Next</a>
+        <% } else { %>
+        <span class="pagination-btn disabled" aria-disabled="true">Next</span>
+        <% } %>
+      </div>
+    </div>
+  </div>
+  <% if (it.search.pagination.total > 0) { %>
+  <div class="results-summary">
+    Showing <strong><%= it.search.pagination.rangeStart %>&ndash;<%= it.search.pagination.rangeEnd %></strong> of
+    <strong><%= it.search.pagination.total %></strong> assets
+    <% if (it.search.pagination.totalPages > 1) { %>
+    &middot; page <%= it.search.pagination.displayPage %> of <%= it.search.pagination.totalPages %>
+    <% } %>
+  </div>
+  <% } %>
+  <div class="results">
+    <%~ includeFile('templates/components/partials/asset-card-grid/results.eta', { grid: it.grid, type: it?.type, _locals: it?._locals, sourceUrl: it?.params }) %>
+  </div>
+  <% if (it.grid?.length > 0) { %>
+  <div class="bottom-bar">
+    <div class="left">
+      <div class="page-numbers">
+        <% for (const page of it.search.pagination.pages) { %>
+        <a class="page-number<%= page.current ? ' current' : '' %>" href="<%= page.url %>"
+          aria-current="<%= page.current ? 'page' : 'false' %>"><%= page.label %></a>
+        <% } %>
+      </div>
+    </div>
+    <div class="right">
+      <div class="buttons">
+        <% if (it.search.pagination.hasPrev) { %>
+        <a class="pagination-btn" href="<%= it.search.pagination.prevUrl %>" rel="prev" title="Go back a page">Back</a>
+        <% } else { %>
+        <span class="pagination-btn disabled" aria-disabled="true">Back</span>
+        <% } %>
+        <% if (it.search.pagination.hasNext) { %>
+        <a class="pagination-btn" href="<%= it.search.pagination.nextUrl %>" rel="next" title="Go to next page">Next</a>
+        <% } else { %>
+        <span class="pagination-btn disabled" aria-disabled="true">Next</span>
+        <% } %>
+      </div>
+    </div>
+  </div>
+  <% } else { %>
+  <div class="no-results">
+    <span class="iconify no-results-icon" data-icon="bx:search-alt" aria-hidden="true"></span>
+    <h2>No assets found</h2>
+    <p>No assets found for your search.</p>
+    <div class="empty-actions">
+      <% if (it.search?.query) { %>
+      <a href="/search/?q=<%= encodeURIComponent(it.search.query) %>&sort=last_modified"
+        title="Try fewer or different keywords">Try fewer or different keywords</a>
+      <% } %>
+      <a href="/category/2d+tools" title="Browse 2D Tools">Browse categories</a>
+      <% if (it.search?.hasFilters) { %>
+      <a href="<%= it.search.clearAllUrl %>" title="Clear all filters">Clear all filters</a>
+      <% } %>
+      <a href="/search/?sort=last_modified" title="Browse recently updated assets">Browse recently updated assets</a>
+    </div>
+  </div>
+  <% } %>
+  <% } else { %>
   <div class="top-bar">
     <div class="left">
       <div class="sort">
         <label class="inline-dropdown">
           <% var params = new URLSearchParams(it.params?.includes('q=') ? it.params : it.params + '?q=') %>
           Sort By
-          <div class="dropdown no-text-select" onclick="window.godotLibrary.dropdown.showContent(event, this)">
-            <div class="value"><%= params.get('sort')?.replace(/_/g, ' ') ?? 'Relevance' %> </div>
-            <span class="iconify" data-icon="bxs:chevron-down"></span>
+          <div class="dropdown no-text-select">
+            <button type="button" class="dropdown-trigger" aria-haspopup="true" aria-expanded="false"
+              onclick="window.godotLibrary.dropdown.showContent(event, this)">
+              <span class="value"><%= params.get('sort')?.replace(/_/g, ' ') ?? 'Relevance' %></span>
+              <span class="iconify" data-icon="bxs:chevron-down"></span>
+            </button>
             <div class="options">
               <% const sorts = ['Relevance', 'Asset Rating', 'Last Modified', 'Newest'] %>
               <% sorts.forEach(sort => { %>
@@ -23,10 +131,13 @@
     <div class="right">
       <label class="inline-dropdown">
         Results per Page
-        <div class="dropdown no-text-select" onclick="window.godotLibrary.dropdown.showContent(event, this)">
-          <% var params = new URLSearchParams(it.params?.includes('q=') ? it.params : it.params + '?q=') %>
-          <div class="value"><%= params.get('limit') ?? '12' %></div>
-          <span class="iconify" data-icon="bxs:chevron-down"></span>
+        <div class="dropdown no-text-select">
+          <button type="button" class="dropdown-trigger" aria-haspopup="true" aria-expanded="false"
+            onclick="window.godotLibrary.dropdown.showContent(event, this)">
+            <% var params = new URLSearchParams(it.params?.includes('q=') ? it.params : it.params + '?q=') %>
+            <span class="value"><%= params.get('limit') ?? '12' %></span>
+            <span class="iconify" data-icon="bxs:chevron-down"></span>
+          </button>
           <div class="options">
             <% 
             var limitOptions = ['12', '24', '36']
@@ -44,43 +155,46 @@
         <% var page = Number(params.get('page')) ?? 0 %>
 
         <% if (page === 0) { %>
-        <button class="disabled">Back</button>
+        <span class="pagination-btn disabled" aria-disabled="true">Back</span>
         <% } else { %>
         <% params.set('page', page - 1) %>
-        <a href="<%= decodeURIComponent(params.toString()) %>" title="Go back a page">
-          <button>Back</button>
-        </a>
+        <a class="pagination-btn" href="<%= decodeURIComponent(params.toString()) %>" title="Go back a page">Back</a>
         <% } %>
         <% var currentLimit = Number(params.get('limit')) === 0 ? 12 : Number(params.get('limit')) %>
-        <% if (it.grid?.length !== currentLimit) { %>
-        <button class="disabled">Next</button>
+        <% var hasNext = it.gridTotal != null ? ((page + 1) * currentLimit < it.gridTotal) : (it.grid?.length === currentLimit) %>
+        <% if (!hasNext) { %>
+        <span class="pagination-btn disabled" aria-disabled="true">Next</span>
         <% } else { %>
         <% params.set('page', page + 1) %>
-        <a href="<%= decodeURIComponent(params.toString()) %>" title="Go to next page">
-          <button>Next</button>
-        </a>
+        <a class="pagination-btn" href="<%= decodeURIComponent(params.toString()) %>" title="Go to next page">Next</a>
         <% } %>
       </div>
     </div>
   </div>
+  <% if (it.gridTotal != null && it.grid?.length > 0) { %>
+  <div class="results-summary">
+    <% var params = new URLSearchParams(it.params?.includes('q=') ? it.params : it.params + '?q=') %>
+    <% var page = Number(params.get('page')) ?? 0 %>
+    <% var currentLimit = Number(params.get('limit')) === 0 ? 12 : Number(params.get('limit')) %>
+    Showing <strong><%= (page * currentLimit) + 1 %>&ndash;<%= (page * currentLimit) + it.grid.length %></strong> of
+    <strong><%= it.gridTotal %></strong> assets
+  </div>
+  <% } %>
   <div class="results">
-    <% it.grid?.forEach(info => { %>
-    <% if (it?.type && it?.type === 'reports') { %>
-    <%~ includeFile('templates/components/partials/review-report/review-report.eta', info) %>
-    <% } else { %>
-    <%~ includeFile('templates/components/partials/asset-card/asset-card.eta', { info: info, _locals: it?._locals }) %>
-    <% } %>
-    <% }) %>
+    <%~ includeFile('templates/components/partials/asset-card-grid/results.eta', { grid: it.grid, type: it?.type, _locals: it?._locals, sourceUrl: it?.params }) %>
   </div>
   <% if(it?.grid?.length > 0) { %>
   <div class="bottom-bar">
     <div class="left">
       <label class="inline-dropdown">
         Results per Page
-        <div class="dropdown" onclick="window.godotLibrary.dropdown.showContent(event, this)">
-          <% var params = new URLSearchParams(it.params?.includes('q=') ? it.params : it.params + '?q=') %>
-          <div class="value"><%= params.get('limit') ?? '12' %></div>
-          <span class="iconify" data-icon="bxs:chevron-down"></span>
+        <div class="dropdown">
+          <button type="button" class="dropdown-trigger" aria-haspopup="true" aria-expanded="false"
+            onclick="window.godotLibrary.dropdown.showContent(event, this)">
+            <% var params = new URLSearchParams(it.params?.includes('q=') ? it.params : it.params + '?q=') %>
+            <span class="value"><%= params.get('limit') ?? '12' %></span>
+            <span class="iconify" data-icon="bxs:chevron-down"></span>
+          </button>
           <div class="options">
             <% 
             var limitOptions = ['12', '24', '36']
@@ -100,26 +214,27 @@
         <% var page = Number(params.get('page')) ?? 0 %>
 
         <% if (page === 0) { %>
-        <button class="disabled">Back</button>
+        <span class="pagination-btn disabled" aria-disabled="true">Back</span>
         <% } else { %>
         <% params.set('page', page - 1) %>
-        <a href="<%= decodeURIComponent(params.toString()) %>" title="Go back a page">
-          <button>Back</button>
-        </a>
+        <a class="pagination-btn" href="<%= decodeURIComponent(params.toString()) %>" title="Go back a page">Back</a>
         <% } %>
         <% var currentLimit = Number(params.get('limit')) === 0 ? 12 : Number(params.get('limit')) %>
-        <% if (it.grid?.length !== currentLimit) { %>
-        <button class="disabled">Next</button>
+        <% var hasNext = it.gridTotal != null ? ((page + 1) * currentLimit < it.gridTotal) : (it.grid?.length === currentLimit) %>
+        <% if (!hasNext) { %>
+        <span class="pagination-btn disabled" aria-disabled="true">Next</span>
         <% } else { %>
         <% params.set('page', page + 1) %>
-        <a href="<%= decodeURIComponent(params.toString()) %>" title="Go to next page">
-          <button>Next</button>
-        </a>
+        <a class="pagination-btn" href="<%= decodeURIComponent(params.toString()) %>" title="Go to next page">Next</a>
         <% } %>
       </div>
     </div>
   </div>
   <% } else { %>
-  <div>No assets found for query</div>
+  <div class="no-results">
+    <p>No assets found for your search.</p>
+    <a href="/search/?sort=last_modified" title="Browse recently updated assets">Browse recently updated assets</a>
+  </div>
+  <% } %>
   <% } %>
 </div>

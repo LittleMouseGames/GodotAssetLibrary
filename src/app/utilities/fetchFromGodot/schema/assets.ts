@@ -29,6 +29,8 @@ export interface assetSchema {
   'download_url': string
   'upvotes': number
   'downvotes': number
+  /** Confidence-adjusted approval score (95% Wilson lower bound). */
+  'rating_score'?: number
   'featured': boolean
   'card_banner': string
   'modify_date_pretty': string
@@ -38,4 +40,12 @@ export interface assetSchema {
     'link': string
     'thumbnail': string
   }>
+  'modify_date_at'?: Date
+  'source_last_seen_at'?: Date
+  'source_last_synced_at'?: Date
+  'source_status'?: string
+  'source_missing_runs'?: number
+  'readme_status'?: string
+  'readme_fetched_at'?: Date
+  'readme_error'?: string
 }

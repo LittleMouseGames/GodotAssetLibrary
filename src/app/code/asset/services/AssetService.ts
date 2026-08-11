@@ -1,4 +1,5 @@
 import { Request, Response } from 'express'
+import { StatusCodes } from 'http-status-codes'
 import { logger } from 'core/utils/logger'
 import { GetAssetDisplayInformation } from '../models/GET/GetAssetDisplayInformation'
 import { GetDoesPostExistById } from '../models/GET/GetDoesPostExistById'
@@ -19,10 +20,18 @@ import { GetUserSavedAssets } from 'app/code/dashboard/models/GET/GetUserSavedAs
 import { GetSiteRestrictions } from 'app/code/admin/models/GET/GetSiteRestrictions'
 import { GetIsAccountDisabledByToken } from '../models/GET/GetIsAccountDisabledByToken'
 import { InsertReviewReport } from '../models/INSERT/InsertReviewReport'
+import { GetRelatedAssets } from '../models/GET/GetRelatedAssets'
+import { GetAssetReviewCount } from '../models/GET/GetAssetReviewCount'
+import { RefreshAssetRating } from '../models/UPDATE/RefreshAssetRating'
 import fromNow from 'fromnow'
 import striptags from 'striptags'
 import { getFallbackImage, normalizePreviews } from 'core/utils/mediaHelpers'
 import { renderReadme } from 'core/utils/readmeRenderer'
+import { isSafeHttpUrl } from 'core/utils/safeUrl'
+import { escapeHtml } from 'core/utils/escapeHtml'
+import { buildAssetUrl } from 'core/utils/assetUrl'
+import { BadRequestError } from 'core/utils/httpError'
+import { attachCardExtras } from 'core/utils/cardView'
 
 export class AssetService {
   /**
@@ -36,15 +45,67 @@ export class AssetService {
     const assetId = striptags(req.params.id ?? '')
     const authToken = striptags(req.cookies['auth-token'] ?? '')
 
+    // "Back to results" must stay local to discovery routes to avoid open redirects.
+    const fromParam = striptags(String(req.query.from ?? ''))
+    const VALID_BACK_PREFIXES = ['/search/', '/category/', '/engine/']
+    const isSafeBackLink = VALID_BACK_PREFIXES.some(prefix => fromParam.startsWith(prefix)) &&
+      !fromParam.includes('://') &&
+      !fromParam.includes('..')
+    const backToResults = isSafeBackLink ? fromParam : ''
+
     if (assetId === '') {
       throw new Error('Missing asset ID')
     }
 
     try {
       const assetInfo = await GetAssetDisplayInformation(assetId)
-      const comments = await GetAssetReviewsById(assetId)
+
+      if (assetInfo === null) {
+        return res.status(StatusCodes.NOT_FOUND).render('templates/pages/lost/not-found', {
+          pageBanner: {
+            title: 'Asset not found',
+            info: 'We couldn\'t find an asset with that ID'
+          }
+        })
+      }
+
+      // Imported asset data is untrusted. Only http(s) URLs may be rendered as
+      // links, otherwise non-HTTP schemes (javascript:, data:, ...) would reach
+      // the browser through the download/repository/issues controls.
+      for (const field of ['download_url', 'browse_url', 'issues_url'] as const) {
+        if (!isSafeHttpUrl(assetInfo[field])) assetInfo[field] = ''
+      }
+
+      const REVIEWS_PER_PAGE = 10
+      const parsedReviewsPage = Number.parseInt(striptags(String(req.query.reviews_page ?? '')), 10)
+      const reviewsPage = Number.isNaN(parsedReviewsPage)
+        ? 0
+        : Math.max(0, Math.min(100, parsedReviewsPage))
+
+      const comments = await GetAssetReviewsById(assetId, REVIEWS_PER_PAGE, reviewsPage * REVIEWS_PER_PAGE)
       let hasUserReviewedAsset = false
       let usersAssetReview = {}
+
+      let reviewCount = comments.length
+      let relatedAssets: Awaited<ReturnType<typeof GetRelatedAssets>> = []
+
+      try {
+        reviewCount = await GetAssetReviewCount(assetId)
+      } catch (e) {
+        // ignore
+      }
+
+      try {
+        relatedAssets = await GetRelatedAssets(
+          assetInfo.category,
+          assetInfo.godot_version,
+          assetInfo.type,
+          assetInfo.asset_id
+        )
+      } catch (e) {
+        // ignore
+      }
+      attachCardExtras(relatedAssets)
 
       assetInfo.modify_date_pretty = fromNow(new Date(assetInfo.modify_date), {
         suffix: true,
@@ -78,24 +139,55 @@ export class AssetService {
 
       const pageBanner = {
         title: assetInfo.title,
-        info: `An asset by <strong>${assetInfo.author}</strong>`
+        info: `An asset by <strong>${escapeHtml(assetInfo.author)}</strong>`,
+        backLink: backToResults !== ''
+          ? { url: backToResults, label: 'Back to results', title: 'Back to previous results' }
+          : null,
+        breadcrumb: [
+          { label: 'Home', url: '/' },
+          {
+            label: assetInfo.category ?? 'Assets',
+            url: assetInfo.category_lowercase != null ? `/category/${assetInfo.category_lowercase}` : ''
+          },
+          { label: assetInfo.title ?? 'Asset', url: '' }
+        ]
       }
       const mediaItems = normalizePreviews(assetInfo.previews)
+      const galleryMedia = mediaItems.filter(item => item.type !== 'external')
       const fallbackImage = getFallbackImage(assetInfo)
+
+      const reviewsHasMore = (reviewsPage * REVIEWS_PER_PAGE) + comments.length < reviewCount
+      const reviewsNextPage = reviewsPage + 1
+      const nextReviewsQuery = new URLSearchParams()
+      nextReviewsQuery.set('reviews_page', String(reviewsNextPage))
+      if (backToResults !== '') nextReviewsQuery.set('from', backToResults)
 
       return res.render('templates/pages/asset/view', {
         info: assetInfo,
         comments: comments,
+        relatedAssets: relatedAssets,
+        reviewCount: reviewCount,
+        reviewsShown: comments.length,
+        reviewsPage: reviewsPage,
+        reviewsHasMore: reviewsHasMore,
+        reviewsNextUrl: `${buildAssetUrl(assetId, assetInfo.title)}?${nextReviewsQuery.toString()}`,
+        backToResults: backToResults,
         hasUserReviewedAsset: hasUserReviewedAsset,
         usersAssetReview: usersAssetReview,
         pageBanner: pageBanner,
-        mediaItems: mediaItems,
-        primaryMedia: mediaItems[0] ?? null,
+        mediaItems: galleryMedia,
+        primaryMedia: galleryMedia[0] ?? null,
+        noindex: assetInfo.source_status === 'unavailable',
         fallbackImage: fallbackImage
       })
     } catch (e: any) {
       logger.log('error', `Failed to load asset page: ${assetId}, ${e?.message}`, [e])
-      return res.send({ error: 'Sorry, we\'re having issues loading this page right now' })
+      return res.status(StatusCodes.INTERNAL_SERVER_ERROR).render('templates/pages/lost/server-error', {
+        pageBanner: {
+          title: 'Something went wrong',
+          info: 'Sorry, we\'re having issues loading this page right now'
+        }
+      })
     }
   }
 
@@ -122,43 +214,44 @@ export class AssetService {
     }
 
     if (siteRestrictions?.disable_new_comments === true || isAccountDisabled) {
-      throw new Error('Posting new reviews has been temporarily disabled')
+      throw new BadRequestError('Posting new reviews has been temporarily disabled')
     }
 
     if (assetId === '') {
-      throw new Error('Missing post ID')
+      throw new BadRequestError('Missing post ID')
     }
 
     if (authToken === undefined || authToken === '') {
-      throw new Error('Missing auth token. Are you logged in?')
+      throw new BadRequestError('Missing auth token. Are you logged in?')
     }
 
     if (rating === '' || (rating !== 'positive' && rating !== 'negative')) {
-      throw new Error('Missing or invalid rating selection, expected "positive" or "negative"')
+      throw new BadRequestError('Missing or invalid rating selection, expected "positive" or "negative"')
     }
 
     if (review.length > 500) {
-      throw new Error('Review text is too long, must be less than 500 characters')
+      throw new BadRequestError('Review text is too long, must be less than 500 characters')
     }
 
     if (review.length > 0 && review.length < 5) {
-      throw new Error('Review text too short, must be at least 5 characters')
+      throw new BadRequestError('Review text too short, must be at least 5 characters')
     }
 
     if (headline.length > 50) {
-      throw new Error('Headline text is too long, must be less than 50 characters')
+      throw new BadRequestError('Headline text is too long, must be less than 50 characters')
     }
 
     if (headline.length > 0 && headline.length < 3) {
-      throw new Error('Headline too short, must be at least 3 characters')
+      throw new BadRequestError('Headline too short, must be at least 3 characters')
     }
 
-    if (review.length > 5 && headline.length < 3) {
-      throw new Error('If you add a review you need a headline, too')
+    // A review of exactly 5 characters is still a review and needs a headline.
+    if (review.length >= 5 && headline.length < 3) {
+      throw new BadRequestError('If you add a review you need a headline, too')
     }
 
     if (!(await GetDoesPostExistById(assetId))) {
-      throw new Error('Asset not found')
+      throw new BadRequestError('Asset not found')
     }
 
     const userId = await GetUserIdByToken(authToken)
@@ -172,7 +265,14 @@ export class AssetService {
       }
 
       await UpdateUserReviewedAssets(authToken, assetId)
-      await InsertReviewForAsset(userId, username, assetId, rating, striptags(review), striptags(headline))
+      try {
+        await InsertReviewForAsset(userId, username, assetId, rating, striptags(review), striptags(headline))
+      } catch (e: any) {
+        // The unique (user_id, asset_id) index makes duplicate inserts
+        // impossible. A concurrent request may have won the race, so treat
+        // this as an update rather than surfacing a server error.
+        await UpdateReviewForAsset(userId, assetId, rating, striptags(review), striptags(headline))
+      }
     } else {
       const oldReview = await GetAssetReviewByUserId(assetId, userId)
 
@@ -187,32 +287,38 @@ export class AssetService {
       await UpdateReviewForAsset(userId, assetId, rating, striptags(review), striptags(headline))
     }
 
+    // Recompute counters from the canonical reviews so upvotes/downvotes and
+    // the confidence-adjusted rating_score always match what cards display.
+    await RefreshAssetRating(assetId)
+
     res.send()
   }
 
   public async reportReview (req: Request, res: Response): Promise<void> {
     const reasons = [
       'spam',
-      'harrasement',
+      'harassment',
       'illegal',
       'other'
     ]
 
-    const reason = striptags(req.body.reason)
+    const rawReason = striptags(req.body.reason)
+    // Normalize the legacy misspelling so older clients keep working
+    const reason = rawReason === 'harrasement' ? 'harassment' : rawReason
     const notes = striptags(req.body.notes ?? '')
     const reviewId = striptags(req.params.id ?? '')
     const authToken = striptags(req.cookies['auth-token'] ?? '')
 
     if (reviewId.length === 0) {
-      throw new Error('Missing comment ID')
+      throw new BadRequestError('Missing comment ID')
     }
 
     if (notes.length > 200) {
-      throw new Error('Notes too long, please keep it under 500 characters')
+      throw new BadRequestError('Notes too long, please keep it under 200 characters')
     }
 
     if (reason === undefined || !reasons.includes(reason)) {
-      throw new Error('Invalid or missing reason')
+      throw new BadRequestError('Invalid or missing reason')
     }
 
     let userId = 'not-logged-in'

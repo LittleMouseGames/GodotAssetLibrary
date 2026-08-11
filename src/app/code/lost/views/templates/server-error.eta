@@ -1,0 +1,15 @@
+<% it.meta = {
+  title: 'Something went wrong | Godot Asset Library',
+  description: 'Discover the best free and open source assets on Godot Asset Library',
+  url: 'https://godotassetlibrary.com/500',
+  moduleName: 'lost'
+} %>
+<% layout('templates/components/layouts/promobar-nav-body-footer/promobar-nav-body-footer.eta') %>
+
+<section class="page-not-found">
+  <div class="center">
+    <h2>Something went wrong 😿</h2>
+    <p>Sorry, but we had trouble loading that page. Please try again shortly.</p>
+    <a href="/" title="Go to the Godot Asset Library homepage">Back to homepage</a>
+  </div>
+</section>

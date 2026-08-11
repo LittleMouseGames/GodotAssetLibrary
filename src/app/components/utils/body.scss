@@ -3,6 +3,7 @@
 
 html {
   height: 100%;
+  scroll-behavior: smooth;
 }
 
 body {
@@ -46,5 +47,161 @@ a {
         text-decoration: underline;
       }
     }
+  }
+}
+
+.skip-link {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  z-index: 1000;
+  background: $color-brand-black;
+  color: $text-light-white;
+  padding: 10px 16px;
+  border-radius: 0 0 6px 0;
+
+  &:focus {
+    left: 0;
+  }
+}
+
+.visually-hidden {
+  position: absolute !important;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+:focus-visible {
+  outline: $focus-ring-width solid $focus-ring-color;
+  outline-offset: 2px;
+}
+
+/* Marketplace primitives -------------------------------------------------- */
+
+/* Comfortable interactive target sizes, especially on touch devices. */
+button,
+a,
+select,
+input[type="checkbox"],
+input[type="radio"] {
+  &:focus-visible {
+    outline: $focus-ring-width solid $focus-ring-color;
+    outline-offset: 2px;
+  }
+}
+
+button,
+[role="button"],
+select {
+  min-height: $touch-target;
+}
+
+/* Disclosure triggers are now real buttons inside styled containers. Reset the
+   native button chrome so the existing `.dropdown`/`.search` visuals apply. */
+.dropdown .dropdown-trigger {
+  background: transparent;
+  border: none;
+  margin: 0;
+  padding: 0;
+  min-height: 0;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  text-align: left;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+}
+
+.search .close {
+  background: transparent;
+  border: none;
+  padding: 0;
+  min-height: 0;
+  cursor: pointer;
+}
+
+a {
+  color: inherit;
+}
+
+.inline-link {
+  color: $link-color;
+
+  &:hover {
+    color: $link-color-hover;
+    text-decoration: underline;
+  }
+}
+
+/* Status pills / messages */
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: $space-1;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: $font-size-xs;
+  font-weight: 600;
+  line-height: $line-height-tight;
+
+  &.success { background: rgba(26, 143, 76, 0.12); color: $color-success; }
+  &.warning { background: rgba(199, 123, 27, 0.14); color: $color-warning; }
+  &.danger { background: $color-danger-bg; color: $color-danger; }
+  &.neutral { background: $color-lighter-gray; color: $text-secondary; }
+}
+
+/* Purposeful empty states */
+.empty-state {
+  padding: $space-8 $space-4;
+  text-align: center;
+  color: $text-muted;
+
+  h2, h3 {
+    color: $text-primary;
+    margin: 0 0 $space-2;
+  }
+
+  p {
+    margin: 0 0 $space-4;
+  }
+
+  .empty-actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: $space-2;
+  }
+}
+
+/* Respect Windows High Contrast / forced-colors mode */
+@media (forced-colors: active) {
+  .save-toggle[aria-pressed="true"],
+  .status-pill.success,
+  .status-pill.warning,
+  .status-pill.danger {
+    border: 1px solid CanvasText;
+  }
+}
+
+/* Keep anchored sections clear of sticky bars (e.g. the asset action bar). */
+#reviews {
+  scroll-margin-top: 80px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 }

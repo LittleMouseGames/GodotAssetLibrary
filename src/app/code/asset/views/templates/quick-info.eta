@@ -5,6 +5,11 @@ var generateProxyUrl = it?._locals?.functions?.generateProxyUrl
 <div class="quick-info">
   <h2>Quick Information</h2>
   <%~ includeFile('templates/components/partials/stars/stars.eta', it) %>
+  <% if (it?.reviewCount != null && it.reviewCount > 0) { %>
+  <a class="reviews-anchor" href="#reviews" title="Jump to reviews">
+    See <%= it.reviewCount %> review<%= it.reviewCount === 1 ? '' : 's' %>
+  </a>
+  <% } %>
   <div class="card">
     <div class="banner">
       <div class="badges">
@@ -15,32 +20,33 @@ var generateProxyUrl = it?._locals?.functions?.generateProxyUrl
           title="See assets for this engine version">
           <div class="badge badge-purple"><%= it?.info?.godot_version ?? 'ERR' %></div>
         </a>
-        <div class="dropdown no-text-select" onclick="window.godotLibrary.dropdown.showContent(event, this)">
-          <span class="iconify" data-icon="akar-icons:more-horizontal"></span>
-          <div class="options">
-            <% if(it?.info?.saved === true) { %>
-            <a href="/dashboard/save/<%= it?.info?.asset_id %>"
-              onclick="window.godotLibrary.dropdown.callRouteAjax(event, '/dashboard/save/<%= it?.info?.asset_id %>', 'Post successfully removed from saves')"
-              title="Add asset to saved list">
-              Unsave
-            </a>
+        <div class="dropdown no-text-select">
+          <button type="button" class="dropdown-trigger" aria-haspopup="true" aria-expanded="false"
+            aria-controls="quick-info-menu"
+            onclick="window.godotLibrary.dropdown.showContent(event, this)">
+            <span class="iconify" data-icon="akar-icons:more-horizontal"></span>
+          </button>
+          <div class="options" id="quick-info-menu">
+            <% if (it?._locals?.loggedIn === true) { %>
+            <button type="button" class="save-toggle" data-save-asset="<%= it?.info?.asset_id %>"
+              data-saved="<%= it?.info?.saved === true ? 'true' : 'false' %>"
+              aria-pressed="<%= it?.info?.saved === true ? 'true' : 'false' %>"
+              title="<%= it?.info?.saved === true ? 'Remove asset from saved list' : 'Add asset to saved list' %>">
+              <%= it?.info?.saved === true ? 'Unsave' : 'Save' %>
+            </button>
             <% } else { %>
-            <a href="/dashboard/save/<%= it?.info?.asset_id %>"
-              onclick="window.godotLibrary.dropdown.callRouteAjax(event, '/dashboard/save/<%= it?.info?.asset_id %>', 'Post successfully added to saves')"
-              title="Remove asset from saved list">
-              Save
-            </a>
+            <a href="/register" title="Sign in to save assets">Sign in to save</a>
             <% } %>
             <% if(it?._locals?.role === 'admin') { %>
             <% if(it?.info?.featured === true) { %>
             <a href="/admin/feature-post/<%= it?.info?.asset_id %>"
-              onclick="window.godotLibrary.dropdown.callRouteAjax(event, '/admin/feature-post/<%= it?.info?.asset_id %>', 'Post successfully featured')"
+              onclick="window.godotLibrary.dropdown.callRouteAjax(event, '/admin/feature-post/<%= it?.info?.asset_id %>', 'Asset unfeatured')"
               title="Remove from 'Assets We Love' on homepage">
               Unfeature
             </a>
             <% } else { %>
             <a href="/admin/feature-post/<%= it?.info?.asset_id %>"
-              onclick="window.godotLibrary.dropdown.callRouteAjax(event, '/admin/feature-post/<%= it?.info?.asset_id %>', 'Post successfully featured')"
+              onclick="window.godotLibrary.dropdown.callRouteAjax(event, '/admin/feature-post/<%= it?.info?.asset_id %>', 'Asset featured')"
               title="Add to 'Assets We Love' on homepage">
               Feature
             </a>
@@ -85,10 +91,6 @@ var generateProxyUrl = it?._locals?.functions?.generateProxyUrl
           <div class="value"><%= it?.info?.version_string ?? 'Unknown' %></div>
         </div>
         <div class="row">
-          <div class="property">License Version</div>
-          <div class="value"><%= it?.info?.cost ?? 'Unknown' %></div>
-        </div>
-        <div class="row">
           <div class="property">Support Level</div>
           <div class="value"><%= it?.info?.support_level ?? 'Unknown' %></div>
         </div>
@@ -97,22 +99,32 @@ var generateProxyUrl = it?._locals?.functions?.generateProxyUrl
           <div class="value" title="<%= it?.info?.modify_date ?? 'Unknown' %>">
             <%= it?.info?.modify_date_pretty ?? 'Unknown' %></div>
         </div>
+        <% const browseUrl = it?.info?.browse_url ?? '' %>
+        <% const issuesUrl = it?.info?.issues_url ?? '' %>
+        <% if (typeof browseUrl === 'string' && /^https?:\/\//i.test(browseUrl)) { %>
         <div class="row">
           <div class="property">Git URL</div>
-          <div class="value"><a href="<%= it?.info?.browse_url %>" target="_blank" rel="noopener noreferrer"
-              title="Open asset Git repository">Link to
-              Git URL</a></div>
+          <div class="value"><a href="<%= browseUrl %>" target="_blank" rel="noopener noreferrer"
+              title="Open asset Git repository">Link to Git URL</a></div>
         </div>
+        <% } %>
+        <% if (typeof issuesUrl === 'string' && /^https?:\/\//i.test(issuesUrl)) { %>
         <div class="row">
           <div class="property">Issue URL</div>
-          <div class="value"><a href="<%= it?.info?.issues_url %>" target="_blank" rel="noopener noreferrer"
-              title="Open asset issue tracker">Link to
-              Issues URL</a>
-          </div>
+          <div class="value"><a href="<%= issuesUrl %>" target="_blank" rel="noopener noreferrer"
+              title="Open asset issue tracker">Link to Issues URL</a></div>
         </div>
+        <% } %>
       </div>
-      <button onclick="openInstallModal(event)">Add to
-        Project</button>
+      <% const downloadUrl = it?.info?.download_url ?? '' %>
+      <div class="actions">
+        <% if (typeof downloadUrl === 'string' && downloadUrl !== '') { %>
+        <a class="action primary" href="<%= downloadUrl %>" target="_blank" rel="noopener noreferrer"
+          title="Download the asset ZIP archive">Download ZIP</a>
+        <% } %>
+        <button class="action secondary" type="button" data-dialog-open="install"
+          title="Open installation instructions">Installation help</button>
+      </div>
     </div>
   </div>
 </div>

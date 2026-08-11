@@ -1,8 +1,8 @@
 import { MongoHelper } from 'core/MongoHelper'
-import { buildSearchFilter } from './buildSearchFilter'
+import { buildSearchFilter, SearchFilterOptions } from './buildSearchFilter'
 
-export async function GetAssetsCountFromQuery (query: string, categoryFilters: any[], engineFilters: any[]): Promise<number> {
+export async function GetAssetsCountFromQuery (query: string, options: SearchFilterOptions = {}): Promise<number> {
   const mongo = MongoHelper.getDatabase()
-  const filter = buildSearchFilter(query, categoryFilters, engineFilters)
-  return await mongo.collection('assets').countDocuments(filter)
+  const filter = buildSearchFilter(query, options)
+  return await mongo.collection('assets').countDocuments(filter, { maxTimeMS: 5000 })
 }

@@ -3,11 +3,22 @@ import { MongoHelper } from 'core/MongoHelper'
 import { logger } from 'core/utils/logger'
 import * as cronJobs from 'core/jobs.index'
 import { ensureIndexes } from 'core/ensureIndexes'
+import { runMigrations } from 'core/migrations'
 
 // Connect to MongoDB Database
 MongoHelper.getInstance().connect().then(async () => {
   const startTime: Date = new Date()
   logger.log('info', `Successfull startup at ${startTime}`)
+
+  // Apply any pending migrations before verifying indexes. This is idempotent:
+  // already-applied migrations are skipped via the `migrations` collection, so
+  // it is a no-op on every normal boot. Failures are logged but do not block
+  // serving — ensureIndexes still runs as the safety net.
+  try {
+    await runMigrations(MongoHelper.getDatabase())
+  } catch (error: any) {
+    logger.log('error', `Migrations failed at startup: ${error?.message ?? error}`, [error])
+  }
 
   await ensureIndexes()
 

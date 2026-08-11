@@ -35,20 +35,35 @@ npm run devel
 
 For linting:
 ```
-npm run lint
+npm run lint:check
 ```
 
-### Indexes
-Searching the catalog of assets relies on MongoDBs `text` search, so we need to create a text asset on the `asset` collection. To do so is pretty easy, just log into the MongoDB shell and run:
+### Verification
 ```
-db.assets.createIndex({ 
-  description: "text",
-  quick_description: "text",
-  title: "text",
-  author: "text",
-})
+npm run typecheck      # TypeScript validation (use this, not `build`, for types)
+npm run lint:check     # ESLint enforcement (npm run lint exits 0 by design)
+npm test               # Compiles and runs the node:test suite (host Node 18+)
+npm run build          # Webpack bundle + per-page Sass
 ```
-In future versions we may do this automatically if it detects the index doesn't already exist, but for now its a manual process.
+
+### Indexes & migrations
+Search relies on MongoDB text search and several derived fields. Migrations
+are applied with a single command (they record completion in the `migrations`
+collection, so they are idempotent):
+```
+npm run migrate
+```
+Migrations create/verify:
+* `0001` — the weighted text index (`title` 10, `quick_description` 7, `author` 7, `description` 1). MongoDB only allows one text index per collection, so a conflicting legacy index must be dropped manually first.
+* `0002` — backfills the confidence-adjusted `rating_score` (95% Wilson lower bound) used by "Highest rated" sorting.
+* `0003` — backfills the normalized `modify_date_at` used by "Recently updated" sorting.
+* `0004` — deduplicates reviews by `(user_id, asset_id)` and creates the unique index.
+
+Operational maintenance (run against a snapshot first):
+```
+npm run reconcile:ratings   # Recompute vote counters + rating_score from reviews
+npm run audit:catalog       # Read-only catalog health audit
+```
 
 ## Folder Structure
 ```

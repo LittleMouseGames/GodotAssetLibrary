@@ -9,7 +9,7 @@ import { GetDoesPostExistById } from 'app/code/asset/models/GET/GetDoesPostExist
 import { GetUserAssetsFromQuery } from '../models/GET/GetUserAssetsFromQuery'
 import { GetUserSavedAssets } from '../models/GET/GetUserSavedAssets'
 import { GetUserInfoByToken } from '../models/GET/GetUserInfoByToken'
-import { GetUserReviewedAssets } from '../models/GET/GetUserReviewedAssets'
+import { GetUserReviewsByToken, UserReviewRow } from '../models/GET/GetUserReviewsByToken'
 import { UpdateUserInformtaion } from '../models/UPDATE/UpateUserInformation'
 import { UpdateReviewsInformationByUserId } from '../models/UPDATE/UpdateReviewsInformationByUserId'
 import { UpdateUserSavedAssetsAdd } from '../models/UPDATE/UpdateUserSavedAssetsAdd'
@@ -20,6 +20,8 @@ import { GetAllUserComments } from '../models/GET/GetAllUserComments'
 import { DeleteUserByUserId } from '../models/DELETE/DeleteUserById'
 import { GetUsernameByToken } from 'core/modules/authentication/models/user/GET/GetUsernameByToken'
 import { parsePagination } from 'core/utils/pagination'
+import { BadRequestError } from 'core/utils/httpError'
+import { attachCardExtras } from 'core/utils/cardView'
 import { DeleteUserReviewsAndAdjustVotes } from '../models/DELETE/DeleteUserReviewsAndAdjustVotes'
 
 async function writeResponseChunk (res: Response, chunk: string): Promise<void> {
@@ -61,42 +63,46 @@ export class DashboardService {
       info: 'Manage your account information, including username and password'
     }
 
-    return res.render('templates/pages/dashboard/dashboard', { info: info, pageBanner: pageBanner })
+    return res.render('templates/pages/dashboard/dashboard', { info: info, pageBanner: pageBanner, sidebarActive: 'account' })
   }
 
   public async renderReviews (req: Request, res: Response): Promise<void> {
     const { limit, skip } = parsePagination(req.query.limit, req.query.page)
-    const sort = striptags(String(req.query.sort ?? 'relevance'))
-    const sortMap: {[key: string]: any} = {
-      relevance: {},
-      asset_rating: { upvotes: -1 },
-      newest: { added_date: -1 },
-      last_modified: { modify_date: -1 }
+    const hashedToken = striptags(req.body.hashedToken ?? '')
+
+    if (hashedToken === '') {
+      throw new BadRequestError('Missing user auth')
     }
 
-    if (sort !== 'undefined' && !(sort in sortMap)) {
-      throw new Error('Invalid sort parameter, expeting nothing, `relevance`, `rating`, `newest`, or `last_modified`')
-    }
+    // Canonical reviews (not the embedded reviewed_assets array) are the
+    // source of truth for what a user has rated.
+    const userId = await GetUserIdByToken(hashedToken)
+    const { rows, total } = await GetUserReviewsByToken(userId, limit, skip)
 
-    const reviewedAssetList = await GetUserReviewedAssets(req.body.hashedToken)
-    const assets = await GetUserAssetsFromQuery(limit, skip, reviewedAssetList ?? [], sortMap[sort])
+    const assetIds = rows.map(row => row.asset_id)
+    let reviewItems: Array<{ review: UserReviewRow, asset: any }> = []
+
+    if (assetIds.length > 0) {
+      const assets = await GetUserAssetsFromQuery(limit, 0, assetIds as [string], {})
+      attachCardExtras(assets)
+      const byId = new Map(assets.map(asset => [asset.asset_id, asset]))
+      reviewItems = rows
+        .map(review => ({ review, asset: byId.get(review.asset_id) }))
+        .filter((item): item is { review: UserReviewRow, asset: any } => item.asset !== undefined)
+    }
 
     const pageBanner = {
-      title: 'Reviewed Assets',
-      info: 'View all assets you\'ve left reviews on'
+      title: 'Ratings & reviews',
+      info: 'Your ratings and written reviews on assets'
     }
 
-    try {
-      const userSaved = await GetUserSavedAssets(req.body.hashedToken)
-
-      for (const asset of assets) {
-        asset.saved = userSaved.includes(asset.asset_id)
-      }
-    } catch (e) {
-      // ignore
-    }
-
-    return res.render('templates/pages/dashboard/reviews', { grid: assets, params: req.originalUrl, pageBanner: pageBanner })
+    return res.render('templates/pages/dashboard/reviews', {
+      reviewItems,
+      gridTotal: total,
+      params: req.originalUrl,
+      pageBanner,
+      sidebarActive: 'reviews'
+    })
   }
 
   public async renderManage (_req: Request, res: Response): Promise<void> {
@@ -105,7 +111,7 @@ export class DashboardService {
       info: 'Download your information or delete your account'
     }
 
-    return res.render('templates/pages/dashboard/manage', { pageBanner: pageBanner })
+    return res.render('templates/pages/dashboard/manage', { pageBanner: pageBanner, sidebarActive: 'manage' })
   }
 
   public async renderSaved (req: Request, res: Response): Promise<void> {
@@ -122,25 +128,41 @@ export class DashboardService {
       throw new Error('Invalid sort parameter, expeting nothing, `relevance`, `rating`, `newest`, or `last_modified`')
     }
 
-    const reviewedAssetList = await GetUserSavedAssets(req.body.hashedToken) ?? []
-    const assets = await GetUserAssetsFromQuery(limit, skip, reviewedAssetList, sortMap[sort])
-
-    try {
-      const userSaved = await GetUserSavedAssets(req.body.hashedToken)
-
-      for (const asset of assets) {
-        asset.saved = userSaved.includes(asset.asset_id)
-      }
-    } catch (e) {
-      // ignore
-    }
+    const savedAssetList = await GetUserSavedAssets(req.body.hashedToken) ?? []
+    const { assets, total } = await this.loadPagedUserAssets(savedAssetList, limit, skip)
 
     const pageBanner = {
       title: 'Saved Assets',
       info: 'View all assets you\'ve saved'
     }
 
-    return res.render('templates/pages/dashboard/reviews', { grid: assets, params: req.originalUrl, pageBanner: pageBanner })
+    return res.render('templates/pages/dashboard/reviews', {
+      grid: assets,
+      gridTotal: total,
+      params: req.originalUrl,
+      pageBanner: pageBanner,
+      sidebarActive: 'saved'
+    })
+  }
+
+  /**
+   * Slice the user's asset-id list for the current page, fetch those assets,
+   * and restore the user's stored order (embedded arrays have no order in
+   * Mongo's $in result). Returns the page plus the accurate total for
+   * pagination.
+   */
+  private async loadPagedUserAssets (assetIds: string[], limit: number, skip: number): Promise<{ assets: any[], total: number }> {
+    const pageIds = assetIds.slice(skip, skip + limit)
+    if (pageIds.length === 0) return { assets: [], total: assetIds.length }
+
+    const found = await GetUserAssetsFromQuery(limit, 0, pageIds as [string], {})
+    attachCardExtras(found)
+    const byId = new Map(found.map(asset => [asset.asset_id, asset]))
+    const ordered = pageIds
+      .map(id => byId.get(id))
+      .filter((asset): asset is any => asset !== undefined)
+
+    return { assets: ordered, total: assetIds.length }
   }
 
   public async updateInfo (req: Request, res: Response): Promise<void> {
@@ -149,21 +171,21 @@ export class DashboardService {
     const hashedToken = striptags(req.body.hashedToken ?? '')
 
     if (username === '' || email === '' || hashedToken === '') {
-      throw new Error('Missing required username or email')
+      throw new BadRequestError('Missing required username or email')
     }
 
     const UserService = UserServices.getInstance()
 
     if (!UserService.isUsernameValid(username)) {
-      throw new Error('Username isn\'t valid')
+      throw new BadRequestError('Username isn\'t valid')
     }
 
     if (await GetDoesUsernameExist(username) && await GetUsernameByToken(hashedToken) !== username) {
-      throw new Error('Username already in use')
+      throw new BadRequestError('Username already in use')
     }
 
     if (await GetIsUsernameReserved(username)) {
-      throw new Error('Username is reserved since its used on an asset thats been imported. If this username and those assets belong to you, please reach out so that you can claim this username.')
+      throw new BadRequestError('Username is reserved since its used on an asset thats been imported. If this username and those assets belong to you, please reach out so that you can claim this username.')
     }
 
     const userId = await GetUserIdByToken(hashedToken)
@@ -182,23 +204,23 @@ export class DashboardService {
     const hashedToken = striptags(req.body.hashedToken ?? '')
 
     if (currentPassword === '' || newPassword === '' || newPasswordConf === '' || hashedToken === '') {
-      throw new Error('Missing required current password or new password')
+      throw new BadRequestError('Missing required current password or new password')
     }
 
     if (newPassword !== newPasswordConf) {
-      throw new Error('Password mis-match')
+      throw new BadRequestError('Password mis-match')
     }
 
     const UserService = UserServices.getInstance()
 
     if (!UserService.isPasswordValid(newPassword)) {
-      throw new Error('Password doesn\'t meet requirements')
+      throw new BadRequestError('Password doesn\'t meet requirements')
     }
 
     const currentPasswordHash = await GetPasswordHashByToken(hashedToken)
 
     if (!(await UserService.doesPasswordMatchHash(currentPasswordHash, currentPassword))) {
-      throw new Error('Incorrect password')
+      throw new BadRequestError('Incorrect password')
     }
 
     const newPasswordHash = await UserService.hashPassword(newPassword)
@@ -214,15 +236,15 @@ export class DashboardService {
     const hashedToken = striptags(req.body.hashedToken ?? '')
 
     if (hashedToken === '') {
-      throw new Error('Missing user auth')
+      throw new BadRequestError('Missing user auth')
     }
 
     if (asset === '') {
-      throw new Error('Missing asset id')
+      throw new BadRequestError('Missing asset id')
     }
 
     if (!(await GetDoesPostExistById(asset))) {
-      throw new Error('Asset not found')
+      throw new BadRequestError('Asset not found')
     }
 
     const userSaved = await GetUserSavedAssets(hashedToken)
@@ -236,11 +258,41 @@ export class DashboardService {
     res.send()
   }
 
+  public async setSavedAsset (req: Request, res: Response): Promise<void> {
+    const asset = striptags(req.params.id ?? '')
+    const hashedToken = striptags(req.body.hashedToken ?? '')
+
+    if (hashedToken === '') {
+      throw new BadRequestError('Missing user auth')
+    }
+
+    if (asset === '') {
+      throw new BadRequestError('Missing asset id')
+    }
+
+    if (!(await GetDoesPostExistById(asset))) {
+      throw new BadRequestError('Asset not found')
+    }
+
+    // Explicit desired state, so retries cannot accidentally reverse it.
+    const desired = req.body.saved === true || req.body.saved === 'true'
+    const userSaved = await GetUserSavedAssets(hashedToken)
+    const isSaved = userSaved?.includes(asset) ?? false
+
+    if (desired && !isSaved) {
+      await UpdateUserSavedAssetsAdd(hashedToken, asset)
+    } else if (!desired && isSaved) {
+      await UpdateUserSavedAssetsRemove(hashedToken, asset)
+    }
+
+    res.send({ assetId: asset, saved: desired })
+  }
+
   public async downloadInformation (req: Request, res: Response): Promise<void> {
     const hashedToken = striptags(req.body.hashedToken ?? '')
 
     if (hashedToken === '') {
-      throw new Error('Missing user auth')
+      throw new BadRequestError('Missing user auth')
     }
 
     const userObject = await GetAllUserInformation(hashedToken)
@@ -267,9 +319,25 @@ export class DashboardService {
 
   public async deleteAccount (req: Request, res: Response): Promise<void> {
     const hashedToken = striptags(req.body.hashedToken ?? '')
+    const password = striptags(req.body.password ?? '')
+    const confirmation = striptags(req.body.confirm ?? '')
 
     if (hashedToken === '') {
-      throw new Error('Missing user auth')
+      throw new BadRequestError('Missing user auth')
+    }
+
+    if (password === '') {
+      throw new BadRequestError('Enter your current password to delete your account')
+    }
+
+    if (confirmation !== 'DELETE') {
+      throw new BadRequestError('Type DELETE to confirm account deletion')
+    }
+
+    const passwordHash = await GetPasswordHashByToken(hashedToken)
+    const valid = await UserServices.getInstance().doesPasswordMatchHash(passwordHash, password)
+    if (!valid) {
+      throw new BadRequestError('Incorrect password')
     }
 
     const userId = await GetUserIdByToken(hashedToken)

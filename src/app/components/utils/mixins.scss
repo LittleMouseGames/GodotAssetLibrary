@@ -132,6 +132,20 @@
       }
     }
   }
+
+  .rating-approval {
+    @include inter-like-font();
+    font-size: 14px;
+    font-weight: 700;
+    color: $text-dark-darkest;
+  }
+
+  .rating-count {
+    @include inter-like-font();
+    font-size: 12px;
+    font-weight: 500;
+    color: $text-gray-dark;
+  }
 }
 
 @mixin background-gradient-image($background, $mask, $image, $gradient) {

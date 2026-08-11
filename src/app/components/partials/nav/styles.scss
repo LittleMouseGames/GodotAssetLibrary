@@ -116,11 +116,21 @@ nav {
     }
   }
 
-  .mobile-search {
+  .mobile-search-btn {
     display: none;
+    border: none;
+    background: transparent;
+    padding: 0;
+    cursor: pointer;
 
     @include mobile-styles {
       display: block;
+    }
+
+    .iconify {
+      width: 30px;
+      height: auto;
+      margin-right: 14px;
     }
   }
 

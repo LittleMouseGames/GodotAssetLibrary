@@ -1,10 +1,12 @@
 import { StatusCodes } from 'http-status-codes'
-import { Controller, Post, Middleware, Get } from '@overnightjs/core'
+import { Controller, Post, Middleware } from '@overnightjs/core'
 import { Request, Response } from 'express'
 import { UserServices } from 'core/modules/authentication/services/UserServices'
 import bodyParser from 'body-parser'
 import rateLimit from 'express-rate-limit'
 import { PasswordHasherBusyError } from 'core/modules/authentication/services/PasswordHasher'
+import { TokenServices } from 'core/modules/authentication/services/TokenServices'
+import { DeleteResumeToken } from 'core/modules/authentication/models/user/DELETE/DeleteResumeToken'
 
 const urlencodedParser = bodyParser.urlencoded({ extended: false })
 
@@ -29,8 +31,11 @@ export class UserController {
     private readonly AuthService: UserServices = UserServices.getInstance()
   ) { }
 
-  private readonly cookieOptons = {
+  private readonly cookieOptions = {
     httpOnly: true,
+    secure: process.env.RUN_MODE === 'prod',
+    sameSite: 'lax' as const,
+    path: '/',
     maxAge: 1000 * 60 * 60 * 24 * 5 // expire after 5 days
   }
 
@@ -47,7 +52,11 @@ export class UserController {
     try {
       const registerService = await this.AuthService.register(req)
 
-      return res.status(StatusCodes.OK).cookie('auth-token', registerService, this.cookieOptons).send({ token: registerService })
+      // Set the HttpOnly cookie only; never return the raw token to JS.
+      return res.status(StatusCodes.OK).cookie('auth-token', registerService, this.cookieOptions).send({
+        ok: true,
+        redirect: '/dashboard'
+      })
     } catch (e: any) {
       const status = e instanceof PasswordHasherBusyError ? StatusCodes.SERVICE_UNAVAILABLE : StatusCodes.BAD_REQUEST
       return res.status(status).send({ error: e.message })
@@ -66,7 +75,10 @@ export class UserController {
   private async login (req: Request, res: Response): Promise<Response> {
     try {
       const loginService = await this.AuthService.login(req)
-      return res.status(StatusCodes.OK).cookie('auth-token', loginService, this.cookieOptons).send({ token: loginService })
+      return res.status(StatusCodes.OK).cookie('auth-token', loginService, this.cookieOptions).send({
+        ok: true,
+        redirect: '/dashboard'
+      })
     } catch (e: any) {
       const status = e instanceof PasswordHasherBusyError ? StatusCodes.SERVICE_UNAVAILABLE : StatusCodes.BAD_REQUEST
       return res.status(status).send({ error: e.message })
@@ -76,11 +88,21 @@ export class UserController {
   /**
  * Logout endpoint
  *
-   * @param {Request} _req
-   * @param {Response} res
+ * @param {Request} _req
+ * @param {Response} res
  */
-  @Get('logout')
-  private logout (_req: Request, res: Response): void {
+  @Post('logout')
+  private async logout (req: Request, res: Response): Promise<void> {
+    const authToken = req.cookies['auth-token'] ?? ''
+    if (authToken !== '') {
+      const tokenServices = TokenServices.getInstance()
+      const hashedToken = tokenServices.hashToken(authToken)
+      try {
+        await DeleteResumeToken(hashedToken)
+      } catch (e) {
+        // token revocation is best-effort; the cookie is still cleared
+      }
+    }
     res.clearCookie('auth-token')
     res.redirect('/')
   }

@@ -1,9 +1,13 @@
 <!-- GENERAl META -->
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<!-- <meta name="theme-color" content="#12141c"> -->
+<% if (it?.meta?.noindex === true) { %>
+<meta name="robots" content="noindex,nofollow">
+<meta name="googlebot" content="noindex,nofollow">
+<% } else { %>
 <meta name="robots" content="index,follow">
 <meta name="googlebot" content="index,follow">
+<% } %>
 <meta name="rating" content="General">
 <meta name="referrer" content="no-referrer">
 <!-- FACEBOOK -->

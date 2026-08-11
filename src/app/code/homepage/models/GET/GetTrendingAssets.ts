@@ -6,21 +6,18 @@ interface ReturnedAssets extends WithId<Document>, assetGridSchema {}
 
 export async function GetTrendingAssets (): Promise<ReturnedAssets[]> {
   const mongo = MongoHelper.getDatabase()
+  // Stable "popular" ordering: confidence-adjusted rating first, then raw
+  // upvotes and id as deterministic tie-breakers. No random sampling, so the
+  // section does not reshuffle between requests.
   const operationObject = await mongo.collection('assets').aggregate([{
     $sort: {
+      rating_score: -1,
       upvotes: -1,
-      godot_version: -1
+      downvotes: -1,
+      asset_id: 1
     }
   }, {
-    $limit: 20
-  }, {
-    $sample: {
-      size: 6
-    }
-  }, {
-    $sort: {
-      upvotes: -1
-    }
+    $limit: 8
   }, {
     $project: {
       category: 1,
@@ -31,10 +28,16 @@ export async function GetTrendingAssets (): Promise<ReturnedAssets[]> {
       icon_url: 1,
       upvotes: 1,
       downvotes: 1,
+      rating_score: 1,
       featured: 1,
       asset_id: 1,
       previews: 1,
-      card_banner: 1
+      card_banner: 1,
+      modify_date: 1,
+      added_date: 1,
+      version_string: 1,
+      type: 1,
+      support_level: 1
     }
   }]).toArray() as ReturnedAssets[]
 

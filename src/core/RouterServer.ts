@@ -10,6 +10,7 @@ import { GetUserContextByToken } from 'core/modules/authentication/models/user/G
 import { GetPromobarMessage } from 'app/code/admin/models/GET/GetPromobarMesasge'
 import { StatusCodes } from 'http-status-codes'
 import { generateProxyUrl } from 'core/utils/generateProxyUrl'
+import { buildAssetUrl, buildAssetUrlWithReturn } from 'core/utils/assetUrl'
 require('express-async-errors')
 
 let promoCachedMessage: string | null = null
@@ -59,6 +60,46 @@ class RouterServer extends Server {
     this.app.use(express.urlencoded({
       extended: true
     }))
+
+    // CSRF defense-in-depth for state-changing requests. SameSite=Lax cookies
+    // already block most cross-site posts; this also rejects requests that
+    // send a mismatched Origin/Referer (e.g. older browsers or forms).
+    //
+    // The expected origin is derived from the request's own Host (behind the
+    // trusted proxy), not from PROJECT_BASE_URL, which is the production
+    // canonical host and would wrongly block local/dev origins.
+    this.app.use((req: Request, res: Response, next: NextFunction) => {
+      if (req.method === 'GET' || req.method === 'HEAD' || req.method === 'OPTIONS') {
+        next()
+        return
+      }
+
+      const origin = req.headers.origin
+      const referer = req.headers.referer
+      const expectedHost = `${req.protocol}://${req.get('host')}`
+
+      const matchesHost = (value: string | undefined): boolean => {
+        if (value === undefined || value === '') return false
+        try {
+          const url = new URL(value)
+          const expected = new URL(expectedHost)
+          return url.hostname === expected.hostname && url.port === expected.port
+        } catch {
+          return false
+        }
+      }
+
+      // Native/API clients may omit both headers entirely; but if either is
+      // present it must belong to this site.
+      if (origin !== undefined || referer !== undefined) {
+        if (!matchesHost(origin) && !matchesHost(referer)) {
+          res.status(StatusCodes.FORBIDDEN).send({ error: 'Cross-site request blocked' })
+          return
+        }
+      }
+
+      next()
+    })
 
     // health check bypasses all database middleware
     this.app.get('/health', (_req: Request, res: Response) => {
@@ -116,7 +157,9 @@ class RouterServer extends Server {
       }
 
       res.locals.functions = {
-        generateProxyUrl: generateProxyUrl
+        generateProxyUrl: generateProxyUrl,
+        buildAssetUrl: buildAssetUrl,
+        buildAssetUrlWithReturn: buildAssetUrlWithReturn
       }
 
       res.locals.buildString = buildString
@@ -124,11 +167,36 @@ class RouterServer extends Server {
       next()
     })
 
+    // Account pages and auth endpoints carry personal data; never cache them.
+    this.app.use((req: Request, res: Response, next: NextFunction) => {
+      if (req.path.startsWith('/dashboard') || req.path.startsWith('/api/users')) {
+        res.set('Cache-Control', 'no-store')
+      }
+      next()
+    })
+
     this.setupControllers()
 
-    this.app.use((err: Error, _req: Request, res: Response, _next: NextFunction) => {
+    this.app.use((err: Error, req: Request, res: Response, _next: NextFunction) => {
       logger.log('error', err.message, [err])
-      return res.status(StatusCodes.BAD_REQUEST).send({ error: err.message })
+
+      // Explicit status codes (e.g. BadRequestError) are honored; anything
+      // else is a server error, not a client error.
+      const statusCode = (err as any).statusCode ?? StatusCodes.INTERNAL_SERVER_ERROR
+
+      const wantsHtml = req.accepts(['html', 'json']) === 'html' && !req.path.startsWith('/api/')
+      if (wantsHtml) {
+        return res.status(statusCode).render('templates/pages/lost/server-error', {
+          pageBanner: {
+            title: 'Something went wrong',
+            info: 'Sorry, we\'re having issues loading this page right now'
+          }
+        })
+      }
+      // Never leak internal error details on 5xx responses; keep the detailed
+      // message only for explicit 4xx errors (e.g. BadRequestError).
+      const message = statusCode >= 500 ? 'Internal server error' : err.message
+      return res.status(statusCode).send({ error: message })
     })
   }
 
@@ -152,9 +220,23 @@ class RouterServer extends Server {
    * @param port {Number} declare the server port
    */
   public start (port: number): void {
-    this.app.get('*', (_req: Request, res: Response) => {
-      res.redirect('/lost')
-      // res.send(this.FRONT_END_MSG)
+    this.app.get('*', (req: Request, res: Response) => {
+      // Unmatched routes are real 404s, not redirects, so crawlers and users
+      // see the correct status. The /lost page renders inside the normal shell.
+      if (req.path !== '/lost') {
+        return res.status(StatusCodes.NOT_FOUND).render('templates/pages/lost/not-found', {
+          pageBanner: {
+            title: 'Page not found',
+            info: 'The page you were looking for doesn\'t exist'
+          }
+        })
+      }
+      return res.status(StatusCodes.NOT_FOUND).render('templates/pages/lost/not-found', {
+        pageBanner: {
+          title: 'Page not found',
+          info: 'The page you were looking for doesn\'t exist'
+        }
+      })
     })
 
     this.app.listen(port, () => {

@@ -111,7 +111,7 @@
             rel="noopener noreferrer" title="Visit LittleMouseGames twitter"><span
               class="strong">LittleMouseGames</span></a></div>
       </a>
-      <span class="copyright disclaimer">&copy; 2022 Godot Asset Library</span>
+      <span class="copyright disclaimer">&copy; <%= new Date().getFullYear() %> Godot Asset Library</span>
     </section>
   </div>
 </footer>

@@ -1,18 +1,19 @@
 import { Controller, Get, Middleware, Post } from '@overnightjs/core'
 import { Request, Response } from 'express'
 import rateLimit from 'express-rate-limit'
+import { rateLimitHandler } from 'core/utils/rateLimitHandler'
 import { SearchService } from '../services/SearchService'
 
 const searchRedirectRateLimit = rateLimit({
   windowMs: 1000 * 60 * 15, // 15 minutes
   max: 50, // start blocking after x requests
-  message: JSON.stringify({ error: 'You\'re doing that too much, please try again later' })
+  handler: rateLimitHandler('You\'re doing that too much, please try again later')
 })
 
 const searchRateLimit = rateLimit({
   windowMs: 1000 * 60 * 15, // 15 minutes
   max: 50, // start blocking after x requests
-  message: JSON.stringify({ error: 'You\'re doing that too much, please try again later' })
+  handler: rateLimitHandler('You\'re doing that too much, please try again later')
 })
 
 @Controller('search')
