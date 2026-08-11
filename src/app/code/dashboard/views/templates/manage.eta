@@ -8,21 +8,29 @@
 
 <section class="page-dashboard">
   <div class="column">
-    <%~ includeFile('./components/sidebar.eta') %>
+    <%~ includeFile('./components/sidebar.eta', it) %>
   </div>
   <div class="column">
     <h2>Download My Information</h2>
     <p>Download all the information that we have about you</p>
-    <a href="/dashboard/download/" download="GodotAssetLibrary_User_Information.json"
-      title="Download the information associated with my account"><button>Download
-        archive</button></a>
+    <a class="btn" href="/dashboard/download/" download="GodotAssetLibrary_User_Information.json"
+      title="Download the information associated with my account">Download archive</a>
   </div>
   <div class="column">
     <h2>Delete My Information</h2>
-    <p>Delete your account and its associated information like any reviews you've left on assets</p>
-    <p><strong>Note: Clicking the button will not prompt for a confirmation. It will immediately delete your
-        account</strong></p>
-    <a href="/dashboard/delete/"><button class="delete" title="Delete all my data with no confirmation prompt">Delete
-        account</button></a>
+    <p>Deleting your account permanently removes it and its associated information, such as reviews you've left on
+      assets. This cannot be undone.</p>
+    <form method="POST" action="/dashboard/delete/" class="delete-account-form"
+      onsubmit="window.godotLibrary.formTools.sendFormAjax(event, this)">
+      <div class="form-field">
+        <label for="delete-password">Current password</label>
+        <input id="delete-password" name="password" type="password" autocomplete="current-password" required>
+      </div>
+      <div class="form-field">
+        <label for="delete-confirm">Type <strong>DELETE</strong> to confirm</label>
+        <input id="delete-confirm" name="confirm" type="text" autocomplete="off" required>
+      </div>
+      <button type="submit" class="delete danger">Delete account</button>
+    </form>
   </div>
 </section>

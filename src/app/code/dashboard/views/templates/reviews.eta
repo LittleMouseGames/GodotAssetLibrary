@@ -1,5 +1,5 @@
 <% it.meta = {
-  title: 'My Reviews | Godot Asset Library',
+  title: 'Ratings & Reviews | Godot Asset Library',
   description: 'Manage your Godot Asset Library experience',
   url: 'https://godotassetlibrary.com/dashboard/reviews',
   moduleName: 'dashboard'
@@ -8,9 +8,9 @@
 
 <section class="page-dashboard reviews">
   <div class="column">
-    <%~ includeFile('./components/sidebar.eta') %>
+    <%~ includeFile('./components/sidebar.eta', it) %>
   </div>
   <div class="column">
-    <%~ includeFile('templates/components/partials/catalog-grid/catalog-grid.eta', it) %>
+    <%~ includeFile('./components/review-list.eta', it) %>
   </div>
 </section>

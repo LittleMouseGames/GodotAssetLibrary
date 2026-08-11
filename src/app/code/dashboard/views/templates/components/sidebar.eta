@@ -1,6 +1,10 @@
-<div class="sidebar">
-  <div class="item"><a href="/dashboard" title="See my account information">Account Information</a></div>
-  <div class="item"><a href="/dashboard/saved/" title="See my saved assets">My Saved Assets</a></div>
-  <div class="item"><a href="/dashboard/reviews/" title="See the assets I've reviewed">My Reviewed Assets</a></div>
-  <div class="item"><a href="/dashboard/manage/" title="Manage my information">Manage Information</a></div>
-</div>
+<nav class="sidebar" aria-label="Account">
+  <div class="item"><a href="/dashboard" title="See my account information"
+      aria-current="<%= it?.sidebarActive === 'account' ? 'page' : 'false' %>">Account Information</a></div>
+  <div class="item"><a href="/dashboard/saved/" title="See my saved assets"
+      aria-current="<%= it?.sidebarActive === 'saved' ? 'page' : 'false' %>">My Saved Assets</a></div>
+  <div class="item"><a href="/dashboard/reviews/" title="See my ratings and reviews"
+      aria-current="<%= it?.sidebarActive === 'reviews' ? 'page' : 'false' %>">Ratings &amp; Reviews</a></div>
+  <div class="item"><a href="/dashboard/manage/" title="Manage my information"
+      aria-current="<%= it?.sidebarActive === 'manage' ? 'page' : 'false' %>">Manage Information</a></div>
+</nav>

@@ -34,7 +34,12 @@ export async function GetUserAssetsFromQuery (limit: number = 12, skip: number, 
       featured: 1,
       asset_id: 1,
       previews: 1,
-      card_banner: 1
+      card_banner: 1,
+      download_url: 1,
+      type: 1,
+      support_level: 1,
+      version_string: 1,
+      modify_date_at: 1
     }
   }).skip(skip).toArray() as ReturnedAssets[]
 

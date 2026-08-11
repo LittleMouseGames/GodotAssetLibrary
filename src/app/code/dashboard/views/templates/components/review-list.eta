@@ -1,0 +1,67 @@
+<div class="review-list">
+  <% if (it.gridTotal != null && it.gridTotal > 0) { %>
+  <div class="results-summary">
+    Showing <strong><%= it.reviewItems?.length %></strong> of <strong><%= it.gridTotal %></strong> ratings
+  </div>
+  <% } %>
+
+  <% if (it.reviewItems?.length > 0) { %>
+  <div class="review-rows">
+    <% it.reviewItems.forEach(item => { %>
+    <div class="review-row">
+      <div class="review-row-head">
+        <span class="status-pill <%= item.review.review_type === 'positive' ? 'success' : 'danger' %>">
+          <%= item.review.review_type === 'positive' ? 'Positive' : 'Negative' %>
+        </span>
+        <% if (item.review.headline) { %>
+        <span class="review-headline"><%= item.review.headline %></span>
+        <% } %>
+      </div>
+      <% if (item.review.text) { %>
+      <p class="review-excerpt"><%= item.review.text %></p>
+      <% } %>
+      <div class="review-row-meta">
+        <span class="review-date">
+          <%= new Date(item.review.date).toLocaleDateString() %>
+          <% if (item.review.modified_date != null) { %> &middot; edited<% } %>
+        </span>
+        <% var assetSlug = encodeURI(String(item.asset.title ?? '').replace(/\s/g, '-')).toLocaleLowerCase() %>
+        <a class="inline-link" href="/asset/<%= item.asset.asset_id %>/<%= assetSlug %>"
+          title="View <%= item.asset.title %> and edit your review">View / edit on <%= item.asset.title %></a>
+      </div>
+    </div>
+    <% }) %>
+  </div>
+
+  <div class="bottom-bar">
+    <div class="right">
+      <div class="buttons">
+        <% var params = new URLSearchParams(it.params?.includes('q=') ? it.params : it.params + '?q=') %>
+        <% var page = Number(params.get('page')) ?? 0 %>
+        <% var currentLimit = Number(params.get('limit')) === 0 ? 12 : Number(params.get('limit')) %>
+
+        <% if (page === 0) { %>
+        <span class="pagination-btn disabled" aria-disabled="true">Back</span>
+        <% } else { %>
+        <% params.set('page', page - 1) %>
+        <a class="pagination-btn" href="<%= decodeURIComponent(params.toString()) %>" title="Go back a page">Back</a>
+        <% } %>
+        <% var hasNext = ((page + 1) * currentLimit) < it.gridTotal %>
+        <% if (!hasNext) { %>
+        <span class="pagination-btn disabled" aria-disabled="true">Next</span>
+        <% } else { %>
+        <% params.set('page', page + 1) %>
+        <a class="pagination-btn" href="<%= decodeURIComponent(params.toString()) %>" title="Go to next page">Next</a>
+        <% } %>
+      </div>
+    </div>
+  </div>
+  <% } else { %>
+  <div class="no-results">
+    <p>You haven't rated any assets yet.</p>
+    <div class="empty-actions">
+      <a href="/search/" title="Browse all assets">Browse assets</a>
+    </div>
+  </div>
+  <% } %>
+</div>
