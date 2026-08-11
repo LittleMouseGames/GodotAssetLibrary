@@ -11,11 +11,11 @@
     <h2>Sign in to an existing Account</h2>
     <form method="POST" action="/api/users/login" onsubmit="window.godotLibrary.formTools.sendFormAjax(event, this)">
       <div class="input-container">
-        <input class="input" id="login-username" name="username" type="username" placeholder=" " required>
+        <input class="input" id="login-username" name="username" type="text" placeholder=" " required autocomplete="username">
         <label for="login-username" class="placeholder">Username</label>
       </div>
       <div class="input-container">
-        <input class="input" id="login-password" name="password" type="password" placeholder=" " required>
+        <input class="input" id="login-password" name="password" type="password" placeholder=" " required autocomplete="current-password">
         <label for="login-password" class="placeholder">Password</label>
       </div>
       <div class="disclaimer">
@@ -23,7 +23,7 @@
         <a href="/terms/privacy-policy" title="Open Privacy Policy page">Privacy Policy</a> and
         <a href="/terms/terms-of-service" title="Open Terms of Service page">Terms of Service</a>
       </div>
-      <button action="submit">Login</button>
+      <button type="submit">Login</button>
     </form>
   </div>
   <div class="column">
@@ -36,20 +36,20 @@
     <form method="POST" action="/api/users/register" onsubmit="window.godotLibrary.formTools.sendFormAjax(event, this)">
       <div class="requirement">Username must be at least 3 characters</div>
       <div class="input-container">
-        <input class="input" id="register-username" name="username" type="username" placeholder=" " required>
+        <input class="input" id="register-username" name="username" type="text" placeholder=" " required autocomplete="username" minlength="3" maxlength="16">
         <label for="register-username" class="placeholder">Username</label>
       </div>
       <div class="input-container">
-        <input class="input" id="register-email" name="email" type="email" placeholder=" " required>
+        <input class="input" id="register-email" name="email" type="email" placeholder=" " required autocomplete="email">
         <label for="register-email" class="placeholder">Email Address</label>
       </div>
       <div class="requirement">Password must be at least 6 characters and contain at least 1 number</div>
       <div class="input-container">
-        <input class="input" id="register-password" name="password" type="password" placeholder=" " required>
+        <input class="input" id="register-password" name="password" type="password" placeholder=" " required autocomplete="new-password" minlength="6" maxlength="128">
         <label for="register-password" class="placeholder">Password</label>
       </div>
       <div class="input-container">
-        <input class="input" id="register-password-conf" name="passwordConf" type="password" placeholder=" " required>
+        <input class="input" id="register-password-conf" name="passwordConf" type="password" placeholder=" " required autocomplete="new-password" minlength="6" maxlength="128">
         <label for="register-password-conf" class="placeholder">Password Confirmation</label>
       </div>
       <div class="disclaimer">
@@ -57,7 +57,7 @@
         <a href="/terms/privacy-policy" title="Open Privacy Policy page">Privacy Policy</a> and
         <a href="/terms/terms-of-service" title="Open Terms of Service page">Terms of Service</a>
       </div>
-      <button action="submit">Create account</button>
+      <button type="submit">Create account</button>
     </form>
   </div>
 </section>
