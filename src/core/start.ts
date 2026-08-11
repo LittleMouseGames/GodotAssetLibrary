@@ -7,6 +7,7 @@ import { ensureIndexes } from 'core/ensureIndexes'
 import { runMigrations } from 'core/migrations'
 import { runGenerateSitemap } from 'app/utilities/sitemapGenerator/jobs/generateSitemap'
 import { getWorkerCount } from 'core/utils/clusterConfig'
+import { invalidateSiteFileCacheLocally, primeSiteFilesCache } from 'core/utils/siteFiles'
 
 process.on('uncaughtException', (err) => {
   console.error('Uncaught Exception:', err)
@@ -82,6 +83,18 @@ if (cluster.isPrimary) {
       }, 1000)
     })
 
+    // Relay cache-invalidation broadcasts from any worker to all workers, so
+    // an admin site-file save made on one worker is reflected everywhere
+    // immediately (each worker keeps its own process-local site-files cache).
+    cluster.on('message', (_worker, message) => {
+      const msg = message as { type?: string } | null
+      if (msg?.type === 'invalidate-site-files') {
+        for (const id of Object.keys(cluster.workers ?? {})) {
+          cluster.workers?.[id]?.send({ type: 'invalidate-site-files' })
+        }
+      }
+    })
+
     // Let Docker/systemd stop the cluster cleanly. Idempotent so a SIGTERM and
     // SIGINT arriving together only trigger one shutdown.
     const shutdown = (): void => {
@@ -105,11 +118,24 @@ if (cluster.isPrimary) {
 } else {
   // Worker: connect to MongoDB and serve HTTP only. No migrations, index
   // checks, sitemap generation or cron here — those run once in the primary.
+  //
+  // Listen for site-file cache-invalidation broadcasts from the primary (an
+  // admin save happened on another worker) and invalidate this worker's cache.
+  process.on('message', (message: unknown) => {
+    const msg = message as { type?: string } | null
+    if (msg?.type === 'invalidate-site-files') {
+      invalidateSiteFileCacheLocally()
+    }
+  })
+
   MongoHelper.getInstance().connect().then(() => {
     const startTime: Date = new Date()
     logger.log('info', `Worker ${process.pid} ready at ${startTime}`)
     const server: RouterServer = new RouterServer()
     server.start(3000)
+    // Warm the site-files cache now that Mongo is connected so the first
+    // public request serves immediately instead of 404ing on an empty cache.
+    primeSiteFilesCache()
   }).catch(error => {
     logger.log('error', `Error during worker ${process.pid} startup`, error)
     process.exit(1)
