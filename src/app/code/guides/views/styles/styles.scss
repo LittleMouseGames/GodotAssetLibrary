@@ -1,134 +1,90 @@
 @import "components/layouts/promobar-nav-body-footer/styles";
 @import "components/utils/mixins";
 @import "components/utils/variables";
+@import "components/partials/guide-card/styles";
 
-.page-guides {
-  @include reset-header-spacing;
-  margin-top: 20px;
-  margin-bottom: 40px;
-
-  .guides-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 20px;
-  }
-
-  .guide-card {
-    background: $surface-card;
-    border: 1px solid $border-color;
-    border-radius: $border-radius-lg;
-    padding: 20px;
-    box-shadow: $standard-shadow;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-
-    h2 {
-      font-size: 17px;
-      font-weight: 700;
-      line-height: 1.3;
-
-      a {
-        color: $text-primary;
-        text-decoration: none;
-
-        &:hover {
-          color: $link-color-hover;
-        }
-      }
-    }
-
-    p {
-      font-family: "DM Sans";
-      font-size: $font-size-md;
-      color: $text-secondary;
-      line-height: 1.55;
-      margin: 0;
-    }
-
-    .guide-card-meta {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      margin-top: auto;
-      font-size: $font-size-sm;
-      color: $text-muted;
-
-      .guide-category {
-        @include inter-like-font();
-        text-transform: uppercase;
-        letter-spacing: 0.4px;
-        font-size: $font-size-xs;
-        background: $color-lighter-gray;
-        border-radius: $border-radius-sm;
-        padding: 3px 8px;
-        color: $text-dark-deep-gray;
-      }
-    }
-  }
-}
-
+// Shared section-head / grid / empty-state patterns that match the homepage so
+// guide pages feel native to the site.
+.page-guides,
 .page-guide {
   @include reset-header-spacing;
   margin-top: 20px;
   margin-bottom: 40px;
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) 260px;
-  column-gap: 40px;
-  align-items: start;
 
-  .guide-content {
-    min-width: 0;
-    background: $surface-card;
-    border: 1px solid $border-color;
-    border-radius: $border-radius-lg;
-    padding: 30px;
-    box-shadow: $standard-shadow;
-
-    .guide-breadcrumb {
-      font-size: $font-size-sm;
-      margin-bottom: 14px;
-
-      a {
-        color: $link-color;
-        text-decoration: none;
-
-        &:hover {
-          text-decoration: underline;
-        }
-      }
-
-      .sep {
-        margin: 0 6px;
-        color: $text-faint;
-      }
-
-      span[aria-current="page"] {
-        color: $text-muted;
-      }
-    }
-
-    h1 {
-      font-size: 30px;
-      font-weight: 700;
-      line-height: 1.2;
-      margin: 0 0 10px;
-    }
-
-    .guide-meta {
-      font-family: "DM Sans";
-      color: $text-muted;
-      font-size: $font-size-sm;
-      margin: 0 0 24px;
-    }
+  .section-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-top: 20px;
+    margin-bottom: 13px;
 
     h2 {
-      font-size: 22px;
+      @include inter-like-font();
+      font-weight: 700;
+      font-size: 18px;
+      margin: 0;
+    }
+
+    .view-all {
+      @include inter-like-font();
+      font-size: 13px;
+      font-weight: 600;
+      color: $link-color;
+      text-decoration: none;
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+  }
+
+  .section-empty {
+    @include inter-like-font();
+    grid-column: 1 / -1;
+    padding: 16px;
+    background: $color-brand-white;
+    border-radius: 6px;
+    color: $text-gray-darker;
+    border: 1px solid #dbdbdb;
+  }
+}
+
+.page-guides {
+  .guides-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    column-gap: 20px;
+    row-gap: 20px;
+
+    @include small-desktop-styles {
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    @include tablet-styles {
+      grid-template-columns: 1fr 1fr;
+    }
+
+    @include mobile-styles {
+      grid-template-columns: 1fr;
+    }
+  }
+}
+
+// Article body: plain content-page typography (like the terms pages), no boxed
+// card — the page banner provides the heading, so the body starts at h2.
+.page-guide {
+  .guide-content {
+    max-width: 860px;
+
+    h2 {
+      @include inter-like-font();
+      font-size: 20px;
       font-weight: 700;
       margin: 28px 0 10px;
     }
 
     h3 {
+      @include inter-like-font();
       font-size: 17px;
       font-weight: 600;
       margin: 22px 0 8px;
@@ -137,9 +93,9 @@
     p,
     li {
       font-family: "DM Sans";
-      font-size: 16px;
+      font-size: 15px;
       line-height: 1.65;
-      color: $text-secondary;
+      color: $text-dark-darker;
     }
 
     p {
@@ -162,6 +118,11 @@
       &:hover {
         color: $link-color-hover;
       }
+    }
+
+    strong {
+      font-weight: 600;
+      color: $text-dark-darker;
     }
 
     blockquote {
@@ -226,54 +187,22 @@
     }
   }
 
-  .guide-sidebar {
-    background: $surface-card;
-    border: 1px solid $border-color;
-    border-radius: $border-radius-lg;
-    padding: 20px;
-    box-shadow: $standard-shadow;
+  .guide-related {
+    margin-top: 40px;
 
-    h2 {
-      font-size: 15px;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.4px;
-      margin: 0 0 12px;
-    }
+    .related-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      column-gap: 20px;
+      row-gap: 20px;
 
-    ul {
-      list-style: none;
-      margin: 0 0 16px;
-      padding: 0;
-    }
-
-    li {
-      margin-bottom: 10px;
-    }
-
-    a {
-      font-family: "DM Sans";
-      color: $link-color;
-      text-decoration: none;
-      font-size: 14px;
-
-      &:hover {
-        color: $link-color-hover;
-        text-decoration: underline;
+      @include tablet-styles {
+        grid-template-columns: 1fr 1fr;
       }
-    }
 
-    .guide-sidebar-cta {
-      margin: 0;
-    }
-  }
-
-  @include mobile-styles {
-    grid-template-columns: 1fr;
-    gap: 20px;
-
-    .guide-content {
-      padding: 20px;
+      @include mobile-styles {
+        grid-template-columns: 1fr;
+      }
     }
   }
 }

@@ -1,0 +1,75 @@
+@import "components/utils/variables";
+@import "components/utils/mixins";
+
+.guide-card {
+  @include reset-header-spacing;
+  background: $color-brand-white;
+  border: 1px solid $color-brand-gray;
+  border-radius: 6px;
+  box-shadow: $standard-shadow;
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+
+  &:hover {
+    border-color: $border-color-strong;
+
+    .guide-card-body h3 a {
+      color: $link-color-hover;
+    }
+  }
+
+  .guide-card-body {
+    flex-grow: 1;
+
+    h3 {
+      @include inter-like-font();
+      font-size: 16px;
+      font-weight: 700;
+      line-height: 1.35;
+      margin: 0 0 8px;
+
+      a {
+        color: $text-dark-darkest;
+        text-decoration: none;
+
+        &:hover {
+          text-decoration: underline;
+        }
+      }
+    }
+
+    p {
+      font-family: "DM Sans";
+      font-size: 14px;
+      line-height: 1.55;
+      color: $text-gray-darker;
+      margin: 0;
+    }
+  }
+
+  .guide-card-meta {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-top: auto;
+
+    font-family: "DM Sans";
+    font-size: 12px;
+    color: $text-gray-darker;
+
+    .guide-category {
+      @include inter-like-font();
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      font-size: 11px;
+      font-weight: 600;
+      background: $color-lighter-gray;
+      border-radius: 3px;
+      padding: 3px 8px;
+      color: $text-dark-deep-gray;
+    }
+  }
+}

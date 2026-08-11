@@ -1,0 +1,12 @@
+<% var guide = it?.guide %>
+<article class="guide-card">
+  <div class="guide-card-body">
+    <h3><a href="<%= guide?.url %>" title="Read <%= guide?.title %>"><%= guide?.title %></a></h3>
+    <p><%= guide?.description %></p>
+  </div>
+  <div class="guide-card-meta">
+    <span class="guide-category"><%= guide?.category %></span>
+    <% if (guide?.readMinutes) { %><span class="guide-read-time"><%= guide?.readMinutes %> min read</span><% } %>
+    <% if (guide?.updated) { %><time datetime="<%= guide?.updated %>"><%= guide?.updated %></time><% } %>
+  </div>
+</article>

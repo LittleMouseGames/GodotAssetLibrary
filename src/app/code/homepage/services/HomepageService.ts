@@ -7,6 +7,7 @@ import { GetAllCategoriesAndTheirAssetCount } from '../models/GET/GetAllCategori
 import { GetFourAssetsForHomepage } from '../models/GET/GetFeaturedAssetsForHomepage'
 import { GetLastModifiedAssets } from '../models/GET/GetLastModifiedAssets'
 import { GetTrendingAssets } from '../models/GET/GetTrendingAssets'
+import { getAllGuides } from 'app/code/guides/models/guide'
 import { attachCardExtras } from 'core/utils/cardView'
 
 export class HomepageService {
@@ -60,11 +61,16 @@ export class HomepageService {
       }
     }
 
+    // Guides are file-based editorial content; surface the first few on the
+    // homepage to cross-link the guides section with the catalog.
+    const homepageGuides = getAllGuides().slice(0, 4)
+
     return res.render('templates/pages/homepage/index', {
       trendingAssets,
       featuredAssets,
       lastModifiedAssets,
-      categoriesObject
+      categoriesObject,
+      guides: homepageGuides
     })
   }
 }
