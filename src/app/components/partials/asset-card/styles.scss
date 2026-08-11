@@ -156,6 +156,21 @@
     }
   }
 
+  .meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin: 8px 0 10px;
+
+    .meta-item {
+      @include inter-like-font();
+      font-size: 11px;
+      font-weight: 600;
+      color: $rating-color;
+      opacity: 0.9;
+    }
+  }
+
   .footer {
     display: flex;
     justify-content: space-between;
@@ -165,6 +180,12 @@
 
     button {
       @include asset-featured-button-styles($dark: $cta-dark);
+    }
+
+    .card-cta {
+      @include asset-featured-button-styles($dark: $cta-dark);
+      display: inline-block;
+      text-decoration: none;
     }
 
     .rating {
@@ -201,6 +222,22 @@
 }
 
 .asset-card {
+  .dropdown .options button {
+    width: 100%;
+    text-align: left;
+    background: transparent;
+    border: none;
+    padding: 7px 13px;
+    font-family: "Inter";
+    font-weight: 600;
+    color: inherit;
+    cursor: pointer;
+
+    &:hover {
+      background: $text-light-lightest;
+    }
+  }
+
   &.featured {
     @include set-styles(
       $background-color: $color-brand-black,
@@ -235,6 +272,61 @@
 
     .footer {
       margin-top: 5px;
+    }
+  }
+
+  .media {
+    display: block;
+    text-decoration: none;
+  }
+
+  .title a {
+    color: inherit;
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+
+  .rating {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+
+    .rating-approval {
+      @include inter-like-font();
+      font-size: 13px;
+      font-weight: 700;
+      color: inherit;
+    }
+
+    .rating-count {
+      @include inter-like-font();
+      font-size: 12px;
+      font-weight: 500;
+      opacity: 0.85;
+    }
+  }
+}
+
+.asset-card {
+  /* Footer quick action: primary View details CTA. */
+  .card-actions-cta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .rating-summary {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+
+    .iconify {
+      color: $color-gold;
+      font-size: 14px;
+      flex-shrink: 0;
     }
   }
 }

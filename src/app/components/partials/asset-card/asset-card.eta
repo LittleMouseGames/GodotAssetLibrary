@@ -5,113 +5,128 @@ var cardImage = it?.info?.card_banner ?? it?.info?.icon_url ?? '/images/noimage.
 if (typeof cardImage !== 'string' || /(?:youtube\.com|youtu\.be|\.(?:mp4|webm|mov))(?:[?#]|$)/i.test(cardImage)) {
   cardImage = it?.info?.icon_url ?? '/images/noimage.png'
 }
+
+var assetId = it?.info?.asset_id ?? ''
+var assetSlug = encodeURI(String(it?.info?.title ?? '').replace(/\s/g, '-')).toLocaleLowerCase()
+var assetHref = `/asset/${assetId}/${assetSlug}`
+if (it?.sourceUrl != null && it.sourceUrl !== '') {
+  assetHref += '?from=' + encodeURIComponent(it.sourceUrl)
+}
+
+var upvotes = Number(it?.info?.upvotes) || 0
+var downvotes = Number(it?.info?.downvotes) || 0
+var total = upvotes + downvotes
+var approval = total > 0 ? Math.round((upvotes / total) * 100) : 0
+var ratingDetail = total > 0
+  ? `${approval}% approval (${upvotes} positive, ${downvotes} negative)`
+  : 'No ratings yet'
 %>
 
-<div class="asset-card <%= it?.featured ? 'featured' : 'normal' %>">
+<article class="asset-card <%= it?.featured ? 'featured' : 'normal' %>" id="asset-<%= assetId %>">
   <div class="head">
     <div class="badges">
-      <a href="/category/<%= it?.info?.category?.toLocaleLowerCase() %>" title="See assets in this category">
-        <div class="badge badge-blue"><%= it?.info?.category ?? 'ERR' %></div>
-      </a>
-      <a href="/engine/<%= it?.info?.godot_version?.toLocaleLowerCase() %>" title="See assets for this engine version">
-        <div class="badge badge-purple"><%= it?.info?.godot_version ?? 'ERR' %></div>
-      </a>
+      <a class="badge badge-blue" href="/category/<%= it?.info?.category?.toLocaleLowerCase() %>"
+        title="See assets in this category"><%= it?.info?.category ?? 'ERR' %></a>
+      <a class="badge badge-purple" href="/engine/<%= it?.info?.godot_version?.toLocaleLowerCase() %>"
+        title="See assets for this engine version"><%= it?.info?.godot_version ?? 'ERR' %></a>
+      <% if (it?._locals?.loggedIn === true) { %>
       <div class="dropdown no-text-select" onclick="window.godotLibrary.dropdown.showContent(event, this)">
-        <span class="iconify" data-icon="akar-icons:more-horizontal"></span>
+        <span class="iconify" data-icon="akar-icons:more-horizontal" aria-hidden="true"></span>
         <div class="options">
-          <% if(it?.info?.saved === true) { %>
-          <a href="/dashboard/save/<%= it?.info?.asset_id %>"
-            onclick="window.godotLibrary.dropdown.callRouteAjax(event, '/dashboard/save/<%= it?.info?.asset_id %>', 'Post successfully removed from saves')"
-            title="Unsave asset">
-            Unsave
-          </a>
+          <% if (it?.info?.saved === true) { %>
+          <a href="#" data-save-asset="<%= assetId %>" data-saved="true" title="Unsave asset">Unsave</a>
           <% } else { %>
-          <a href="/dashboard/save/<%= it?.info?.asset_id %>"
-            onclick="window.godotLibrary.dropdown.callRouteAjax(event, '/dashboard/save/<%= it?.info?.asset_id %>', 'Post successfully added to saves')"
-            title="Save asset">
-            Save
-          </a>
+          <a href="#" data-save-asset="<%= assetId %>" data-saved="false" title="Save asset">Save</a>
           <% } %>
-          <% if(it?._locals?.role === 'admin') { %>
-          <% if(it?.info?.featured === true) { %>
-          <a href="/admin/feature-post/<%= it?.info?.asset_id %>"
-            onclick="window.godotLibrary.dropdown.callRouteAjax(event, '/admin/feature-post/<%= it?.info?.asset_id %>', 'Post successfully featured')"
-            title="Remove from 'Assets We Love' on homepage">
-            Unfeature
-          </a>
+          <% if (it?._locals?.role === 'admin') { %>
+          <% if (it?.info?.featured === true) { %>
+          <a href="/admin/feature-post/<%= assetId %>"
+            onclick="window.godotLibrary.dropdown.callRouteAjax(event, '/admin/feature-post/<%= assetId %>', 'Post successfully featured')"
+            title="Remove from 'Assets We Love' on homepage">Unfeature</a>
           <% } else { %>
-          <a href="/admin/feature-post/<%= it?.info?.asset_id %>"
-            onclick="window.godotLibrary.dropdown.callRouteAjax(event, '/admin/feature-post/<%= it?.info?.asset_id %>', 'Post successfully featured')"
-            title="Add to 'Assets We Love' on homepage">
-            Feature
-          </a>
+          <a href="/admin/feature-post/<%= assetId %>"
+            onclick="window.godotLibrary.dropdown.callRouteAjax(event, '/admin/feature-post/<%= assetId %>', 'Post successfully featured')"
+            title="Add to 'Assets We Love' on homepage">Feature</a>
           <% } %>
           <% } %>
         </div>
       </div>
+      <% } %>
     </div>
     <% if (!it?.featured) { %>
-    <div class="background">
-      <div class="mask">
+    <a class="media" href="<%= assetHref %>" tabindex="-1" aria-hidden="true">
+      <div class="background">
+        <div class="mask">
           <img src="<%= generateProxyUrl(cardImage, 100, 100) %>"
-          data-src="<%= generateProxyUrl(cardImage) %>"
-          data-fallback-image="<%= cardImage %>"
-          alt="<%= it?.info?.title %> background image" class="lazyload">
+            data-src="<%= generateProxyUrl(cardImage) %>"
+            data-fallback-image="<%= cardImage %>"
+            alt="" class="lazyload">
+        </div>
       </div>
-    </div>
+    </a>
     <% } %>
   </div>
-  <a class="body"
-    href="<%= `/asset/${it?.info?.asset_id}/${encodeURI(it?.info?.title.replace(/\s/g, '-')).toLocaleLowerCase()}` %>"
-    title="Visit asset information page">
-    <div>
-      <div class="top">
-        <div class="icon">
-          <img
-            src="<%= generateProxyUrl(it?.info?.icon_url ?? 'https://avatars.githubusercontent.com/u/42072863?s=200&v=4', 50, 50) %>"
-            alt="<%= it?.info?.title %> icon image">
-        </div>
-        <div class="info">
-          <div class="author"><%= it?.info?.author ?? 'Failed to load'%></div>
-          <div class="title"><%= it?.info?.title ?? 'Unable to load the asset 😿' %></div>
+  <div class="body">
+    <div class="top">
+      <div class="icon">
+        <img
+          src="<%= generateProxyUrl(it?.info?.icon_url ?? 'https://avatars.githubusercontent.com/u/42072863?s=200&v=4', 50, 50) %>"
+          alt="<%= it?.info?.title %> icon image">
+      </div>
+      <div class="info">
+        <div class="author"><%= it?.info?.author ?? 'Failed to load'%></div>
+        <div class="title">
+          <a href="<%= assetHref %>" title="Visit asset information page">
+            <%= it?.info?.title ?? 'Unable to load the asset' %>
+          </a>
         </div>
       </div>
-      <p><%= it?.info?.quick_description ?? 'For some reason we\'re unable to load this asset information right now' %>
-      </p>
     </div>
-  </a>
+    <p class="card-description" title="<%= it?.info?.quick_description ?? '' %>"><%= it?.info?.quick_description ?? 'For some reason we\'re unable to load this asset information right now' %>
+    </p>
+    <div class="meta">
+      <% if (it?.context != null && it.context !== '') { %>
+      <span class="meta-item meta-date"><%= it.context %></span>
+      <% } %>
+      <% if (it?.info?.version_string != null && it.info.version_string !== '') { %>
+      <span class="meta-item meta-version">v<%= it.info.version_string %></span>
+      <% } %>
+      <% if (it?.info?.type != null && it.info.type !== '') { %>
+      <span class="meta-item meta-type"><%= it.info.type %></span>
+      <% } %>
+      <% if (it?.info?.support_level != null && it.info.support_level !== '' && it.info.support_level !== 'None') { %>
+      <span class="meta-item meta-support"><%= it.info.support_level %></span>
+      <% } %>
+    </div>
+  </div>
   <div class="footer">
     <div class="rating">
-      <% 
-        // Convert votes to percentage, then to stars
-        var upvotes = it?.info?.upvotes
-        var total = upvotes + it?.info?.downvotes
-        var percent = Math.round((upvotes / total) * 100).toFixed(2)
-        var stars = Math.round((percent + 5) / 10).toFixed(1) / 2
-        %>
-      <ul class="stars" data-rating="<%= stars ? stars : 0 %>">
-        <li class="stars__item"></li>
-        <li class="stars__item"></li>
-        <li class="stars__item"></li>
-        <li class="stars__item"></li>
-        <li class="stars__item"></li>
-      </ul>
-      <span><%= it?.info?.upvotes + it?.info?.downvotes %> ratings</span>
+      <span class="rating-summary">
+        <% if (total > 0) { %>
+        <span class="iconify" data-icon="bi:hand-thumbs-up-fill" aria-hidden="true"></span>
+        <%= `${approval}% approval · ${total} rating${total === 1 ? '' : 's'}` %>
+        <% } else { %>
+        No ratings yet
+        <% } %>
+      </span>
+      <span class="visually-hidden"><%= ratingDetail %></span>
     </div>
-    <div class="actions">
-      <a
-        href="<%= `/asset/${it?.info?.asset_id}/${encodeURI(it?.info?.title.replace(/\s/g, '-')).toLocaleLowerCase()}` %>"><button>Open
-          Asset</button></a>
+    <div class="card-actions-cta">
+      <a class="card-cta" href="<%= assetHref %>"
+        title="Open <%= it?.info?.title ?? 'asset' %> details">View details</a>
     </div>
   </div>
   <% if (it?.featured) { %>
-  <div class="background">
-    <div class="mask">
-      <img src="<%= generateProxyUrl(cardImage, 100, 100) %>"
-        data-src="<%= generateProxyUrl(cardImage) %>"
-        data-fallback-image="<%= cardImage %>"
-        alt="<%= it?.info?.title %> background image" class="lazyload">
+  <a class="media" href="<%= assetHref %>" tabindex="-1" aria-hidden="true">
+    <div class="background">
+      <div class="mask">
+        <img src="<%= generateProxyUrl(cardImage, 100, 100) %>"
+          data-src="<%= generateProxyUrl(cardImage) %>"
+          data-fallback-image="<%= cardImage %>"
+          alt="" class="lazyload">
+      </div>
     </div>
-  </div>
+  </a>
   <% } %>
-</div>
+</article>
+
