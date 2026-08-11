@@ -2,53 +2,46 @@
   const loggedIn = it?._locals?.loggedIn
   const generateProxyUrl = it?._locals?.functions?.generateProxyUrl
 
-  var upvotes = it?.info?.upvotes ?? 0
-  var total = upvotes + it?.info?.downvotes ?? 0
+  var upvotes = Number(it?.info?.upvotes) || 0
+  var downvotes = Number(it?.info?.downvotes) || 0
+  var total = upvotes + downvotes
   var percent = 0
-  var stars = 0
-  
-  if(total !== 0) {
-    percent = Math.round((upvotes / total) * 100).toFixed(2)
-    stars = Math.round((percent + 5) / 10).toFixed(1) / 2
+  var assetUrl = `https://godotassetlibrary.com/asset/${it?.info?.asset_id}/${encodeURI(it?.info?.title?.replace(/\s/g, '-')).toLocaleLowerCase()}`
+
+  if (total !== 0) {
+    percent = Math.round((upvotes / total) * 100)
   }
 
   it.meta = {
     title: `${it?.info?.title ?? 'Asset'} | Godot Asset Library`,
     description: it?.info?.quick_description ??  `Find out more about the FREE ${it?.info?.title} godot asset on Godot Asset Library.`,
-    url: `https://godotassetlibrary.com/asset/${it?.info?.asset_id}/${encodeURI(it?.info?.title.replace(/\s/g, '-')).toLocaleLowerCase()}`,
+    url: assetUrl,
     moduleName: 'asset',
-    // jsonLd: {
-    //   "@context": "https://schema.org/",
-    //   "@type": "Product",
-    //   "name": it?.info?.title,
-    //   "image": it?.info?.card_banner,
-    //   "description": it?.info?.quick_description
-    // },
+    noindex: it?.noindex === true,
+    jsonLd: {
+      "@context": "https://schema.org/",
+      "@type": "SoftwareApplication",
+      "name": it?.info?.title,
+      "description": it?.info?.quick_description,
+      "image": it?.info?.card_banner ?? it?.info?.icon_url,
+      "url": assetUrl,
+      "author": { "@type": "Person", "name": it?.info?.author },
+      "softwareVersion": it?.info?.version_string,
+      "applicationCategory": "GameApplication",
+      "operatingSystem": "Godot Engine",
+      "softwareRequirements": `Godot ${it?.info?.godot_version}`
+    },
     image: generateProxyUrl(it.info.card_banner ?? it.info.icon_url),
   }
-
-  // if (stars > 0) {
-  //   it.meta.jsonLd.aggregateRating = {
-  //     "@type": "AggregateRating",
-  //     "ratingValue": stars,
-  //     "bestRating": "5",
-  //     "worstRating": "0",
-  //     "ratingCount": total
-  //   }
-  // }
 %>
 <% layout('templates/components/layouts/promobar-nav-body-footer/promobar-nav-body-footer.eta') %>
 
-<%~ includeFile('templates/components/partials/modal-install/modal-install.eta', {downloadUrl: it?.info?.download_url}) %>
+<%~ includeFile('templates/components/partials/modal-install/modal-install.eta', it) %>
 <%~ includeFile('templates/components/partials/modal-report/modal-report.eta') %>
 <%~ includeFile('templates/components/partials/modal-delete/modal-delete.eta') %>
 <%~ includeFile('templates/components/partials/modal-media/modal-media.eta') %>
 
 <section class="page-asset">
-  <link rel="stylesheet"
-    href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.1.0/github-markdown-light.min.css"
-    integrity="sha512-zb2pp+R+czM7GAemdSUQt6jFmr3qCo6ikvBgVU6F5GvwEDR0C2sefFiPEJ9QUpmAKdD5EqDUdNRtbOYnbF/eyQ=="
-    crossorigin="anonymous" referrerpolicy="no-referrer" />
   <div class="column">
     <% const mediaItems = it?.mediaItems ?? [] %>
     <% const primaryMedia = it?.primaryMedia ?? null %>
@@ -67,6 +60,7 @@
           <img src="<%= generateProxyUrl(item.thumbnail, 150, 84) %>"
             data-fallback-image="<%= item.thumbnail %>" alt="<%= it?.info?.title %> thumbnail <%= index + 1 %>"
             loading="lazy" decoding="async">
+          <% if (item.type === 'video') { %><span class="thumb-play" aria-hidden="true">&#9654;</span><% } %>
         </button>
         <% }) %>
       </div>
@@ -78,13 +72,17 @@
             style="<%= primaryMedia?.type === 'video' ? '' : 'display: none;' %>"
             title="<%= it?.info?.title %> video preview"
             allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-          <img class="media-frame media-image" tabindex="0" role="button"
-            style="<%= primaryMedia?.type === 'video' ? 'display: none;' : '' %>"
-            src="<%= generateProxyUrl(primaryMedia?.type === 'image' ? primaryMedia.url : fallbackImage, 1920, 1080) %>"
-            data-fallback-image="<%= primaryMedia?.type === 'image' ? primaryMedia.url : fallbackImage %>"
-            data-media-url="<%= primaryMedia?.type === 'image' ? primaryMedia.url : fallbackImage %>"
-            data-media-index="<%= primaryMedia?.type === 'image' ? 0 : '' %>"
-            alt="<%= it?.info?.title %> preview image" loading="lazy" decoding="async">
+          <% if (primaryMedia?.type === 'image' || primaryMedia == null) { %>
+          <button type="button" class="media-image-button" aria-label="Open <%= it?.info?.title %> preview image">
+            <img class="media-frame media-image" data-media-type="image"
+              style=""
+              src="<%= generateProxyUrl(primaryMedia?.type === 'image' ? primaryMedia.url : fallbackImage, 1920, 1080) %>"
+              data-fallback-image="<%= primaryMedia?.type === 'image' ? primaryMedia.url : fallbackImage %>"
+              data-media-url="<%= primaryMedia?.type === 'image' ? primaryMedia.url : fallbackImage %>"
+              data-media-index="<%= primaryMedia?.type === 'image' ? 0 : '' %>"
+              alt="<%= it?.info?.title %> preview image" loading="lazy" decoding="async">
+          </button>
+          <% } %>
         </div>
       </div>
     </div>
@@ -97,30 +95,37 @@
           <label class="inline-dropdown">
             <h2>Asset Description</h2>
             <% if (it.info.readme) { %>
-            <div class="dropdown no-text-select" onclick="window.godotLibrary.dropdown.showContent(event, this)">
-              <div class="value">README.md</div>
-              <span class="iconify" data-icon="bxs:chevron-down"></span>
-              <div class="options">
-                <div onclick="switchToReadme()">README.md</div>
-                <div onclick="switchToDescription()">Description</div>
+            <div class="dropdown no-text-select docs-source">
+              <button type="button" class="dropdown-trigger" aria-haspopup="true" aria-expanded="false"
+                aria-controls="docs-source-panel"
+                onclick="window.godotLibrary.dropdown.showContent(event, this)">
+                <span class="value" id="docs-source-value">README.md</span>
+                <span class="iconify" data-icon="bxs:chevron-down"></span>
+              </button>
+              <div class="options" id="docs-source-panel">
+                <button type="button" data-docs-source="readme"
+                  onclick="window.godotLibrary.docs.switchTo('readme')">README.md</button>
+                <button type="button" data-docs-source="description"
+                  onclick="window.godotLibrary.docs.switchTo('description')">Description</button>
               </div>
             </div>
             <% } %>
           </label>
-          <% const descriptionFormatted = it?.info?.description?.replace(/\n/g, '<br>') %>
-
           <% if (it.info.readme) { %>
-          <div class="readme active markdown-body">
+          <div class="readme active markdown-body" id="asset-readme-panel">
             <%~ it.info.readme %>
           </div>
           <% } %>
-          <div class="description <%= it.info.readme ? '' : 'active' %> markdown-body">
-            <p><%~ descriptionFormatted %></p>
+          <div class="description <%= it.info.readme ? '' : 'active' %> markdown-body" id="asset-description-panel">
+            <p class="plain-description"><%= it?.info?.description ?? '' %></p>
           </div>
         </div>
 
-        <div class="section">
+        <div class="section" id="reviews">
           <h2>Reviews</h2>
+          <% if (it?.reviewCount != null) { %>
+          <div class="reviews-count"><%= it.reviewCount %> total review<%= it.reviewCount === 1 ? '' : 's' %><% if (it.reviewCount > (it?.reviewsShown ?? 0)) { %> &middot; showing the <%= it.reviewsShown %> most recent<% } %></div>
+          <% } %>
           <%~ includeFile('templates/components/partials/stars/stars.eta', it) %>
 
           <div class="reviews">
@@ -130,15 +135,23 @@
             <div class="review">
               <div class="header">
                 <span class="headline"><%= comment.headline %></span>
-                <div class="dropdown no-text-select" onclick="window.godotLibrary.dropdown.showContent(event, this)">
-                  <span class="iconify" data-icon="akar-icons:more-horizontal"></span>
+                <div class="dropdown no-text-select">
+                  <button type="button" class="dropdown-trigger" aria-haspopup="true" aria-expanded="false"
+                    aria-label="Review options"
+                    onclick="window.godotLibrary.dropdown.showContent(event, this)">
+                    <span class="iconify" data-icon="akar-icons:more-horizontal"></span>
+                  </button>
                   <div class="options">
-                    <div onclick="openReportModal(event, '<%= String(comment.human_id) %>')">Report</div>
+                    <button type="button" data-dialog-open="report"
+                      data-report-comment-id="<%= String(comment.human_id) %>">Report</button>
                   </div>
                 </div>
               </div>
               <span class="username"><%= comment.username %></span>
               <span class=" rated">Rated <%= comment.review_type %></span>
+              <% if (comment.date != null) { %>
+              <span class="review-date"><%= new Date(comment.date).toLocaleDateString() %></span>
+              <% } %>
               <div class="review-body">
                 <%= comment.text %>
               </div>
@@ -146,46 +159,58 @@
             <% }) %>
             <% } %>
           </div>
+          <% if (it?.reviewsHasMore === true && it?.reviewsNextUrl) { %>
+          <a class="load-more-reviews" href="<%= it.reviewsNextUrl %>" title="Load more reviews">
+            Load more reviews
+          </a>
+          <% } %>
         </div>
         <div class="section">
-          <form method="PATCH" action="/asset/review/<%= it?.info?.asset_id %>" class="write-review"
+          <% var loggedInUser = it?._locals?.loggedIn === true %>
+          <form method="POST" action="/asset/review/<%= it?.info?.asset_id %>" class="write-review"
             onsubmit="window.godotLibrary.formTools.sendFormAjax(event, this)">
             <h2>Your Rating</h2>
-            <label class="rating-select">
-              <input type="radio" name="rating" value="positive" required
-                <%= it?.usersAssetReview?.review_type === 'positive' ? 'checked' : '' %>
-                <% if(!loggedIn) { %>disabled<% } %>>
-              <div class="label <% if(!loggedIn) { %>disabled<% } %>">
-                <span class="iconify" data-icon="bi:hand-thumbs-up-fill"
-                  <%= it?.usersAssetReview?.review_type === 'false' ? 'checked' : '' %>></span>
-                <span>This addon is good</span>
-              </div>
-            </label>
-            <label class="rating-select">
-              <input type="radio" name="rating" value="negative" required <% if(!loggedIn) { %>disabled<% } %>>
-              <div class="label <% if(!loggedIn) { %>disabled<% } %>">
-                <span class="iconify" data-icon="bi:hand-thumbs-down-fill"></span>
-                <span>This addon is not good</span>
-              </div>
-            </label>
-            <div class="requirement">Headline must be at least 3 characters but not more than 50</div>
+            <fieldset class="rating-fieldset">
+              <legend class="visually-hidden">How do you rate this asset?</legend>
+              <label class="rating-select">
+                <input type="radio" name="rating" value="positive" required
+                  <%= it?.usersAssetReview?.review_type === 'positive' ? 'checked' : '' %>
+                  <% if(!loggedInUser) { %>disabled<% } %>>
+                <div class="label <% if(!loggedInUser) { %>disabled<% } %>">
+                  <span class="iconify" data-icon="bi:hand-thumbs-up-fill"></span>
+                  <span>This addon is good</span>
+                </div>
+              </label>
+              <label class="rating-select">
+                <input type="radio" name="rating" value="negative" required
+                  <%= it?.usersAssetReview?.review_type === 'negative' ? 'checked' : '' %>
+                  <% if(!loggedInUser) { %>disabled<% } %>>
+                <div class="label <% if(!loggedInUser) { %>disabled<% } %>">
+                  <span class="iconify" data-icon="bi:hand-thumbs-down-fill"></span>
+                  <span>This addon is not good</span>
+                </div>
+              </label>
+            </fieldset>
+            <div class="requirement" id="review-headline-hint">Headline must be at least 3 characters but not more than 50</div>
             <div class="input-container">
               <input name="asset_review_headline" class="input" id="asset-review-headline" type="text" placeholder=" "
+                minlength="3" maxlength="50" aria-describedby="review-headline-hint"
                 value="<%= it?.usersAssetReview?.headline ? it?.usersAssetReview?.headline : '' %>"
-                <% if(!loggedIn) { %>disabled<% } %>>
+                <% if(!loggedInUser) { %>disabled<% } %>>
               <label for="asset-review-headline" class="placeholder">Headline (optional)</label>
             </div>
-            <div class="requirement">Review must be at least 5 characters but not more than 500</div>
+            <div class="requirement" id="review-body-hint">Review must be at least 5 characters but not more than 500</div>
             <div class="input-container">
-              <textarea name="asset_review" class="input" id="asset-review" type="text" placeholder=" "
-                <% if(!loggedIn) { %>disabled<% } %>><%= it?.usersAssetReview?.text ? it?.usersAssetReview?.text : '' %></textarea>
+              <textarea name="asset_review" class="input" id="asset-review" placeholder=" "
+                minlength="5" maxlength="500" aria-describedby="review-body-hint"
+                <% if(!loggedInUser) { %>disabled<% } %>><%= it?.usersAssetReview?.text ? it?.usersAssetReview?.text : '' %></textarea>
               <label for="asset-review" class="placeholder">Review (optional)</label>
             </div>
             <div class="actions">
-              <% if(loggedIn) { %>
+              <% if(loggedInUser) { %>
               <button type="submit"><%= it?.hasUserReviewedAsset ? 'Update' : 'Submit' %></button>
               <% } %>
-              <% if(!loggedIn) { %>
+              <% if(!loggedInUser) { %>
               <div class="notice">
                 Please <a href="/register" title="Go to login / register page">sign in</a> to add a review
               </div>
@@ -199,29 +224,18 @@
   <div class="desktop-quick-info">
     <%~ includeFile('./quick-info.eta', it) %>
   </div>
-  <script>
-    function openInstallModal(event) {
-      document.querySelector('.modal.install').classList.add('active')
-      event.stopPropagation()
-    }
-
-    function openReportModal(event, commentId) {
-      const modalSelector = document.querySelector('.modal.report')
-      modalSelector.classList.add('active')
-      modalSelector.querySelector('form').setAttribute('action', `/asset/report/review/${commentId}`)
-      event.stopPropagation()
-    }
-
-    function switchToReadme() {
-      document.querySelector('.readme').classList.add('active')
-      document.querySelector('.description').classList.remove('active')
-      document.querySelector('.docs .dropdown .value').innerText = "README.md"
-    }
-
-    function switchToDescription() {
-      document.querySelector('.readme').classList.remove('active')
-      document.querySelector('.description').classList.add('active')
-      document.querySelector('.docs .dropdown .value').innerText = "Description"
-    }
-  </script>
+  <% if (it?.relatedAssets?.length > 0) { %>
+  <div class="related-assets">
+    <div class="section-head">
+      <h2>Related Assets</h2>
+      <a class="view-all" href="/category/<%= it?.info?.category_lowercase ?? '' %>"
+        title="See more in <%= it?.info?.category ?? 'this category' %>">More in <%= it?.info?.category ?? 'category' %></a>
+    </div>
+    <div class="related-grid">
+      <% it.relatedAssets.forEach(info => { %>
+      <%~ includeFile('templates/components/partials/asset-card/asset-card.eta', { info: info, _locals: it?._locals }) %>
+      <% }) %>
+    </div>
+  </div>
+  <% } %>
 </section>

@@ -1,11 +1,12 @@
-<div class="modal delete">
-  <div class="background"></div>
+<div class="modal delete" role="dialog" aria-modal="true" aria-labelledby="delete-dialog-title" aria-hidden="true"
+  data-dialog="delete">
+  <div class="background" data-dialog-close></div>
   <div class="modal-delete body">
     <div class="head">
-      <!-- close icon -->
+      <button type="button" class="close" data-dialog-close aria-label="Close delete confirmation">&times;</button>
     </div>
     <form action="POST" method="">
-      <h2>Delete <span class="type">Comment</span></h2>
+      <h2 id="delete-dialog-title">Delete <span class="type">Comment</span></h2>
       <p>Are you sure you want to delete this <span class="type">Comment</span>? This action can't be undone.</p>
       <button>Delete <span class="type">Comment</span></button>
     </form>

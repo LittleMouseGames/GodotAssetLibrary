@@ -5,7 +5,7 @@ export interface AssetPreview {
 }
 
 export interface MediaItem {
-  type: 'image' | 'video'
+  type: 'image' | 'video' | 'external'
   url: string
   thumbnail: string
   embedUrl?: string
@@ -20,6 +20,22 @@ const YOUTUBE_HOSTS = new Set([
   'www.youtu.be',
   'www.youtube-nocookie.com'
 ])
+
+/** File extensions we can reliably render as an <img>. */
+const IMAGE_EXTENSIONS = new Set(['png', 'jpg', 'jpeg', 'gif', 'webp', 'svg', 'avif', 'bmp'])
+
+/** File extensions that are clearly video but not YouTube-embeddable. */
+const VIDEO_EXTENSIONS = new Set(['mp4', 'webm', 'mov', 'ogg', 'm4v', 'm3u8'])
+
+function fileExtension (url: string): string {
+  try {
+    const pathname = new URL(url).pathname
+    const lastSegment = pathname.split('/').filter(Boolean).pop() ?? ''
+    return lastSegment.includes('.') ? (lastSegment.split('.').pop() ?? '').toLowerCase() : ''
+  } catch {
+    return ''
+  }
+}
 
 function getVideoId (value: string | null): string | null {
   if (value === null || !/^[A-Za-z0-9_-]{6,20}$/.test(value)) {
@@ -85,14 +101,38 @@ export function normalizePreviews (previews: unknown): MediaItem[] {
     }
 
     const url = preview.link.trim()
+
+    // Only http(s) URLs are rendered; other schemes would break the media
+    // markup or invite unsafe loads.
+    let parsed: URL
+    try {
+      parsed = new URL(url)
+    } catch {
+      return items
+    }
+    if (parsed.protocol !== 'http:' && parsed.protocol !== 'https:') {
+      return items
+    }
+
     const embedUrl = parseYoutubeUrl(url)
+    const extension = fileExtension(url)
     const thumbnail = typeof preview.thumbnail === 'string' && preview.thumbnail.trim() !== ''
       ? preview.thumbnail.trim()
       : url
 
-    items.push(embedUrl === null
-      ? { type: 'image', url, thumbnail }
-      : { type: 'video', url, thumbnail, embedUrl })
+    if (embedUrl !== null) {
+      items.push({ type: 'video', url, thumbnail, embedUrl })
+    } else if (VIDEO_EXTENSIONS.has(extension)) {
+      // Real video that we cannot embed — surface it as an external link rather
+      // than pretending the URL is an image.
+      items.push({ type: 'external', url, thumbnail })
+    } else if (IMAGE_EXTENSIONS.has(extension) || typeof preview.thumbnail === 'string') {
+      items.push({ type: 'image', url, thumbnail })
+    } else {
+      // Unknown type with no thumbnail would render as a broken image; keep it
+      // accessible as an external link instead.
+      items.push({ type: 'external', url, thumbnail })
+    }
 
     return items
   }, [])

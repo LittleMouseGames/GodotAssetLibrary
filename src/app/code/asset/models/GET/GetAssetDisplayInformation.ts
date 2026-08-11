@@ -8,9 +8,9 @@ interface ReturnedAsset extends WithId<Document>, assetSchema {}
  * Get asset information for display page
  *
  * @param {string} assetId
- * @returns {ReturnedAsset}
+ * @returns {Promise<ReturnedAsset | null>} the asset, or null when it does not exist
  */
-export async function GetAssetDisplayInformation (assetId: String): Promise<ReturnedAsset> {
+export async function GetAssetDisplayInformation (assetId: String): Promise<ReturnedAsset | null> {
   const mongo = MongoHelper.getDatabase()
   const operationObject = await mongo.collection('assets').findOne({ asset_id: assetId }, {
     projection: {
@@ -22,11 +22,7 @@ export async function GetAssetDisplayInformation (assetId: String): Promise<Retu
       legacy_asset_id: 0,
       version: 0
     }
-  }) as ReturnedAsset
-
-  if (operationObject === null || operationObject === undefined) {
-    throw new Error('No assets found')
-  }
+  }) as ReturnedAsset | null
 
   return operationObject
 }

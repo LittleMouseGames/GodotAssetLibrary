@@ -1,7 +1,8 @@
-<div class="modal media-lightbox" role="dialog" aria-modal="true" aria-label="Image preview" aria-hidden="true">
-  <div class="background" data-media-lightbox-close></div>
+<div class="modal media-lightbox" role="dialog" aria-modal="true" aria-label="Image preview" aria-hidden="true"
+  data-dialog="media">
+  <div class="background" data-media-lightbox-close data-dialog-close></div>
   <div class="modal-media body">
-    <button type="button" class="close" data-media-lightbox-close aria-label="Close image preview">×</button>
+    <button type="button" class="close" data-media-lightbox-close data-dialog-close aria-label="Close image preview">×</button>
     <button type="button" class="previous" data-media-lightbox-previous aria-label="Previous image">‹</button>
     <div class="image-container">
       <img src="/images/noimage.png" alt="" data-media-lightbox-image data-fallback-image="/images/noimage.png">

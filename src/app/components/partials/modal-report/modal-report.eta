@@ -1,16 +1,18 @@
-<div class="modal report">
-  <div class="background"></div>
+<div class="modal report" role="dialog" aria-modal="true" aria-labelledby="report-dialog-title" aria-hidden="true"
+  data-dialog="report">
+  <div class="background" data-dialog-close></div>
   <div class="modal-report body">
     <div class="head">
-      <!-- close icon -->
+      <button type="button" class="close" data-dialog-close aria-label="Close report form">&times;</button>
     </div>
     <form method="POST" action="" onsubmit="window.godotLibrary.formTools.sendFormAjax(event, this)">
-      <h2>Report comment</h2>
+      <h2 id="report-dialog-title">Report comment</h2>
       <div class="name">Reason for reporting:</div>
       <div class="input-container">
-        <select class="input" name="reason">
+        <label class="visually-hidden" for="report_reason">Reason for reporting</label>
+        <select class="input" id="report_reason" name="reason">
           <option value="spam">Spam</option>
-          <option value="harrasement">Harrasement</option>
+          <option value="harassment">Harassment</option>
           <option value="illegal">Illegal Content</option>
           <option value="other">Other</option>
         </select>
