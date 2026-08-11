@@ -41,29 +41,6 @@
 %>
 <% layout('templates/components/layouts/promobar-nav-body-footer/promobar-nav-body-footer.eta') %>
 
-<% if (it?.categoryContent != null) { %>
-<section class="taxonomy-intro">
-  <p><%= it.categoryContent.intro %></p>
-  <ul class="taxonomy-bullets">
-    <% it.categoryContent.bullets.forEach(bullet => { %>
-    <li><%= bullet %></li>
-    <% }) %>
-  </ul>
-  <% if (it.categoryContent.guides.length > 0) { %>
-  <p class="taxonomy-guides">
-    <strong>Related guides:</strong>
-    <% it.categoryContent.guides.forEach((guide, index) => { %>
-    <a href="<%= guide.href %>" title="<%= guide.label %>"><%= guide.label %></a><%= index < it.categoryContent.guides.length - 1 ? ' &middot; ' : '' %>
-    <% }) %>
-  </p>
-  <% } %>
-</section>
-<% } else if (it?.routeEngine != null) { %>
-<section class="taxonomy-intro">
-  <p>These <strong><%= it?.search?.pagination?.total ?? 0 %></strong> assets are compatible with Godot <strong><%= it.routeEngine %></strong>. Use the filters to narrow by category, asset type or support level, and always confirm the version badge on the asset page before installing. Read <a href="/guides/how-to-choose-a-godot-asset" title="How to choose a Godot asset">how to choose a Godot asset</a> for the full checklist.</p>
-</section>
-<% } %>
-
 <section class="page-search">
   <section class="filters-column">
     <button type="button" class="filters-toggle" aria-expanded="false" aria-controls="search-filters-form"
@@ -206,3 +183,26 @@
     <% } %>
   </section>
 </section>
+
+<% if (it?.categoryContent != null) { %>
+<section class="taxonomy-intro">
+  <p><%= it.categoryContent.intro %></p>
+  <ul class="taxonomy-bullets">
+    <% it.categoryContent.bullets.forEach(bullet => { %>
+    <li><%= bullet %></li>
+    <% }) %>
+  </ul>
+  <% if (it.categoryContent.guides.length > 0) { %>
+  <p class="taxonomy-guides">
+    <strong>Related guides:</strong>
+    <% it.categoryContent.guides.forEach((guide, index) => { %>
+    <a href="<%= guide.href %>" title="<%= guide.label %>"><%= guide.label %></a><%= index < it.categoryContent.guides.length - 1 ? ' &middot; ' : '' %>
+    <% }) %>
+  </p>
+  <% } %>
+</section>
+<% } else if (it?.routeEngine != null) { %>
+<section class="taxonomy-intro">
+  <p>These <strong><%= it?.search?.pagination?.total ?? 0 %></strong> assets are compatible with Godot <strong><%= it.routeEngine %></strong>. Use the filters to narrow by category, asset type or support level, and always confirm the version badge on the asset page before installing. Read <a href="/guides/how-to-choose-a-godot-asset" title="How to choose a Godot asset">how to choose a Godot asset</a> for the full checklist.</p>
+</section>
+<% } %>
