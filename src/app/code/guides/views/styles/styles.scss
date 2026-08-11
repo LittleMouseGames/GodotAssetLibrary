@@ -70,11 +70,15 @@
   }
 }
 
-// Article body: plain content-page typography (like the terms pages), no boxed
-// card — the page banner provides the heading, so the body starts at h2.
+// Article body: a white box matching the asset page's readme/description box.
+// The page banner provides the heading, so the body starts at h2.
 .page-guide {
   .guide-content {
     max-width: 860px;
+    background: $color-brand-white;
+    border: 1px solid #dbdbdb;
+    border-radius: 3px;
+    padding: 20px 32px;
 
     h2 {
       @include inter-like-font();

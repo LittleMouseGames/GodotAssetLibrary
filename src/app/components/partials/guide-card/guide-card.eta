@@ -9,4 +9,6 @@
     <% if (guide?.readMinutes) { %><span class="guide-read-time"><%= guide?.readMinutes %> min read</span><% } %>
     <% if (guide?.updated) { %><time datetime="<%= guide?.updated %>"><%= guide?.updated %></time><% } %>
   </div>
+  <a class="card-link-overlay" href="<%= guide?.url %>" tabindex="-1" aria-hidden="true"
+    aria-label="Open <%= guide?.title %>"></a>
 </article>
