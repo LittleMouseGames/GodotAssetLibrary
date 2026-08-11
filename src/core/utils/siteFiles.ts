@@ -13,22 +13,31 @@ let refreshPromise: Promise<void> | null = null
 const TTL_MS = 60_000
 
 /**
- * Reload the whole set from the database in the background (deduplicated so
- * concurrent callers share one in-flight refresh). Failures keep serving the
- * last good value — the routes must never error just because Mongo hiccupped.
- * Mirrors RouterServer's promobar refresh pattern.
+ * Load the whole set from the database. Kept async so any throw inside the
+ * loader (e.g. MongoHelper.getDatabase() when no connection is established)
+ * becomes a rejection handled by refresh() rather than bubbling synchronously
+ * out of getSiteFileContent().
+ */
+async function loadSiteFiles (): Promise<void> {
+  const files = await GetSiteFiles()
+  cache.clear()
+  for (const file of files) {
+    cache.set(file.route, file.content)
+  }
+}
+
+/**
+ * Reload the whole set in the background (deduplicated so concurrent callers
+ * share one in-flight refresh). Failures keep serving the last good value —
+ * the routes must never error just because Mongo hiccupped. Mirrors
+ * RouterServer's promobar refresh pattern.
  */
 function refresh (): void {
   if (refreshPromise !== null) {
     return
   }
 
-  refreshPromise = GetSiteFiles().then(files => {
-    cache.clear()
-    for (const file of files) {
-      cache.set(file.route, file.content)
-    }
-  }).catch(() => {
+  refreshPromise = loadSiteFiles().catch(() => {
     // Keep serving the stale value when the database is temporarily unavailable.
   }).finally(() => {
     refreshPromise = null
@@ -57,4 +66,8 @@ export function getSiteFileContent (route: string): string | null {
  */
 export function invalidateSiteFileCache (): void {
   cacheExpiresAt = 0
+  // Kick off a background refresh right away (rather than waiting for the next
+  // public request) so the new content is ready by the time the routes serve
+  // it. Called after an admin saves the Site Settings form.
+  refresh()
 }
