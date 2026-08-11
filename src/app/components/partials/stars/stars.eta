@@ -1,17 +1,14 @@
+<%
+var upvotes = Number(it?.info?.upvotes) || 0
+var downvotes = Number(it?.info?.downvotes) || 0
+var total = upvotes + downvotes
+var approval = total > 0 ? Math.round((upvotes / total) * 100) : 0
+%>
 <div class="rating">
-  <% 
-    // Convert votes to percentage, then to stars
-    var upvotes = it?.info?.upvotes
-    var total = upvotes + it?.info?.downvotes
-    var percent = Math.round((upvotes / total) * 100).toFixed(2)
-    var stars = Math.round((percent + 5) / 10).toFixed(1) / 2
-    %>
-  <ul class="stars" data-rating="<%= stars ? stars : 0 %>">
-    <li class="stars__item"></li>
-    <li class="stars__item"></li>
-    <li class="stars__item"></li>
-    <li class="stars__item"></li>
-    <li class="stars__item"></li>
-  </ul>
-  <span><%= it?.info?.upvotes + it?.info?.downvotes %> ratings</span>
+  <% if (total > 0) { %>
+  <span class="rating-approval"><%= approval %>% approval</span>
+  <span class="rating-count"><%= total %> rating<%= total === 1 ? '' : 's' %> (<%= upvotes %> positive, <%= downvotes %> negative)</span>
+  <% } else { %>
+  <span class="rating-count">No ratings yet</span>
+  <% } %>
 </div>

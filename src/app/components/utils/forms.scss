@@ -154,6 +154,26 @@
           background: $hover-color;
         }
       }
+
+      .logout-form {
+        margin: 0;
+
+        button {
+          width: 100%;
+          min-height: 0;
+          text-align: left;
+          background: transparent;
+          border: none;
+          padding: $padding;
+          font: inherit;
+          color: inherit;
+          cursor: pointer;
+
+          &:hover {
+            background: $hover-color;
+          }
+        }
+      }
     }
   }
 }
@@ -193,7 +213,26 @@
       background: white;
       z-index: 1;
       padding: 15px;
-      width: 600px;
+      width: min(600px, calc(100vw - 32px));
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+
+    .head {
+      display: flex;
+      justify-content: flex-end;
+
+      .close {
+        @include form-button();
+        width: auto;
+        padding: 6px 12px;
+        background: transparent;
+        color: $text-dark-darkest;
+        font-size: 20px;
+        line-height: 1;
+        margin-top: 0;
+        border-radius: 4px;
+      }
     }
 
     h2 {
@@ -230,4 +269,76 @@
       @include form-select();
     }
   }
+}
+
+/* Field validation + focus primitives -------------------------------------- */
+
+@mixin form-validation {
+  .form-field {
+    display: flex;
+    flex-direction: column;
+    gap: $space-1;
+    margin-bottom: $space-4;
+
+    label {
+      @include inter-like-font();
+      font-size: 13px;
+      font-weight: 600;
+      color: $text-secondary;
+    }
+
+    .field-help,
+    .field-error {
+      @include inter-like-font();
+      font-size: 12px;
+    }
+
+    .field-help {
+      color: $text-muted;
+    }
+
+    .field-error {
+      color: $color-danger;
+      display: none;
+
+      &.visible {
+        display: block;
+      }
+    }
+  }
+
+  input,
+  textarea,
+  select {
+    &[aria-invalid="true"] {
+      border: 1px solid $color-danger !important;
+    }
+
+    &:focus {
+      outline: $focus-ring-width solid $focus-ring-color;
+      outline-offset: 1px;
+    }
+  }
+}
+
+.error-summary {
+  @include inter-like-font();
+  background: $color-danger-bg;
+  color: $color-danger;
+  border: 1px solid rgba(192, 57, 43, 0.35);
+  border-radius: $border-radius-md;
+  padding: $space-3 $space-4;
+  margin-bottom: $space-4;
+  font-size: 14px;
+
+  ul {
+    margin: $space-2 0 0;
+    padding-left: $space-4;
+  }
+}
+
+button:disabled,
+[aria-disabled="true"] {
+  opacity: 0.55;
+  cursor: not-allowed;
 }

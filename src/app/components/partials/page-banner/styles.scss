@@ -14,6 +14,56 @@
     position: relative;
     display: inline-block;
     cursor: default;
+    max-width: 100%;
+  }
+
+  .banner-back-link {
+    @include inter-like-font();
+    display: inline-block;
+    font-size: 13px;
+    font-weight: 600;
+    color: $text-light-lightest;
+    text-decoration: none;
+    margin-bottom: 8px;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+
+  .banner-breadcrumbs {
+    @include inter-like-font();
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 6px;
+    font-size: 13px;
+    color: $text-light-grayer;
+    margin-bottom: 10px;
+    background: transparent;
+    border: none;
+    height: auto;
+    width: auto;
+    position: static;
+    z-index: auto;
+
+    a {
+      color: $text-light-lightest;
+      text-decoration: none;
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+
+    .sep {
+      opacity: 0.6;
+    }
+
+    [aria-current="page"] {
+      color: $text-light-grayer;
+      font-weight: 600;
+    }
   }
 
   .heading {

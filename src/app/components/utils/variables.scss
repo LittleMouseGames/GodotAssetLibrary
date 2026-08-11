@@ -42,3 +42,95 @@ $button-gray: #e4e4e4;
 $button-white: white;
 $button-very-gray: #e8e8e8;
 $button-very-dark: #0b0b0b;
+
+/* ==========================================================================
+   Semantic marketplace tokens
+   Values start as aliases of the existing palette to avoid visual churn while
+   giving every surface one source of truth. Shared components should prefer
+   these aliases over hardcoded colors.
+   ========================================================================== */
+
+/** Surfaces **/
+$surface-page: $background;
+$surface-card: $color-brand-white;
+$surface-elevated: $color-brand-white;
+$surface-overlay: rgba(0, 0, 0, 0.55);
+$surface-inverse: $color-brand-black;
+
+/** Text hierarchy **/
+$text-primary: $text-dark-darkest;
+$text-secondary: $text-dark-darker;
+$text-muted: $text-gray-dark;
+$text-faint: $text-gray-darker;
+$text-on-inverse: $text-light-white;
+$text-on-inverse-muted: $text-light-gray;
+
+/** Brand / links / accents **/
+$link-color: #2081db;
+$link-color-hover: #1a6cb8;
+$accent: $color-gold;
+$accent-strong: #f5b400;
+
+/** Status **/
+$color-success: #1a8f4c;
+$color-warning: #c77b1b;
+$color-danger: #c0392b;
+$color-danger-bg: #fdecea;
+$color-info: $badge-blue;
+
+/** Borders **/
+$border-color: $color-brand-gray;
+$border-color-strong: #c9c9c9;
+$border-radius-sm: 3px;
+$border-radius-md: 6px;
+$border-radius-lg: 10px;
+
+/** Focus **/
+$focus-ring-color: $link-color;
+$focus-ring-width: 2px;
+
+/** Spacing scale (8-based) **/
+$space-1: 4px;
+$space-2: 8px;
+$space-3: 12px;
+$space-4: 16px;
+$space-5: 20px;
+$space-6: 24px;
+$space-8: 32px;
+$space-10: 40px;
+$space-12: 48px;
+
+/** Type scale **/
+$font-size-xs: 11px;
+$font-size-sm: 13px;
+$font-size-md: 15px;
+$font-size-base: 16px;
+$font-size-lg: 18px;
+$font-size-xl: 24px;
+$font-size-2xl: 32px;
+$line-height-tight: 1.25;
+$line-height-normal: 1.5;
+
+/** Control heights **/
+$control-height-sm: 32px;
+$control-height-md: 40px;
+$control-height-lg: 48px;
+$touch-target: 44px;
+
+/** Elevation **/
+$shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.06);
+$shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
+$shadow-lg: $standard-shadow;
+
+/** Z-index layers **/
+$z-base: 1;
+$z-sticky: 100;
+$z-overlay: 200;
+$z-dialog: 300;
+$z-toast: 400;
+
+/** Motion **/
+$duration-fast: 120ms;
+$duration-normal: 200ms;
+$duration-slow: 320ms;
+$ease-standard: cubic-bezier(0.2, 0, 0, 1);

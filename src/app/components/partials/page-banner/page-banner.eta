@@ -1,12 +1,31 @@
-<% 
+<% if (it?.hidePageBanner !== true) { %>
+<%
 var generateProxyUrl = it?._locals?.functions?.generateProxyUrl
 var image = "https://images.unsplash.com/photo-1528724872435-8ce3a8ccbd9a?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80"
 %>
 
 <div class="page-banner">
   <div class="contents">
+    <% if (it?.pageBanner?.backLink != null) { %>
+    <a class="banner-back-link" href="<%= it.pageBanner.backLink.url %>"
+      title="<%= it.pageBanner.backLink.title ?? 'Back to previous results' %>">
+      &larr; <%= it.pageBanner.backLink.label ?? 'Back to results' %>
+    </a>
+    <% } %>
+    <% if (it?.pageBanner?.breadcrumb != null && it.pageBanner.breadcrumb.length > 0) { %>
+    <div class="banner-breadcrumbs" role="navigation" aria-label="Breadcrumb">
+      <% it.pageBanner.breadcrumb.forEach((item, index) => { %>
+      <% if (item.url != null && item.url !== '') { %>
+      <a href="<%= item.url %>" title="<%= item.label %>"><%= item.label %></a>
+      <% } else { %>
+      <span aria-current="page"><%= item.label %></span>
+      <% } %>
+      <% if (index < it.pageBanner.breadcrumb.length - 1) { %><span class="sep" aria-hidden="true">/</span><% } %>
+      <% }) %>
+    </div>
+    <% } %>
     <h1 class="heading">
-      <%~ it?.pageBanner?.title ? it?.pageBanner?.title : 'Kickstart Projects with Free Godot Assets' %>
+      <%= it?.pageBanner?.title ? it?.pageBanner?.title : 'Kickstart Projects with Free Godot Assets' %>
     </h1>
     <span
       class="subtitle"><%~ it?.pageBanner?.info ? it?.pageBanner?.info : `Discover <strong>high quality</strong> and <strong>Open Source</strong> assets for your next <strong>Godot</strong> project` %></span>
@@ -19,3 +38,4 @@ var image = "https://images.unsplash.com/photo-1528724872435-8ce3a8ccbd9a?ixlib=
     </div>
   </div>
 </div>
+<% } %>
