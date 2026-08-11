@@ -77,6 +77,7 @@ describe('taxonomyUrl', () => {
   it('title-cases display labels', () => {
     assert.equal(displayCategoryLabel('2d tools'), '2D Tools')
     assert.equal(displayCategoryLabel('tools'), 'Tools')
+    assert.equal(displayCategoryLabel('ui'), 'UI')
   })
 })
 
@@ -161,6 +162,18 @@ describe('buildSearchViewModel indexing policy', () => {
     const highestRated = model.sortOptions.find(option => option.value === 'asset_rating')
     assert.equal(highestRated?.url, '/category/2d%20tools?sort=asset_rating')
     assert.equal(model.categoryClearUrl, '/category/2d%20tools')
+  })
+
+  it('keeps the query term and default-sort rules on taxonomy links', () => {
+    const model = buildSearchViewModel(
+      categoryParsed({ query: 'water', sort: 'relevance', requestedSort: 'relevance', page: 1 }),
+      47,
+      categoryFacets()
+    )
+    const highestRated = model.sortOptions.find(option => option.value === 'asset_rating')
+    assert.equal(highestRated?.url, '/category/2d%20tools?q=water&sort=asset_rating')
+    assert.equal(model.pagination.nextUrl, '/category/2d%20tools?q=water&page=2')
+    assert.equal(model.pagination.prevUrl, '/category/2d%20tools?q=water')
   })
 
   it('noindexes extra filters on category pages', () => {

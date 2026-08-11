@@ -92,6 +92,7 @@ function buildUrlFor (parsed: ParsedSearchRequest, state: UrlState): string {
       ? buildCategoryPath(routeCategory)
       : buildEnginePath(routeEngine ?? '')
     const params = new URLSearchParams()
+    if (state.query !== '') params.set('q', state.query)
     const extraCategories = routeCategory !== undefined
       ? state.categories.filter(c => c !== routeCategory)
       : state.categories
@@ -103,7 +104,10 @@ function buildUrlFor (parsed: ParsedSearchRequest, state: UrlState): string {
     for (const type of state.types) params.append('type', type)
     for (const support of state.supports) params.append('support', support)
     if (state.featured) params.set('featured', 'true')
-    if (state.sort !== 'last_modified') params.set('sort', state.sort)
+    // Same context-aware default sort as buildSearchUrl: "relevance" only has
+    // meaning with a query; "last_modified" is the default for an empty query.
+    const omitSort = state.sort === 'relevance' || (state.query === '' && state.sort === 'last_modified')
+    if (!omitSort) params.set('sort', state.sort)
     if (state.limit !== DEFAULT_LIMIT) params.set('limit', String(state.limit))
     if (state.page !== 0) params.set('page', String(state.page))
     const queryString = params.toString()

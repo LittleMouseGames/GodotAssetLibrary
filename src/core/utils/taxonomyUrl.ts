@@ -39,7 +39,7 @@ export function displayCategoryLabel (key: string): string {
       const upper = part.toLocaleUpperCase()
       // Keep common abbreviations all-caps ("2D", "3D", "UI") and title-case
       // everything else.
-      if (/^[a-z0-9]{1,2}$/i.test(part) && /\d/.test(part)) return upper
+      if (part === 'ui' || (/^[a-z0-9]{1,2}$/i.test(part) && /\d/.test(part))) return upper
       return upper.charAt(0) + part.slice(1)
     })
     .join(' ')

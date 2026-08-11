@@ -194,9 +194,12 @@ class RouterServer extends Server {
     })
 
     // Public anonymous pages can be cached briefly for crawlers and repeat
-    // visitors; authenticated responses are always revalidated.
+    // visitors; authenticated responses are always revalidated. Never clobber
+    // an existing Cache-Control (e.g. the no-store set above for
+    // /dashboard, /api/, /admin and /register).
     this.app.use((req: Request, res: Response, next: NextFunction) => {
-      if (req.method === 'GET' && req.cookies?.['auth-token'] === undefined) {
+      if (req.method === 'GET' && req.cookies?.['auth-token'] === undefined &&
+          res.getHeader('Cache-Control') === undefined) {
         res.set('Cache-Control', 'public, max-age=120')
       }
       next()
