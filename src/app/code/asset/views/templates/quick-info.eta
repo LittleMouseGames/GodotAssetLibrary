@@ -5,11 +5,6 @@ var generateProxyUrl = it?._locals?.functions?.generateProxyUrl
 <div class="quick-info">
   <h2>Quick Information</h2>
   <%~ includeFile('templates/components/partials/stars/stars.eta', it) %>
-  <% if (it?.reviewCount != null && it.reviewCount > 0) { %>
-  <a class="reviews-anchor" href="#reviews" title="Jump to reviews">
-    See <%= it.reviewCount %> review<%= it.reviewCount === 1 ? '' : 's' %>
-  </a>
-  <% } %>
   <div class="card">
     <div class="banner">
       <div class="badges">

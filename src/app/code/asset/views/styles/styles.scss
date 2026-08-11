@@ -782,18 +782,4 @@
     pointer-events: none;
   }
 
-  /* Reviews anchor from the quick-info sidebar. */
-  .reviews-anchor {
-    @include inter-like-font();
-    display: inline-block;
-    margin: 8px 0 12px;
-    font-size: 13px;
-    font-weight: 600;
-    color: $link-color;
-    text-decoration: none;
-
-    &:hover {
-      text-decoration: underline;
-    }
-  }
 }

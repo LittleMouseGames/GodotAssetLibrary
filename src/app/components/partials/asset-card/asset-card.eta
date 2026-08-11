@@ -129,5 +129,7 @@ var ratingDetail = total > 0
     </div>
   </a>
   <% } %>
+  <a class="card-link-overlay" href="<%= assetHref %>" tabindex="-1" aria-hidden="true"
+    aria-label="Open <%= it?.info?.title ?? 'asset' %> details"></a>
 </article>
 
