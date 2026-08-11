@@ -6,14 +6,20 @@ interface ReturnedAssets extends WithId<Document>, assetGridSchema {}
 
 export async function GetFourAssetsForHomepage (): Promise<ReturnedAssets[]> {
   const mongo = MongoHelper.getDatabase()
+  // Curated featured assets, deterministically ordered by confidence-adjusted
+  // rating so the section does not reshuffle between requests.
   const operationObject = await mongo.collection('assets').aggregate([{
     $match: {
       featured: true
     }
   }, {
-    $sample: {
-      size: 3
+    $sort: {
+      rating_score: -1,
+      upvotes: -1,
+      asset_id: 1
     }
+  }, {
+    $limit: 3
   }, {
     $project: {
       category: 1,
@@ -24,10 +30,16 @@ export async function GetFourAssetsForHomepage (): Promise<ReturnedAssets[]> {
       icon_url: 1,
       upvotes: 1,
       downvotes: 1,
+      rating_score: 1,
       featured: 1,
       asset_id: 1,
       previews: 1,
-      card_banner: 1
+      card_banner: 1,
+      modify_date: 1,
+      added_date: 1,
+      version_string: 1,
+      type: 1,
+      support_level: 1
     }
   }]).toArray() as ReturnedAssets[]
 

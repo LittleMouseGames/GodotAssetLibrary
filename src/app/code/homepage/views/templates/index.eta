@@ -8,27 +8,44 @@
 
 <section class="page-home">
   <section>
-    <h2>Whats popular</h2>
-    <div class="container five-wide">
-      <% it.trendingAssets?.forEach(info => { %>
+    <div class="section-head">
+      <h2>Popular with the community</h2>
+      <a class="view-all" href="/search/?sort=asset_rating" title="See all popular assets">View all</a>
+    </div>
+    <div class="container four-wide">
+      <% if (it.trendingAssets?.length > 0) { %>
+      <% it.trendingAssets.forEach(info => { %>
       <%~ includeFile('templates/components/partials/asset-card/asset-card.eta', { info: info, _locals: it?._locals }) %>
       <% }) %>
+      <% } else { %>
+      <p class="section-empty">No popular assets right now. <a href="/search/?sort=last_modified">Browse recently
+          updated assets</a></p>
+      <% } %>
     </div>
   </section>
 
   <section>
-    <h2>Assets we Love</h2>
+    <div class="section-head">
+      <h2>Assets we Love</h2>
+      <a class="view-all" href="/search/" title="Browse all assets">View all</a>
+    </div>
     <div class="container three-wide">
-      <% it.featuredAssets?.forEach(info => { %>
+      <% if (it.featuredAssets?.length > 0) { %>
+      <% it.featuredAssets.forEach(info => { %>
       <%~ includeFile('templates/components/partials/asset-card/asset-card.eta', { info: info, _locals: it?._locals, featured: true }) %>
       <% }) %>
+      <% } else { %>
+      <p class="section-empty">No curated assets yet. <a href="/search/?sort=asset_rating">See popular assets</a></p>
+      <% } %>
     </div>
   </section>
 
   <section>
-    <h2>Explore more from Categories</h2>
+    <div class="section-head">
+      <h2>Explore more from Categories</h2>
+    </div>
     <div class="container five-wide categories">
-      <% for (const [key, value] of Object.entries(it?.categoriesObject)) { %>
+      <% for (const [key, value] of Object.entries(it?.categoriesObject ?? {})) { %>
       <%~ includeFile('templates/components/partials/category-card/category-card.eta', {
         name: key,
         count: value
@@ -38,7 +55,9 @@
   </section>
 
   <section>
-    <h2>Featured Categories</h2>
+    <div class="section-head">
+      <h2>Featured Categories</h2>
+    </div>
     <div class="container three-wide">
       <%~ includeFile('templates/components/partials/category-card-featured/category-card-featured.eta', {
         _locals: it?._locals,
@@ -62,10 +81,18 @@
   </section>
 
   <section>
-    <h2>Newly Updated</h2>
-    <div class="container five-wide">
-      <% it.lastModifiedAssets?.forEach(info => { %>
+    <div class="section-head">
+      <h2>Newly Updated</h2>
+      <a class="view-all" href="/search/?sort=last_modified" title="See all recently updated assets">View all</a>
+    </div>
+    <div class="container four-wide">
+      <% if (it.lastModifiedAssets?.length > 0) { %>
+      <% it.lastModifiedAssets.forEach(info => { %>
       <%~ includeFile('templates/components/partials/asset-card/asset-card.eta', { info: info, _locals: it?._locals }) %>
       <% }) %>
+      <% } else { %>
+      <p class="section-empty">No recently updated assets right now.</p>
+      <% } %>
+    </div>
   </section>
 </section>

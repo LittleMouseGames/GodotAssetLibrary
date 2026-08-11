@@ -1,12 +1,13 @@
 import { Controller, Get, Middleware } from '@overnightjs/core'
 import { Request, Response } from 'express'
 import rateLimit from 'express-rate-limit'
+import { rateLimitHandler } from 'core/utils/rateLimitHandler'
 import { HomepageService } from '../services/HomepageService'
 
 const fetchHomepageRatelimit = rateLimit({
   windowMs: 1000 * 60 * 15, // 15 minutes
   max: 30, // start blocking after x requests
-  message: JSON.stringify({ error: 'You\'re doing that too much, please try again later' })
+  handler: rateLimitHandler('You\'re doing that too much, please try again later')
 })
 
 @Controller('/')
