@@ -169,6 +169,16 @@ window.godotLibrary = {
       e.preventDefault()
     }
   },
+  siteFiles: {
+    addRow: function () {
+      const container = document.getElementById('site-files')
+      const template = document.getElementById('site-file-row-template')
+      if (container === null || template === null) return
+      container.appendChild(template.content.cloneNode(true))
+      const rows = container.querySelectorAll('.site-file-row')
+      rows[rows.length - 1]?.querySelector('input')?.focus()
+    }
+  },
   clipboard: {
     copyText: function (text) {
       if (navigator.clipboard && window.isSecureContext) {
@@ -225,7 +235,7 @@ window.godotLibrary = {
       if (options !== null) options.style.display = 'none'
       trigger?.setAttribute('aria-expanded', 'false')
     },
-    callRouteAjax: function (event, route, message) {
+    callRouteAjax: function (event, route, message, removeOnSuccess) {
       event.preventDefault()
 
       fetch(route, {
@@ -245,6 +255,12 @@ window.godotLibrary = {
           setTimeout(() => {
             window.godotLibrary.pageMessages.removeAllPageMessages()
           }, 5000)
+
+          // Admin reports: after approving/ignoring a report, remove its card
+          // so handled reports disappear instead of lingering on the page.
+          if (removeOnSuccess !== undefined && removeOnSuccess instanceof Element) {
+            removeOnSuccess.closest('.review-report')?.remove()
+          }
         }
       })
     }

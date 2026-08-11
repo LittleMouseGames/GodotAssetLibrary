@@ -9,6 +9,7 @@ import { TokenServices } from 'core/modules/authentication/services/TokenService
 import { GetUserContextByToken } from 'core/modules/authentication/models/user/GET/GetUserContextByToken'
 import { GetPromobarMessage } from 'app/code/admin/models/GET/GetPromobarMesasge'
 import { StatusCodes } from 'http-status-codes'
+import { getSiteFileContent } from 'core/utils/siteFiles'
 import { generateProxyUrl } from 'core/utils/generateProxyUrl'
 import { buildAssetUrl, buildAssetUrlWithReturn } from 'core/utils/assetUrl'
 import { buildCategoryPath, buildEnginePath } from 'core/utils/taxonomyUrl'
@@ -55,6 +56,26 @@ function refreshPromoMessage (): void {
   }).finally(() => {
     promoRefresh = null
   })
+}
+
+/**
+ * Serve admin-managed root files (e.g. ads.txt, security.txt, humans.txt) at
+ * whatever route the admin configured. Content is read from a short-TTL
+ * in-memory cache (see core/utils/siteFiles.ts), so this is fully synchronous
+ * and never touches the database in the request path. Registered as the final
+ * GET route (after controllers) so it only sees paths no controller handled;
+ * if the route isn't a configured site file it falls through to the 404.
+ */
+function serveSiteFile (req: Request, res: Response, next: NextFunction): void {
+  const route = req.path.replace(/^\/+/, '')
+  const content = getSiteFileContent(route)
+  if (content === null || content.length === 0) {
+    next()
+    return
+  }
+  res.set('Content-Type', 'text/plain; charset=utf-8')
+  res.set('Cache-Control', 'public, max-age=300')
+  res.send(content)
 }
 
 /**
@@ -266,6 +287,12 @@ class RouterServer extends Server {
     })
 
     this.setupControllers()
+
+    // Admin-managed site files are served by a wildcard route registered after
+    // the controllers so it only sees paths no controller handled. If the path
+    // matches a configured site file it is served as text/plain; otherwise it
+    // falls through to the 404 handler in start().
+    this.app.get('*', serveSiteFile)
 
     this.app.use((err: Error, req: Request, res: Response, _next: NextFunction) => {
       logger.log('error', err.message, [err])

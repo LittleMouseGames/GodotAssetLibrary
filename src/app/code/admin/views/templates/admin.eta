@@ -37,6 +37,44 @@
           <span>Disable new comments</span>
         </label>
       </div>
+      <h2>Site Files</h2>
+      <p class="site-file-hint">
+        Serve arbitrary plain-text files at custom routes (e.g. <code>ads.txt</code>,
+        <code>security.txt</code>, <code>humans.txt</code>, <code>.well-known/security.txt</code>).
+        Enter the route — no leading slash — and the content. Saving replaces the whole set.
+      </p>
+      <div id="site-files">
+        <% it?.siteFiles?.forEach(file => { %>
+        <div class="site-file-row">
+          <div class="input-container site-file-route">
+            <input class="input" type="text" name="site_file_route[]" value="<%= file.route ?? '' %>" placeholder=" " autocomplete="off">
+            <label class="placeholder">Route</label>
+          </div>
+          <div class="input-container">
+            <textarea class="input" name="site_file_content[]" rows="5" placeholder=" "><%= file.content ?? '' %></textarea>
+            <label class="placeholder">Content</label>
+          </div>
+          <button type="button" class="site-file-remove"
+            onclick="this.closest('.site-file-row').remove()" aria-label="Remove this file">Remove</button>
+        </div>
+        <% }) %>
+      </div>
+      <template id="site-file-row-template">
+        <div class="site-file-row">
+          <div class="input-container site-file-route">
+            <input class="input" type="text" name="site_file_route[]" value="" placeholder=" " autocomplete="off">
+            <label class="placeholder">Route</label>
+          </div>
+          <div class="input-container">
+            <textarea class="input" name="site_file_content[]" rows="5" placeholder=" "></textarea>
+            <label class="placeholder">Content</label>
+          </div>
+          <button type="button" class="site-file-remove"
+            onclick="this.closest('.site-file-row').remove()" aria-label="Remove this file">Remove</button>
+        </div>
+      </template>
+      <button type="button" id="site-file-add" class="site-file-add"
+        onclick="window.godotLibrary.siteFiles.addRow()">Add file</button>
       <div class="disclaimer">
         By submitting this form you agree to our
         <a href="/terms/privacy-policy">Privacy Policy</a> and
