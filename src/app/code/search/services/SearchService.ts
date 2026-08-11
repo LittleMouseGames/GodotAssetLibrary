@@ -9,6 +9,8 @@ import { GetRelatedAssets } from 'app/code/asset/models/GET/GetRelatedAssets'
 import { SearchFilterOptions } from '../models/GET/buildSearchFilter'
 import { parseSearchRequest } from './parseSearchRequest'
 import { buildSearchUrl, buildSearchViewModel } from './buildSearchViewModel'
+import { displayCategoryLabel } from 'core/utils/taxonomyUrl'
+import { getCategoryContent } from './categoryContent'
 import { escapeHtml } from 'core/utils/escapeHtml'
 import { attachCardExtras } from 'core/utils/cardView'
 
@@ -23,13 +25,6 @@ export class SearchService {
       types: parsed.types,
       supports: parsed.supports,
       featured: parsed.featured
-    }
-
-    let title = parsed.query === '' ? 'Browse Godot assets' : `Search results for: ${parsed.query}`
-    if (parsed.routeCategory !== undefined) {
-      title = `Assets in category: ${parsed.routeCategory}`
-    } else if (parsed.routeEngine !== undefined) {
-      title = `Assets for engine: ${parsed.routeEngine}`
     }
 
     const [assets, totalAssetsForQuery, facets] = await Promise.all([
@@ -77,6 +72,15 @@ export class SearchService {
 
     const search = buildSearchViewModel(parsed, totalAssetsForQuery, facets)
 
+    // Human-readable H1: use the display-case category label when available.
+    let title = parsed.query === '' ? 'Browse Godot assets' : `Search results for: ${parsed.query}`
+    if (parsed.routeCategory !== undefined) {
+      const categoryLabel = search.categories.find(c => c.value === parsed.routeCategory)?.label
+      title = `Assets in category: ${categoryLabel ?? displayCategoryLabel(parsed.routeCategory)}`
+    } else if (parsed.routeEngine !== undefined) {
+      title = `Assets for engine: Godot ${parsed.routeEngine}`
+    }
+
     let info = parsed.query !== ''
       ? `Found <strong>${totalAssetsForQuery} assets</strong> matching &ldquo;<strong>${escapeHtml(parsed.query)}</strong>&rdquo;`
       : `Browsing <strong>${totalAssetsForQuery} assets</strong>`
@@ -88,7 +92,8 @@ export class SearchService {
 
     const pageBanner = {
       title: title,
-      info: info
+      info: info,
+      breadcrumb: search.breadcrumb
     }
 
     if (authToken !== '') {
@@ -113,6 +118,10 @@ export class SearchService {
       params: req.originalUrl,
       pageBanner: pageBanner,
       originalQuery: parsed.query,
+      canonicalUrl: search.canonicalUrl,
+      noindex: search.noindex,
+      categoryContent: parsed.routeCategory !== undefined ? getCategoryContent(parsed.routeCategory) : undefined,
+      routeEngine: parsed.routeEngine,
       relatedForSearch: relatedForSearch
     })
   }

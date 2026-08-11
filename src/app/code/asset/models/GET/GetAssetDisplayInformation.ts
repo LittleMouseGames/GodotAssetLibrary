@@ -18,7 +18,6 @@ export async function GetAssetDisplayInformation (assetId: String): Promise<Retu
       author_id: 0,
       category_id: 0,
       download_provider: 0,
-      searchable: 0,
       legacy_asset_id: 0,
       version: 0
     }

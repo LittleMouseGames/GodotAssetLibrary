@@ -13,7 +13,7 @@ var projectBase = process.env.PROJECT_BASE_URL ?? 'https://godotassetlibrary.com
     <div><%= it?.description %></div>
   </div>
   <div class="footer">
-    <a href="/category/<%= it?.name?.toLocaleLowerCase() %>" title="See assets in this category"><button>Explore
+    <a href="<%= it?._locals?.functions?.buildCategoryPath(it?.name) %>" title="See assets in this category"><button>Explore
         <%= it?.name %></button></a>
   </div>
   <div class="background">

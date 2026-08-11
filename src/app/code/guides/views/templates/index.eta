@@ -1,0 +1,43 @@
+<% it.meta = {
+  title: 'Godot Asset Guides | Godot Asset Library',
+  description: 'Learn how to install Godot assets, use shaders, choose compatible plugins and get more out of the Godot Asset Library with free guides.',
+  url: 'https://godotassetlibrary.com/guides',
+  moduleName: 'guides',
+  image: 'https://godotassetlibrary.com/images/logo-image.png',
+  jsonLd: {
+    "@context": "https://schema.org/",
+    "@type": "CollectionPage",
+    "name": "Godot Asset Guides",
+    "url": "https://godotassetlibrary.com/guides",
+    "description": "Learn how to install Godot assets, use shaders, choose compatible plugins and get more out of the Godot Asset Library."
+  },
+  jsonLdBreadcrumb: {
+    "@context": "https://schema.org/",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Home", item: "https://godotassetlibrary.com/" },
+      { "@type": "ListItem", position: 2, name: "Guides", item: "https://godotassetlibrary.com/guides" }
+    ]
+  }
+} %>
+<% layout('templates/components/layouts/promobar-nav-body-footer/promobar-nav-body-footer.eta') %>
+
+<section class="page-guides">
+  <% if (it.guides?.length > 0) { %>
+  <div class="guides-grid">
+    <% it.guides.forEach(guide => { %>
+    <article class="guide-card">
+      <h2><a href="<%= guide.url %>" title="Read <%= guide.title %>"><%= guide.title %></a></h2>
+      <p><%= guide.description %></p>
+      <div class="guide-card-meta">
+        <span class="guide-category"><%= guide.category %></span>
+        <span class="guide-read-time"><%= guide.readMinutes %> min read</span>
+        <% if (guide.updated) { %><time datetime="<%= guide.updated %>"><%= guide.updated %></time><% } %>
+      </div>
+    </article>
+    <% }) %>
+  </div>
+  <% } else { %>
+  <p class="section-empty">Guides are on their way.</p>
+  <% } %>
+</section>

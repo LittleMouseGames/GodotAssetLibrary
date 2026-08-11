@@ -1,6 +1,7 @@
 import { Document, WithId } from 'mongodb'
 import { MongoHelper } from 'core/MongoHelper'
 import { assetGridSchema } from 'app/components/partials/catalog-grid/asset-grd-schema'
+import { PUBLIC_ASSET_FILTER } from 'core/utils/publicCatalog'
 
 interface ReturnedAssets extends WithId<Document>, assetGridSchema {}
 
@@ -20,6 +21,7 @@ export async function GetRelatedAssets (
 
   const pool = await mongo.collection('assets').find(
     {
+      ...PUBLIC_ASSET_FILTER,
       asset_id: { $ne: excludeAssetId },
       category: category
     },

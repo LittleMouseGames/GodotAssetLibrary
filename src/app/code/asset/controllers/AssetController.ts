@@ -1,8 +1,12 @@
 import { Controller, Get, Middleware, Post, Patch } from '@overnightjs/core'
 import { Request, Response } from 'express'
+import { StatusCodes } from 'http-status-codes'
 import rateLimit from 'express-rate-limit'
 import { CheckIfUserExistAndSendError } from 'core/modules/authentication/middleware/CheckIfUserExistAndSendError'
 import { rateLimitHandler } from 'core/utils/rateLimitHandler'
+import { buildAssetUrl } from 'core/utils/assetUrl'
+import { GetAssetDisplayInformation } from '../models/GET/GetAssetDisplayInformation'
+import striptags from 'striptags'
 import { AssetService } from '../services/AssetService'
 
 const reviewAssetRateLimit = rateLimit({
@@ -44,6 +48,40 @@ export class AssetController {
   @Middleware(renderAssetRateLimit)
   private async index (req: Request, res: Response): Promise<void> {
     return await this.AssetService.render(req, res)
+  }
+
+  /**
+   * Id-only asset URLs (`/asset/:id`) never match `:id/*`; resolve the asset
+   * and permanently redirect to the canonical slug so link equity and the
+   * sitemap always point at one URL per asset.
+   *
+   * @param {Request} req
+   * @param {Response} res
+   * @returns
+   */
+  @Get(':id')
+  @Middleware(renderAssetRateLimit)
+  private async indexByIdOnly (req: Request, res: Response): Promise<void> {
+    const assetId = striptags(req.params.id ?? '')
+    const fromParam = striptags(String(req.query.from ?? ''))
+    const isValidBackLink = /^\/(search|category|engine)\//.test(fromParam) &&
+      !fromParam.includes('://') && !fromParam.includes('..')
+
+    const assetInfo = await GetAssetDisplayInformation(assetId)
+    if (assetInfo === null) {
+      return res.status(StatusCodes.NOT_FOUND).render('templates/pages/lost/not-found', {
+        pageBanner: {
+          title: 'Asset not found',
+          info: 'We couldn\'t find an asset with that ID'
+        }
+      })
+    }
+
+    const canonicalUrl = buildAssetUrl(assetId, assetInfo.title)
+    const query = new URLSearchParams()
+    if (isValidBackLink) query.set('from', fromParam)
+    const target = canonicalUrl + (query.toString() !== '' ? `?${query.toString()}` : '')
+    return res.redirect(StatusCodes.MOVED_PERMANENTLY, target)
   }
 
   /**

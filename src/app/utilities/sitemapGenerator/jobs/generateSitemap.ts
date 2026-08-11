@@ -1,5 +1,4 @@
 import { CronJob } from 'cron'
-import { GetAllCategoriesAndTheirAssetCount } from 'app/code/homepage/models/GET/GetAllCategoriesAndTheirAssetCount'
 import { MongoHelper } from 'core/MongoHelper'
 import { logger } from 'core/utils/logger'
 import { createWriteStream } from 'fs'
@@ -7,6 +6,11 @@ import { rename, unlink } from 'fs/promises'
 import { pipeline as streamPipeline } from 'stream/promises'
 import { SitemapStream } from 'sitemap'
 import path from 'path'
+import { buildAssetUrl } from 'core/utils/assetUrl'
+import { buildCategoryPath, buildEnginePath } from 'core/utils/taxonomyUrl'
+import { PUBLIC_ASSET_FILTER } from 'core/utils/publicCatalog'
+import { GetPublicCategoryCounts, GetPublicEngineCounts } from '../models/GET/GetPublicTaxonomyCounts'
+import { getAllGuides } from 'app/code/guides/models/guide'
 
 let generating = false
 
@@ -34,7 +38,10 @@ export async function runGenerateSitemap (): Promise<void> {
 
 async function generateSitemap (): Promise<void> {
   const mongo = MongoHelper.getDatabase()
-  const categories = await GetAllCategoriesAndTheirAssetCount()
+  const [categories, engines] = await Promise.all([
+    GetPublicCategoryCounts(),
+    GetPublicEngineCounts()
+  ])
 
   const tmpPath = path.join(__dirname, '../dist/public/sitemap.xml.tmp')
   const finalPath = path.join(__dirname, '../dist/public/sitemap.xml')
@@ -47,11 +54,8 @@ async function generateSitemap (): Promise<void> {
 
   // Exclude assets that are no longer available upstream or were marked
   // non-searchable, so crawlers don't index stale/tombstoned pages.
-  const cursor = mongo.collection('assets').find({
-    source_status: { $ne: 'unavailable' },
-    searchable: { $ne: 'false' }
-  }, {
-    projection: { asset_id: 1, title: 1, modify_date: 1 }
+  const cursor = mongo.collection('assets').find(PUBLIC_ASSET_FILTER, {
+    projection: { asset_id: 1, title: 1, modify_date: 1, modify_date_at: 1 }
   })
 
   let completed = false
@@ -82,16 +86,40 @@ async function generateSitemap (): Promise<void> {
   }
 
   try {
+    // Core pages and editorial content.
+    await writeEntry({ url: '/', changefreq: 'daily', priority: 1 })
+    await writeEntry({ url: '/search/', changefreq: 'daily', priority: 0.8 })
+    await writeEntry({ url: '/guides', changefreq: 'weekly', priority: 0.9 })
+    for (const guide of getAllGuides()) {
+      await writeEntry({ url: guide.url, changefreq: 'monthly', priority: 0.9 })
+    }
+
     for await (const asset of cursor) {
+      const lastmod = asset.modify_date_at ?? asset.modify_date
       await writeEntry({
-        url: `/asset/${asset.asset_id}/${encodeURI(String(asset.title).replace(/\s/g, '-')).toLocaleLowerCase()}`,
+        url: buildAssetUrl(asset.asset_id, asset.title),
         changefreq: 'monthly',
-        lastmod: asset.modify_date
+        lastmod
       })
     }
 
-    for (const [key] of Object.entries(categories)) {
-      await writeEntry({ url: `/category/${key.toLocaleLowerCase()}`, changefreq: 'weekly' })
+    for (const { key } of categories) {
+      if (key === '') continue
+      await writeEntry({ url: buildCategoryPath(key), changefreq: 'weekly', priority: 0.7 })
+    }
+
+    for (const { key } of engines) {
+      if (key === '') continue
+      await writeEntry({ url: buildEnginePath(key), changefreq: 'weekly', priority: 0.6 })
+    }
+
+    for (const legal of [
+      '/terms/privacy-policy',
+      '/terms/terms-of-service',
+      '/terms/cookie-policy',
+      '/terms/acceptable-use-policy'
+    ]) {
+      await writeEntry({ url: legal, changefreq: 'yearly', priority: 0.2 })
     }
 
     sitemap.end()

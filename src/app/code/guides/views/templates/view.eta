@@ -1,0 +1,61 @@
+<%
+  var guide = it?.guide
+  var guideUrl = `https://godotassetlibrary.com${guide?.url ?? ''}`
+  it.meta = {
+    title: `${guide?.title ?? 'Guide'} | Godot Asset Library`,
+    description: guide?.description ?? 'A guide from the Godot Asset Library',
+    url: guideUrl,
+    moduleName: 'guides',
+    jsonLd: {
+      "@context": "https://schema.org/",
+      "@type": "Article",
+      "headline": guide?.title,
+      "description": guide?.description,
+      "datePublished": guide?.date,
+      "dateModified": guide?.updated,
+      "mainEntityOfPage": guideUrl,
+      "author": { "@type": "Organization", "name": "Godot Asset Library", "url": "https://godotassetlibrary.com" },
+      "publisher": { "@type": "Organization", "name": "Godot Asset Library", "url": "https://godotassetlibrary.com" }
+    },
+    jsonLdBreadcrumb: {
+      "@context": "https://schema.org/",
+      "@type": "BreadcrumbList",
+      itemListElement: [
+        { "@type": "ListItem", position: 1, name: "Home", item: "https://godotassetlibrary.com/" },
+        { "@type": "ListItem", position: 2, name: "Guides", item: "https://godotassetlibrary.com/guides" },
+        { "@type": "ListItem", position: 3, name: guide?.title, item: guideUrl }
+      ]
+    }
+  }
+  it.hidePageBanner = true
+%>
+<% layout('templates/components/layouts/promobar-nav-body-footer/promobar-nav-body-footer.eta') %>
+
+<section class="page-guide">
+  <article class="guide-content">
+    <div class="guide-breadcrumb" role="navigation" aria-label="Breadcrumb">
+      <a href="/" title="Go to homepage">Home</a>
+      <span class="sep" aria-hidden="true">/</span>
+      <a href="/guides" title="All guides">Guides</a>
+      <span class="sep" aria-hidden="true">/</span>
+      <span aria-current="page"><%= guide?.title %></span>
+    </div>
+    <h1><%= guide?.title %></h1>
+    <p class="guide-meta">
+      <% if (guide?.updated) { %><time datetime="<%= guide?.updated %>">Last updated <%= guide?.updated %></time><% } %>
+      <% if (guide?.readMinutes) { %>&middot; <%= guide?.readMinutes %> min read<% } %>
+    </p>
+    <%~ guide?.html %>
+  </article>
+  <% if (it.relatedGuides?.length > 0) { %>
+  <aside class="guide-sidebar">
+    <h2>More guides</h2>
+    <ul>
+      <% it.relatedGuides.forEach(related => { %>
+      <li><a href="<%= related.url %>" title="Read <%= related.title %>"><%= related.title %></a></li>
+      <% }) %>
+    </ul>
+    <p class="guide-sidebar-cta"><a href="/guides" title="All Godot guides">All guides</a></p>
+  </aside>
+  <% } %>
+</section>
