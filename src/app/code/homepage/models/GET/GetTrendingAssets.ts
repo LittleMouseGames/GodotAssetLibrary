@@ -1,6 +1,7 @@
 import { Document, WithId } from 'mongodb'
 import { MongoHelper } from 'core/MongoHelper'
 import { assetGridSchema } from 'app/components/partials/catalog-grid/asset-grd-schema'
+import { PUBLIC_ASSET_FILTER } from 'core/utils/publicCatalog'
 
 interface ReturnedAssets extends WithId<Document>, assetGridSchema {}
 
@@ -10,6 +11,8 @@ export async function GetTrendingAssets (): Promise<ReturnedAssets[]> {
   // upvotes and id as deterministic tie-breakers. No random sampling, so the
   // section does not reshuffle between requests.
   const operationObject = await mongo.collection('assets').aggregate([{
+    $match: { ...PUBLIC_ASSET_FILTER }
+  }, {
     $sort: {
       rating_score: -1,
       upvotes: -1,

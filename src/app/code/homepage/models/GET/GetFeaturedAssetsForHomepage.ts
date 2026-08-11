@@ -1,6 +1,7 @@
 import { Document, WithId } from 'mongodb'
 import { MongoHelper } from 'core/MongoHelper'
 import { assetGridSchema } from 'app/utilities/fetchFromGodot/schema/assets-grid'
+import { PUBLIC_ASSET_FILTER } from 'core/utils/publicCatalog'
 
 interface ReturnedAssets extends WithId<Document>, assetGridSchema {}
 
@@ -10,6 +11,7 @@ export async function GetFourAssetsForHomepage (): Promise<ReturnedAssets[]> {
   // rating so the section does not reshuffle between requests.
   const operationObject = await mongo.collection('assets').aggregate([{
     $match: {
+      ...PUBLIC_ASSET_FILTER,
       featured: true
     }
   }, {

@@ -61,6 +61,7 @@
         Useful Links
       </h2>
       <ul>
+        <li><a href="/guides" title="Read Godot asset guides">Guides</a></li>
         <li class="gold"><a href="https://patreon.com/godotengine" target="_blank" rel="noopener noreferrer"
             title="Go to Godots Official Patreon">Godot
             Patreon</a></li>

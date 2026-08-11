@@ -329,4 +329,23 @@
       flex-shrink: 0;
     }
   }
+
+  /* Make the whole card a click target for the asset detail page. The overlay
+     sits above the static body/footer content but below the interactive head
+     (category/engine badges, the "..." menu and the banner link), so those
+     keep working. */
+  .card-link-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1;
+    border-radius: 6px;
+  }
+
+  &.normal .head,
+  &.featured .head {
+    z-index: 2;
+  }
 }

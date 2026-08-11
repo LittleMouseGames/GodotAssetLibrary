@@ -28,10 +28,10 @@
       </div>
     </form>
     <div class="links">
-      <a href="/category/2d+tools" class="link" title="See assets in this category">2D Tools</a>
-      <a href="/category/3d+tools" class="link" title="See assets in this category">3D Tools</a>
-      <a href="/category/tools" class="link" title="See assets in this category">Tools</a>
-      <a href="/category/shaders" class="link" title="See assets in this category">Shaders</a>
+      <a href="<%= it?._locals?.functions?.buildCategoryPath('2d tools') %>" class="link" title="See assets in this category">2D Tools</a>
+      <a href="<%= it?._locals?.functions?.buildCategoryPath('3d tools') %>" class="link" title="See assets in this category">3D Tools</a>
+      <a href="<%= it?._locals?.functions?.buildCategoryPath('tools') %>" class="link" title="See assets in this category">Tools</a>
+      <a href="<%= it?._locals?.functions?.buildCategoryPath('shaders') %>" class="link" title="See assets in this category">Shaders</a>
       <div class="dropdown categories no-text-select">
         <button type="button" class="dropdown-trigger" aria-haspopup="true" aria-expanded="false"
           aria-controls="nav-categories-panel"
@@ -41,12 +41,12 @@
           <span class="iconify" data-icon="bxs:chevron-down"></span>
         </button>
         <div class="options" id="nav-categories-panel">
-          <a href="/category/materials" title="See assets in this category">Materials</a>
-          <a href="/category/scripts" title="See assets in this category">Scripts</a>
-          <a href="/category/misc" title="See assets in this category">Misc</a>
-          <a href="/category/templates" title="See assets in this category">Templates</a>
-          <a href="/category/projects" title="See assets in this category">Projects</a>
-          <a href="/category/demos" title="See assets in this category">Demos</a>
+          <a href="<%= it?._locals?.functions?.buildCategoryPath('materials') %>" title="See assets in this category">Materials</a>
+          <a href="<%= it?._locals?.functions?.buildCategoryPath('scripts') %>" title="See assets in this category">Scripts</a>
+          <a href="<%= it?._locals?.functions?.buildCategoryPath('misc') %>" title="See assets in this category">Misc</a>
+          <a href="<%= it?._locals?.functions?.buildCategoryPath('templates') %>" title="See assets in this category">Templates</a>
+          <a href="<%= it?._locals?.functions?.buildCategoryPath('projects') %>" title="See assets in this category">Projects</a>
+          <a href="<%= it?._locals?.functions?.buildCategoryPath('demos') %>" title="See assets in this category">Demos</a>
         </div>
       </div>
     </div>

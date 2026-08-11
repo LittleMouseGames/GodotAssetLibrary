@@ -1,0 +1,87 @@
+@import "components/utils/variables";
+@import "components/utils/mixins";
+
+.guide-card {
+  @include reset-header-spacing;
+  position: relative;
+  background: $color-brand-white;
+  border: 1px solid $color-brand-gray;
+  border-radius: 6px;
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+
+  /* Make the whole card clickable to the guide article; the title link stays
+     for keyboard/screen-reader navigation. */
+  .card-link-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1;
+    border-radius: 6px;
+  }
+
+  &:hover {
+    border-color: $border-color-strong;
+
+    .guide-card-body h3 a {
+      color: $link-color-hover;
+    }
+  }
+
+  .guide-card-body {
+    flex-grow: 1;
+
+    h3 {
+      @include inter-like-font();
+      font-size: 16px;
+      font-weight: 700;
+      line-height: 1.35;
+      margin: 0 0 8px;
+
+      a {
+        color: $text-dark-darkest;
+        text-decoration: none;
+
+        &:hover {
+          text-decoration: underline;
+        }
+      }
+    }
+
+    p {
+      font-family: "DM Sans";
+      font-size: 14px;
+      line-height: 1.55;
+      color: $text-gray-darker;
+      margin: 0;
+    }
+  }
+
+  .guide-card-meta {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-top: auto;
+
+    font-family: "DM Sans";
+    font-size: 12px;
+    color: $text-gray-darker;
+
+    .guide-category {
+      @include inter-like-font();
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      font-size: 11px;
+      font-weight: 600;
+      background: $color-lighter-gray;
+      border-radius: 3px;
+      padding: 3px 8px;
+      color: $text-dark-deep-gray;
+    }
+  }
+}

@@ -2,7 +2,8 @@
   title: 'Something went wrong | Godot Asset Library',
   description: 'Discover the best free and open source assets on Godot Asset Library',
   url: 'https://godotassetlibrary.com/500',
-  moduleName: 'lost'
+  moduleName: 'lost',
+  noindex: true
 } %>
 <% layout('templates/components/layouts/promobar-nav-body-footer/promobar-nav-body-footer.eta') %>
 

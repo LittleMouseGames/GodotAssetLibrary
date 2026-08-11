@@ -7,6 +7,51 @@
 
 @include card-rating-styles;
 
+.taxonomy-intro {
+  @include reset-header-spacing;
+  margin-top: 20px;
+  background: $surface-card;
+  border: 1px solid $border-color;
+  border-radius: $border-radius-lg;
+  padding: 20px 24px;
+  box-shadow: $standard-shadow;
+
+  p {
+    font-family: "DM Sans";
+    font-size: 15px;
+    line-height: 1.6;
+    color: $text-secondary;
+    margin: 0;
+  }
+
+  .taxonomy-bullets {
+    margin: 12px 0 0;
+    padding-left: 22px;
+
+    li {
+      font-family: "DM Sans";
+      font-size: 14px;
+      line-height: 1.6;
+      color: $text-secondary;
+      margin-bottom: 4px;
+    }
+  }
+
+  .taxonomy-guides {
+    margin-top: 12px;
+
+    a {
+      color: $link-color;
+      text-decoration: none;
+
+      &:hover {
+        color: $link-color-hover;
+        text-decoration: underline;
+      }
+    }
+  }
+}
+
 .page-search {
   display: grid;
   grid-template-columns: 17% auto;

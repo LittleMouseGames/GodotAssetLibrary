@@ -2,7 +2,8 @@
   title: 'Godot Asset Library - The Best Assets, All Free',
   description: 'Kickstart your development with the best FREE Godot assets for your next game or project',
   url: 'https://godotassetlibrary.com',
-  moduleName: 'homepage'
+  moduleName: 'homepage',
+  image: 'https://godotassetlibrary.com/images/logo-image.png'
 } %>
 <% layout('templates/components/layouts/promobar-nav-body-footer/promobar-nav-body-footer.eta') %>
 
@@ -48,7 +49,8 @@
       <% for (const [key, value] of Object.entries(it?.categoriesObject ?? {})) { %>
       <%~ includeFile('templates/components/partials/category-card/category-card.eta', {
         name: key,
-        count: value
+        count: value,
+        _locals: it?._locals
       }) %>
       <% } %>
     </div>
@@ -92,6 +94,22 @@
       <% }) %>
       <% } else { %>
       <p class="section-empty">No recently updated assets right now.</p>
+      <% } %>
+    </div>
+  </section>
+
+  <section>
+    <div class="section-head">
+      <h2>Guides &amp; Tutorials</h2>
+      <a class="view-all" href="/guides" title="See all guides">View all</a>
+    </div>
+    <div class="container four-wide">
+      <% if (it.guides?.length > 0) { %>
+      <% it.guides.forEach(guide => { %>
+      <%~ includeFile('templates/components/partials/guide-card/guide-card.eta', { guide: guide, _locals: it?._locals }) %>
+      <% }) %>
+      <% } else { %>
+      <p class="section-empty">Guides are on their way.</p>
       <% } %>
     </div>
   </section>

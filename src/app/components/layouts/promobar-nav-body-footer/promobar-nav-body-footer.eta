@@ -8,7 +8,7 @@
   <meta property="og:description" content="<%= it.meta.description %>">
   <meta property="og:url" content="<%= it.meta.url %>">
   <meta property="og:title" content="<%= it.meta.title %>">
-  <meta property="og:site_name" content="<%= it.meta.title %>">
+  <meta property="og:site_name" content="Godot Asset Library">
   <meta name="twitter:description" content="<%= it.meta.description %>">
   <meta name="twitter:url" content="<%= it.meta.url %>">
   <meta name="twitter:title" content="<%= it.meta.title %>">
@@ -20,7 +20,17 @@
   <link rel="canonical" href="<%= it.meta.url %>">
   <% if(it?.meta?.jsonLd) { %>
   <script type="application/ld+json">
-    <%~ JSON.stringify(it?.meta?.jsonLd) %> 
+    <%~ it?._locals?.functions?.safeJsonLd(it?.meta?.jsonLd) %>
+  </script>
+  <% } %>
+  <% if(it?.meta?.jsonLdBreadcrumb) { %>
+  <script type="application/ld+json">
+    <%~ it?._locals?.functions?.safeJsonLd(it?.meta?.jsonLdBreadcrumb) %>
+  </script>
+  <% } %>
+  <% if(it?.meta?.jsonLdItemList) { %>
+  <script type="application/ld+json">
+    <%~ it?._locals?.functions?.safeJsonLd(it?.meta?.jsonLdItemList) %>
   </script>
   <% } %>
   <script type="application/ld+json">

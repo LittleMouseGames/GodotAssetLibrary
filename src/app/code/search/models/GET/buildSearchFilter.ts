@@ -1,3 +1,5 @@
+import { PUBLIC_ASSET_FILTER } from 'core/utils/publicCatalog'
+
 export interface SearchFilterOptions {
   categories?: string[]
   engines?: string[]
@@ -9,11 +11,13 @@ export interface SearchFilterOptions {
 /**
  * Build the MongoDB filter for discovery. All filter values use canonical
  * lowercase keys (category_lowercase) so query parameters, facet values,
- * chips, and stored data always agree.
+ * chips, and stored data always agree. The public-catalog predicate is always
+ * applied so unavailable and non-searchable assets never surface in results,
+ * counts or facets (matching the sitemap).
  */
 export function buildSearchFilter (query: string, options: SearchFilterOptions = {}): Record<string, any> {
   const { categories, engines, types, supports, featured } = options
-  const filter: Record<string, any> = {}
+  const filter: Record<string, any> = { ...PUBLIC_ASSET_FILTER }
 
   if (categories !== undefined && categories.length > 0) {
     filter.category_lowercase = { $in: categories }

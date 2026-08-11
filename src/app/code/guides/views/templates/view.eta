@@ -1,0 +1,64 @@
+<%
+  var guide = it?.guide
+  var guideUrl = `https://godotassetlibrary.com${guide?.url ?? ''}`
+  it.meta = {
+    title: `${guide?.title ?? 'Guide'} | Godot Asset Library`,
+    description: guide?.description ?? 'A guide from the Godot Asset Library',
+    url: guideUrl,
+    moduleName: 'guides',
+    jsonLd: {
+      "@context": "https://schema.org/",
+      "@type": "Article",
+      "headline": guide?.title,
+      "description": guide?.description,
+      "datePublished": guide?.date,
+      "dateModified": guide?.updated,
+      "mainEntityOfPage": guideUrl,
+      "author": { "@type": "Organization", "name": "Godot Asset Library", "url": "https://godotassetlibrary.com" },
+      "publisher": { "@type": "Organization", "name": "Godot Asset Library", "url": "https://godotassetlibrary.com" }
+    },
+    jsonLdBreadcrumb: {
+      "@context": "https://schema.org/",
+      "@type": "BreadcrumbList",
+      itemListElement: [
+        { "@type": "ListItem", position: 1, name: "Home", item: "https://godotassetlibrary.com/" },
+        { "@type": "ListItem", position: 2, name: "Guides", item: "https://godotassetlibrary.com/guides" },
+        { "@type": "ListItem", position: 3, name: guide?.title, item: guideUrl }
+      ]
+    }
+  }
+  var metaInfo = 'A Godot Asset Library Guide'
+  if (guide?.readMinutes) metaInfo += ` · ${guide?.readMinutes} min read`
+  if (guide?.updated) {
+    metaInfo += ` · Last updated <time datetime="${guide.updated}">${guide.updated}</time>`
+  }
+  it.pageBanner = {
+    title: guide?.title ?? 'Guide',
+    info: metaInfo,
+    breadcrumb: [
+      { label: 'Home', url: '/' },
+      { label: 'Guides', url: '/guides' },
+      { label: guide?.title ?? 'Guide', url: '' }
+    ]
+  }
+%>
+<% layout('templates/components/layouts/promobar-nav-body-footer/promobar-nav-body-footer.eta') %>
+
+<section class="page-guide">
+  <div class="guide-content">
+    <%~ guide?.html %>
+  </div>
+  <% if (it.relatedGuides?.length > 0) { %>
+  <div class="guide-related">
+    <div class="section-head">
+      <h2>More guides</h2>
+      <a class="view-all" href="/guides" title="All Godot guides">All guides</a>
+    </div>
+    <div class="related-grid">
+      <% it.relatedGuides.forEach(related => { %>
+      <%~ includeFile('templates/components/partials/guide-card/guide-card.eta', { guide: related, _locals: it?._locals }) %>
+      <% }) %>
+    </div>
+  </div>
+  <% } %>
+</section>

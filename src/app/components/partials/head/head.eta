@@ -1,20 +1,22 @@
 <!-- GENERAl META -->
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<% if (it?.meta?.noindex === true) { %>
-<meta name="robots" content="noindex,nofollow">
-<meta name="googlebot" content="noindex,nofollow">
-<% } else { %>
-<meta name="robots" content="index,follow">
-<meta name="googlebot" content="index,follow">
-<% } %>
+<%
+  var robots = it?.meta?.robots
+  if (robots === undefined) {
+    robots = it?.meta?.noindex === true ? 'noindex,nofollow' : 'index,follow'
+  }
+%>
+<meta name="robots" content="<%= robots %>">
+<meta name="googlebot" content="<%= robots %>">
+<meta name="bingbot" content="<%= robots %>">
 <meta name="rating" content="General">
 <meta name="referrer" content="no-referrer">
 <!-- FACEBOOK -->
 <meta property="og:type" content="website">
 <meta property="og:locale" content="en_US">
 <!-- TWITTER -->
-<meta name="twitter:card" content="summary">
+<meta name="twitter:card" content="<%= it?.meta?.image ? 'summary_large_image' : 'summary' %>">
 <!-- STYLES -->
 <link rel="stylesheet"
     href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500&family=Inter:wght@400;500;600;700&family=Poppins:wght@400;600;700&display=swap"
@@ -25,13 +27,18 @@
         rel="stylesheet">
 </noscript>
 <link rel="icon" href="/favicon.ico">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link rel="preconnect" href="https://code.iconify.design" crossorigin />
 <link rel="dns-prefetch" href="https://code.iconify.design" />
-<script src="/javascript/utilities.js?cache=<%= it._locals?.buildString %>"></script>
+<link rel="preconnect" href="https://img.godotassetlibrary.com" />
+<% if (it?.meta?.moduleName === 'guides') { %>
+<link rel="alternate" type="application/rss+xml" title="Godot Asset Library Guides" href="https://godotassetlibrary.com/guides/feed.xml">
+<% } %>
+<script src="/javascript/utilities.js?cache=<%= it._locals?.buildString %>" defer></script>
 <!-- FAVICON -->
 <link rel="apple-touch-icon" sizes="180x180" href="/images/favicon/apple-touch-icon.png">
 <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon/favicon-32x32.png">
 <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon/favicon-16x16.png">
 <link rel="manifest" href="/site.webmanifest">
 <!-- SCRIPTS -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/lazysizes/5.3.2/lazysizes.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/lazysizes/5.3.2/lazysizes.min.js" defer></script>

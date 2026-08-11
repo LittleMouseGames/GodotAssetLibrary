@@ -83,6 +83,56 @@
     }
   }
 
+  .related-guides {
+    grid-column: 1 / -1;
+    margin-top: 30px;
+
+    .section-head {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      margin-bottom: 15px;
+
+      h2 {
+        margin: 0;
+      }
+
+      .view-all {
+        @include inter-like-font();
+        font-size: 13px;
+        font-weight: 600;
+        color: #2081db;
+        text-decoration: none;
+
+        &:hover {
+          text-decoration: underline;
+        }
+      }
+    }
+
+    .guide-links {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+
+      li {
+        margin-bottom: 8px;
+      }
+
+      a {
+        font-family: "DM Sans";
+        font-size: 15px;
+        color: #2081db;
+        text-decoration: none;
+
+        &:hover {
+          color: #1a6cb8;
+          text-decoration: underline;
+        }
+      }
+    }
+  }
+
   .desktop-quick-info {
     @include mobile-styles {
       display: none;
@@ -732,18 +782,4 @@
     pointer-events: none;
   }
 
-  /* Reviews anchor from the quick-info sidebar. */
-  .reviews-anchor {
-    @include inter-like-font();
-    display: inline-block;
-    margin: 8px 0 12px;
-    font-size: 13px;
-    font-weight: 600;
-    color: $link-color;
-    text-decoration: none;
-
-    &:hover {
-      text-decoration: underline;
-    }
-  }
 }

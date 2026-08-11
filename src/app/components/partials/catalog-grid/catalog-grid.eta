@@ -95,7 +95,7 @@
       <a href="/search/?q=<%= encodeURIComponent(it.search.query) %>&sort=last_modified"
         title="Try fewer or different keywords">Try fewer or different keywords</a>
       <% } %>
-      <a href="/category/2d+tools" title="Browse 2D Tools">Browse categories</a>
+      <a href="<%= it?._locals?.functions?.buildCategoryPath('2d tools') %>" title="Browse 2D Tools">Browse categories</a>
       <% if (it.search?.hasFilters) { %>
       <a href="<%= it.search.clearAllUrl %>" title="Clear all filters">Clear all filters</a>
       <% } %>

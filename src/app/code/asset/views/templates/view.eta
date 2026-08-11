@@ -1,15 +1,40 @@
-<% 
+<%
   const loggedIn = it?._locals?.loggedIn
   const generateProxyUrl = it?._locals?.functions?.generateProxyUrl
+  const buildAssetUrl = it?._locals?.functions?.buildAssetUrl
 
   var upvotes = Number(it?.info?.upvotes) || 0
   var downvotes = Number(it?.info?.downvotes) || 0
   var total = upvotes + downvotes
   var percent = 0
-  var assetUrl = `https://godotassetlibrary.com/asset/${it?.info?.asset_id}/${encodeURI(it?.info?.title?.replace(/\s/g, '-')).toLocaleLowerCase()}`
+  var assetPath = buildAssetUrl(it?.info?.asset_id, it?.info?.title)
+  var assetUrl = `https://godotassetlibrary.com${assetPath}`
+
+  // Truthful application category: developer tools are DeveloperApplication,
+  // everything else stays a generic GameApplication category.
+  var appCategory = 'GameApplication'
+  if (/tool/i.test(it?.info?.category ?? '')) appCategory = 'DeveloperApplication'
+
+  // Schema.org expects a Date/DateTime; prefer the normalized date.
+  var modifiedDate = it?.info?.modify_date_at ?? it?.info?.modify_date ?? undefined
 
   if (total !== 0) {
     percent = Math.round((upvotes / total) * 100)
+  }
+
+  var breadcrumbItems = []
+  if (it?.pageBanner?.breadcrumb != null) {
+    it.pageBanner.breadcrumb.forEach((item, index) => {
+      var itemUrl = item.url != null && item.url !== ''
+        ? `https://godotassetlibrary.com${item.url}`
+        : assetUrl
+      breadcrumbItems.push({
+        '@type': 'ListItem',
+        position: index + 1,
+        name: item.label,
+        item: itemUrl
+      })
+    })
   }
 
   it.meta = {
@@ -27,12 +52,39 @@
       "url": assetUrl,
       "author": { "@type": "Person", "name": it?.info?.author },
       "softwareVersion": it?.info?.version_string,
-      "applicationCategory": "GameApplication",
-      "operatingSystem": "Godot Engine",
+      "applicationCategory": appCategory,
       "softwareRequirements": `Godot ${it?.info?.godot_version}`
     },
     image: generateProxyUrl(it.info.card_banner ?? it.info.icon_url),
   }
+
+  // dateModified and BreadcrumbList are only valid when we have the data.
+  if (modifiedDate !== undefined) {
+    it.meta.jsonLd.dateModified = modifiedDate
+  }
+  if (breadcrumbItems.length > 0) {
+    it.meta.jsonLdBreadcrumb = {
+      "@context": "https://schema.org/",
+      "@type": "BreadcrumbList",
+      itemListElement: breadcrumbItems
+    }
+  }
+
+  // Related guide links chosen by the asset's category, for deep internal
+  // linking between the catalog and the guides.
+  var guideLinks = []
+  var categoryKey = String(it?.info?.category_lowercase ?? '').toLocaleLowerCase()
+  if (categoryKey === 'shaders' || categoryKey === 'materials') {
+    guideLinks.push({ url: '/guides/how-to-use-shaders-in-godot', label: 'How to use shaders in Godot' })
+  }
+  if (categoryKey === 'tools' || categoryKey === '2d tools' || categoryKey === '3d tools' || categoryKey === 'scripts') {
+    guideLinks.push({ url: '/guides/how-to-install-godot-plugins', label: 'How to install Godot plugins' })
+  }
+  if (categoryKey === 'templates' || categoryKey === 'projects' || categoryKey === 'demos') {
+    guideLinks.push({ url: '/guides/how-to-install-godot-assets', label: 'How to install Godot assets' })
+  }
+  guideLinks.push({ url: '/guides/how-to-choose-a-godot-asset', label: 'How to choose a Godot asset' })
+  it.guideLinks = guideLinks
 %>
 <% layout('templates/components/layouts/promobar-nav-body-footer/promobar-nav-body-footer.eta') %>
 
@@ -80,7 +132,8 @@
               data-fallback-image="<%= primaryMedia?.type === 'image' ? primaryMedia.url : fallbackImage %>"
               data-media-url="<%= primaryMedia?.type === 'image' ? primaryMedia.url : fallbackImage %>"
               data-media-index="<%= primaryMedia?.type === 'image' ? 0 : '' %>"
-              alt="<%= it?.info?.title %> preview image" loading="lazy" decoding="async">
+              width="1920" height="1080"
+              alt="<%= it?.info?.title %> preview image" fetchpriority="high" decoding="async">
           </button>
           <% } %>
         </div>
@@ -236,6 +289,19 @@
       <%~ includeFile('templates/components/partials/asset-card/asset-card.eta', { info: info, _locals: it?._locals }) %>
       <% }) %>
     </div>
+  </div>
+  <% } %>
+  <% if (it?.guideLinks?.length > 0) { %>
+  <div class="related-guides">
+    <div class="section-head">
+      <h2>Related Guides</h2>
+      <a class="view-all" href="/guides" title="All guides">All guides</a>
+    </div>
+    <ul class="guide-links">
+      <% it.guideLinks.forEach(link => { %>
+      <li><a href="<%= link.url %>" title="<%= link.label %>"><%= link.label %></a></li>
+      <% }) %>
+    </ul>
   </div>
   <% } %>
 </section>

@@ -1,6 +1,7 @@
 import { Request } from 'express'
 import striptags from 'striptags'
 import { parsePagination } from 'core/utils/pagination'
+import { normalizeTaxonomyKey } from 'core/utils/taxonomyUrl'
 
 const QUERY_MAX_LENGTH = 100
 const MAX_FILTERS = 20
@@ -69,10 +70,10 @@ export function parseSearchRequest (req: Request): ParsedSearchRequest {
   const featured = String(req.query.featured ?? '') === 'true'
 
   const routeCategory = req?.params?.category != null
-    ? striptags(String(req.params.category).toLocaleLowerCase().replace(/\+|&plus;|%2b/g, ' ')).trim()
+    ? normalizeTaxonomyKey(striptags(String(req.params.category)))
     : undefined
   const routeEngine = req?.params?.engine != null
-    ? striptags(String(req.params.engine).toLocaleLowerCase().replace(/\+|&plus;|%2b/g, ' ')).trim()
+    ? normalizeTaxonomyKey(striptags(String(req.params.engine)))
     : undefined
 
   if (routeCategory !== undefined && routeCategory !== '') categories = [routeCategory]

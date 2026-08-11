@@ -4,6 +4,7 @@ import { logger } from 'core/utils/logger'
 import * as cronJobs from 'core/jobs.index'
 import { ensureIndexes } from 'core/ensureIndexes'
 import { runMigrations } from 'core/migrations'
+import { runGenerateSitemap } from 'app/utilities/sitemapGenerator/jobs/generateSitemap'
 
 // Connect to MongoDB Database
 MongoHelper.getInstance().connect().then(async () => {
@@ -21,6 +22,15 @@ MongoHelper.getInstance().connect().then(async () => {
   }
 
   await ensureIndexes()
+
+  // A fresh deployment has no sitemap until the 02:00 cron runs. Generate it
+  // now (best-effort, non-blocking) so robots.txt never advertises a missing
+  // file. The daily cron still refreshes it.
+  try {
+    await runGenerateSitemap()
+  } catch (error: any) {
+    logger.log('error', `Startup sitemap generation failed: ${error?.message ?? error}`, [error])
+  }
 
   // Start our server
   const server: RouterServer = new RouterServer()

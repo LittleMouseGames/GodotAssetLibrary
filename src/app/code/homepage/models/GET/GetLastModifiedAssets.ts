@@ -1,12 +1,13 @@
 import { Document, WithId } from 'mongodb'
 import { MongoHelper } from 'core/MongoHelper'
 import { assetGridSchema } from 'app/components/partials/catalog-grid/asset-grd-schema'
+import { PUBLIC_ASSET_FILTER } from 'core/utils/publicCatalog'
 
 interface ReturnedAssets extends WithId<Document>, assetGridSchema {}
 
 export async function GetLastModifiedAssets (): Promise<ReturnedAssets[]> {
   const mongo = MongoHelper.getDatabase()
-  const operationObject = await mongo.collection('assets').find({}, {
+  const operationObject = await mongo.collection('assets').find({ ...PUBLIC_ASSET_FILTER }, {
     limit: 8,
     projection: {
       category: 1,

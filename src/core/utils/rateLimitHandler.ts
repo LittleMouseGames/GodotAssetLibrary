@@ -8,6 +8,9 @@ import { StatusCodes } from 'http-status-codes'
 export function rateLimitHandler (message: string) {
   return (req: Request, res: Response): void => {
     const wantsHtml = req.accepts(['html', 'json']) === 'html' && !req.path.startsWith('/api/')
+    res.set('Cache-Control', 'no-store')
+    res.set('X-Robots-Tag', 'noindex, nofollow')
+    res.set('Retry-After', '900')
     if (wantsHtml) {
       res.status(StatusCodes.TOO_MANY_REQUESTS).render('templates/pages/lost/server-error', {
         pageBanner: {

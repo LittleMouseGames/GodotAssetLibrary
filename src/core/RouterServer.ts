@@ -11,6 +11,8 @@ import { GetPromobarMessage } from 'app/code/admin/models/GET/GetPromobarMesasge
 import { StatusCodes } from 'http-status-codes'
 import { generateProxyUrl } from 'core/utils/generateProxyUrl'
 import { buildAssetUrl, buildAssetUrlWithReturn } from 'core/utils/assetUrl'
+import { buildCategoryPath, buildEnginePath } from 'core/utils/taxonomyUrl'
+import { safeJsonLd } from 'core/utils/jsonLd'
 require('express-async-errors')
 
 let promoCachedMessage: string | null = null
@@ -54,7 +56,17 @@ class RouterServer extends Server {
     this.app.set('views', path.join(__dirname, '/'))
     this.app.set('trust proxy', 1)
     this.app.use(compression())
-    this.app.use(express.static(path.join(__dirname, 'public')))
+    // Static assets are cache-busted with ?cache=<buildString>, so a long
+    // max-age is safe: after a redeploy the new HTML references a new URL.
+    // Non-asset files (robots.txt, sitemap.xml) stay short-lived.
+    this.app.use(express.static(path.join(__dirname, 'public'), {
+      maxAge: '30d',
+      setHeaders: (res: Response, filePath: string) => {
+        if (/\.(html?|xml|txt|json)$/.test(filePath)) {
+          res.setHeader('Cache-Control', 'public, max-age=300')
+        }
+      }
+    }))
     this.app.use(express.json())
     this.app.use(cookieParser())
     this.app.use(express.urlencoded({
@@ -159,7 +171,10 @@ class RouterServer extends Server {
       res.locals.functions = {
         generateProxyUrl: generateProxyUrl,
         buildAssetUrl: buildAssetUrl,
-        buildAssetUrlWithReturn: buildAssetUrlWithReturn
+        buildAssetUrlWithReturn: buildAssetUrlWithReturn,
+        buildCategoryPath: buildCategoryPath,
+        buildEnginePath: buildEnginePath,
+        safeJsonLd: safeJsonLd
       }
 
       res.locals.buildString = buildString
@@ -167,10 +182,25 @@ class RouterServer extends Server {
       next()
     })
 
-    // Account pages and auth endpoints carry personal data; never cache them.
+    // Account/auth/admin pages carry personal data or exist only for signed-in
+    // workflows: never cache them and never let them enter the index.
     this.app.use((req: Request, res: Response, next: NextFunction) => {
-      if (req.path.startsWith('/dashboard') || req.path.startsWith('/api/users')) {
+      if (req.path.startsWith('/dashboard') || req.path.startsWith('/api/') ||
+          req.path.startsWith('/admin') || req.path.startsWith('/register')) {
         res.set('Cache-Control', 'no-store')
+        res.set('X-Robots-Tag', 'noindex, nofollow')
+      }
+      next()
+    })
+
+    // Public anonymous pages can be cached briefly for crawlers and repeat
+    // visitors; authenticated responses are always revalidated. Never clobber
+    // an existing Cache-Control (e.g. the no-store set above for
+    // /dashboard, /api/, /admin and /register).
+    this.app.use((req: Request, res: Response, next: NextFunction) => {
+      if (req.method === 'GET' && req.cookies?.['auth-token'] === undefined &&
+          res.getHeader('Cache-Control') === undefined) {
+        res.set('Cache-Control', 'public, max-age=120')
       }
       next()
     })
@@ -185,6 +215,8 @@ class RouterServer extends Server {
       const statusCode = (err as any).statusCode ?? StatusCodes.INTERNAL_SERVER_ERROR
 
       const wantsHtml = req.accepts(['html', 'json']) === 'html' && !req.path.startsWith('/api/')
+      res.set('Cache-Control', 'no-store')
+      res.set('X-Robots-Tag', 'noindex, nofollow')
       if (wantsHtml) {
         return res.status(statusCode).render('templates/pages/lost/server-error', {
           pageBanner: {
@@ -220,17 +252,12 @@ class RouterServer extends Server {
    * @param port {Number} declare the server port
    */
   public start (port: number): void {
-    this.app.get('*', (req: Request, res: Response) => {
+    this.app.get('*', (_req: Request, res: Response) => {
       // Unmatched routes are real 404s, not redirects, so crawlers and users
       // see the correct status. The /lost page renders inside the normal shell.
-      if (req.path !== '/lost') {
-        return res.status(StatusCodes.NOT_FOUND).render('templates/pages/lost/not-found', {
-          pageBanner: {
-            title: 'Page not found',
-            info: 'The page you were looking for doesn\'t exist'
-          }
-        })
-      }
+      // 404 URLs must not be indexed.
+      res.set('Cache-Control', 'no-store')
+      res.set('X-Robots-Tag', 'noindex, nofollow')
       return res.status(StatusCodes.NOT_FOUND).render('templates/pages/lost/not-found', {
         pageBanner: {
           title: 'Page not found',

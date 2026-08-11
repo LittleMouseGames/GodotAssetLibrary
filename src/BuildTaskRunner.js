@@ -24,6 +24,7 @@ function makeDistFolder () {
   fs.mkdirSync(path.join(__dirname, '../dist/templates'), { recursive: true })
   fs.mkdirSync(path.join(__dirname, '../dist/public/javascript'), { recursive: true })
   fs.mkdirSync(path.join(__dirname, '../dist/public/styles'), { recursive: true })
+  fs.mkdirSync(path.join(__dirname, '../dist/content'), { recursive: true })
 }
 
 /**
@@ -54,6 +55,21 @@ function findTemplates () {
 
     /** on first start */
     moveTemplates(file)
+  })
+}
+
+/**
+ * Copy first-party markdown content (e.g. guides) into dist/content so the
+ * runtime bundle can read it from disk. Content is git-managed and read at
+ * runtime (with a short TTL cache), not bundled into the JS.
+ */
+function findMarkdown () {
+  const files = glob.sync(path.join(__dirname, '/content/**/*.md'))
+  files.forEach(file => {
+    const relative = file.split(path.join(__dirname, 'content'))[1]
+    const dest = path.join(__dirname, '../dist/content', relative)
+    fs.mkdirSync(path.dirname(dest), { recursive: true })
+    fs.copyFileSync(file, dest)
   })
 }
 
@@ -191,6 +207,8 @@ if (argv?.production && argv?.['build-only']) {
 makeDistFolder()
 findScss()
 findTemplates()
+findMarkdown()
+watchFileOrFolder('content', 'markdown', findMarkdown)
 watchPublicFolders()
 
 const webpackArgs = ['node_modules/webpack/bin/webpack.js']

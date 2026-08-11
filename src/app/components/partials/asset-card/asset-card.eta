@@ -24,9 +24,9 @@ var ratingDetail = total > 0
 <article class="asset-card <%= it?.featured ? 'featured' : 'normal' %>" id="asset-<%= assetId %>">
   <div class="head">
     <div class="badges">
-      <a class="badge badge-blue" href="/category/<%= it?.info?.category?.toLocaleLowerCase() %>"
+      <a class="badge badge-blue" href="<%= it?._locals?.functions?.buildCategoryPath(it?.info?.category) %>"
         title="See assets in this category"><%= it?.info?.category ?? 'ERR' %></a>
-      <a class="badge badge-purple" href="/engine/<%= it?.info?.godot_version?.toLocaleLowerCase() %>"
+      <a class="badge badge-purple" href="<%= it?._locals?.functions?.buildEnginePath(it?.info?.godot_version) %>"
         title="See assets for this engine version"><%= it?.info?.godot_version ?? 'ERR' %></a>
       <% if (it?._locals?.loggedIn === true) { %>
       <div class="dropdown no-text-select" onclick="window.godotLibrary.dropdown.showContent(event, this)">
@@ -57,9 +57,11 @@ var ratingDetail = total > 0
       <div class="background">
         <div class="mask">
           <img src="<%= generateProxyUrl(cardImage, 100, 100) %>"
+            data-srcset="<%= generateProxyUrl(cardImage, 320, 180) %> 320w, <%= generateProxyUrl(cardImage, 480, 270) %> 480w, <%= generateProxyUrl(cardImage, 640, 360) %> 640w, <%= generateProxyUrl(cardImage, 800, 450) %> 800w"
+            data-sizes="auto"
             data-src="<%= generateProxyUrl(cardImage) %>"
             data-fallback-image="<%= cardImage %>"
-            alt="" class="lazyload">
+            alt="" class="lazyload" width="400" height="225">
         </div>
       </div>
     </a>
@@ -70,7 +72,7 @@ var ratingDetail = total > 0
       <div class="icon">
         <img
           src="<%= generateProxyUrl(it?.info?.icon_url ?? 'https://avatars.githubusercontent.com/u/42072863?s=200&v=4', 50, 50) %>"
-          alt="<%= it?.info?.title %> icon image">
+          width="37" height="37" alt="<%= it?.info?.title %> icon image">
       </div>
       <div class="info">
         <div class="author"><%= it?.info?.author ?? 'Failed to load'%></div>
@@ -127,5 +129,7 @@ var ratingDetail = total > 0
     </div>
   </a>
   <% } %>
+  <a class="card-link-overlay" href="<%= assetHref %>" tabindex="-1" aria-hidden="true"
+    aria-label="Open <%= it?.info?.title ?? 'asset' %> details"></a>
 </article>
 

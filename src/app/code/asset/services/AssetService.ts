@@ -30,6 +30,7 @@ import { renderReadme } from 'core/utils/readmeRenderer'
 import { isSafeHttpUrl } from 'core/utils/safeUrl'
 import { escapeHtml } from 'core/utils/escapeHtml'
 import { buildAssetUrl } from 'core/utils/assetUrl'
+import { buildCategoryPath } from 'core/utils/taxonomyUrl'
 import { BadRequestError } from 'core/utils/httpError'
 import { attachCardExtras } from 'core/utils/cardView'
 
@@ -67,6 +68,21 @@ export class AssetService {
             info: 'We couldn\'t find an asset with that ID'
           }
         })
+      }
+
+      // Consolidate duplicate URLs onto the canonical slug. Old slugs, encoded
+      // punctuation, and id-only URLs all 301 to buildAssetUrl()'s slug so
+      // link equity is not split across URL spellings. Discovery-context and
+      // review pagination params are preserved.
+      const canonicalUrl = buildAssetUrl(assetId, assetInfo.title)
+      const requestedSlug = striptags(String(req.params[0] ?? ''))
+      const requestedUrl = `/asset/${assetId}${requestedSlug !== '' ? `/${requestedSlug}` : ''}`
+      if (requestedUrl !== canonicalUrl) {
+        const redirectQuery = new URLSearchParams()
+        if (backToResults !== '') redirectQuery.set('from', backToResults)
+        const redirectTarget = canonicalUrl +
+          (redirectQuery.toString() !== '' ? `?${redirectQuery.toString()}` : '')
+        return res.redirect(StatusCodes.MOVED_PERMANENTLY, redirectTarget)
       }
 
       // Imported asset data is untrusted. Only http(s) URLs may be rendered as
@@ -147,7 +163,7 @@ export class AssetService {
           { label: 'Home', url: '/' },
           {
             label: assetInfo.category ?? 'Assets',
-            url: assetInfo.category_lowercase != null ? `/category/${assetInfo.category_lowercase}` : ''
+            url: buildCategoryPath(assetInfo.category_lowercase ?? assetInfo.category)
           },
           { label: assetInfo.title ?? 'Asset', url: '' }
         ]
@@ -177,7 +193,7 @@ export class AssetService {
         pageBanner: pageBanner,
         mediaItems: galleryMedia,
         primaryMedia: galleryMedia[0] ?? null,
-        noindex: assetInfo.source_status === 'unavailable',
+        noindex: assetInfo.source_status === 'unavailable' || assetInfo.searchable === 'false',
         fallbackImage: fallbackImage
       })
     } catch (e: any) {
