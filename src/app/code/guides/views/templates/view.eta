@@ -28,9 +28,9 @@
     }
   }
   var metaInfo = 'A Godot Asset Library Guide'
-  if (guide?.readMinutes) metaInfo += ` &middot; ${guide?.readMinutes} min read`
+  if (guide?.readMinutes) metaInfo += ` · ${guide?.readMinutes} min read`
   if (guide?.updated) {
-    metaInfo += ` &middot; Last updated <time datetime="${guide.updated}">${guide.updated}</time>`
+    metaInfo += ` · Last updated <time datetime="${guide.updated}">${guide.updated}</time>`
   }
   it.pageBanner = {
     title: guide?.title ?? 'Guide',

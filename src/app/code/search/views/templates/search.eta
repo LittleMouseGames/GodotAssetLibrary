@@ -196,7 +196,7 @@
   <p class="taxonomy-guides">
     <strong>Related guides:</strong>
     <% it.categoryContent.guides.forEach((guide, index) => { %>
-    <a href="<%= guide.href %>" title="<%= guide.label %>"><%= guide.label %></a><%= index < it.categoryContent.guides.length - 1 ? ' &middot; ' : '' %>
+    <a href="<%= guide.href %>" title="<%= guide.label %>"><%= guide.label %></a><%= index < it.categoryContent.guides.length - 1 ? ' · ' : '' %>
     <% }) %>
   </p>
   <% } %>
