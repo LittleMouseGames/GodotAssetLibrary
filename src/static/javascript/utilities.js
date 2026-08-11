@@ -235,7 +235,7 @@ window.godotLibrary = {
       if (options !== null) options.style.display = 'none'
       trigger?.setAttribute('aria-expanded', 'false')
     },
-    callRouteAjax: function (event, route, message) {
+    callRouteAjax: function (event, route, message, removeOnSuccess) {
       event.preventDefault()
 
       fetch(route, {
@@ -255,6 +255,12 @@ window.godotLibrary = {
           setTimeout(() => {
             window.godotLibrary.pageMessages.removeAllPageMessages()
           }, 5000)
+
+          // Admin reports: after approving/ignoring a report, remove its card
+          // so handled reports disappear instead of lingering on the page.
+          if (removeOnSuccess !== undefined && removeOnSuccess instanceof Element) {
+            removeOnSuccess.closest('.review-report')?.remove()
+          }
         }
       })
     }

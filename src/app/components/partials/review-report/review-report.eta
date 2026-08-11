@@ -1,20 +1,20 @@
 <div class="review-report">
   <div class="report">
-    <p><span class="field">Reason:</span> <span><%= it?.report?.reason %></span></p>
-    <p><span class="field">Notes:</span> <span><%= it?.report?.notes %></span></p>
+    <p><span class="field">Reason:</span> <span><%= it?.report?.reason ?? '' %></span></p>
+    <p><span class="field">Notes:</span> <span><%= it?.report?.notes ?? '' %></span></p>
   </div>
   <div class="review">
-    <p><span class="field">Type:</span> <span><%= it?.review?.review_type %></span></p>
-    <p><span class="field">Username:</span> <span><%= it?.review?.username %></span></p>
-    <p><span class="field">Headline:</span> <span><%= it?.review?.headline %></span></p>
-    <p><span class="field">Text:</span> <span><%= it?.review?.text %></span></p>
+    <p><span class="field">Type:</span> <span><%= it?.review?.review_type ?? '' %></span></p>
+    <p><span class="field">Username:</span> <span><%= it?.review?.username ?? '' %></span></p>
+    <p><span class="field">Headline:</span> <span><%= it?.review?.headline ?? '' %></span></p>
+    <p><span class="field">Text:</span> <span><%= it?.review?.text ?? '' %></span></p>
   </div>
   <div class="actions">
     <a href="/admin/report/ignore/<%= it?.report?.report_id %>"
-      onclick="window.godotLibrary.dropdown.callRouteAjax(event, '/admin/report/ignore/<%= it?.report?.report_id %>', 'Report successfully ignored')"><button>Ignore
+      onclick="window.godotLibrary.dropdown.callRouteAjax(event, '/admin/report/ignore/<%= it?.report?.report_id %>', 'Report successfully ignored', this)"><button>Ignore
         Report</button></a>
     <a href="/admin/report/approve/<%= it?.report?.report_id %>"
-      onclick="window.godotLibrary.dropdown.callRouteAjax(event, '/admin/report/approve/<%= it?.report?.report_id %>', 'Report successfully approved and comment removed')"><button>Remove
+      onclick="window.godotLibrary.dropdown.callRouteAjax(event, '/admin/report/approve/<%= it?.report?.report_id %>', 'Report successfully approved and comment removed', this)"><button>Remove
         Review</button></a>
   </div>
 </div>
