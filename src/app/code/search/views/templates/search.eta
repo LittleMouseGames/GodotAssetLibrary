@@ -7,75 +7,144 @@
 <% layout('templates/components/layouts/promobar-nav-body-footer/promobar-nav-body-footer.eta') %>
 
 <section class="page-search">
-  <section>
-    <% for (const [filtersKey, filtersValue] of Object.entries(it.filters)) { %>
-    <div class="catalog-filters">
-      <div class="filter accordion">
+  <section class="filters-column">
+    <button type="button" class="filters-toggle" aria-expanded="false" aria-controls="search-filters-form"
+      onclick="window.godotLibrary.search.toggleFilters(event)">
+      <span>Filters (<%= it.search.activeFilterCount %>)</span>
+      <span class="iconify" data-icon="bxs:chevron-down"></span>
+    </button>
+
+    <form method="GET" action="/search/" class="catalog-filters" id="search-filters-form">
+      <input type="hidden" name="q" value="<%= it.search.query %>">
+      <input type="hidden" name="sort" value="<%= it.search.currentSort %>">
+      <input type="hidden" name="limit" value="<%= it.search.currentLimit %>">
+
+      <div class="filter accordion" id="filter-categories">
         <div class="accordion-trigger no-text-select">
           <h2>
-            <%= filtersKey === 'category' ? 'Category Filters' : 'Engine Filters' %>
+            Category Filters
             <span class="iconify icon-close" data-icon="bxs:chevron-up"></span>
             <span class="iconify icon-expand" data-icon="bxs:chevron-down"></span>
           </h2>
         </div>
         <div class="options accordion-content">
           <ul>
-            <% for (const [key, value] of Object.entries(filtersValue)) { %>
+            <% for (const category of it.search.categories) { %>
             <li>
               <label>
-                <% 
-                    let filterParams = new URLSearchParams(it.params ?? '?q=')
-                    let filterAlreadyAdded = false
-                    let filterLink = ''
-                    var categoryOrEngineRegex = /(\/category\/|\/engine\/)/
-
-                    Array.from(filterParams.keys()).forEach(filter => {
-                      if (categoryOrEngineRegex.test(filter)) {
-                        var split = filter.split(categoryOrEngineRegex)
-                        filterParams.delete(filter)
-                        filterParams.set(split[1].replace(/\//g, ''), split[2].replace('?q', ''))
-                      }
-                    })
-
-                    let currentParams = filterParams.getAll(filtersKey)
-                    
-                    filterParams.set('page', 0)
-
-                    if (currentParams.includes(key.toLocaleLowerCase()) 
-                    || currentParams.includes(key) 
-                    || currentParams.includes(encodeURIComponent(key)) 
-                    || currentParams.includes(encodeURIComponent(key.toLocaleLowerCase()))) {
-                      filterAlreadyAdded = true
-
-                      const paramsToArray = decodeURIComponent(filterParams.toString()).split('&')
-                      filterLink = paramsToArray.filter((v, i, a) => a.indexOf(v) === i)
-                                      .filter(e => e !== `${filtersKey}=${key.toLocaleLowerCase().replace(/\s+/g, '+')}`)
-                                      .join(',')
-                                      .replace(/,/g, '&')
-                    } else {
-                      filterParams.append(filtersKey, String(key.toLocaleLowerCase()))
-                      filterLink = decodeURIComponent(filterParams.toString())
-                    }
-
-                    if (!Array.from(filterParams.keys())[0].includes('/search/')) {
-                      filterLink = '/search/?q=&' + filterLink
-                    } 
-                  %>
-                <a href="<%= filterLink %>" title="Add to filters">
-                  <input type="checkbox" <%= filterAlreadyAdded ? 'checked' : '' %>>
-                  <%= `${filtersKey == 'engine' ? 'Godot' : ''}  ${String(key)}` %> (<%= String(value) %>)
-                </a>
+                <input type="checkbox" name="category" value="<%= category.value %>"
+                  <%= category.checked ? 'checked' : '' %>>
+                <%= category.label %> (<%= category.count %>)
               </label>
             </li>
             <% } %>
           </ul>
+          <% if (it.search.categories.some(c => c.checked)) { %>
+          <a class="clear-section" href="<%= it.search.categoryClearUrl %>" title="Clear category filters">Clear section</a>
+          <% } %>
         </div>
       </div>
-    </div>
-    <% } %>
+
+      <div class="filter accordion" id="filter-engines">
+        <div class="accordion-trigger no-text-select">
+          <h2>
+            Godot Version
+            <span class="iconify icon-close" data-icon="bxs:chevron-up"></span>
+            <span class="iconify icon-expand" data-icon="bxs:chevron-down"></span>
+          </h2>
+        </div>
+        <div class="options accordion-content">
+          <ul>
+            <% for (const engine of it.search.engines) { %>
+            <li>
+              <label>
+                <input type="checkbox" name="engine" value="<%= engine.value %>"
+                  <%= engine.checked ? 'checked' : '' %>>
+                Godot <%= engine.label %> (<%= engine.count %>)
+              </label>
+            </li>
+            <% } %>
+          </ul>
+          <% if (it.search.engines.some(e => e.checked)) { %>
+          <a class="clear-section" href="<%= it.search.engineClearUrl %>" title="Clear engine filters">Clear section</a>
+          <% } %>
+        </div>
+      </div>
+
+      <div class="filter accordion" id="filter-types">
+        <div class="accordion-trigger no-text-select">
+          <h2>
+            Asset Type
+            <span class="iconify icon-close" data-icon="bxs:chevron-up"></span>
+            <span class="iconify icon-expand" data-icon="bxs:chevron-down"></span>
+          </h2>
+        </div>
+        <div class="options accordion-content">
+          <ul>
+            <% for (const type of it.search.types) { %>
+            <li>
+              <label>
+                <input type="checkbox" name="type" value="<%= type.value %>"
+                  <%= type.checked ? 'checked' : '' %>>
+                <%= type.label %> (<%= type.count %>)
+              </label>
+            </li>
+            <% } %>
+          </ul>
+          <% if (it.search.types.some(t => t.checked)) { %>
+          <a class="clear-section" href="<%= it.search.typeClearUrl %>" title="Clear asset type filters">Clear section</a>
+          <% } %>
+        </div>
+      </div>
+
+      <div class="filter accordion" id="filter-supports">
+        <div class="accordion-trigger no-text-select">
+          <h2>
+            Support Level
+            <span class="iconify icon-close" data-icon="bxs:chevron-up"></span>
+            <span class="iconify icon-expand" data-icon="bxs:chevron-down"></span>
+          </h2>
+        </div>
+        <div class="options accordion-content">
+          <ul>
+            <% for (const support of it.search.supports) { %>
+            <li>
+              <label>
+                <input type="checkbox" name="support" value="<%= support.value %>"
+                  <%= support.checked ? 'checked' : '' %>>
+                <%= support.label %> (<%= support.count %>)
+              </label>
+            </li>
+            <% } %>
+          </ul>
+          <% if (it.search.supports.some(s => s.checked)) { %>
+          <a class="clear-section" href="<%= it.search.supportClearUrl %>" title="Clear support level filters">Clear section</a>
+          <% } %>
+        </div>
+      </div>
+
+      <label class="filter-featured">
+        <input type="checkbox" name="featured" value="true" <%= it.search.featured ? 'checked' : '' %>>
+        Featured only
+      </label>
+
+      <button type="submit" class="apply-filters">Apply filters</button>
+    </form>
   </section>
 
   <section>
     <%~ includeFile('templates/components/partials/catalog-grid/catalog-grid.eta', it) %>
+    <% if (it?.relatedForSearch?.length > 0) { %>
+    <div class="related-for-search">
+      <div class="section-head">
+        <h2>You may also like</h2>
+      </div>
+      <div class="related-grid">
+        <% it.relatedForSearch.forEach(info => { %>
+        <%~ includeFile('templates/components/partials/asset-card/asset-card.eta', { info: info, _locals: it?._locals, sourceUrl: it?.params }) %>
+        <% }) %>
+      </div>
+    </div>
+    <% } %>
   </section>
 </section>

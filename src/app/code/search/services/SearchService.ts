@@ -5,81 +5,85 @@ import striptags from 'striptags'
 import { GetAssetsCountFromQuery } from '../models/GET/GetAssetsCountFromQuery'
 import { GetAssetsFromQuery } from '../models/GET/GetAssetsFromQuery'
 import { GetSearchFacets } from '../models/GET/GetSearchFacets'
-import { buildSearchFilter } from '../models/GET/buildSearchFilter'
-import { parsePagination } from 'core/utils/pagination'
+import { GetRelatedAssets } from 'app/code/asset/models/GET/GetRelatedAssets'
+import { SearchFilterOptions } from '../models/GET/buildSearchFilter'
+import { parseSearchRequest } from './parseSearchRequest'
+import { buildSearchUrl, buildSearchViewModel } from './buildSearchViewModel'
+import { escapeHtml } from 'core/utils/escapeHtml'
+import { attachCardExtras } from 'core/utils/cardView'
 
 export class SearchService {
   public async render (req: Request, res: Response): Promise<void> {
-    const query = striptags(String(req.query.q ?? '').substr(0, 100))
-    let categoryParams = striptags(String(req.query.category ?? ''))
-    let engineParams = striptags(String(req.query.engine ?? ''))
-    const { limit, skip } = parsePagination(req.query.limit, req.query.page)
+    const parsed = parseSearchRequest(req)
     const authToken = striptags(req.cookies['auth-token'] ?? '')
-    // || so an empty string also falls back to the default
-    const requestedSort = striptags(String(req.query.sort ?? ''))
-    const sort = requestedSort === '' ? 'relevance' : requestedSort
-    let title = `Search results ${query === '' ? '' : 'for: ' + query}`
-    const plusToSpaceRegex = /\+|&plus;|%2b/
-    let inCategory = false
 
-    if (req?.params?.category != null) {
-      const convertedCategory = striptags(req.params.category.toLocaleLowerCase().replace(plusToSpaceRegex, ' '))
-      categoryParams = convertedCategory
-      title = `Assets in category: <span>${convertedCategory}</span>`
-      inCategory = true
+    const filterOptions: SearchFilterOptions = {
+      categories: parsed.categories,
+      engines: parsed.engines,
+      types: parsed.types,
+      supports: parsed.supports,
+      featured: parsed.featured
     }
 
-    if (req?.params?.engine != null) {
-      const convertedEngine = striptags(req.params.engine.toLocaleLowerCase().replace(plusToSpaceRegex, ' '))
-      engineParams = convertedEngine
-      title = `Assets for engine: <span>${convertedEngine}</span>`
-      inCategory = true
+    let title = parsed.query === '' ? 'Browse Godot assets' : `Search results for: ${parsed.query}`
+    if (parsed.routeCategory !== undefined) {
+      title = `Assets in category: ${parsed.routeCategory}`
+    } else if (parsed.routeEngine !== undefined) {
+      title = `Assets for engine: ${parsed.routeEngine}`
     }
 
-    const sortMap: {[key: string]: any} = {
-      relevance: { godot_version: -1 },
-      asset_rating: { upvotes: -1 },
-      newest: { added_date: -1 },
-      last_modified: { modify_date: -1 }
-    }
-
-    // unknown values fall back to relevance rather than returning a 400
-    const sortOrder = sortMap[sort] ?? sortMap.relevance
-
-    let categoryArray: any[] = []
-    let engineArray: any[] = []
-
-    if (typeof categoryParams === 'string') {
-      if (categoryParams === '') {
-        categoryArray = []
-      } else {
-        categoryArray = categoryParams.split(',')
-      }
-    } else {
-      categoryArray = categoryParams as any[]
-    }
-
-    if (typeof engineParams === 'string') {
-      if (engineParams === '') {
-        engineArray = []
-      } else {
-        engineArray = engineParams.split(',')
-      }
-    } else {
-      engineArray = engineParams as any[]
-    }
-
-    const filter = buildSearchFilter(query, categoryArray, engineArray)
-
-    const [assets, totalAssetsForQuery, { categoryFilters, engineFilters }] = await Promise.all([
-      GetAssetsFromQuery(query, limit, skip, sortOrder, categoryArray, engineArray),
-      GetAssetsCountFromQuery(query, categoryArray, engineArray),
-      GetSearchFacets(filter)
+    const [assets, totalAssetsForQuery, facets] = await Promise.all([
+      GetAssetsFromQuery(parsed.query, parsed.limit, parsed.skip, parsed.sort, filterOptions),
+      GetAssetsCountFromQuery(parsed.query, filterOptions),
+      GetSearchFacets(parsed.query, filterOptions)
     ])
 
-    let info = `Found <strong>${totalAssetsForQuery} assets</strong> for query`
-    if (inCategory) {
-      info = `Showing <strong>${totalAssetsForQuery} assets</strong> in category`
+    attachCardExtras(assets)
+
+    // Single-result searches surface a "You may also like" row so visitors
+    // can keep exploring without going back.
+    let relatedForSearch: any[] = []
+    if (parsed.query !== '' && assets.length === 1) {
+      try {
+        relatedForSearch = await GetRelatedAssets(
+          assets[0].category,
+          assets[0].godot_version,
+          assets[0].type,
+          assets[0].asset_id
+        )
+        attachCardExtras(relatedForSearch)
+      } catch (e) {
+        // ignore
+      }
+    }
+
+    // A page that points past the end should redirect to the real last page
+    // rather than rendering an empty grid with contradictory pagination.
+    if (parsed.page > 0 && assets.length === 0 && totalAssetsForQuery > 0) {
+      const lastPage = Math.ceil(totalAssetsForQuery / parsed.limit) - 1
+      const redirectUrl = buildSearchUrl({
+        query: parsed.query,
+        categories: parsed.categories,
+        engines: parsed.engines,
+        types: parsed.types,
+        supports: parsed.supports,
+        featured: parsed.featured,
+        sort: parsed.sort,
+        limit: parsed.limit,
+        page: lastPage
+      })
+      return res.redirect(redirectUrl)
+    }
+
+    const search = buildSearchViewModel(parsed, totalAssetsForQuery, facets)
+
+    let info = parsed.query !== ''
+      ? `Found <strong>${totalAssetsForQuery} assets</strong> matching &ldquo;<strong>${escapeHtml(parsed.query)}</strong>&rdquo;`
+      : `Browsing <strong>${totalAssetsForQuery} assets</strong>`
+    if (parsed.routeCategory !== undefined) {
+      info = `Showing <strong>${totalAssetsForQuery} assets</strong> in this category`
+    } else if (parsed.routeEngine !== undefined) {
+      info = `Showing <strong>${totalAssetsForQuery} assets</strong> for this engine`
     }
 
     const pageBanner = {
@@ -103,11 +107,13 @@ export class SearchService {
     }
 
     return res.render('templates/pages/search/search', {
-      filters: { category: categoryFilters, engine: engineFilters },
+      filters: facets,
+      search: search,
       grid: assets,
       params: req.originalUrl,
       pageBanner: pageBanner,
-      originalQuery: query
+      originalQuery: parsed.query,
+      relatedForSearch: relatedForSearch
     })
   }
 

@@ -11,4 +11,10 @@ export interface assetGridSchema {
   asset_id: string
   previews: any[]
   modify_date: Date
+  added_date?: Date
+  version_string?: string
+  type?: string
+  support_level?: string
+  /** Optional human-readable context line such as "Updated 3 days ago". */
+  context?: string
 }
