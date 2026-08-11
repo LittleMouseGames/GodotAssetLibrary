@@ -2,8 +2,7 @@ import { Request, Response } from 'express'
 import { TokenServices } from 'core/modules/authentication/services/TokenServices'
 import { GetUserSavedAssets } from 'app/code/dashboard/models/GET/GetUserSavedAssets'
 import striptags from 'striptags'
-import { GetAssetsCountFromQuery } from '../models/GET/GetAssetsCountFromQuery'
-import { GetAssetsFromQuery } from '../models/GET/GetAssetsFromQuery'
+import { GetSearchResults } from '../models/GET/GetSearchResults'
 import { GetSearchFacets } from '../models/GET/GetSearchFacets'
 import { GetRelatedAssets } from 'app/code/asset/models/GET/GetRelatedAssets'
 import { SearchFilterOptions } from '../models/GET/buildSearchFilter'
@@ -27,11 +26,15 @@ export class SearchService {
       featured: parsed.featured
     }
 
-    const [assets, totalAssetsForQuery, facets] = await Promise.all([
-      GetAssetsFromQuery(parsed.query, parsed.limit, parsed.skip, parsed.sort, filterOptions),
-      GetAssetsCountFromQuery(parsed.query, filterOptions),
+    // Results + total count now come from ONE aggregation ($facet) and the
+    // four facets are consolidated into another, so the per-request Mongo
+    // fan-out drops from ~6 operations to ~2, directly relieving the pool
+    // pressure that caused the prod 503s.
+    const [searchData, facets] = await Promise.all([
+      GetSearchResults(parsed.query, parsed.limit, parsed.skip, parsed.sort, filterOptions),
       GetSearchFacets(parsed.query, filterOptions)
     ])
+    const { assets, total: totalAssetsForQuery } = searchData
 
     attachCardExtras(assets)
 

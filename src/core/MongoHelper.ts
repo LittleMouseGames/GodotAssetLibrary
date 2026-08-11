@@ -1,5 +1,6 @@
 import { MongoClient, Db } from 'mongodb'
 import { logger } from 'core/utils/logger'
+import { getDefaultMongoPool } from 'core/utils/clusterConfig'
 
 export class MongoHelper {
   private static instance: MongoHelper
@@ -54,19 +55,20 @@ export class MongoHelper {
     const url = `mongodb://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@${process.env.DB_HOST}:${process.env.DB_PORT}/${process.env.DB_NAME}?authSource=admin`
 
     try {
-      // Traditional long-running web server (single instance). Connections are
-      // created lazily on demand (minPoolSize 0) and pruned when idle, so the
-      // pool "spins up as needed" rather than holding connections. Each search
-      // request fans out ~6 concurrent queries (4 facet aggregations + results
-      // + count) and the homepage ~4. RouterServer caps concurrent HTTP
-      // requests at MAX_CONCURRENT_REQUESTS (default 100), so the worst-case
-      // simultaneous connection demand is ~600; a 1000 ceiling leaves headroom
-      // while still protecting the MongoDB server. Idle connections are reaped
-      // after MONGO_MAX_IDLE_MS, so steady state stays low. Tune with
-      // MONGO_MAX_POOL. The 5s wait-queue timeout stays as a fail-fast
-      // backstop for genuine overload.
+      // Traditional long-running web server. Connections are created lazily on
+      // demand (minPoolSize 0) and pruned when idle, so the pool "spins up as
+      // needed" rather than holding connections. Search requests now run 2
+      // MongoDB ops instead of 6 (results+count and all four facets are
+      // consolidated into $facet aggregations) and the homepage ~4. Under
+      // cluster mode every worker AND the primary owns its own pool, so the
+      // default ceiling is scaled per process (clusterConfig) to keep the
+      // TOTAL worst-case connections bounded (~1500) no matter how many
+      // workers run; an
+      // explicit MONGO_MAX_POOL always wins. Idle connections are reaped after
+      // MONGO_MAX_IDLE_MS, so steady state stays low. The 5s wait-queue
+      // timeout stays as a fail-fast backstop for genuine overload.
       const parsedMax = Number.parseInt(process.env.MONGO_MAX_POOL ?? '', 10)
-      const maxPoolSize = Number.isFinite(parsedMax) && parsedMax > 0 ? parsedMax : 1000
+      const maxPoolSize = Number.isFinite(parsedMax) && parsedMax > 0 ? parsedMax : getDefaultMongoPool()
 
       // 0 = no pre-warmed connections; each one is established on first use.
       const parsedMin = Number.parseInt(process.env.MONGO_MIN_POOL ?? '', 10)
