@@ -629,52 +629,59 @@ document.addEventListener('keydown', function (event) {
   }
 })
 
-document.addEventListener('load', function (event) {
-  const image = event.target
-  if (!(image instanceof HTMLImageElement) || image.src.endsWith('/images/noimage.png')) return
-
-  // Lazysizes swaps src from a small placeholder to data-src. Remember the
-  // working placeholder so a failed larger variant does not discard it.
-  image.dataset.lastSuccessfulSrc = image.currentSrc || image.src
-}, true)
-
 document.addEventListener('error', function (event) {
   const image = event.target
   if (!(image instanceof HTMLImageElement)) return
 
+  // Terminal state: the fallback chain already landed on the local
+  // placeholder. Never touch this image again — otherwise a still-active
+  // srcset (or repeated fallback errors) can cause an unbounded retry loop.
+  if (image.dataset.triedFallback === 'complete') return
+
   const source = image.getAttribute('src') ?? ''
-  const previousSource = image.dataset.lastSuccessfulSrc
-
-  if (image.classList.contains('lazyload') && previousSource !== undefined && previousSource !== '' && source !== previousSource) {
-    image.classList.remove('lazyload')
-    image.removeAttribute('data-src')
-    image.src = previousSource
-    image.dataset.triedFallback = 'complete'
-    return
-  }
-
-  if (image.dataset.triedFallback === 'true') {
-    image.src = '/images/noimage.png'
-    image.dataset.triedFallback = 'complete'
-    return
-  }
-
-  image.dataset.triedFallback = 'true'
   const host = image.dataset.host
   const fallback = image.dataset.fallbackImage
 
-  if (host !== undefined && source !== '' && !/^(https?:|data:|\/)/i.test(source)) {
-    image.src = `${host}${source}`
-  } else if (fallback !== undefined && fallback !== '') {
-    if (new URL(fallback, document.baseURI).href === new URL(source, document.baseURI).href) {
-      image.src = '/images/noimage.png'
-      image.dataset.triedFallback = 'complete'
-    } else {
-      image.src = fallback
-    }
-  } else {
+  // A failed responsive/lazy candidate keeps winning over `src` while its
+  // srcset (or lazysizes hooks) is present. Disable the whole responsive
+  // pipeline BEFORE assigning a fallback so the browser cannot re-select the
+  // broken URL and lazysizes cannot re-install it.
+  image.removeAttribute('srcset')
+  image.removeAttribute('data-srcset')
+  image.removeAttribute('sizes')
+  image.removeAttribute('data-sizes')
+  image.removeAttribute('data-src')
+  image.classList.remove('lazyload')
+
+  // Second failure: the original/host fallback also failed. Land on the
+  // local placeholder permanently.
+  if (image.dataset.triedFallback === 'true') {
+    image.dataset.triedFallback = 'complete'
     image.src = '/images/noimage.png'
+    return
   }
+
+  // Relative README images are corrected against their repo host once.
+  if (host !== undefined && source !== '' && !/^(https?:|data:|\/)/i.test(source)) {
+    image.dataset.triedFallback = 'true'
+    image.src = `${host}${source}`
+    return
+  }
+
+  if (fallback !== undefined && fallback !== '') {
+    if (new URL(fallback, document.baseURI).href === new URL(source, document.baseURI).href) {
+      // The fallback is the same URL that just failed — do not retry it.
+      image.dataset.triedFallback = 'complete'
+      image.src = '/images/noimage.png'
+      return
+    }
+    image.dataset.triedFallback = 'true'
+    image.src = fallback
+    return
+  }
+
+  image.dataset.triedFallback = 'complete'
+  image.src = '/images/noimage.png'
 }, true)
 
 function isHidden (el) {
