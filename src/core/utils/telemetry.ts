@@ -27,6 +27,10 @@ export interface TelemetrySnapshot {
   rejectedByActiveCap: number
   mongoWaitQueueTimeouts: number
   mongoServerSelectionErrors: number
+  cacheHits: number
+  cacheMisses: number
+  cacheBypasses: number
+  cacheErrors: number
   status2xx: number
   status3xx: number
   status4xx: number
@@ -50,6 +54,10 @@ let totalRejected = 0
 let rejectedByActiveCap = 0
 let mongoWaitQueueTimeouts = 0
 let mongoServerSelectionErrors = 0
+let cacheHits = 0
+let cacheMisses = 0
+let cacheBypasses = 0
+let cacheErrors = 0
 let status2xx = 0
 let status3xx = 0
 let status4xx = 0
@@ -137,6 +145,22 @@ export function recordMongoServerSelectionError (): void {
   mongoServerSelectionErrors++
 }
 
+export function recordCacheHit (): void {
+  cacheHits++
+}
+
+export function recordCacheMiss (): void {
+  cacheMisses++
+}
+
+export function recordCacheBypass (): void {
+  cacheBypasses++
+}
+
+export function recordCacheError (): void {
+  cacheErrors++
+}
+
 function percentile (p: number): number {
   const count = durations.length
   if (count === 0) {
@@ -158,6 +182,10 @@ export function snapshot (): TelemetrySnapshot {
     rejectedByActiveCap,
     mongoWaitQueueTimeouts,
     mongoServerSelectionErrors,
+    cacheHits,
+    cacheMisses,
+    cacheBypasses,
+    cacheErrors,
     status2xx,
     status3xx,
     status4xx,
@@ -202,6 +230,10 @@ export function prometheusText (): string {
   emit('gauge', 'http_request_duration_p99_ms', 'p99 recent request duration in ms', s.durationP99Ms)
   emit('counter', 'mongo_wait_queue_timeouts_total', 'MongoDB connection checkout (wait-queue) timeouts', s.mongoWaitQueueTimeouts)
   emit('counter', 'mongo_server_selection_errors_total', 'MongoDB server-selection errors', s.mongoServerSelectionErrors)
+  emit('counter', 'cache_hits_total', 'Shared Dragonfly cache hits', s.cacheHits)
+  emit('counter', 'cache_misses_total', 'Shared Dragonfly cache misses filled from the source', s.cacheMisses)
+  emit('counter', 'cache_bypasses_total', 'Operations bypassing the shared cache while disabled or unavailable', s.cacheBypasses)
+  emit('counter', 'cache_errors_total', 'Shared Dragonfly cache command or payload errors', s.cacheErrors)
   emit('gauge', 'process_uptime_seconds', 'Seconds since this process started', s.uptimeSeconds)
   emit('gauge', 'process_rss_bytes', 'Resident set size in bytes', memory.rss)
   emit('gauge', 'process_heap_used_bytes', 'V8 heap used in bytes', memory.heapUsed)
@@ -250,6 +282,10 @@ export function reset (): void {
   rejectedByActiveCap = 0
   mongoWaitQueueTimeouts = 0
   mongoServerSelectionErrors = 0
+  cacheHits = 0
+  cacheMisses = 0
+  cacheBypasses = 0
+  cacheErrors = 0
   status2xx = 0
   status3xx = 0
   status4xx = 0
