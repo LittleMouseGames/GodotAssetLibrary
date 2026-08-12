@@ -50,13 +50,13 @@ interface AssetPageData {
 }
 
 /**
- * Load the shared data behind a public asset page: the asset document, its
- * first page of reviews, the persisted review count and related assets. The
- * four MongoDB operations are consolidated so a Dragonfly cache hit serves the
- * whole page from memory. Mutations that change any of these (reviews, admin
- * review deletion) invalidate the cache key.
+ * Load the shared data behind a public asset page: the asset document, the
+ * requested page of reviews, the persisted review count and related assets.
+ * The four MongoDB operations are consolidated so a Dragonfly cache hit serves
+ * the whole page from memory. Mutations that change any of these (reviews,
+ * admin review deletion) invalidate the cache key.
  */
-async function loadAssetPageData (assetId: string): Promise<AssetPageData> {
+async function loadAssetPageData (assetId: string, reviewsPage = 0): Promise<AssetPageData> {
   const assetInfo = await GetAssetDisplayInformation(assetId)
 
   if (assetInfo === null) {
@@ -72,7 +72,7 @@ async function loadAssetPageData (assetId: string): Promise<AssetPageData> {
   }
 
   const [commentsResult, reviewCountResult, relatedAssetsResult] = await Promise.allSettled([
-    GetAssetReviewsById(assetId, REVIEWS_PER_PAGE, 0),
+    GetAssetReviewsById(assetId, REVIEWS_PER_PAGE, reviewsPage * REVIEWS_PER_PAGE),
     GetAssetReviewCount(assetId),
     GetRelatedAssets(assetInfo.category, assetInfo.godot_version, assetInfo.type, assetInfo.asset_id)
   ])
@@ -135,7 +135,9 @@ export class AssetService {
         // readme render) never leak into the shared cache entry.
         bundle = JSON.parse(JSON.stringify(cached.value)) as AssetPageData
       } else {
-        bundle = await loadAssetPageData(assetId)
+        // Paginated or authenticated views bypass the cache and must load the
+        // requested reviews page (the cached bundle is always page 0).
+        bundle = await loadAssetPageData(assetId, reviewsPage)
       }
       const { assetInfo, comments, reviewCount, relatedAssets } = bundle
 
