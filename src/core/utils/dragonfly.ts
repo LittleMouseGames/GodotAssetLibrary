@@ -2,6 +2,7 @@ import { createClient, RedisClientType } from 'redis'
 import { randomBytes } from 'crypto'
 import { logger } from 'core/utils/logger'
 import * as telemetry from 'core/utils/telemetry'
+import { GODOT_MAJOR_CACHE_VARIANTS, godotMajorCacheSuffix } from 'core/utils/godotVersionPreference'
 
 type DragonflyClient = RedisClientType
 
@@ -176,11 +177,21 @@ export async function cacheGetOrLoad<T> (
 }
 
 /**
- * Cache key for a public asset (PDP) page bundle. Shared by the render path
- * and by the mutation paths that invalidate it after a review or admin change.
+ * Cache key for a public asset (PDP) page bundle. Partitioned by the visitor's
+ * pinned Godot major because the cached bundle includes related-asset cards,
+ * which are major-filtered. Old `gda:v1:asset:*` keys are never read by the
+ * new code and expire naturally.
  */
-export function buildAssetCacheKey (assetId: string): string {
-  return `gda:v1:asset:${assetId}`
+export function buildAssetCacheKey (assetId: string, major: number | undefined): string {
+  return `gda:v2:asset:${assetId}:${godotMajorCacheSuffix(major)}`
+}
+
+/**
+ * Every PDP cache variant for an asset. Review/admin mutations invalidate all
+ * of them so a fresh rating or report is reflected for every pinned major.
+ */
+export function buildAllAssetCacheKeys (assetId: string): string[] {
+  return GODOT_MAJOR_CACHE_VARIANTS.map(major => buildAssetCacheKey(assetId, major))
 }
 
 /**

@@ -12,6 +12,8 @@ import {
   buildSearchViewModel
 } from '../src/app/code/search/services/buildSearchViewModel'
 import { SearchFacets } from '../src/app/code/search/models/GET/GetSearchFacets'
+import { buildSearchFilter } from '../src/app/code/search/models/GET/buildSearchFilter'
+import { PUBLIC_ASSET_FILTER } from '../src/core/utils/publicCatalog'
 
 function makeRequest (
   query: Record<string, unknown> = {},
@@ -228,5 +230,29 @@ describe('buildSearchViewModel', () => {
     const model = buildSearchViewModel(parsed, 0, emptyFacets())
     assert.equal(model.pagination.rangeStart, 0)
     assert.equal(model.pagination.rangeEnd, 0)
+  })
+})
+
+describe('buildSearchFilter with the version pin', () => {
+  it('applies the major while no exact engine selection exists', () => {
+    const filter = buildSearchFilter('', { godotMajor: 4 })
+    assert.equal(filter.godot_major, 4)
+    assert.equal(filter.godot_version, undefined)
+    // PUBLIC_ASSET_FILTER always stays applied.
+    assert.deepEqual(filter.source_status, { $ne: 'unavailable' })
+    assert.deepEqual(filter.searchable, { $ne: 'false' })
+  })
+
+  it('drops the major when an exact engine selection is present', () => {
+    const filter = buildSearchFilter('', { engines: ['3.4'], godotMajor: 4 })
+    assert.equal(filter.godot_major, undefined)
+    assert.deepEqual(filter.godot_version, { $in: ['3.4'] })
+  })
+
+  it('keeps text search and public visibility in the filter', () => {
+    const filter = buildSearchFilter('shader', { godotMajor: 3 })
+    assert.equal(filter.godot_major, 3)
+    assert.deepEqual(filter.$text, { $search: 'shader', $caseSensitive: false })
+    assert.deepEqual(filter.source_status, PUBLIC_ASSET_FILTER.source_status)
   })
 })

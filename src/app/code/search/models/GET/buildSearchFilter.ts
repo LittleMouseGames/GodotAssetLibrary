@@ -1,4 +1,5 @@
 import { PUBLIC_ASSET_FILTER } from 'core/utils/publicCatalog'
+import { godotMajorFilter } from 'core/utils/godotVersionPreference'
 
 export interface SearchFilterOptions {
   categories?: string[]
@@ -6,6 +7,12 @@ export interface SearchFilterOptions {
   types?: string[]
   supports?: string[]
   featured?: boolean
+  /**
+   * Numeric Godot major line to restrict discovery to (e.g. 4 for "4.x").
+   * Only set while the visitor has no explicit exact-engine selection so the
+   * pinned major can be lifted once they choose exact versions.
+   */
+  godotMajor?: number
 }
 
 /**
@@ -16,7 +23,7 @@ export interface SearchFilterOptions {
  * counts or facets (matching the sitemap).
  */
 export function buildSearchFilter (query: string, options: SearchFilterOptions = {}): Record<string, any> {
-  const { categories, engines, types, supports, featured } = options
+  const { categories, engines, types, supports, featured, godotMajor } = options
   const filter: Record<string, any> = { ...PUBLIC_ASSET_FILTER }
 
   if (categories !== undefined && categories.length > 0) {
@@ -25,6 +32,9 @@ export function buildSearchFilter (query: string, options: SearchFilterOptions =
 
   if (engines !== undefined && engines.length > 0) {
     filter.godot_version = { $in: engines }
+  } else {
+    // The major pin applies only while no exact engine selection overrides it.
+    Object.assign(filter, godotMajorFilter(godotMajor))
   }
 
   if (types !== undefined && types.length > 0) {

@@ -13,6 +13,13 @@ import { getCategoryContent } from './categoryContent'
 import { escapeHtml } from 'core/utils/escapeHtml'
 import { attachCardExtras } from 'core/utils/cardView'
 import { cacheGetOrLoad } from 'core/utils/dragonfly'
+import {
+  GODOT_VERSION_PREFERENCE_COOKIE,
+  deriveEffectiveMajor,
+  godotMajorCacheSuffix,
+  normalizeGodotVersionPreference
+} from 'core/utils/godotVersionPreference'
+import { resolveBrowsingMajor } from 'core/utils/godotMajorAvailability'
 
 interface CachedSearchData {
   searchData: SearchResults
@@ -42,7 +49,8 @@ function searchCacheKey (
     engines: [...(options.engines ?? [])].sort(),
     types: [...(options.types ?? [])].sort(),
     supports: [...(options.supports ?? [])].sort(),
-    featured: options.featured === true
+    featured: options.featured === true,
+    major: godotMajorCacheSuffix(options.godotMajor)
   })).toString('base64url')}`
 }
 
@@ -51,12 +59,28 @@ export class SearchService {
     const parsed = parseSearchRequest(req)
     const authToken = striptags(req.cookies['auth-token'] ?? '')
 
+    // The persistent major pin applies to results/facets only while the
+    // visitor has no explicit exact-engine selection; once they pick exact
+    // versions the pin lifts and they can move across majors. Related cards
+    // use the effective major (exact selections with one shared major resolve
+    // to that major) so single-result recommendations stay in-generation.
+    // An explicit version cookie is honored strictly; the implicit 4.x default
+    // falls back to all when the catalog has no 4.x assets.
+    const versionPreference = normalizeGodotVersionPreference(req.cookies[GODOT_VERSION_PREFERENCE_COOKIE])
+    const resultMajor = parsed.engines.length === 0
+      ? await resolveBrowsingMajor(req.cookies[GODOT_VERSION_PREFERENCE_COOKIE])
+      : undefined
+    const relatedMajor = parsed.engines.length > 0
+      ? deriveEffectiveMajor(parsed.engines, versionPreference)
+      : await resolveBrowsingMajor(req.cookies[GODOT_VERSION_PREFERENCE_COOKIE])
+
     const filterOptions: SearchFilterOptions = {
       categories: parsed.categories,
       engines: parsed.engines,
       types: parsed.types,
       supports: parsed.supports,
-      featured: parsed.featured
+      featured: parsed.featured,
+      godotMajor: resultMajor
     }
 
     // Results + total count now come from ONE aggregation ($facet) and the
@@ -90,7 +114,8 @@ export class SearchService {
           assets[0].category,
           assets[0].godot_version,
           assets[0].type,
-          assets[0].asset_id
+          assets[0].asset_id,
+          relatedMajor
         )
         attachCardExtras(relatedForSearch)
       } catch (e) {

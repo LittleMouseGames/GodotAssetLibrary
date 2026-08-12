@@ -14,6 +14,12 @@ import { generateProxyUrl } from 'core/utils/generateProxyUrl'
 import { buildAssetUrl, buildAssetUrlWithReturn } from 'core/utils/assetUrl'
 import { buildCategoryPath, buildEnginePath } from 'core/utils/taxonomyUrl'
 import { safeJsonLd } from 'core/utils/jsonLd'
+import {
+  GODOT_VERSION_PREFERENCE_COOKIE,
+  GODOT_VERSION_PREFERENCES,
+  godotVersionPreferenceLabel,
+  normalizeGodotVersionPreference
+} from 'core/utils/godotVersionPreference'
 import * as telemetry from 'core/utils/telemetry'
 require('express-async-errors')
 
@@ -217,6 +223,17 @@ class RouterServer extends Server {
         safeJsonLd: safeJsonLd
       }
 
+      // Persistent Godot-version (major-line) browsing preference, surfaced to
+      // every Eta view (the header selector renders from it). The preference is
+      // a functional, non-authenticated cookie; see the preferences controller.
+      const versionPreference = normalizeGodotVersionPreference(req.cookies[GODOT_VERSION_PREFERENCE_COOKIE])
+      res.locals.godotVersion = {
+        current: versionPreference,
+        label: godotVersionPreferenceLabel(versionPreference),
+        options: GODOT_VERSION_PREFERENCES,
+        returnTo: req.originalUrl
+      }
+
       res.locals.buildString = buildString
 
       next()
@@ -237,10 +254,21 @@ class RouterServer extends Server {
     // visitors; authenticated responses are always revalidated. Never clobber
     // an existing Cache-Control (e.g. the no-store set above for
     // /dashboard, /api/, /admin and /register).
+    //
+    // Responses whose HTML varies by the version-preference cookie must stay
+    // private: a shared proxy/CDN must never serve one visitor's 2.x/3.x/All
+    // markup to another. The default (no cookie) is deterministic 4.x and
+    // stays publicly cacheable.
     this.app.use((req: Request, res: Response, next: NextFunction) => {
+      const versionCookie = req.cookies?.[GODOT_VERSION_PREFERENCE_COOKIE]
+      const hasNonDefaultVersion = versionCookie !== undefined && versionCookie !== ''
       if (req.method === 'GET' && req.cookies?.['auth-token'] === undefined &&
+          !hasNonDefaultVersion &&
           res.getHeader('Cache-Control') === undefined) {
         res.set('Cache-Control', 'public, max-age=120')
+      } else if (req.method === 'GET' && hasNonDefaultVersion &&
+          res.getHeader('Cache-Control') === undefined) {
+        res.set('Cache-Control', 'private, max-age=120')
       }
       next()
     })

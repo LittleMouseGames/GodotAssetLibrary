@@ -2,16 +2,19 @@ import { Document, WithId } from 'mongodb'
 import { MongoHelper } from 'core/MongoHelper'
 import { assetGridSchema } from 'app/utilities/fetchFromGodot/schema/assets-grid'
 import { PUBLIC_ASSET_FILTER } from 'core/utils/publicCatalog'
+import { godotMajorFilter } from 'core/utils/godotVersionPreference'
 
 interface ReturnedAssets extends WithId<Document>, assetGridSchema {}
 
-export async function GetFourAssetsForHomepage (): Promise<ReturnedAssets[]> {
+export async function GetFourAssetsForHomepage (major?: number): Promise<ReturnedAssets[]> {
   const mongo = MongoHelper.getDatabase()
   // Curated featured assets, deterministically ordered by confidence-adjusted
-  // rating so the section does not reshuffle between requests.
+  // rating so the section does not reshuffle between requests. Filtered to the
+  // pinned major before sorting/limiting so the section stays in-generation.
   const operationObject = await mongo.collection('assets').aggregate([{
     $match: {
       ...PUBLIC_ASSET_FILTER,
+      ...godotMajorFilter(major),
       featured: true
     }
   }, {
@@ -26,6 +29,7 @@ export async function GetFourAssetsForHomepage (): Promise<ReturnedAssets[]> {
     $project: {
       category: 1,
       godot_version: 1,
+      godot_major: 1,
       author: 1,
       title: 1,
       quick_description: 1,

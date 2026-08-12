@@ -45,7 +45,10 @@ function facetFilterFor (query: string, options: SearchFilterOptions, omit: Face
     engines: omit === 'engines' ? undefined : options.engines,
     types: omit === 'types' ? undefined : options.types,
     supports: omit === 'supports' ? undefined : options.supports,
-    featured: options.featured
+    featured: options.featured,
+    // The major pin stays on even when self-excluding the exact-engine
+    // dimension: it constrains which exact versions appear in the sidebar.
+    godotMajor: options.godotMajor
   })
 }
 

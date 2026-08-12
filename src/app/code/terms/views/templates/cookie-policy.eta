@@ -52,6 +52,12 @@
       with customized, enhanced, or optimized content and services. These cookies may be set by the website you’re
       visiting (first-party) or by third-party services. </p>
     <p>We use functionality cookies for selected features on our site. </p>
+    <p>For example, we use a <code>godot_version</code> functionality cookie to remember which Godot engine version you
+      prefer to browse. It stores one of <code>2</code>, <code>3</code>, or <code>all</code> and is set only when you
+      choose something other than our default of Godot 4.x, so that the homepage, search, and category listings show
+      assets for the version you care about. It is a first-party, non-tracking preference that can be changed at any
+      time from the Godot version selector in the site header. The dark theme setting is stored locally on your device
+      and is not sent to our servers.</p>
     <h4>Targeting/advertising cookies</h4>
     <p>Targeting/advertising cookies help determine what promotional content is most relevant and appropriate to you and
       your interests. Websites may use them to deliver targeted advertising or limit the number of times you see an

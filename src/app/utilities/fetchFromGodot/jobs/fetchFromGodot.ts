@@ -6,6 +6,7 @@ import { MongoHelper } from 'core/MongoHelper'
 import { Db } from 'mongodb'
 import { assetSchema } from '../schema/assets'
 import { FetchReadme } from 'app/utilities/fetchReadme/services/FetchReadme'
+import { parseGodotMajor } from 'core/utils/godotVersionPreference'
 
 const host = 'godotengine.org'
 let importRunning = false
@@ -145,6 +146,10 @@ function normalizeAssetForSync (asset: any, isNew: boolean): void {
   const modifyDate = new Date(asset.modify_date)
   if (!isNaN(modifyDate.getTime())) {
     asset.modify_date_at = modifyDate
+  }
+  const major = parseGodotMajor(asset.godot_version)
+  if (major !== undefined) {
+    asset.godot_major = major
   }
 }
 

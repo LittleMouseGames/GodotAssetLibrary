@@ -1,6 +1,8 @@
 export interface assetGridSchema {
   category: string
   godot_version: string
+  /** Normalized numeric major line (e.g. 4 for "4.2"). */
+  godot_major?: number
   author: string
   title: string
   quick_description: string
