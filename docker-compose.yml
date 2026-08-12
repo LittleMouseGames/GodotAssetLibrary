@@ -8,6 +8,7 @@ services:
     restart: always
     env_file: .env
     environment:
+      - NODE_ENV=production
       - DB_USERNAME=$DB_USERNAME
       - DB_PASSWORD=$DB_PASSWORD
       - DB_HOST=db
@@ -17,6 +18,12 @@ services:
       - SMTP_PORT=$SMTP_PORT
       - SMTP_USER=$SMTP_USER
       - SMTP_PASS=$SMTP_PASS
+      - DRAGONFLY_URL=redis://dragonfly:6379
+    depends_on:
+      db:
+        condition: service_started
+      dragonfly:
+        condition: service_healthy
     ports:
       - "8080:3000"
     networks:
@@ -27,6 +34,27 @@ services:
       timeout: 5s
       retries: 3
       start_period: 10s
+
+  dragonfly:
+    image: docker.dragonflydb.io/dragonflydb/dragonfly:v1.35.1
+    container_name: gda_dragonfly
+    restart: unless-stopped
+    command:
+      - --cache_mode=true
+      - --maxmemory=512mb
+      - --proactor_threads=1
+      - --primary_port_http_enabled=false
+      - --version_check=false
+    ulimits:
+      memlock: -1
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+      start_period: 5s
 
   db:
     image: mongo:5.0.5
