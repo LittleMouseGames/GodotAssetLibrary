@@ -99,45 +99,67 @@
     <% const primaryMedia = it?.primaryMedia ?? null %>
     <% const fallbackImage = it?.fallbackImage ?? '/images/noimage.png' %>
     <div class="media<%= mediaItems.length <= 1 ? ' single-image' : '' %>">
-      <% if(mediaItems.length > 1) { %>
-      <div class="thumbnails">
-        <% mediaItems.forEach((item, index) => { %>
-        <button type="button" class="thumbnail-btn<%= index === 0 ? ' active' : '' %>"
-          data-media-index="<%= index %>" data-media-type="<%= item.type %>"
-          data-media-url="<%= item.type === 'video' ? item.embedUrl : item.url %>"
-          data-media-image-url="<%= item.url %>"
-          data-media-display-url="<%= item.type === 'image' ? generateProxyUrl(item.url, 1920, 1080) : '' %>"
-          aria-current="<%= index === 0 ? 'true' : 'false' %>"
-          aria-label="View media <%= index + 1 %>">
-          <img src="<%= generateProxyUrl(item.thumbnail, 150, 84) %>"
-            data-fallback-image="<%= item.thumbnail %>" alt="<%= it?.info?.title %> thumbnail <%= index + 1 %>"
-            loading="lazy" decoding="async">
-          <% if (item.type === 'video') { %><span class="thumb-play" aria-hidden="true">&#9654;</span><% } %>
-        </button>
-        <% }) %>
-      </div>
-      <% } %>
       <div class="player">
-        <div class="container">
-          <iframe class="media-frame" width="100%" height="100%" frameborder="0"
-            src="<%= primaryMedia?.type === 'video' ? primaryMedia.embedUrl : 'about:blank' %>"
-            style="<%= primaryMedia?.type === 'video' ? '' : 'display: none;' %>"
-            title="<%= it?.info?.title %> video preview"
-            allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-          <% if (primaryMedia?.type === 'image' || primaryMedia == null) { %>
-          <button type="button" class="media-image-button" aria-label="Open <%= it?.info?.title %> preview image">
-            <img class="media-frame media-image" data-media-type="image"
-              style=""
-              src="<%= generateProxyUrl(primaryMedia?.type === 'image' ? primaryMedia.url : fallbackImage, 1920, 1080) %>"
-              data-fallback-image="<%= primaryMedia?.type === 'image' ? primaryMedia.url : fallbackImage %>"
-              data-media-url="<%= primaryMedia?.type === 'image' ? primaryMedia.url : fallbackImage %>"
-              data-media-index="<%= primaryMedia?.type === 'image' ? 0 : '' %>"
-              width="1920" height="1080"
-              alt="<%= it?.info?.title %> preview image" fetchpriority="high" decoding="async">
-          </button>
+        <div class="container" data-media-stage>
+          <div class="media-layer media-image-layer" style="<%= primaryMedia?.type === 'video' ? 'display: none;' : '' %>">
+            <button type="button" class="media-image-button" data-media-index="<%= primaryMedia?.type === 'image' ? 0 : '' %>"
+              aria-label="Open <%= it?.info?.title %> preview image">
+              <img class="media-frame media-image" data-media-type="image"
+                src="<%= generateProxyUrl(primaryMedia?.type === 'image' ? primaryMedia.url : fallbackImage, 1920, 1080) %>"
+                data-fallback-image="<%= primaryMedia?.type === 'image' ? primaryMedia.url : fallbackImage %>"
+                data-media-url="<%= primaryMedia?.type === 'image' ? primaryMedia.url : fallbackImage %>"
+                width="1920" height="1080"
+                alt="<%= it?.info?.title %> preview image" fetchpriority="high" decoding="async">
+            </button>
+          </div>
+          <div class="media-layer media-video-layer"
+            data-media-video-layer
+            data-media-url="<%= primaryMedia?.type === 'video' ? primaryMedia.embedUrl : '' %>"
+            style="<%= primaryMedia?.type === 'video' ? '' : 'display: none;' %>">
+            <button type="button" class="video-cover" data-media-play aria-label="Play video preview">
+              <img class="video-poster"
+                src="<%= primaryMedia?.type === 'video' ? generateProxyUrl(primaryMedia.thumbnail, 1280, 720) : '' %>"
+                data-fallback-image="<%= primaryMedia?.type === 'video' ? primaryMedia.thumbnail : '' %>"
+                alt="" loading="lazy" decoding="async">
+              <span class="video-play-icon" aria-hidden="true">&#9654;</span>
+            </button>
+            <iframe class="media-frame media-video" data-media-iframe width="100%" height="100%" frameborder="0"
+              src="about:blank" style="display: none;"
+              title="<%= it?.info?.title %> video preview"
+              referrerpolicy="strict-origin-when-cross-origin"
+              allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+          </div>
+          <% if (mediaItems.length > 1) { %>
+          <button type="button" class="media-prev" data-media-prev aria-label="Previous media">&#8249;</button>
+          <button type="button" class="media-next" data-media-next aria-label="Next media">&#8250;</button>
           <% } %>
+          <div class="media-counter" data-media-counter aria-live="polite"><%= mediaItems.length > 1 ? `1 / ${mediaItems.length}` : '' %></div>
         </div>
       </div>
+      <% if(mediaItems.length > 1) { %>
+      <div class="thumbnails" data-media-rail>
+        <button type="button" class="rail-arrow rail-prev" data-media-rail-prev aria-label="Scroll thumbnails back">&#8249;</button>
+        <div class="rail-viewport" data-media-rail-viewport>
+          <div class="rail-track" data-media-rail-track>
+            <% mediaItems.forEach((item, index) => { %>
+            <button type="button" class="thumbnail-btn<%= index === 0 ? ' active' : '' %>"
+              data-media-index="<%= index %>" data-media-type="<%= item.type %>"
+              data-media-url="<%= item.type === 'video' ? item.embedUrl : item.url %>"
+              data-media-image-url="<%= item.url %>"
+              data-media-display-url="<%= item.type === 'image' ? generateProxyUrl(item.url, 1920, 1080) : '' %>"
+              aria-current="<%= index === 0 ? 'true' : 'false' %>"
+              aria-label="<%= item.type === 'video' ? `View video ${index + 1}` : `View image ${index + 1}` %>">
+              <img src="<%= generateProxyUrl(item.thumbnail, 150, 84) %>"
+                data-fallback-image="<%= item.thumbnail %>" alt="<%= it?.info?.title %> <%= item.type === 'video' ? 'video' : 'image' %> <%= index + 1 %>"
+                loading="lazy" decoding="async">
+              <% if (item.type === 'video') { %><span class="thumb-play" aria-hidden="true">&#9654;</span><% } %>
+            </button>
+            <% }) %>
+          </div>
+        </div>
+        <button type="button" class="rail-arrow rail-next" data-media-rail-next aria-label="Scroll thumbnails forward">&#8250;</button>
+      </div>
+      <% } %>
     </div>
     <div class="info">
       <div class="details">

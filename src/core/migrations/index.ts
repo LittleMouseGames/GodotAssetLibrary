@@ -4,6 +4,7 @@ import { createWeightedTextIndex } from './0001-create-text-index'
 import { backfillRatingScore } from './0002-backfill-rating-score'
 import { backfillModifyDate } from './0003-backfill-modify-date'
 import { dedupeReviewsAndIndex } from './0004-dedupe-reviews'
+import { backfillGodotMajor } from './0005-backfill-godot-major'
 
 export interface Migration {
   id: string
@@ -31,6 +32,11 @@ const MIGRATIONS: Migration[] = [
     id: '0004-dedupe-reviews',
     description: 'Deduplicate reviews by (user_id, asset_id) and create the unique index',
     run: dedupeReviewsAndIndex
+  },
+  {
+    id: '0005-backfill-godot-major',
+    description: 'Backfill the numeric godot_major used by major-line browsing filters',
+    run: backfillGodotMajor
   }
 ]
 

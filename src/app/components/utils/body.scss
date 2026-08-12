@@ -10,7 +10,8 @@ body {
   @include poppins-like-font;
   margin: 0;
   padding: 0;
-  background: #efefef;
+  background: var(--surface-page);
+  color: var(--text-primary);
   font-size: 14px;
   display: flex;
   flex-direction: column;
@@ -39,11 +40,11 @@ a {
 .main {
   section {
     a {
-      color: #2081db;
+      color: var(--link-color);
       transition: 0.01s;
 
       &:hover {
-        color: #204f79;
+        color: var(--link-color-hover);
         text-decoration: underline;
       }
     }

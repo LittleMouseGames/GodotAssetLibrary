@@ -4,7 +4,31 @@
 @include modal-styles;
 
 .modal-report {
-  button {
+  /* The X lives in the generic `.head`; give it the same high-specificity
+     transparent treatment as the install modal's header close so the merged
+     `.modal button` rule (black form-button) can never paint it dark. */
+  .head .close {
+    background: transparent;
+    border: none;
+    color: $text-gray-darker;
+    font-family: "Inter", sans-serif;
+    font-size: 24px;
+    line-height: 1;
+    padding: 2px 8px;
+    min-height: 0;
+    width: auto;
+    margin: 0;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 400;
+
+    &:hover {
+      background: var(--surface-subtle);
+      color: var(--text-primary);
+    }
+  }
+
+  form button {
     display: block;
     margin-left: auto;
   }

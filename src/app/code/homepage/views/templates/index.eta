@@ -10,17 +10,17 @@
 <section class="page-home">
   <section>
     <div class="section-head">
-      <h2>Popular with the community</h2>
-      <a class="view-all" href="/search/?sort=asset_rating" title="See all popular assets">View all</a>
+      <h2>Recently Updated</h2>
+      <a class="view-all" href="/search/" title="See all recently updated assets">View all</a>
     </div>
     <div class="container four-wide">
-      <% if (it.trendingAssets?.length > 0) { %>
-      <% it.trendingAssets.forEach(info => { %>
+      <% if (it.lastModifiedAssets?.length > 0) { %>
+      <% it.lastModifiedAssets.forEach(info => { %>
       <%~ includeFile('templates/components/partials/asset-card/asset-card.eta', { info: info, _locals: it?._locals }) %>
       <% }) %>
       <% } else { %>
-      <p class="section-empty">No popular assets right now. <a href="/search/?sort=last_modified">Browse recently
-          updated assets</a></p>
+      <p class="section-empty">No recently updated assets right now. <a href="/search/?sort=asset_rating">See popular
+          assets</a></p>
       <% } %>
     </div>
   </section>
@@ -84,16 +84,17 @@
 
   <section>
     <div class="section-head">
-      <h2>Newly Updated</h2>
-      <a class="view-all" href="/search/?sort=last_modified" title="See all recently updated assets">View all</a>
+      <h2>Popular with the community</h2>
+      <a class="view-all" href="/search/?sort=asset_rating" title="See all popular assets">View all</a>
     </div>
     <div class="container four-wide">
-      <% if (it.lastModifiedAssets?.length > 0) { %>
-      <% it.lastModifiedAssets.forEach(info => { %>
+      <% if (it.trendingAssets?.length > 0) { %>
+      <% it.trendingAssets.forEach(info => { %>
       <%~ includeFile('templates/components/partials/asset-card/asset-card.eta', { info: info, _locals: it?._locals }) %>
       <% }) %>
       <% } else { %>
-      <p class="section-empty">No recently updated assets right now.</p>
+      <p class="section-empty">No popular assets right now. <a href="/search/?sort=last_modified">Browse recently
+          updated assets</a></p>
       <% } %>
     </div>
   </section>

@@ -2,16 +2,18 @@ import { Document, WithId } from 'mongodb'
 import { MongoHelper } from 'core/MongoHelper'
 import { assetGridSchema } from 'app/components/partials/catalog-grid/asset-grd-schema'
 import { PUBLIC_ASSET_FILTER } from 'core/utils/publicCatalog'
+import { godotMajorFilter } from 'core/utils/godotVersionPreference'
 
 interface ReturnedAssets extends WithId<Document>, assetGridSchema {}
 
-export async function GetTrendingAssets (): Promise<ReturnedAssets[]> {
+export async function GetTrendingAssets (major?: number): Promise<ReturnedAssets[]> {
   const mongo = MongoHelper.getDatabase()
   // Stable "popular" ordering: confidence-adjusted rating first, then raw
   // upvotes and id as deterministic tie-breakers. No random sampling, so the
-  // section does not reshuffle between requests.
+  // section does not reshuffle between requests. The major pin is applied
+  // before sorting/limiting so the section stays full for the pinned version.
   const operationObject = await mongo.collection('assets').aggregate([{
-    $match: { ...PUBLIC_ASSET_FILTER }
+    $match: { ...PUBLIC_ASSET_FILTER, ...godotMajorFilter(major) }
   }, {
     $sort: {
       rating_score: -1,
@@ -25,6 +27,7 @@ export async function GetTrendingAssets (): Promise<ReturnedAssets[]> {
     $project: {
       category: 1,
       godot_version: 1,
+      godot_major: 1,
       author: 1,
       title: 1,
       quick_description: 1,
@@ -37,6 +40,7 @@ export async function GetTrendingAssets (): Promise<ReturnedAssets[]> {
       previews: 1,
       card_banner: 1,
       modify_date: 1,
+      modify_date_at: 1,
       added_date: 1,
       version_string: 1,
       type: 1,

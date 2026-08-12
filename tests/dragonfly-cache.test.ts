@@ -1,6 +1,11 @@
 import { describe, it } from 'node:test'
 import assert from 'node:assert/strict'
-import { cacheGetOrLoad, buildAssetCacheKey, buildUserContextCacheKey } from '../src/core/utils/dragonfly'
+import {
+  cacheGetOrLoad,
+  buildAssetCacheKey,
+  buildAllAssetCacheKeys,
+  buildUserContextCacheKey
+} from '../src/core/utils/dragonfly'
 import { reset, snapshot } from '../src/core/utils/telemetry'
 
 describe('Dragonfly cache', () => {
@@ -29,9 +34,25 @@ describe('Dragonfly cache', () => {
     }
   })
 
-  it('builds a stable asset page cache key', () => {
-    assert.equal(buildAssetCacheKey('abc-123'), 'gda:v1:asset:abc-123')
-    assert.equal(buildAssetCacheKey('abc-123'), buildAssetCacheKey('abc-123'))
+  it('builds major-partitioned asset page cache keys', () => {
+    assert.equal(buildAssetCacheKey('abc-123', 4), 'gda:v2:asset:abc-123:4')
+    assert.equal(buildAssetCacheKey('abc-123', undefined), 'gda:v2:asset:abc-123:all')
+    assert.equal(buildAssetCacheKey('abc-123', 4), buildAssetCacheKey('abc-123', 4))
+    assert.notEqual(buildAssetCacheKey('abc-123', 4), buildAssetCacheKey('abc-123', 3))
+  })
+
+  it('returns every PDP cache variant for invalidation', () => {
+    const variants = buildAllAssetCacheKeys('abc-123')
+    assert.equal(variants.length, 4)
+    assert.deepEqual(
+      [...variants].sort(),
+      [
+        'gda:v2:asset:abc-123:2',
+        'gda:v2:asset:abc-123:3',
+        'gda:v2:asset:abc-123:4',
+        'gda:v2:asset:abc-123:all'
+      ].sort()
+    )
   })
 
   it('builds a stable user context cache key', () => {

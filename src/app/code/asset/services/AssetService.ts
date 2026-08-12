@@ -33,7 +33,9 @@ import { buildAssetUrl } from 'core/utils/assetUrl'
 import { buildCategoryPath } from 'core/utils/taxonomyUrl'
 import { BadRequestError } from 'core/utils/httpError'
 import { attachCardExtras } from 'core/utils/cardView'
-import { buildAssetCacheKey, cacheDelete, cacheGetOrLoad } from 'core/utils/dragonfly'
+import { buildAllAssetCacheKeys, buildAssetCacheKey, cacheDelete, cacheGetOrLoad } from 'core/utils/dragonfly'
+import { GODOT_VERSION_PREFERENCE_COOKIE } from 'core/utils/godotVersionPreference'
+import { resolveBrowsingMajor } from 'core/utils/godotMajorAvailability'
 
 const REVIEWS_PER_PAGE = 10
 
@@ -54,9 +56,12 @@ interface AssetPageData {
  * requested page of reviews, the persisted review count and related assets.
  * The four MongoDB operations are consolidated so a Dragonfly cache hit serves
  * the whole page from memory. Mutations that change any of these (reviews,
- * admin review deletion) invalidate the cache key.
+ * admin review deletion) invalidate the cache keys.
+ *
+ * `major` is the visitor's pinned Godot major and constrains the related-asset
+ * cards bundled into the cached page.
  */
-async function loadAssetPageData (assetId: string, reviewsPage = 0): Promise<AssetPageData> {
+async function loadAssetPageData (assetId: string, reviewsPage = 0, major?: number): Promise<AssetPageData> {
   const assetInfo = await GetAssetDisplayInformation(assetId)
 
   if (assetInfo === null) {
@@ -74,7 +79,7 @@ async function loadAssetPageData (assetId: string, reviewsPage = 0): Promise<Ass
   const [commentsResult, reviewCountResult, relatedAssetsResult] = await Promise.allSettled([
     GetAssetReviewsById(assetId, REVIEWS_PER_PAGE, reviewsPage * REVIEWS_PER_PAGE),
     GetAssetReviewCount(assetId),
-    GetRelatedAssets(assetInfo.category, assetInfo.godot_version, assetInfo.type, assetInfo.asset_id)
+    GetRelatedAssets(assetInfo.category, assetInfo.godot_version, assetInfo.type, assetInfo.asset_id, major)
   ])
 
   return {
@@ -117,6 +122,10 @@ export class AssetService {
         ? 0
         : Math.max(0, Math.min(100, parsedReviewsPage))
 
+      // Related cards bundled into the anonymous cached page follow the
+      // visitor's pinned major (asset pages have no exact engine selection).
+      const relatedMajor = await resolveBrowsingMajor(req.cookies[GODOT_VERSION_PREFERENCE_COOKIE])
+
       // The public asset page is expensive (~4 Mongo ops). Cache the shared
       // anonymous default view (page 0) in Dragonfly; authenticated requests,
       // paginated review views and a shared-cache outage fall back to a direct
@@ -126,9 +135,9 @@ export class AssetService {
       let bundle: AssetPageData
       if (cacheable) {
         const cached = await cacheGetOrLoad<AssetPageData>(
-          buildAssetCacheKey(assetId),
+          buildAssetCacheKey(assetId, relatedMajor),
           ASSET_CACHE_TTL_SECONDS,
-          async () => await loadAssetPageData(assetId),
+          async () => await loadAssetPageData(assetId, 0, relatedMajor),
           10_000
         )
         // Defensive clone so per-request mutations (saved state, card extras,
@@ -137,7 +146,7 @@ export class AssetService {
       } else {
         // Paginated or authenticated views bypass the cache and must load the
         // requested reviews page (the cached bundle is always page 0).
-        bundle = await loadAssetPageData(assetId, reviewsPage)
+        bundle = await loadAssetPageData(assetId, reviewsPage, relatedMajor)
       }
       const { assetInfo, comments, reviewCount, relatedAssets } = bundle
 
@@ -356,9 +365,9 @@ export class AssetService {
     // the confidence-adjusted rating_score always match what cards display.
     await RefreshAssetRating(assetId)
 
-    // The public asset page is cached briefly; drop its entry so the review
-    // and its rating change are reflected immediately.
-    void cacheDelete(buildAssetCacheKey(assetId))
+    // The public asset page is cached briefly; drop every major variant so the
+    // review and its rating change are reflected immediately.
+    void cacheDelete(...buildAllAssetCacheKeys(assetId))
 
     res.send()
   }

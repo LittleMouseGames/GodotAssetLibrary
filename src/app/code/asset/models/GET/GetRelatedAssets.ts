@@ -2,6 +2,7 @@ import { Document, WithId } from 'mongodb'
 import { MongoHelper } from 'core/MongoHelper'
 import { assetGridSchema } from 'app/components/partials/catalog-grid/asset-grd-schema'
 import { PUBLIC_ASSET_FILTER } from 'core/utils/publicCatalog'
+import { godotMajorFilter } from 'core/utils/godotVersionPreference'
 
 interface ReturnedAssets extends WithId<Document>, assetGridSchema {}
 
@@ -10,18 +11,24 @@ interface ReturnedAssets extends WithId<Document>, assetGridSchema {}
  * same-category assets is ranked by how close each peer is to the current
  * asset: exact Godot version first, then same major version, then same type,
  * then by confidence-adjusted rating and recency.
+ *
+ * When a major pin is active (the caller passes `major`), the pool is strictly
+ * constrained to that major line before ranking, so related cards never show
+ * assets from another engine generation.
  */
 export async function GetRelatedAssets (
   category: string,
   godotVersion: string | undefined,
   assetType: string | undefined,
-  excludeAssetId: string
+  excludeAssetId: string,
+  major?: number
 ): Promise<ReturnedAssets[]> {
   const mongo = MongoHelper.getDatabase()
 
   const pool = await mongo.collection('assets').find(
     {
       ...PUBLIC_ASSET_FILTER,
+      ...godotMajorFilter(major),
       asset_id: { $ne: excludeAssetId },
       category: category
     },
@@ -31,6 +38,7 @@ export async function GetRelatedAssets (
       projection: {
         category: 1,
         godot_version: 1,
+        godot_major: 1,
         author: 1,
         title: 1,
         quick_description: 1,
@@ -52,13 +60,13 @@ export async function GetRelatedAssets (
     }
   ).toArray() as ReturnedAssets[]
 
-  const major = godotVersion?.split('.')[0]
+  const assetMajor = godotVersion?.split('.')[0]
   const ranked = pool
     .map(asset => {
       let tier = 3
       if (godotVersion !== undefined && godotVersion !== '' && asset.godot_version === godotVersion) {
         tier = 0
-      } else if (major !== undefined && major !== '' && String(asset.godot_version ?? '').split('.')[0] === major) {
+      } else if (assetMajor !== undefined && assetMajor !== '' && String(asset.godot_version ?? '').split('.')[0] === assetMajor) {
         tier = 1
       } else if (assetType !== undefined && assetType !== '' && asset.type === assetType) {
         tier = 2

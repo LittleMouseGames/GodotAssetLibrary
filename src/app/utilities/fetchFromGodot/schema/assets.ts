@@ -12,6 +12,8 @@ export interface assetSchema {
   'category_lowercase': string
   'category_id': string
   'godot_version': string
+  /** Normalized numeric major line (e.g. 4 for "4.2"); absent when unparseable. */
+  'godot_major'?: number
   'rating': string
   'cost': string
   'description': string

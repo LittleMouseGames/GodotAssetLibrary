@@ -304,95 +304,380 @@ window.godotLibrary = {
       }
     }
   },
+  theme: {
+    key: 'godot-theme',
+    mediaQuery: null,
+
+    init: function () {
+      // Listen for OS theme changes ONLY while the user is on "System".
+      if (typeof window.matchMedia === 'function') {
+        const self = this
+        this.mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
+        const listener = function () {
+          if (self.getStored() === 'system') self.apply(self.resolve('system'))
+        }
+        if (typeof this.mediaQuery.addEventListener === 'function') {
+          this.mediaQuery.addEventListener('change', listener)
+        } else if (typeof this.mediaQuery.addListener === 'function') {
+          this.mediaQuery.addListener(listener)
+        }
+      }
+      this.syncControl()
+    },
+
+    getStored: function () {
+      try {
+        const value = window.localStorage.getItem(this.key)
+        return (value === 'light' || value === 'dark' || value === 'system') ? value : 'system'
+      } catch (e) {
+        return 'system'
+      }
+    },
+
+    setStored: function (value) {
+      try { window.localStorage.setItem(this.key, value) } catch (e) { /* storage unavailable */ }
+    },
+
+    resolve: function (theme) {
+      if (theme === 'system') {
+        if (this.mediaQuery != null && this.mediaQuery.matches) return 'dark'
+        return 'light'
+      }
+      return theme
+    },
+
+    apply: function (resolved) {
+      document.documentElement.setAttribute('data-theme', resolved)
+      const meta = document.querySelector('meta[name="theme-color"]')
+      if (meta !== null) meta.setAttribute('content', resolved === 'dark' ? '#141518' : '#ffffff')
+    },
+
+    set: function (theme) {
+      if (theme !== 'system' && theme !== 'light' && theme !== 'dark') return
+      this.setStored(theme)
+      this.apply(this.resolve(theme))
+      this.syncControl()
+    },
+
+    syncControl: function () {
+      const stored = this.getStored()
+      const control = document.querySelector('[data-theme-control]')
+      if (control === null) return
+
+      const label = control.querySelector('.theme-label')
+      if (label !== null) label.textContent = stored.charAt(0).toUpperCase() + stored.slice(1)
+
+      const icon = control.querySelector('.theme-icon')
+      if (icon !== null) {
+        const icons = { system: 'mdi:theme-light-dark', light: 'mdi:white-balance-sunny', dark: 'mdi:weather-night' }
+        icon.setAttribute('data-icon', icons[stored] ?? icons.system)
+      }
+
+      control.querySelectorAll('[data-theme]').forEach(option => {
+        option.classList.toggle('active', option.getAttribute('data-theme') === stored)
+      })
+    }
+  },
   media: {
     activeTrigger: null,
+    selectedIndex: 0,
+
+    getStage: function () {
+      return document.querySelector('.player .container[data-media-stage]')
+    },
     getLightbox: function () {
       return document.querySelector('.modal.media-lightbox')
     },
-    getImageButtons: function () {
-      return Array.from(document.querySelectorAll('.thumbnail-btn[data-media-type="image"]'))
+    getThumbnails: function () {
+      return Array.from(document.querySelectorAll('.thumbnail-btn'))
+    },
+    getThumbnail: function (index) {
+      return document.querySelector(`.thumbnail-btn[data-media-index="${index}"]`) ?? null
+    },
+    /** Gallery indices that are images (the lightbox is image-only). */
+    getImageIndices: function () {
+      const indices = []
+      for (const button of this.getThumbnails()) {
+        if (button.getAttribute('data-media-type') === 'image') {
+          indices.push(button.getAttribute('data-media-index'))
+        }
+      }
+      const primary = document.querySelector('.player .media-image-button')
+      if (primary !== null) {
+        const index = primary.getAttribute('data-media-index')
+        if (index !== null && index !== '' && !indices.includes(index)) indices.push(index)
+      }
+      return indices
+    },
+    init: function () {
+      const active = this.getThumbnails().find(button => button.classList.contains('active'))
+      if (active !== undefined) this.selectedIndex = Number(active.getAttribute('data-media-index'))
+      this.updateCounter()
+      this.updateLightboxNav()
+      this.wireSwipe()
     },
     switchToMedia: function (index) {
-      const button = document.querySelector(`.thumbnail-btn[data-media-index="${index}"]`)
-      const image = document.querySelector('.player .media-image')
-      const iframe = document.querySelector('.player iframe.media-frame')
+      const thumb = this.getThumbnail(index)
+      if (thumb === null) return
 
-      if (button === null || image === null || iframe === null) return
+      const type = thumb.getAttribute('data-media-type')
+      const stage = this.getStage()
+      const imageLayer = stage?.querySelector('.media-image-layer')
+      const videoLayer = stage?.querySelector('.media-video-layer')
+      const image = stage?.querySelector('.media-image')
+      const iframe = stage?.querySelector('[data-media-iframe]')
+      const poster = stage?.querySelector('.video-cover')
 
-      const type = button.getAttribute('data-media-type')
-      const mediaUrl = button.getAttribute('data-media-url')
-      const imageUrl = button.getAttribute('data-media-image-url')
-      const displayUrl = button.getAttribute('data-media-display-url')
+      this.selectedIndex = Number(index)
 
-      document.querySelectorAll('.thumbnail-btn').forEach(item => {
-        item.classList.remove('active')
-        item.setAttribute('aria-current', 'false')
-      })
-      button.classList.add('active')
-      button.setAttribute('aria-current', 'true')
+      for (const button of this.getThumbnails()) {
+        button.classList.remove('active')
+        button.setAttribute('aria-current', 'false')
+      }
+      thumb.classList.add('active')
+      thumb.setAttribute('aria-current', 'true')
 
-      if (type === 'video' && mediaUrl !== null) {
-        image.style.display = 'none'
-        image.dataset.mediaIndex = ''
-        iframe.style.display = 'block'
-        iframe.src = mediaUrl
+      if (type === 'video') {
+        if (imageLayer !== null) imageLayer.style.display = 'none'
+        if (videoLayer !== null) videoLayer.style.display = 'block'
+        // Click-to-load: show the poster and wait for an explicit play
+        // gesture before creating/loading the privacy-enhanced iframe.
+        if (iframe !== null) {
+          iframe.src = 'about:blank'
+          iframe.style.display = 'none'
+        }
+        if (poster !== null) {
+          const posterImage = poster.querySelector('img')
+          const thumbImage = thumb.querySelector('img')
+          if (posterImage !== null && thumbImage !== null) {
+            posterImage.src = thumbImage.currentSrc || thumbImage.src || thumbImage.dataset?.fallbackImage || '/images/noimage.png'
+            posterImage.dataset.triedFallback = 'false'
+          }
+          poster.style.display = 'flex'
+        }
+        if (videoLayer !== null) {
+          videoLayer.setAttribute('data-media-url', thumb.getAttribute('data-media-url') ?? '')
+        }
+      } else {
+        if (videoLayer !== null) {
+          const videoIframe = videoLayer.querySelector('[data-media-iframe]')
+          if (videoIframe !== null) videoIframe.src = 'about:blank'
+          videoLayer.style.display = 'none'
+        }
+        if (imageLayer !== null) {
+          imageLayer.style.display = 'block'
+          if (image !== null) {
+            const thumbImage = thumb.querySelector('img')
+            image.src = thumb.getAttribute('data-media-display-url') ||
+              thumb.getAttribute('data-media-image-url') ||
+              thumb.getAttribute('data-media-url') ||
+              '/images/noimage.png'
+            image.dataset.fallbackImage = thumb.getAttribute('data-media-image-url') ?? ''
+            image.dataset.mediaIndex = index
+            image.dataset.mediaUrl = thumb.getAttribute('data-media-image-url') ?? ''
+            image.dataset.triedFallback = 'false'
+            image.setAttribute('alt', thumbImage?.getAttribute('alt') ?? 'Asset preview image')
+            // openLightbox reads the index from the focusable wrapper button,
+            // so keep it in sync with the image itself.
+            const imageButton = image.closest('.media-image-button')
+            if (imageButton !== null) imageButton.setAttribute('data-media-index', index)
+          }
+        }
+      }
+
+      this.updateCounter()
+      this.scrollThumbnailIntoView(index)
+      this.refreshLazy()
+    },
+    playVideo: function () {
+      const stage = this.getStage()
+      const videoLayer = stage?.querySelector('.media-video-layer')
+      const iframe = stage?.querySelector('[data-media-iframe]')
+      const poster = stage?.querySelector('.video-cover')
+      if (videoLayer === null || iframe === null) return
+
+      const baseUrl = videoLayer.getAttribute('data-media-url') ?? ''
+      if (baseUrl === '' || baseUrl === 'about:blank') return
+
+      iframe.src = baseUrl + (baseUrl.indexOf('?') === -1 ? '?autoplay=1' : '&autoplay=1')
+      iframe.style.display = 'block'
+      if (poster !== null) poster.style.display = 'none'
+    },
+    previous: function () { this.move(-1) },
+    next: function () { this.move(1) },
+    move: function (direction) {
+      const thumbs = this.getThumbnails()
+      if (thumbs.length < 2) return
+      const current = thumbs.findIndex(button => Number(button.getAttribute('data-media-index')) === this.selectedIndex)
+      if (current === -1) return
+      const next = thumbs[(current + direction + thumbs.length) % thumbs.length]
+      this.switchToMedia(next.getAttribute('data-media-index'))
+    },
+    scrollThumbnailIntoView: function (index) {
+      const thumb = this.getThumbnail(index)
+      const viewport = document.querySelector('[data-media-rail-viewport]')
+      if (thumb === null || viewport === null) return
+      const left = Math.max(0, thumb.offsetLeft - (viewport.clientWidth - thumb.clientWidth) / 2)
+      if (typeof viewport.scrollTo === 'function') {
+        viewport.scrollTo({ left, behavior: 'smooth' })
+      } else {
+        viewport.scrollLeft = left
+      }
+    },
+    scrollRail: function (direction) {
+      const viewport = document.querySelector('[data-media-rail-viewport]')
+      if (viewport === null) return
+      if (typeof viewport.scrollBy === 'function') {
+        viewport.scrollBy({ left: direction * viewport.clientWidth * 0.8, behavior: 'smooth' })
+      } else {
+        viewport.scrollLeft += direction * viewport.clientWidth * 0.8
+      }
+    },
+    refreshLazy: function () {
+      if (typeof window.lazySizes !== 'undefined' && typeof window.lazySizes.updateAll === 'function') {
+        window.lazySizes.updateAll()
+      } else {
+        window.dispatchEvent(new Event('resize'))
+      }
+    },
+    updateCounter: function () {
+      const total = this.getThumbnails().length
+      const counter = document.querySelector('[data-media-counter]')
+      if (counter === null) return
+      if (total < 2) {
+        counter.style.display = 'none'
         return
       }
-
-      if (imageUrl !== null) {
-        iframe.src = 'about:blank'
-        iframe.style.display = 'none'
-        image.style.display = 'block'
-        image.src = displayUrl || imageUrl
-        image.dataset.fallbackImage = imageUrl
-        image.dataset.mediaUrl = imageUrl
-        image.dataset.mediaIndex = index
-        image.dataset.triedFallback = 'false'
-      }
+      counter.style.display = ''
+      counter.textContent = `${this.selectedIndex + 1} / ${total}`
     },
     showLightboxImage: function (index, fallbackUrl, fallbackAlt) {
       const lightbox = this.getLightbox()
       const image = lightbox?.querySelector('[data-media-lightbox-image]')
-      const button = document.querySelector(`.thumbnail-btn[data-media-index="${index}"]`)
-
+      const thumb = this.getThumbnail(index)
       if (lightbox === null || image === null) return
 
-      const url = button?.getAttribute('data-media-image-url') ?? fallbackUrl
+      const url = thumb?.getAttribute('data-media-image-url') ?? fallbackUrl
       if (url === null || url === undefined || url === '') return
 
       image.src = url
       image.dataset.fallbackImage = '/images/noimage.png'
       image.dataset.triedFallback = 'false'
-      image.alt = button?.querySelector('img')?.alt ?? fallbackAlt ?? 'Asset preview image'
+      image.alt = thumb?.querySelector('img')?.getAttribute('alt') ?? fallbackAlt ?? 'Asset preview image'
       lightbox.dataset.mediaIndex = index
+      const caption = lightbox.querySelector('[data-lightbox-caption]')
+      if (caption !== null) caption.textContent = image.alt
+      this.updateLightboxCounter(index)
+      this.syncLightboxStrip(index)
+    },
+    updateLightboxCounter: function (index) {
+      const indices = this.getImageIndices()
+      const lightbox = this.getLightbox()
+      const counter = lightbox?.querySelector('[data-lightbox-counter]')
+      if (counter === null) return
+      const position = indices.indexOf(String(index))
+      counter.textContent = position >= 0 ? `${position + 1} / ${indices.length}` : ''
+    },
+    syncLightboxStrip: function (index) {
+      const lightbox = this.getLightbox()
+      const strip = lightbox?.querySelector('[data-lightbox-strip]')
+      if (lightbox === null || strip === null) return
+      const indices = this.getImageIndices()
+
+      strip.replaceChildren()
+      for (const imageIndex of indices) {
+        const thumb = this.getThumbnail(imageIndex)
+        const button = document.createElement('button')
+        button.type = 'button'
+        button.className = 'lightbox-strip-item'
+        button.setAttribute('aria-label', 'Show image')
+        if (String(imageIndex) === String(index)) {
+          button.classList.add('active')
+          button.setAttribute('aria-current', 'true')
+        }
+        const img = document.createElement('img')
+        img.src = thumb?.querySelector('img')?.getAttribute('src') ?? thumb?.getAttribute('data-media-image-url') ?? '/images/noimage.png'
+        img.alt = ''
+        img.loading = 'lazy'
+        img.decoding = 'async'
+        button.appendChild(img)
+        button.addEventListener('click', function () {
+          window.godotLibrary.media.showLightboxImage(imageIndex)
+        })
+        strip.appendChild(button)
+      }
     },
     openLightbox: function (trigger) {
       const lightbox = this.getLightbox()
       const image = lightbox?.querySelector('[data-media-lightbox-image]')
-      const index = trigger.dataset.mediaIndex
+      const index = trigger.getAttribute('data-media-index')
 
       if (lightbox === null || image === null || index === undefined || index === '') return
 
       this.activeTrigger = trigger
-      this.showLightboxImage(index, trigger.dataset.mediaUrl ?? trigger.dataset.fallbackImage ?? trigger.currentSrc, trigger.alt)
+      this.showLightboxImage(
+        index,
+        trigger.getAttribute('data-media-url') ?? trigger.getAttribute('data-fallback-image') ?? '/images/noimage.png',
+        trigger.getAttribute('aria-label') ?? ''
+      )
       window.godotLibrary.dialog.open(lightbox, trigger)
+      this.updateLightboxNav()
+    },
+    updateLightboxNav: function () {
+      const lightbox = this.getLightbox()
+      if (lightbox === null) return
+      const count = this.getImageIndices().length
+      const prev = lightbox.querySelector('[data-media-lightbox-previous]')
+      const next = lightbox.querySelector('[data-media-lightbox-next]')
+      const strip = lightbox.querySelector('[data-lightbox-strip]')
+      if (prev !== null) prev.style.display = count < 2 ? 'none' : ''
+      if (next !== null) next.style.display = count < 2 ? 'none' : ''
+      if (strip !== null) strip.style.display = count < 2 ? 'none' : ''
     },
     closeLightbox: function () {
       const lightbox = this.getLightbox()
       if (lightbox === null) return
-
       window.godotLibrary.dialog.close(lightbox)
     },
     moveLightbox: function (direction) {
       const lightbox = this.getLightbox()
-      if (lightbox === null) return
+      if (lightbox === null || !lightbox.classList.contains('active')) return
 
-      const buttons = this.getImageButtons()
-      const current = buttons.findIndex(button => button.dataset.mediaIndex === lightbox.dataset.mediaIndex)
-      if (current === -1 || buttons.length < 2) return
+      const indices = this.getImageIndices()
+      const current = indices.indexOf(lightbox.dataset.mediaIndex)
+      if (current === -1 || indices.length < 2) return
 
-      const next = buttons[(current + direction + buttons.length) % buttons.length]
-      this.showLightboxImage(next.dataset.mediaIndex)
+      const next = (current + direction + indices.length) % indices.length
+      this.showLightboxImage(indices[next])
+    },
+    wireSwipe: function () {
+      const stage = this.getStage()
+      if (stage === null) return
+
+      let startX = 0
+      let startY = 0
+      let tracking = false
+
+      stage.addEventListener('touchstart', function (event) {
+        const touch = event.changedTouches?.[0]
+        if (touch === undefined) return
+        startX = touch.clientX
+        startY = touch.clientY
+        tracking = true
+      }, { passive: true })
+
+      stage.addEventListener('touchend', function (event) {
+        if (!tracking) return
+        tracking = false
+        const touch = event.changedTouches?.[0]
+        if (touch === undefined) return
+        const deltaX = touch.clientX - startX
+        const deltaY = touch.clientY - startY
+        // Only horizontal swipes navigate; keep vertical scrolling intact.
+        if (Math.abs(deltaX) > 48 && Math.abs(deltaX) > Math.abs(deltaY) * 1.5) {
+          window.godotLibrary.media.move(deltaX < 0 ? 1 : -1)
+        }
+      }, { passive: true })
     }
   },
   docs: {
@@ -450,18 +735,46 @@ document.addEventListener('click', function (event) {
     return
   }
 
-  const mediaImage = target.closest('.media-image')
-  if (mediaImage !== null) {
-    window.godotLibrary.media.openLightbox(mediaImage)
+  const playButton = target.closest('[data-media-play]')
+  if (playButton !== null) {
+    window.godotLibrary.media.playVideo()
     return
   }
 
-  if (target.closest('[data-media-lightbox-close]') !== null) {
+  const mediaImageButton = target.closest('.media-image-button')
+  if (mediaImageButton !== null) {
+    window.godotLibrary.media.openLightbox(mediaImageButton)
+    return
+  }
+
+  if (target.closest('[data-media-prev]') !== null) {
+    window.godotLibrary.media.previous()
+  } else if (target.closest('[data-media-next]') !== null) {
+    window.godotLibrary.media.next()
+  } else if (target.closest('[data-media-rail-prev]') !== null) {
+    window.godotLibrary.media.scrollRail(-1)
+  } else if (target.closest('[data-media-rail-next]') !== null) {
+    window.godotLibrary.media.scrollRail(1)
+  } else if (target.closest('[data-media-lightbox-close]') !== null) {
     window.godotLibrary.media.closeLightbox()
   } else if (target.closest('[data-media-lightbox-previous]') !== null) {
     window.godotLibrary.media.moveLightbox(-1)
   } else if (target.closest('[data-media-lightbox-next]') !== null) {
     window.godotLibrary.media.moveLightbox(1)
+  }
+})
+
+document.addEventListener('click', function (event) {
+  const target = event.target
+  if (!(target instanceof Element)) return
+
+  // Theme selector in the header: System / Light / Dark (client-only).
+  const themeOption = target.closest('[data-theme]')
+  if (themeOption !== null) {
+    const value = themeOption.getAttribute('data-theme')
+    if (value !== null) window.godotLibrary.theme.set(value)
+    const dropdown = themeOption.closest('.dropdown')
+    if (dropdown !== null) window.godotLibrary.dropdown.close(dropdown)
   }
 })
 
@@ -590,7 +903,26 @@ document.addEventListener('keydown', function (event) {
     window.godotLibrary.media.moveLightbox(-1)
   } else if (event.key === 'ArrowRight') {
     window.godotLibrary.media.moveLightbox(1)
+  } else if (event.key === 'Home') {
+    const indices = window.godotLibrary.media.getImageIndices()
+    if (indices.length > 0) window.godotLibrary.media.showLightboxImage(indices[0])
+  } else if (event.key === 'End') {
+    const indices = window.godotLibrary.media.getImageIndices()
+    if (indices.length > 0) window.godotLibrary.media.showLightboxImage(indices[indices.length - 1])
   }
+})
+
+// Main-viewer keyboard navigation: arrows move through the gallery when the
+// focus is inside the player (not the lightbox) and not in a form control.
+document.addEventListener('keydown', function (event) {
+  if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') return
+  const lightbox = window.godotLibrary.media.getLightbox()
+  if (lightbox !== null && lightbox.classList.contains('active')) return
+  const target = event.target
+  if (!(target instanceof Element) || target.closest('.player') === null) return
+  if (target.matches('input, textarea, select') || target.isContentEditable) return
+  event.preventDefault()
+  window.godotLibrary.media.move(event.key === 'ArrowLeft' ? -1 : 1)
 })
 
 document.addEventListener('keydown', function (event) {
@@ -623,7 +955,7 @@ document.addEventListener('change', function (event) {
 })
 
 document.addEventListener('keydown', function (event) {
-  if ((event.key === 'Enter' || event.key === ' ') && event.target instanceof Element && event.target.matches('.media-image')) {
+  if ((event.key === 'Enter' || event.key === ' ') && event.target instanceof Element && event.target.matches('.media-image-button')) {
     event.preventDefault()
     window.godotLibrary.media.openLightbox(event.target)
   }
@@ -709,6 +1041,9 @@ function closeAllModals () {
 }
 
 document.addEventListener('DOMContentLoaded', function (_event) {
+  window.godotLibrary.theme.init()
+  window.godotLibrary.media.init()
+
   document.querySelectorAll('.accordion').forEach(accordion => {
     const trigger = accordion.querySelector('.accordion-trigger')
     const content = accordion.querySelector('.accordion-content')

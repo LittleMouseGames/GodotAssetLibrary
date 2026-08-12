@@ -4,10 +4,10 @@
 @mixin _form-shared {
   @include inter-like-font();
   background: $button-gray;
-  color: $text-dark-darker;
+  color: var(--text-primary);
   padding: 15px;
   border-radius: 4px;
-  border: none;
+  border: 1px solid var(--border-color);
   width: 100%;
   box-sizing: border-box;
   font-size: 14px;
@@ -26,7 +26,7 @@
   @include inter-like-font();
   background: $button-very-dark;
   border: none;
-  color: white;
+  color: var(--button-primary-text);
   border-radius: 3px;
   font-weight: 600;
   padding: 12px 27px;
@@ -62,7 +62,7 @@
     .input:not(:placeholder-shown) ~ .placeholder {
       transform: translateY(-22px) translateX(-6px);
       padding: 0px 6px 3px 6px;
-      background: #efefef;
+      background: var(--surface-page);
       font-size: 12px;
       color: $text-dark-deep-gray;
       border: 1px solid $text-light-gray;
@@ -94,8 +94,8 @@
   $padding: 7px 13px,
   $background: transparent,
   $border-color: $text-light-gray,
-  $content-background: white,
-  $hover-color: $text-light-lightest
+  $content-background: var(--surface-elevated),
+  $hover-color: var(--surface-subtle)
 ) {
   .dropdown {
     @include poppins-like-font;
@@ -186,7 +186,7 @@
     width: 100%;
     height: 100%;
     position: fixed;
-    z-index: 4;
+    z-index: $z-dialog;
     display: none;
     top: 0;
     left: 0;
@@ -210,12 +210,13 @@
 
     .body {
       border-radius: 6px;
-      background: white;
+      background: var(--surface-elevated);
       z-index: 1;
       padding: 15px;
       width: min(600px, calc(100vw - 32px));
       max-height: 90vh;
       overflow-y: auto;
+      color: var(--text-primary);
     }
 
     .head {

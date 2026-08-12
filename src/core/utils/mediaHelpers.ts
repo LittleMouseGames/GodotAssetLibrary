@@ -9,6 +9,10 @@ export interface MediaItem {
   url: string
   thumbnail: string
   embedUrl?: string
+  /** YouTube video ID (video items only), used to synthesize posters. */
+  videoId?: string
+  /** Reliable poster image for a video (upstream thumbnail or synthesized). */
+  poster?: string
 }
 
 const YOUTUBE_HOSTS = new Set([
@@ -60,7 +64,36 @@ function getStartTime (value: string | null): string {
   return Number.isSafeInteger(seconds) && seconds > 0 ? `?start=${seconds}` : ''
 }
 
-/** Returns a safe embeddable YouTube URL, or null for non-YouTube media. */
+/** Extract a validated YouTube video ID from a parsed URL, or null. */
+function extractYoutubeVideoId (parsed: URL): string | null {
+  const host = parsed.hostname.toLowerCase()
+
+  if (host.endsWith('youtu.be')) {
+    return getVideoId(parsed.pathname.split('/').filter(Boolean)[0] ?? null)
+  }
+
+  if (parsed.pathname.startsWith('/watch')) {
+    return getVideoId(parsed.searchParams.get('v'))
+  }
+
+  // /embed/<id>, /shorts/<id>, /live/<id>, legacy /v/<id>
+  const pathSegments = parsed.pathname.split('/').filter(Boolean)
+  if (
+    parsed.pathname.startsWith('/embed/') ||
+    parsed.pathname.startsWith('/shorts/') ||
+    parsed.pathname.startsWith('/live/') ||
+    parsed.pathname.startsWith('/v/')
+  ) {
+    return getVideoId(pathSegments[1] ?? null)
+  }
+
+  return null
+}
+
+/**
+ * Returns a safe embeddable YouTube URL (privacy-enhanced youtube-nocookie
+ * domain), or null for non-YouTube media. `start` is preserved when present.
+ */
 export function parseYoutubeUrl (url: unknown): string | null {
   if (typeof url !== 'string' || url.length === 0) {
     return null
@@ -74,17 +107,10 @@ export function parseYoutubeUrl (url: unknown): string | null {
       return null
     }
 
-    let videoId: string | null = null
+    const videoId = extractYoutubeVideoId(parsed)
+    if (videoId === null) return null
 
-    if (host.endsWith('youtu.be')) {
-      videoId = getVideoId(parsed.pathname.split('/').filter(Boolean)[0] ?? null)
-    } else if (parsed.pathname.startsWith('/watch')) {
-      videoId = getVideoId(parsed.searchParams.get('v'))
-    } else if (parsed.pathname.startsWith('/embed/') || parsed.pathname.startsWith('/shorts/')) {
-      videoId = getVideoId(parsed.pathname.split('/').filter(Boolean)[1] ?? null)
-    }
-
-    return videoId === null ? null : `https://www.youtube.com/embed/${videoId}${getStartTime(parsed.searchParams.get('t') ?? parsed.searchParams.get('start'))}`
+    return `https://www.youtube-nocookie.com/embed/${videoId}${getStartTime(parsed.searchParams.get('t') ?? parsed.searchParams.get('start'))}`
   } catch (_error) {
     return null
   }
@@ -116,22 +142,37 @@ export function normalizePreviews (previews: unknown): MediaItem[] {
 
     const embedUrl = parseYoutubeUrl(url)
     const extension = fileExtension(url)
-    const thumbnail = typeof preview.thumbnail === 'string' && preview.thumbnail.trim() !== ''
+    const upstreamThumbnail = typeof preview.thumbnail === 'string' && preview.thumbnail.trim() !== ''
       ? preview.thumbnail.trim()
-      : url
+      : ''
 
     if (embedUrl !== null) {
-      items.push({ type: 'video', url, thumbnail, embedUrl })
+      // Videos always get a real poster image. When the upstream preview has
+      // no thumbnail, synthesize one from the video ID (the YouTube page URL
+      // itself would render as a broken image).
+      let videoId: string | null = null
+      try {
+        const parsed = new URL(url)
+        if (YOUTUBE_HOSTS.has(parsed.hostname.toLowerCase())) {
+          videoId = extractYoutubeVideoId(parsed)
+        }
+      } catch {
+        // keep null
+      }
+      const poster = upstreamThumbnail !== ''
+        ? upstreamThumbnail
+        : (videoId !== null ? `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg` : url)
+      items.push({ type: 'video', url, thumbnail: poster, embedUrl, videoId: videoId ?? undefined, poster })
     } else if (VIDEO_EXTENSIONS.has(extension)) {
       // Real video that we cannot embed — surface it as an external link rather
       // than pretending the URL is an image.
-      items.push({ type: 'external', url, thumbnail })
+      items.push({ type: 'external', url, thumbnail: upstreamThumbnail !== '' ? upstreamThumbnail : url })
     } else if (IMAGE_EXTENSIONS.has(extension) || typeof preview.thumbnail === 'string') {
-      items.push({ type: 'image', url, thumbnail })
+      items.push({ type: 'image', url, thumbnail: upstreamThumbnail !== '' ? upstreamThumbnail : url })
     } else {
       // Unknown type with no thumbnail would render as a broken image; keep it
       // accessible as an external link instead.
-      items.push({ type: 'external', url, thumbnail })
+      items.push({ type: 'external', url, thumbnail: upstreamThumbnail !== '' ? upstreamThumbnail : url })
     }
 
     return items
