@@ -155,7 +155,7 @@
       }
 
       .iconify {
-        color: $text-dark-darkest !important;
+        color: var(--text-primary) !important;
       }
 
       .background {
@@ -174,10 +174,10 @@
       $background-is-banner: "true",
       $background-color: transparent,
       $body-margin-top: 15px,
-      $author-color: $text-light-grayer,
-      $title-color: $text-dark-darkest,
-      $desc-color: $text-dark-darker,
-      $rating-color: $text-gray-dark,
+      $author-color: var(--text-muted),
+      $title-color: var(--text-primary),
+      $desc-color: var(--text-secondary),
+      $rating-color: var(--text-muted),
       $cta-dark: "false",
       $padding-bottom-override: 0px
     );
@@ -193,7 +193,7 @@
     }
 
     p {
-      color: $text-dark-darker;
+      color: var(--text-secondary);
     }
   }
 
@@ -206,22 +206,22 @@
       font-size: 13px;
       font-family: "DM Sans";
       font-weight: 500;
-      color: $text-dark-darkest;
+      color: var(--text-primary);
     }
   }
 
   .details {
-    color: $text-dark-darkest;
+    color: var(--text-primary);
 
     .section {
       margin-top: 30px;
       margin-bottom: 30px;
 
       &.docs {
-        border: 1px solid #dbdbdb;
+        border: 1px solid var(--border-color);
         border-radius: 3px;
         margin-top: 20px;
-        background: white;
+        background: var(--surface-card);
       }
 
       @include mobile-styles {
@@ -253,7 +253,7 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      border-bottom: 1px solid #dbdbdb;
+      border-bottom: 1px solid var(--border-color);
       padding: 10px 15px;
 
       h2 {
@@ -272,7 +272,7 @@
     }
 
     .username {
-      color: $text-dark-deep-gray;
+      color: var(--text-secondary);
     }
 
     textarea {
@@ -359,10 +359,10 @@
           font-family: "Inter";
           font-weight: 600;
           cursor: pointer;
-          color: $text-dark-black;
+          color: var(--text-primary);
 
           &:hover {
-            background: $text-light-lightest;
+            background: var(--surface-subtle);
           }
         }
       }
@@ -381,10 +381,10 @@
     font-family: "Inter";
     font-weight: 600;
     cursor: pointer;
-    color: $text-dark-black;
+    color: var(--text-primary);
 
     &:hover {
-      background: $text-light-lightest;
+      background: var(--surface-subtle);
     }
   }
 
@@ -454,7 +454,7 @@
 
   .row {
     @include inter-like-font();
-    color: $text-dark-very-dark;
+    color: var(--text-secondary);
     font-weight: 600;
     display: flex;
     justify-content: space-between;
@@ -499,20 +499,20 @@
 
         &.primary {
           background: $button-very-dark;
-          color: #ffffff;
+          color: var(--button-primary-text);
 
           &:hover {
-            background: $text-dark-darkest;
+            background: var(--button-primary-hover);
           }
         }
 
         &.secondary {
-          background: #ffffff;
-          color: $text-dark-darkest;
-          border-color: $text-light-gray;
+          background: var(--surface-elevated);
+          color: var(--text-primary);
+          border-color: var(--border-color);
 
           &:hover {
-            background: $color-lighter-gray;
+            background: var(--surface-subtle);
           }
         }
       }
@@ -553,76 +553,28 @@
   }
 
   .media {
-    &:not(.single-image) {
-      display: grid;
-      grid-template-columns: auto 80.5%;
-      column-gap: 20px;
-
-      @include mobile-styles {
-        display: flex;
-        flex-direction: column;
-
-        .thumbnails {
-          order: 1;
-        }
-
-        .player {
-          order: 0;
-        }
-      }
-    }
-
     &.single-image {
       @include mobile-styles {
         margin-bottom: 20px;
       }
     }
 
-    .thumbnails {
-      @include mobile-styles {
-        display: grid;
-        grid-template-columns: 1fr 1fr 1fr 1fr;
-        margin-top: 10px;
-        column-gap: 10px;
-      }
-
-      .thumbnail-btn {
-        display: block;
-        border: 2px solid transparent;
-        padding: 0;
-        padding-top: 56.25%;
-        margin-top: 0;
-        background: $color-brand-gray;
-        width: 100%;
-        border-radius: 3px;
-        position: relative;
-        overflow: hidden;
-        cursor: pointer;
-
-        &.active,
-        &:focus-visible {
-          border-color: $color-brand-black;
-          outline: none;
-        }
-
-        &:not(:last-of-type) {
-          margin-bottom: 20px;
-        }
-
-        @include mobile-styles {
-          margin-bottom: 20px;
-        }
-      }
-    }
-
     .player {
       .container {
         padding-top: 56.25%;
-        background: $color-brand-gray;
+        background: #000;
         width: 100%;
         border-radius: 3px;
         position: relative;
         overflow: hidden;
+      }
+
+      .media-layer {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
       }
 
       .media-image-button {
@@ -632,12 +584,98 @@
         width: 100%;
         height: 100%;
         padding: 0;
+        margin: 0;
+        min-width: 0;
         border: none;
         background: none;
         cursor: zoom-in;
         min-height: 0;
       }
+
+      .video-cover {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        padding: 0;
+        margin: 0;
+        min-width: 0;
+        border: none;
+        background: #000;
+        cursor: pointer;
+        min-height: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        .video-poster {
+          object-fit: cover;
+        }
+
+        .video-play-icon {
+          position: relative;
+          z-index: 1;
+          width: 64px;
+          height: 64px;
+          border-radius: 50%;
+          background: rgba(0, 0, 0, 0.55);
+          color: #fff;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 24px;
+          padding-left: 4px;
+          transition: background 0.15s;
+        }
+
+        &:hover .video-play-icon {
+          background: rgba(0, 0, 0, 0.75);
+        }
+      }
+
+      .media-prev,
+      .media-next {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        z-index: 2;
+        width: 40px;
+        height: 64px;
+        min-width: 0;
+        padding: 0;
+        margin: 0;
+        border: none;
+        border-radius: 6px;
+        background: rgba(0, 0, 0, 0.4);
+        color: #fff;
+        font-size: 26px;
+        line-height: 1;
+        cursor: pointer;
+        min-height: 0;
+
+        &:hover {
+          background: rgba(0, 0, 0, 0.65);
+        }
+      }
+
+      .media-prev { left: 8px; }
+      .media-next { right: 8px; }
+
+      .media-counter {
+        position: absolute;
+        right: 10px;
+        bottom: 10px;
+        z-index: 2;
+        color: #fff;
+        font-size: 12px;
+        font-weight: 600;
+        background: rgba(0, 0, 0, 0.55);
+        border-radius: 999px;
+        padding: 2px 10px;
+      }
     }
+
     img,
     iframe {
       position: absolute;
@@ -645,7 +683,87 @@
       left: 0;
       width: 100%;
       height: 100%;
+    }
+
+    /* Main screenshots are shown complete on the black 16:9 stage instead of
+       being cropped: contain + letterbox. Thumbnails and video posters keep
+       cover so the rail and covers stay tight. */
+    .media-layer.media-image-layer img {
+      object-fit: contain;
+    }
+
+    iframe.media-video {
       object-fit: cover;
+    }
+
+    /* Bottom horizontal thumbnail rail with scroll snap + arrows (replaces
+       the old desktop left rail / mobile 4-across grid). */
+    .thumbnails {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 12px;
+
+      .rail-viewport {
+        flex: 1 1 auto;
+        overflow-x: auto;
+        scroll-behavior: smooth;
+        scrollbar-width: thin;
+        -webkit-overflow-scrolling: touch;
+      }
+
+      .rail-track {
+        display: flex;
+        gap: 10px;
+        width: max-content;
+      }
+
+      .thumbnail-btn {
+        display: block;
+        border: 2px solid transparent;
+        padding: 0;
+        aspect-ratio: 16 / 9;
+        margin: 0;
+        background: $color-brand-gray;
+        width: 130px;
+        min-width: 0;
+        border-radius: 3px;
+        position: relative;
+        overflow: hidden;
+        cursor: pointer;
+        flex: 0 0 auto;
+
+        &.active,
+        &:focus-visible {
+          border-color: $color-brand-black;
+          outline: none;
+        }
+      }
+
+      .rail-arrow {
+        flex: 0 0 auto;
+        width: 32px;
+        height: 40px;
+        min-width: 0;
+        padding: 0;
+        margin: 0;
+        border: 1px solid $border-color;
+        border-radius: 4px;
+        background: var(--surface-elevated);
+        color: var(--text-primary);
+        font-size: 18px;
+        line-height: 1;
+        cursor: pointer;
+        min-height: 0;
+
+        &:hover {
+          background: var(--surface-subtle);
+        }
+
+        @include mobile-styles {
+          display: none; /* swipe + scroll are the primary mobile navigation */
+        }
+      }
     }
   }
 
@@ -713,8 +831,8 @@
     }
 
     pre {
-      background: $surface-inverse;
-      color: $text-on-inverse;
+      background: var(--surface-subtle);
+      color: var(--text-primary);
       padding: $space-4;
       border-radius: $border-radius-md;
       overflow-x: auto;
