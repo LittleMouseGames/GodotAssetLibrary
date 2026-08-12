@@ -45,8 +45,12 @@ services:
       - --proactor_threads=1
       - --primary_port_http_enabled=false
       - --version_check=false
-    ulimits:
-      memlock: -1
+    # memlock=-1 (unlimited locked memory) is a Dragonfly performance
+    # optimization, not required to run. Some container runtimes refuse to set
+    # it ("error setting rlimit type 8: operation not permitted"), so it is
+    # disabled for portability. Re-enable only on hosts that permit it:
+    # ulimits:
+    #   memlock: -1
     networks:
       - app-network
     healthcheck:
