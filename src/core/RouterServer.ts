@@ -60,15 +60,16 @@ function refreshPromoMessage (): void {
 
 /**
  * Serve admin-managed root files (e.g. ads.txt, security.txt, humans.txt) at
- * whatever route the admin configured. Content is read from a short-TTL
- * in-memory cache (see core/utils/siteFiles.ts), so this is fully synchronous
- * and never touches the database in the request path. Registered as the final
- * GET route (after controllers) so it only sees paths no controller handled;
- * if the route isn't a configured site file it falls through to the 404.
+ * whatever route the admin configured. Content is read through a short-TTL
+ * in-memory cache (see core/utils/siteFiles.ts) that awaits a refresh when
+ * stale, so the first request after a change serves fresh data instead of a
+ * stale value or a bogus 404. Registered as the final GET route (after
+ * controllers) so it only sees paths no controller handled; if the route
+ * isn't a configured site file it falls through to the 404.
  */
-function serveSiteFile (req: Request, res: Response, next: NextFunction): void {
+async function serveSiteFile (req: Request, res: Response, next: NextFunction): Promise<void> {
   const route = req.path.replace(/^\/+/, '')
-  const content = getSiteFileContent(route)
+  const content = await getSiteFileContent(route)
   if (content === null || content.length === 0) {
     next()
     return
@@ -292,7 +293,12 @@ class RouterServer extends Server {
     // the controllers so it only sees paths no controller handled. If the path
     // matches a configured site file it is served as text/plain; otherwise it
     // falls through to the 404 handler in start().
-    this.app.get('*', serveSiteFile)
+    this.app.get('*', (req: Request, res: Response, next: NextFunction) => {
+      // The handler is async so it can await a fresh cache refresh; this sync
+      // wrapper keeps the registration void-returning (lint-clean) and routes
+      // any rejection to the error middleware.
+      void serveSiteFile(req, res, next).catch(next)
+    })
 
     this.app.use((err: Error, req: Request, res: Response, _next: NextFunction) => {
       logger.log('error', err.message, [err])

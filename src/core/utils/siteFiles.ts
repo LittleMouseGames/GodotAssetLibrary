@@ -6,6 +6,12 @@ import { GetSiteFiles } from 'app/code/admin/models/GET/GetSiteFiles'
  * content from /admin; each is stored in the `info` collection as
  * `{ type: 'site_file', route, content }`. The cache maps route -> content so
  * the public routes can serve any configured path without a hardcoded list.
+ *
+ * Cluster note: every worker process keeps its own copy of this cache, so
+ * consistency is coordinated two ways — reads await an in-flight refresh so
+ * the first request after a change serves fresh data, and an admin save
+ * broadcasts a cluster message (via the primary) so ALL workers invalidate
+ * immediately, not just the one that handled the request.
  */
 const cache = new Map<string, string>()
 let cacheExpiresAt = 0
@@ -27,47 +33,72 @@ async function loadSiteFiles (): Promise<void> {
 }
 
 /**
- * Reload the whole set in the background (deduplicated so concurrent callers
- * share one in-flight refresh). Failures keep serving the last good value —
- * the routes must never error just because Mongo hiccupped. Mirrors
- * RouterServer's promobar refresh pattern.
+ * Start (or join) a refresh of the whole set. Deduplicated so concurrent
+ * callers share one in-flight load; failures keep serving the last good value.
  */
-function refresh (): void {
-  if (refreshPromise !== null) {
-    return
+async function refresh (): Promise<void> {
+  if (refreshPromise === null) {
+    refreshPromise = loadSiteFiles()
+      .catch(() => {
+        // Keep serving the stale value when the database is temporarily unavailable.
+      })
+      .finally(() => {
+        refreshPromise = null
+      })
   }
-
-  refreshPromise = loadSiteFiles().catch(() => {
-    // Keep serving the stale value when the database is temporarily unavailable.
-  }).finally(() => {
-    refreshPromise = null
-  })
+  await refreshPromise
 }
 
 /**
- * Returns the content for a route (cached for TTL_MS) or `null` when no such
- * file is configured. When the cache is stale, kicks off a background refresh
- * so the next call within the TTL serves fresh content; the caller gets the
- * last known value synchronously, so the route never blocks on the database.
+ * Returns the content for a route, or `null` when no such file is configured.
+ * When the cache is stale (or a refresh is already in flight) the caller waits
+ * for fresh data, so the first request after a change or a restart never
+ * serves a stale value or a bogus 404.
  */
-export function getSiteFileContent (route: string): string | null {
+export async function getSiteFileContent (route: string): Promise<string | null> {
   const now = Date.now()
-  if (cacheExpiresAt <= now) {
+  if (cacheExpiresAt <= now || refreshPromise !== null) {
     cacheExpiresAt = now + TTL_MS
-    refresh()
+    await refresh()
   }
   return cache.get(route) ?? null
 }
 
 /**
- * Expire the cache so the next getSiteFileContent() re-reads from the
- * database. Called after an admin saves the Site Settings form so the public
- * routes reflect the change without waiting out the TTL.
+ * Invalidate this worker's cache and reload immediately.
+ */
+function invalidateLocal (): void {
+  cacheExpiresAt = 0
+  void refresh()
+}
+
+/**
+ * Expire the cache and reload immediately, and broadcast the invalidation to
+ * every worker (via the primary) so an admin save on one worker is reflected
+ * on all of them. Called after an admin saves the Site Settings form.
  */
 export function invalidateSiteFileCache (): void {
-  cacheExpiresAt = 0
-  // Kick off a background refresh right away (rather than waiting for the next
-  // public request) so the new content is ready by the time the routes serve
-  // it. Called after an admin saves the Site Settings form.
-  refresh()
+  invalidateLocal()
+  // In cluster mode this runs in a worker, which can message the primary; the
+  // primary relays the invalidation to every worker (see start.ts).
+  if (typeof process.send === 'function') {
+    process.send({ type: 'invalidate-site-files' })
+  }
+}
+
+/**
+ * Local-only invalidation for when this worker receives a broadcast from the
+ * primary (i.e. another worker saved a site file). Does NOT re-broadcast,
+ * otherwise the primary relay would loop forever.
+ */
+export function invalidateSiteFileCacheLocally (): void {
+  invalidateLocal()
+}
+
+/**
+ * Warm the cache in the background (e.g. once a worker has connected to Mongo
+ * at startup) so the first public request serves immediately.
+ */
+export function primeSiteFilesCache (): void {
+  void refresh()
 }
