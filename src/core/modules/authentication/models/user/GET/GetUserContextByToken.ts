@@ -17,12 +17,12 @@ const USER_CONTEXT_CACHE_TTL_SECONDS = Number.isFinite(parsedUserCtxTtl) && pars
  * TTL so the per-request global auth lookup stops hitting MongoDB on every
  * authenticated page view.
  */
-async function loadUserContext (token: string): Promise<UserContext> {
+async function loadUserContext (hashedToken: string): Promise<UserContext> {
   const mongo = MongoHelper.getDatabase()
   const user = await mongo.collection('users').findOne({
     resume_tokens: {
       $elemMatch: {
-        token,
+        token: hashedToken,
         expires: { $gt: new Date() }
       }
     }
@@ -40,11 +40,11 @@ async function loadUserContext (token: string): Promise<UserContext> {
  * The key is invalidated on logout and account deletion; a stale entry can
  * only outlive a revocation by at most the TTL.
  */
-export async function GetUserContextByToken (token: string): Promise<UserContext> {
+export async function GetUserContextByToken (hashedToken: string): Promise<UserContext> {
   const cached = await cacheGetOrLoad<UserContext>(
-    buildUserContextCacheKey(token),
+    buildUserContextCacheKey(hashedToken),
     USER_CONTEXT_CACHE_TTL_SECONDS,
-    async () => await loadUserContext(token)
+    async () => await loadUserContext(hashedToken)
   )
   return cached.value
 }
