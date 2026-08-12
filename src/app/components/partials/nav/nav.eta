@@ -9,13 +9,12 @@
 <nav>
   <div class="contents">
     <div class="brand">
-      <a href="/" title="Go back to Godot Asset Library homepage">
-        <img src="/images/logo-image.png"
-          alt="Website logo image of a white letter A in a dark box with rounded corners">
-        <div class="name">
-          <div class="title">Godot A.L. 🪅</div>
-          <div class="subtitle">an <span class="strong">Open Source</span> project</div>
-        </div>
+      <a href="/" title="Go back to Godot Asset Library homepage" aria-label="Godot Asset Library homepage">
+        <img src="/images/logo-square.png?cache=<%= it?._locals?.buildString %>" alt="Godot Asset Library logo">
+        <span class="brand-name">
+          <span class="brand-title">Godot Assets</span>
+          <span class="brand-subtitle">an Open Source project</span>
+        </span>
       </a>
     </div>
     <form method="GET" action="/search/" class="search-container" role="search">
@@ -30,8 +29,6 @@
     <div class="links">
       <a href="<%= it?._locals?.functions?.buildCategoryPath('2d tools') %>" class="link" title="See assets in this category">2D Tools</a>
       <a href="<%= it?._locals?.functions?.buildCategoryPath('3d tools') %>" class="link" title="See assets in this category">3D Tools</a>
-      <a href="<%= it?._locals?.functions?.buildCategoryPath('tools') %>" class="link" title="See assets in this category">Tools</a>
-      <a href="<%= it?._locals?.functions?.buildCategoryPath('shaders') %>" class="link" title="See assets in this category">Shaders</a>
       <div class="dropdown categories no-text-select">
         <button type="button" class="dropdown-trigger" aria-haspopup="true" aria-expanded="false"
           aria-controls="nav-categories-panel"
@@ -41,6 +38,8 @@
           <span class="iconify" data-icon="bxs:chevron-down"></span>
         </button>
         <div class="options" id="nav-categories-panel">
+          <a href="<%= it?._locals?.functions?.buildCategoryPath('tools') %>" title="See assets in this category">Tools</a>
+          <a href="<%= it?._locals?.functions?.buildCategoryPath('shaders') %>" title="See assets in this category">Shaders</a>
           <a href="<%= it?._locals?.functions?.buildCategoryPath('materials') %>" title="See assets in this category">Materials</a>
           <a href="<%= it?._locals?.functions?.buildCategoryPath('scripts') %>" title="See assets in this category">Scripts</a>
           <a href="<%= it?._locals?.functions?.buildCategoryPath('misc') %>" title="See assets in this category">Misc</a>
@@ -55,6 +54,41 @@
         aria-controls="site-search" onclick="window.godotLibrary.mobile.toggleSearch(event)">
         <span class="iconify" data-icon="eva:search-outline"></span>
       </button>
+      <form id="godot-version-form" method="POST" action="/preferences/godot-version" class="preferences-form">
+        <input type="hidden" name="returnTo" value="<%= it?._locals?.godotVersion?.returnTo ?? '/' %>">
+      </form>
+      <div class="dropdown godot-version no-text-select">
+        <button type="button" class="dropdown-trigger" aria-haspopup="true" aria-expanded="false"
+          aria-controls="nav-version-panel" title="Godot version"
+          onclick="window.godotLibrary.dropdown.showContent(event, this)">
+          <span class="value"><%= it?._locals?.godotVersion?.label ?? '4.x' %></span>
+          <span class="iconify chevron" data-icon="bxs:chevron-down"></span>
+        </button>
+        <div class="options" id="nav-version-panel">
+          <% const versionOptions = it?._locals?.godotVersion?.options || [] %>
+          <% const currentVersion = it?._locals?.godotVersion?.current %>
+          <% versionOptions.forEach(option => { %>
+          <button type="submit" form="godot-version-form" name="version" value="<%= option.value %>"
+            class="preference-option<%= currentVersion === option.value ? ' active' : '' %>">
+            <%= option.label %>
+          </button>
+          <% }) %>
+        </div>
+      </div>
+      <div class="dropdown theme no-text-select" data-theme-control>
+        <button type="button" class="dropdown-trigger" aria-haspopup="true" aria-expanded="false"
+          aria-controls="nav-theme-panel" title="Theme"
+          onclick="window.godotLibrary.dropdown.showContent(event, this)">
+          <span class="iconify theme-icon" data-icon="mdi:theme-light-dark" aria-hidden="true"></span>
+          <span class="value theme-label">System</span>
+          <span class="iconify chevron" data-icon="bxs:chevron-down"></span>
+        </button>
+        <div class="options" id="nav-theme-panel">
+          <button type="button" class="preference-option" data-theme="system" data-theme-label="System">System</button>
+          <button type="button" class="preference-option" data-theme="light" data-theme-label="Light">Light</button>
+          <button type="button" class="preference-option" data-theme="dark" data-theme-label="Dark">Dark</button>
+        </div>
+      </div>
       <% if(it?._locals?.loggedIn === true) { %>
       <div class="dropdown no-text-select">
         <button type="button" class="dropdown-trigger" aria-haspopup="true" aria-expanded="false"
