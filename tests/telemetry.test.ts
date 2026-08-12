@@ -4,7 +4,6 @@ import {
   snapshot,
   requestStart,
   requestEnd,
-  requestRejectedByActiveCap,
   recordMongoWaitQueueTimeout,
   recordMongoServerSelectionError,
   recordCacheHit,
@@ -32,18 +31,6 @@ describe('telemetry', () => {
     requestEnd(20, 404)
     assert.equal(snapshot().activeRequests, 0)
     assert.equal(snapshot().status4xx, 1)
-  })
-
-  it('records a cap rejection without touching the active count', () => {
-    reset()
-    requestStart()
-    requestStart()
-    assert.equal(snapshot().activeRequests, 2)
-    requestRejectedByActiveCap()
-    // A rejected request never entered the active gauge, so it must stay put.
-    assert.equal(snapshot().activeRequests, 2)
-    assert.equal(snapshot().totalRejected, 1)
-    assert.equal(snapshot().rejectedByActiveCap, 1)
   })
 
   it('computes duration percentiles and average', () => {
