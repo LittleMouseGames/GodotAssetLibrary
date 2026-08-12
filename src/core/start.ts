@@ -8,6 +8,7 @@ import { runMigrations } from 'core/migrations'
 import { runGenerateSitemap } from 'app/utilities/sitemapGenerator/jobs/generateSitemap'
 import { getWorkerCount } from 'core/utils/clusterConfig'
 import { invalidateSiteFileCacheLocally, primeSiteFilesCache } from 'core/utils/siteFiles'
+import { disconnectDragonfly } from 'core/utils/dragonfly'
 
 process.on('uncaughtException', (err) => {
   console.error('Uncaught Exception:', err)
@@ -106,6 +107,7 @@ if (cluster.isPrimary) {
       for (const id of Object.keys(cluster.workers ?? {})) {
         cluster.workers?.[id]?.kill('SIGTERM')
       }
+      void disconnectDragonfly()
       MongoHelper.getInstance().disconnect()
       process.exit(0)
     }
@@ -127,6 +129,12 @@ if (cluster.isPrimary) {
       invalidateSiteFileCacheLocally()
     }
   })
+
+  const shutdownWorker = (): void => {
+    void disconnectDragonfly().finally(() => process.exit(0))
+  }
+  process.on('SIGTERM', shutdownWorker)
+  process.on('SIGINT', shutdownWorker)
 
   MongoHelper.getInstance().connect().then(() => {
     const startTime: Date = new Date()
