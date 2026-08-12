@@ -1,6 +1,6 @@
 import { describe, it } from 'node:test'
 import assert from 'node:assert/strict'
-import { cacheGetOrLoad, buildAssetCacheKey } from '../src/core/utils/dragonfly'
+import { cacheGetOrLoad, buildAssetCacheKey, buildUserContextCacheKey } from '../src/core/utils/dragonfly'
 import { reset, snapshot } from '../src/core/utils/telemetry'
 
 describe('Dragonfly cache', () => {
@@ -32,5 +32,10 @@ describe('Dragonfly cache', () => {
   it('builds a stable asset page cache key', () => {
     assert.equal(buildAssetCacheKey('abc-123'), 'gda:v1:asset:abc-123')
     assert.equal(buildAssetCacheKey('abc-123'), buildAssetCacheKey('abc-123'))
+  })
+
+  it('builds a stable user context cache key', () => {
+    assert.equal(buildUserContextCacheKey('tok-1'), 'gda:v1:userctx:tok-1')
+    assert.equal(buildUserContextCacheKey('tok-1'), buildUserContextCacheKey('tok-1'))
   })
 })

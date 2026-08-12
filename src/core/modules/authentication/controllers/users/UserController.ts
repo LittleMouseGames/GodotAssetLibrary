@@ -7,6 +7,7 @@ import rateLimit from 'express-rate-limit'
 import { PasswordHasherBusyError } from 'core/modules/authentication/services/PasswordHasher'
 import { TokenServices } from 'core/modules/authentication/services/TokenServices'
 import { DeleteResumeToken } from 'core/modules/authentication/models/user/DELETE/DeleteResumeToken'
+import { buildUserContextCacheKey, cacheDelete } from 'core/utils/dragonfly'
 
 const urlencodedParser = bodyParser.urlencoded({ extended: false })
 
@@ -102,6 +103,9 @@ export class UserController {
       } catch (e) {
         // token revocation is best-effort; the cookie is still cleared
       }
+      // Drop the cached login context so a logged-out session can't appear
+      // authenticated for up to the cache TTL.
+      void cacheDelete(buildUserContextCacheKey(hashedToken))
     }
     res.clearCookie('auth-token')
     res.redirect('/')

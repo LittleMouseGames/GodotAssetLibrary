@@ -177,6 +177,15 @@ export function buildAssetCacheKey (assetId: string): string {
   return `gda:v1:asset:${assetId}`
 }
 
+/**
+ * Cache key for an authenticated user's login context (loggedIn + role),
+ * derived from the hashed resume token. Invalidated on logout and account
+ * deletion so a revoked session never outlives its short TTL.
+ */
+export function buildUserContextCacheKey (hashedToken: string): string {
+  return `gda:v1:userctx:${hashedToken}`
+}
+
 export async function disconnectDragonfly (): Promise<void> {
   const connected = client
   client = null
