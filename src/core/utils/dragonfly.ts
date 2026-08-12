@@ -169,6 +169,14 @@ export async function cacheGetOrLoad<T> (
   return { value: await loader(), hit: false }
 }
 
+/**
+ * Cache key for a public asset (PDP) page bundle. Shared by the render path
+ * and by the mutation paths that invalidate it after a review or admin change.
+ */
+export function buildAssetCacheKey (assetId: string): string {
+  return `gda:v1:asset:${assetId}`
+}
+
 export async function disconnectDragonfly (): Promise<void> {
   const connected = client
   client = null
