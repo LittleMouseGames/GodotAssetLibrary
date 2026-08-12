@@ -11,6 +11,10 @@ RUN apk add --no-cache python3 make g++ \
 COPY . .
 RUN npm run build
 
+# Express enables its compiled view cache in production. Set this only after
+# the build so npm ci still installs TypeScript/Webpack dev dependencies.
+ENV NODE_ENV=production
+
 EXPOSE 3000
 
 CMD ["node", "dist/bundle.js"]
