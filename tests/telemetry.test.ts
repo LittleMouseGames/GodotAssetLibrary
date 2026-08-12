@@ -4,9 +4,12 @@ import {
   snapshot,
   requestStart,
   requestEnd,
-  requestRejectedByActiveCap,
   recordMongoWaitQueueTimeout,
   recordMongoServerSelectionError,
+  recordCacheHit,
+  recordCacheMiss,
+  recordCacheBypass,
+  recordCacheError,
   prometheusText,
   reset
 } from '../src/core/utils/telemetry'
@@ -28,18 +31,6 @@ describe('telemetry', () => {
     requestEnd(20, 404)
     assert.equal(snapshot().activeRequests, 0)
     assert.equal(snapshot().status4xx, 1)
-  })
-
-  it('records a cap rejection without touching the active count', () => {
-    reset()
-    requestStart()
-    requestStart()
-    assert.equal(snapshot().activeRequests, 2)
-    requestRejectedByActiveCap()
-    // A rejected request never entered the active gauge, so it must stay put.
-    assert.equal(snapshot().activeRequests, 2)
-    assert.equal(snapshot().totalRejected, 1)
-    assert.equal(snapshot().rejectedByActiveCap, 1)
   })
 
   it('computes duration percentiles and average', () => {
@@ -88,6 +79,20 @@ describe('telemetry', () => {
     assert.equal(s.mongoServerSelectionErrors, 1)
   })
 
+  it('counts shared cache outcomes separately', () => {
+    reset()
+    recordCacheHit()
+    recordCacheHit()
+    recordCacheMiss()
+    recordCacheBypass()
+    recordCacheError()
+    const s = snapshot()
+    assert.equal(s.cacheHits, 2)
+    assert.equal(s.cacheMisses, 1)
+    assert.equal(s.cacheBypasses, 1)
+    assert.equal(s.cacheErrors, 1)
+  })
+
   it('renders Prometheus text with expected metric names', () => {
     reset()
     requestStart()
@@ -98,5 +103,6 @@ describe('telemetry', () => {
     assert.match(text, /http_requests_total 1/)
     assert.match(text, /http_request_duration_p95_ms 5/)
     assert.match(text, /mongo_wait_queue_timeouts_total 0/)
+    assert.match(text, /cache_hits_total 0/)
   })
 })

@@ -23,6 +23,7 @@ import { parsePagination } from 'core/utils/pagination'
 import { BadRequestError } from 'core/utils/httpError'
 import { attachCardExtras } from 'core/utils/cardView'
 import { DeleteUserReviewsAndAdjustVotes } from '../models/DELETE/DeleteUserReviewsAndAdjustVotes'
+import { buildUserContextCacheKey, cacheDelete } from 'core/utils/dragonfly'
 
 async function writeResponseChunk (res: Response, chunk: string): Promise<void> {
   if (res.write(chunk)) {
@@ -343,6 +344,10 @@ export class DashboardService {
     const userId = await GetUserIdByToken(hashedToken)
     await DeleteUserReviewsAndAdjustVotes(userId)
     await DeleteUserByUserId(userId)
+
+    // Drop the cached login context so the deleted account can't appear
+    // authenticated for up to the cache TTL.
+    void cacheDelete(buildUserContextCacheKey(hashedToken))
 
     res.clearCookie('auth-token')
     res.redirect('/')

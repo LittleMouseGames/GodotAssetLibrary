@@ -36,6 +36,7 @@
     "nodemailer": "^6.7.2",
     "nodemon": "^2.0.15",
     "pubsub-js": "^1.9.4",
+    "redis": "^4.7.0",
     "request": "^2.88.2",
     "sass": "^1.49.7",
     "sitemap": "^7.1.1",
@@ -54,7 +55,6 @@
   "devDependencies": {
     "@overnightjs/core": "^1.7.6",
     "@types/adm-zip": "^0.5.0",
-    "@types/apicache": "^1.6.1",
     "@types/compression": "^1.7.2",
     "@types/cookie-parser": "^1.4.2",
     "@types/create-hmac": "^1.1.0",

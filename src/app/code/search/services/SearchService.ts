@@ -2,8 +2,8 @@ import { Request, Response } from 'express'
 import { TokenServices } from 'core/modules/authentication/services/TokenServices'
 import { GetUserSavedAssets } from 'app/code/dashboard/models/GET/GetUserSavedAssets'
 import striptags from 'striptags'
-import { GetSearchResults } from '../models/GET/GetSearchResults'
-import { GetSearchFacets } from '../models/GET/GetSearchFacets'
+import { GetSearchResults, SearchResults } from '../models/GET/GetSearchResults'
+import { GetSearchFacets, SearchFacets } from '../models/GET/GetSearchFacets'
 import { GetRelatedAssets } from 'app/code/asset/models/GET/GetRelatedAssets'
 import { SearchFilterOptions } from '../models/GET/buildSearchFilter'
 import { parseSearchRequest } from './parseSearchRequest'
@@ -12,6 +12,39 @@ import { displayCategoryLabel } from 'core/utils/taxonomyUrl'
 import { getCategoryContent } from './categoryContent'
 import { escapeHtml } from 'core/utils/escapeHtml'
 import { attachCardExtras } from 'core/utils/cardView'
+import { cacheGetOrLoad } from 'core/utils/dragonfly'
+
+interface CachedSearchData {
+  searchData: SearchResults
+  facets: SearchFacets
+}
+
+const parsedSearchTtl = Number.parseInt(process.env.CACHE_SEARCH_TTL_SECONDS ?? '', 10)
+const SEARCH_CACHE_TTL_SECONDS = Number.isFinite(parsedSearchTtl) && parsedSearchTtl > 0
+  ? parsedSearchTtl
+  : 60
+
+function searchCacheKey (
+  query: string,
+  limit: number,
+  skip: number,
+  sort: string,
+  options: SearchFilterOptions
+): string {
+  // Parsing already deduplicates/caps filters. Sort copies here so equivalent
+  // parameter orderings share one key and cannot inflate cache cardinality.
+  return `gda:v1:search:${Buffer.from(JSON.stringify({
+    query,
+    limit,
+    skip,
+    sort,
+    categories: [...(options.categories ?? [])].sort(),
+    engines: [...(options.engines ?? [])].sort(),
+    types: [...(options.types ?? [])].sort(),
+    supports: [...(options.supports ?? [])].sort(),
+    featured: options.featured === true
+  })).toString('base64url')}`
+}
 
 export class SearchService {
   public async render (req: Request, res: Response): Promise<void> {
@@ -30,10 +63,20 @@ export class SearchService {
     // four facets are consolidated into another, so the per-request Mongo
     // fan-out drops from ~6 operations to ~2, directly relieving the pool
     // pressure that caused the prod 503s.
-    const [searchData, facets] = await Promise.all([
-      GetSearchResults(parsed.query, parsed.limit, parsed.skip, parsed.sort, filterOptions),
-      GetSearchFacets(parsed.query, filterOptions)
-    ])
+    const cached = await cacheGetOrLoad<CachedSearchData>(
+      searchCacheKey(parsed.query, parsed.limit, parsed.skip, parsed.sort, filterOptions),
+      SEARCH_CACHE_TTL_SECONDS,
+      async () => {
+        const [searchData, facets] = await Promise.all([
+          GetSearchResults(parsed.query, parsed.limit, parsed.skip, parsed.sort, filterOptions),
+          GetSearchFacets(parsed.query, filterOptions)
+        ])
+        return { searchData, facets }
+      },
+      10_000
+    )
+    // attachCardExtras and authenticated saved-state mutate asset objects.
+    const { searchData, facets } = JSON.parse(JSON.stringify(cached.value)) as CachedSearchData
     const { assets, total: totalAssetsForQuery } = searchData
 
     attachCardExtras(assets)

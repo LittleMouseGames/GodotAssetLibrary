@@ -33,6 +33,59 @@ import { buildAssetUrl } from 'core/utils/assetUrl'
 import { buildCategoryPath } from 'core/utils/taxonomyUrl'
 import { BadRequestError } from 'core/utils/httpError'
 import { attachCardExtras } from 'core/utils/cardView'
+import { buildAssetCacheKey, cacheDelete, cacheGetOrLoad } from 'core/utils/dragonfly'
+
+const REVIEWS_PER_PAGE = 10
+
+const parsedAssetTtl = Number.parseInt(process.env.CACHE_ASSET_TTL_SECONDS ?? '', 10)
+const ASSET_CACHE_TTL_SECONDS = Number.isFinite(parsedAssetTtl) && parsedAssetTtl > 0
+  ? parsedAssetTtl
+  : 30
+
+interface AssetPageData {
+  assetInfo: Awaited<ReturnType<typeof GetAssetDisplayInformation>>
+  comments: Awaited<ReturnType<typeof GetAssetReviewsById>>
+  reviewCount: number
+  relatedAssets: Awaited<ReturnType<typeof GetRelatedAssets>>
+}
+
+/**
+ * Load the shared data behind a public asset page: the asset document, the
+ * requested page of reviews, the persisted review count and related assets.
+ * The four MongoDB operations are consolidated so a Dragonfly cache hit serves
+ * the whole page from memory. Mutations that change any of these (reviews,
+ * admin review deletion) invalidate the cache key.
+ */
+async function loadAssetPageData (assetId: string, reviewsPage = 0): Promise<AssetPageData> {
+  const assetInfo = await GetAssetDisplayInformation(assetId)
+
+  if (assetInfo === null) {
+    return { assetInfo: null, comments: [], reviewCount: 0, relatedAssets: [] }
+  }
+
+  // Imported asset data is untrusted. Only http(s) URLs may be rendered as
+  // links, otherwise non-HTTP schemes (javascript:, data:, ...) would reach
+  // the browser through the download/repository/issues controls. Sanitizing
+  // here (instead of per request) keeps the cached copy safe too.
+  for (const field of ['download_url', 'browse_url', 'issues_url'] as const) {
+    if (!isSafeHttpUrl(assetInfo[field])) assetInfo[field] = ''
+  }
+
+  const [commentsResult, reviewCountResult, relatedAssetsResult] = await Promise.allSettled([
+    GetAssetReviewsById(assetId, REVIEWS_PER_PAGE, reviewsPage * REVIEWS_PER_PAGE),
+    GetAssetReviewCount(assetId),
+    GetRelatedAssets(assetInfo.category, assetInfo.godot_version, assetInfo.type, assetInfo.asset_id)
+  ])
+
+  return {
+    assetInfo,
+    comments: commentsResult.status === 'fulfilled' ? commentsResult.value : [],
+    reviewCount: reviewCountResult.status === 'fulfilled'
+      ? reviewCountResult.value
+      : (commentsResult.status === 'fulfilled' ? commentsResult.value.length : 0),
+    relatedAssets: relatedAssetsResult.status === 'fulfilled' ? relatedAssetsResult.value : []
+  }
+}
 
 export class AssetService {
   /**
@@ -59,7 +112,34 @@ export class AssetService {
     }
 
     try {
-      const assetInfo = await GetAssetDisplayInformation(assetId)
+      const parsedReviewsPage = Number.parseInt(striptags(String(req.query.reviews_page ?? '')), 10)
+      const reviewsPage = Number.isNaN(parsedReviewsPage)
+        ? 0
+        : Math.max(0, Math.min(100, parsedReviewsPage))
+
+      // The public asset page is expensive (~4 Mongo ops). Cache the shared
+      // anonymous default view (page 0) in Dragonfly; authenticated requests,
+      // paginated review views and a shared-cache outage fall back to a direct
+      // load. Entries are invalidated after review/admin writes so fresh
+      // reviews and ratings appear immediately.
+      const cacheable = authToken === '' && reviewsPage === 0
+      let bundle: AssetPageData
+      if (cacheable) {
+        const cached = await cacheGetOrLoad<AssetPageData>(
+          buildAssetCacheKey(assetId),
+          ASSET_CACHE_TTL_SECONDS,
+          async () => await loadAssetPageData(assetId),
+          10_000
+        )
+        // Defensive clone so per-request mutations (saved state, card extras,
+        // readme render) never leak into the shared cache entry.
+        bundle = JSON.parse(JSON.stringify(cached.value)) as AssetPageData
+      } else {
+        // Paginated or authenticated views bypass the cache and must load the
+        // requested reviews page (the cached bundle is always page 0).
+        bundle = await loadAssetPageData(assetId, reviewsPage)
+      }
+      const { assetInfo, comments, reviewCount, relatedAssets } = bundle
 
       if (assetInfo === null) {
         return res.status(StatusCodes.NOT_FOUND).render('templates/pages/lost/not-found', {
@@ -85,42 +165,11 @@ export class AssetService {
         return res.redirect(StatusCodes.MOVED_PERMANENTLY, redirectTarget)
       }
 
-      // Imported asset data is untrusted. Only http(s) URLs may be rendered as
-      // links, otherwise non-HTTP schemes (javascript:, data:, ...) would reach
-      // the browser through the download/repository/issues controls.
-      for (const field of ['download_url', 'browse_url', 'issues_url'] as const) {
-        if (!isSafeHttpUrl(assetInfo[field])) assetInfo[field] = ''
-      }
+      // URLs were sanitized inside loadAssetPageData (shared by cache and
+      // fresh paths), so nothing else needs cleaning here.
 
-      const REVIEWS_PER_PAGE = 10
-      const parsedReviewsPage = Number.parseInt(striptags(String(req.query.reviews_page ?? '')), 10)
-      const reviewsPage = Number.isNaN(parsedReviewsPage)
-        ? 0
-        : Math.max(0, Math.min(100, parsedReviewsPage))
-
-      const comments = await GetAssetReviewsById(assetId, REVIEWS_PER_PAGE, reviewsPage * REVIEWS_PER_PAGE)
       let hasUserReviewedAsset = false
       let usersAssetReview = {}
-
-      let reviewCount = comments.length
-      let relatedAssets: Awaited<ReturnType<typeof GetRelatedAssets>> = []
-
-      try {
-        reviewCount = await GetAssetReviewCount(assetId)
-      } catch (e) {
-        // ignore
-      }
-
-      try {
-        relatedAssets = await GetRelatedAssets(
-          assetInfo.category,
-          assetInfo.godot_version,
-          assetInfo.type,
-          assetInfo.asset_id
-        )
-      } catch (e) {
-        // ignore
-      }
       attachCardExtras(relatedAssets)
 
       assetInfo.modify_date_pretty = fromNow(new Date(assetInfo.modify_date), {
@@ -306,6 +355,10 @@ export class AssetService {
     // Recompute counters from the canonical reviews so upvotes/downvotes and
     // the confidence-adjusted rating_score always match what cards display.
     await RefreshAssetRating(assetId)
+
+    // The public asset page is cached briefly; drop its entry so the review
+    // and its rating change are reflected immediately.
+    void cacheDelete(buildAssetCacheKey(assetId))
 
     res.send()
   }

@@ -3,13 +3,12 @@ import { logger } from 'core/utils/logger'
 
 /**
  * Lightweight process-wide telemetry for the HTTP request lifecycle and
- * MongoDB pool health. This exists so production capacity decisions (the
- * MAX_CONCURRENT_REQUESTS cap, MONGO_MAX_POOL, caching) are driven by real
- * numbers instead of guesses:
+ * MongoDB pool health. This exists so production capacity decisions (pool
+ * sizing, caching, scaling) are driven by real numbers instead of guesses:
  *
  * - Gauges: active/peak requests, uptime, memory, load average.
- * - Counters: total served, rejected-by-cap, 2xx/3xx/4xx/5xx, Mongo pool
- *   checkout (wait-queue) timeouts, Mongo server-selection errors.
+ * - Counters: total served, 2xx/3xx/4xx/5xx, Mongo pool checkout
+ *   (wait-queue) timeouts, Mongo server-selection errors.
  * - A ring buffer of recent request durations so p50/p95/p99 stay cheap and
  *   bounded (~4k samples, no unbounded growth).
  *
@@ -23,10 +22,12 @@ export interface TelemetrySnapshot {
   activeRequests: number
   peakActiveRequests: number
   totalRequests: number
-  totalRejected: number
-  rejectedByActiveCap: number
   mongoWaitQueueTimeouts: number
   mongoServerSelectionErrors: number
+  cacheHits: number
+  cacheMisses: number
+  cacheBypasses: number
+  cacheErrors: number
   status2xx: number
   status3xx: number
   status4xx: number
@@ -46,10 +47,12 @@ const startedAt = Date.now()
 let activeRequests = 0
 let peakActiveRequests = 0
 let totalRequests = 0
-let totalRejected = 0
-let rejectedByActiveCap = 0
 let mongoWaitQueueTimeouts = 0
 let mongoServerSelectionErrors = 0
+let cacheHits = 0
+let cacheMisses = 0
+let cacheBypasses = 0
+let cacheErrors = 0
 let status2xx = 0
 let status3xx = 0
 let status4xx = 0
@@ -61,7 +64,7 @@ let durationSum = 0
 let durationMin = Number.POSITIVE_INFINITY
 let durationMax = 0
 
-/** Record that a dynamic request entered the server (before the cap check). */
+/** Record that a dynamic request entered the server. */
 export function requestStart (): void {
   activeRequests++
   totalRequests++
@@ -117,16 +120,6 @@ export function requestEnd (durationMs: number, statusCode: number): void {
   }
 }
 
-/**
- * Record a request rejected by the active-request cap (the 503 backstop).
- * Rejected requests never entered the active gauge (requestStart runs only
- * for admitted requests), so this only bumps the rejection counters.
- */
-export function requestRejectedByActiveCap (): void {
-  totalRejected++
-  rejectedByActiveCap++
-}
-
 /** Record a MongoDB driver "timed out checking out a connection" error. */
 export function recordMongoWaitQueueTimeout (): void {
   mongoWaitQueueTimeouts++
@@ -135,6 +128,22 @@ export function recordMongoWaitQueueTimeout (): void {
 /** Record a MongoDB server-selection timeout. */
 export function recordMongoServerSelectionError (): void {
   mongoServerSelectionErrors++
+}
+
+export function recordCacheHit (): void {
+  cacheHits++
+}
+
+export function recordCacheMiss (): void {
+  cacheMisses++
+}
+
+export function recordCacheBypass (): void {
+  cacheBypasses++
+}
+
+export function recordCacheError (): void {
+  cacheErrors++
 }
 
 function percentile (p: number): number {
@@ -154,10 +163,12 @@ export function snapshot (): TelemetrySnapshot {
     activeRequests,
     peakActiveRequests,
     totalRequests,
-    totalRejected,
-    rejectedByActiveCap,
     mongoWaitQueueTimeouts,
     mongoServerSelectionErrors,
+    cacheHits,
+    cacheMisses,
+    cacheBypasses,
+    cacheErrors,
     status2xx,
     status3xx,
     status4xx,
@@ -188,8 +199,6 @@ export function prometheusText (): string {
   emit('gauge', 'http_active_requests', 'In-flight dynamic HTTP requests in this process', s.activeRequests)
   emit('gauge', 'http_peak_active_requests', 'Peak concurrent dynamic HTTP requests since boot', s.peakActiveRequests)
   emit('counter', 'http_requests_total', 'Total dynamic HTTP requests admitted to the server', s.totalRequests)
-  emit('counter', 'http_requests_rejected_total', 'Requests rejected before handling', s.totalRejected)
-  emit('counter', 'http_requests_rejected_active_cap_total', 'Requests rejected by the active-request cap (503)', s.rejectedByActiveCap)
   emit('counter', 'http_requests_2xx_total', 'Responses with status 200-299', s.status2xx)
   emit('counter', 'http_requests_3xx_total', 'Responses with status 300-399', s.status3xx)
   emit('counter', 'http_requests_4xx_total', 'Responses with status 400-499', s.status4xx)
@@ -202,6 +211,10 @@ export function prometheusText (): string {
   emit('gauge', 'http_request_duration_p99_ms', 'p99 recent request duration in ms', s.durationP99Ms)
   emit('counter', 'mongo_wait_queue_timeouts_total', 'MongoDB connection checkout (wait-queue) timeouts', s.mongoWaitQueueTimeouts)
   emit('counter', 'mongo_server_selection_errors_total', 'MongoDB server-selection errors', s.mongoServerSelectionErrors)
+  emit('counter', 'cache_hits_total', 'Shared Dragonfly cache hits', s.cacheHits)
+  emit('counter', 'cache_misses_total', 'Shared Dragonfly cache misses filled from the source', s.cacheMisses)
+  emit('counter', 'cache_bypasses_total', 'Operations bypassing the shared cache while disabled or unavailable', s.cacheBypasses)
+  emit('counter', 'cache_errors_total', 'Shared Dragonfly cache command or payload errors', s.cacheErrors)
   emit('gauge', 'process_uptime_seconds', 'Seconds since this process started', s.uptimeSeconds)
   emit('gauge', 'process_rss_bytes', 'Resident set size in bytes', memory.rss)
   emit('gauge', 'process_heap_used_bytes', 'V8 heap used in bytes', memory.heapUsed)
@@ -246,10 +259,12 @@ export function reset (): void {
   activeRequests = 0
   peakActiveRequests = 0
   totalRequests = 0
-  totalRejected = 0
-  rejectedByActiveCap = 0
   mongoWaitQueueTimeouts = 0
   mongoServerSelectionErrors = 0
+  cacheHits = 0
+  cacheMisses = 0
+  cacheBypasses = 0
+  cacheErrors = 0
   status2xx = 0
   status3xx = 0
   status4xx = 0

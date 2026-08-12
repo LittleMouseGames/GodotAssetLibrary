@@ -22,27 +22,8 @@ let promoCacheExpiresAt = 0
 let promoRefresh: Promise<void> | null = null
 const PROMO_TTL_MS = 60_000
 
-// Cap on in-flight dynamic HTTP requests (process-wide). This is the "Server
-// is busy" 503 backstop, and it was the actual cause of the prod 503s: at
-// ~46 req/s (120M/month) a cap of 100 saturates whenever the average request
-// takes more than ~2.2s, which bursts easily reach while crawling. Raised to
-// 500 in tandem with the search fan-out consolidation (6 -> 2 Mongo ops per
-// request) and the MONGO_MAX_POOL bump, so worst-case pool demand stays
-// bounded (~cap x 2). Tune with MAX_CONCURRENT_REQUESTS and watch
-// /metrics http_peak_active_requests + http_requests_rejected_active_cap_total.
-const parsedMaxRequests = Number.parseInt(process.env.MAX_CONCURRENT_REQUESTS ?? '', 10)
-const MAX_CONCURRENT_REQUESTS = Number.isFinite(parsedMaxRequests) && parsedMaxRequests > 0 ? parsedMaxRequests : 500
-
 const parsedTelemetryInterval = Number.parseInt(process.env.TELEMETRY_LOG_INTERVAL_MS ?? '', 10)
 const TELEMETRY_LOG_INTERVAL_MS = Number.isFinite(parsedTelemetryInterval) && parsedTelemetryInterval > 0 ? parsedTelemetryInterval : 60_000
-
-let activeRequests = 0
-
-// Throttle the per-rejection log so a sustained overload burst can't flood
-// Docker's log driver while the server is already under pressure.
-const REJECT_LOG_INTERVAL_MS = 5000
-let lastRejectLogAt = 0
-let rejectedSinceLastLog = 0
 
 function refreshPromoMessage (): void {
   if (promoRefresh !== null) {
@@ -160,9 +141,9 @@ class RouterServer extends Server {
       res.send('OK')
     })
 
-    // Prometheus-format telemetry. Registered before the active-request cap so
-    // it stays reachable while the app is under load, like /health. Process and
-    // system metrics are only sensitive if someone can reach this route, so it
+    // Prometheus-format telemetry. Registered early so it stays reachable
+    // while the app is under load, like /health. Process and system metrics
+    // are only sensitive if someone can reach this route, so it
     // is gated behind an optional bearer token for production; leaving
     // METRICS_TOKEN unset keeps it open (e.g. local dev).
     this.app.get('/metrics', (req: Request, res: Response) => {
@@ -177,42 +158,19 @@ class RouterServer extends Server {
       res.send(telemetry.prometheusText())
     })
 
-    // Bound request state retained during traffic spikes or database pressure.
-    // Every admitted request is timed and recorded by telemetry; rejections
-    // increment a counter and are logged (throttled) so capacity limits stay
-    // visible in the logs and on /metrics.
-    this.app.use((req: Request, res: Response, next: NextFunction) => {
-      if (activeRequests >= MAX_CONCURRENT_REQUESTS) {
-        // Rejected requests never enter telemetry's active gauge or totals, so
-        // http_peak_active_requests can't exceed the cap and http_requests_total
-        // only counts work the server actually admitted.
-        telemetry.requestRejectedByActiveCap()
-        rejectedSinceLastLog++
-        const now = Date.now()
-        if (now - lastRejectLogAt >= REJECT_LOG_INTERVAL_MS) {
-          lastRejectLogAt = now
-          logger.log('warn', `Rejected ${rejectedSinceLastLog} request(s) at the active-request cap`, {
-            active: activeRequests,
-            max: MAX_CONCURRENT_REQUESTS,
-            method: req.method,
-            path: req.path,
-            ua: req.get('user-agent')
-          })
-          rejectedSinceLastLog = 0
-        }
-        res.setHeader('Retry-After', '1')
-        res.status(StatusCodes.SERVICE_UNAVAILABLE).send({ error: 'Server is busy, please try again shortly' })
-        return
-      }
-
+    // Track every dynamic request for telemetry (active/peak gauges plus
+    // duration/status stats) without rejecting anything. There is deliberately
+    // no in-flight request cap: cached reads are cheap, and uncached work
+    // either completes or trips MongoDB's fail-fast timeouts and surfaces as a
+    // real error instead of a synthetic 503. Watch http_active_requests and
+    // http_request_duration_p99_ms on /metrics during bursts.
+    this.app.use((_req: Request, res: Response, next: NextFunction) => {
       telemetry.requestStart()
-      activeRequests++
       let released = false
       const startedAt = Date.now()
       const release = (): void => {
         if (!released) {
           released = true
-          activeRequests--
           telemetry.requestEnd(Date.now() - startedAt, res.statusCode)
         }
       }

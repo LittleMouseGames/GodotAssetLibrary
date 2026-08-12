@@ -13,6 +13,7 @@ import { UpdatePromobarMessage } from '../models/UPDATE/UpdatePromobarMessage'
 import { UpdateSiteRestrictions } from '../models/UPDATE/UpdateSiteRestrictions'
 import { UpdateSiteFiles } from '../models/UPDATE/UpdateSiteFiles'
 import { invalidateSiteFileCache } from 'core/utils/siteFiles'
+import { buildAssetCacheKey, cacheDelete } from 'core/utils/dragonfly'
 import { GetReviewsByIdList } from '../models/GET/GetReviewsByIdList'
 import { UpdateReportIgnoreById } from '../models/UPDATE/UpdateReportIgnoreById'
 import { GetReportById } from '../models/GET/GetReportById'
@@ -161,7 +162,9 @@ export class AdminService {
 
     await UpdateReportApproveById(reportId)
     await DeleteReviewById(reportInfo.review_id)
-
+    // The deleted review and adjusted counters are cached on the public asset
+    // page; drop the entry so the moderation is reflected immediately.
+    void cacheDelete(buildAssetCacheKey(reviewInfo.asset_id))
     res.send()
   }
 
