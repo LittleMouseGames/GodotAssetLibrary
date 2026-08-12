@@ -9,24 +9,52 @@ import { GetLastModifiedAssets } from '../models/GET/GetLastModifiedAssets'
 import { GetTrendingAssets } from '../models/GET/GetTrendingAssets'
 import { getAllGuides } from 'app/code/guides/models/guide'
 import { attachCardExtras } from 'core/utils/cardView'
+import { cacheGetOrLoad } from 'core/utils/dragonfly'
+
+interface HomepageSnapshot {
+  trendingAssets: any[]
+  featuredAssets: any[]
+  lastModifiedAssets: any[]
+  categoriesObject: any
+}
+
+const parsedHomepageTtl = Number.parseInt(process.env.CACHE_HOMEPAGE_TTL_SECONDS ?? '', 10)
+const HOMEPAGE_CACHE_TTL_SECONDS = Number.isFinite(parsedHomepageTtl) && parsedHomepageTtl > 0
+  ? parsedHomepageTtl
+  : 60
+
+async function loadHomepageSnapshot (): Promise<HomepageSnapshot> {
+  // Fetch sections concurrently and degrade per-section instead of failing the
+  // whole homepage when one query hiccups.
+  const [trending, featured, lastModified, categories] = await Promise.allSettled([
+    GetTrendingAssets(),
+    GetFourAssetsForHomepage(),
+    GetLastModifiedAssets(),
+    GetAllCategoriesAndTheirAssetCount()
+  ])
+
+  return {
+    trendingAssets: trending.status === 'fulfilled' ? trending.value : [],
+    featuredAssets: featured.status === 'fulfilled' ? featured.value : [],
+    lastModifiedAssets: lastModified.status === 'fulfilled' ? lastModified.value : [],
+    categoriesObject: categories.status === 'fulfilled' ? categories.value : {}
+  }
+}
 
 export class HomepageService {
   public async render (req: Request, res: Response): Promise<void> {
     const authToken = striptags(req.cookies['auth-token'] ?? '')
 
-    // Fetch sections concurrently and degrade per-section instead of failing the
-    // whole homepage when one query hiccups.
-    const [trending, featured, lastModified, categories] = await Promise.allSettled([
-      GetTrendingAssets(),
-      GetFourAssetsForHomepage(),
-      GetLastModifiedAssets(),
-      GetAllCategoriesAndTheirAssetCount()
-    ])
-
-    const trendingAssets = trending.status === 'fulfilled' ? trending.value : []
-    const featuredAssets = featured.status === 'fulfilled' ? featured.value : []
-    const lastModifiedAssets = lastModified.status === 'fulfilled' ? lastModified.value : []
-    const categoriesObject = categories.status === 'fulfilled' ? categories.value : {}
+    const cached = await cacheGetOrLoad(
+      'gda:v1:homepage',
+      HOMEPAGE_CACHE_TTL_SECONDS,
+      loadHomepageSnapshot,
+      10_000
+    )
+    // Card decoration and saved-state are request-specific mutations. Clone
+    // the shared cached value so one request can never alter another.
+    const snapshot = JSON.parse(JSON.stringify(cached.value)) as HomepageSnapshot
+    const { trendingAssets, featuredAssets, lastModifiedAssets, categoriesObject } = snapshot
 
     attachCardExtras(trendingAssets)
     attachCardExtras(featuredAssets)
