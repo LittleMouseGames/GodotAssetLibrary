@@ -56,10 +56,16 @@ async function getClient (): Promise<DragonflyClient | null> {
         reconnectStrategy: false
       }
     }) as DragonflyClient
-    next.on('error', () => {
-      // Cache failures are handled as misses. Avoid logging every client event
-      // while Dragonfly is unavailable; the connection attempt logs once.
-    })
+    const markDead = (): void => {
+      // Only the active client clears itself; a late event from an older
+      // client must never clobber a newer, healthy reference.
+      if (client === next) client = null
+    }
+    // Cache failures are handled as misses. When the connection drops, clear
+    // the module reference so the next call reconnects cleanly; the initial
+    // connect attempt logs the one-time "unavailable" warning.
+    next.on('end', markDead)
+    next.on('error', markDead)
 
     try {
       await next.connect()
