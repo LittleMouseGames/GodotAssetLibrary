@@ -260,12 +260,12 @@
     @include set-styles(
       $head-height: 120px,
       $background-is-banner: "true",
-      $background-color: $color-brand-white,
+      $background-color: var(--surface-card),
       $body-margin-top: 15px,
-      $author-color: $text-light-grayer,
-      $title-color: $text-dark-darkest,
-      $desc-color: $text-dark-darker,
-      $rating-color: $text-gray-dark,
+      $author-color: var(--text-muted),
+      $title-color: var(--text-primary),
+      $desc-color: var(--text-secondary),
+      $rating-color: var(--text-muted),
       $cta-dark: "true",
       $padding-bottom-override: 12px
     );

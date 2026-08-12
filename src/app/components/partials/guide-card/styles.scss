@@ -4,8 +4,8 @@
 .guide-card {
   @include reset-header-spacing;
   position: relative;
-  background: $color-brand-white;
-  border: 1px solid $color-brand-gray;
+  background: var(--surface-card);
+  border: 1px solid var(--border-color);
   border-radius: 6px;
   padding: 18px;
   display: flex;
@@ -43,7 +43,7 @@
       margin: 0 0 8px;
 
       a {
-        color: $text-dark-darkest;
+        color: var(--text-primary);
         text-decoration: none;
 
         &:hover {
@@ -56,7 +56,7 @@
       font-family: "DM Sans";
       font-size: 14px;
       line-height: 1.55;
-      color: $text-gray-darker;
+      color: var(--text-muted);
       margin: 0;
     }
   }
@@ -70,7 +70,7 @@
 
     font-family: "DM Sans";
     font-size: 12px;
-    color: $text-gray-darker;
+    color: var(--text-muted);
 
     .guide-category {
       @include inter-like-font();
@@ -78,10 +78,10 @@
       letter-spacing: 0.4px;
       font-size: 11px;
       font-weight: 600;
-      background: $color-lighter-gray;
+      background: var(--surface-subtle);
       border-radius: 3px;
       padding: 3px 8px;
-      color: $text-dark-deep-gray;
+      color: var(--text-secondary);
     }
   }
 }

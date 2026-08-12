@@ -11,7 +11,26 @@
 <meta name="googlebot" content="<%= robots %>">
 <meta name="bingbot" content="<%= robots %>">
 <meta name="rating" content="General">
-<meta name="referrer" content="no-referrer">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<meta name="theme-color" content="#ffffff">
+<!-- Apply the persisted/System theme before page CSS so there is no light
+     first-paint flash. Purely client-side; server output is theme-agnostic. -->
+<script>
+  (function () {
+    try {
+      var stored = localStorage.getItem('godot-theme')
+      var theme = (stored === 'light' || stored === 'dark') ? stored : 'system'
+      var resolved = theme === 'system'
+        ? (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
+        : theme
+      document.documentElement.setAttribute('data-theme', resolved)
+      var meta = document.querySelector('meta[name="theme-color"]')
+      if (meta !== null) {
+        meta.setAttribute('content', resolved === 'dark' ? '#141518' : '#ffffff')
+      }
+    } catch (e) { /* storage unavailable -> keep the :root light defaults */ }
+  })();
+</script>
 <!-- FACEBOOK -->
 <meta property="og:type" content="website">
 <meta property="og:locale" content="en_US">
@@ -26,7 +45,7 @@
         href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500&family=Inter:wght@500;600;700&family=Poppins:wght@400;600;700&display=swap"
         rel="stylesheet">
 </noscript>
-<link rel="icon" href="/favicon.ico">
+<link rel="icon" href="/favicon.ico?cache=<%= it._locals?.buildString %>">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link rel="preconnect" href="https://code.iconify.design" crossorigin />
 <link rel="dns-prefetch" href="https://code.iconify.design" />
@@ -36,9 +55,9 @@
 <% } %>
 <script src="/javascript/utilities.js?cache=<%= it._locals?.buildString %>" defer></script>
 <!-- FAVICON -->
-<link rel="apple-touch-icon" sizes="180x180" href="/images/favicon/apple-touch-icon.png">
-<link rel="icon" type="image/png" sizes="32x32" href="/images/favicon/favicon-32x32.png">
-<link rel="icon" type="image/png" sizes="16x16" href="/images/favicon/favicon-16x16.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/images/favicon/apple-touch-icon.png?cache=<%= it._locals?.buildString %>">
+<link rel="icon" type="image/png" sizes="32x32" href="/images/favicon/favicon-32x32.png?cache=<%= it._locals?.buildString %>">
+<link rel="icon" type="image/png" sizes="16x16" href="/images/favicon/favicon-16x16.png?cache=<%= it._locals?.buildString %>">
 <link rel="manifest" href="/site.webmanifest">
 <!-- SCRIPTS -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/lazysizes/5.3.2/lazysizes.min.js" defer></script>

@@ -18,22 +18,24 @@
 
   strong {
     font-weight: 600;
-    color: $text-dark-darker;
+    color: var(--text-primary);
   }
 
   p,
   ul,
   li {
     font-family: "DM Sans";
+    color: var(--text-secondary);
   }
 
   .sidebar {
     .item {
       @include inter-like-font();
       padding: 15px;
-      border: 3px solid $color-brand-gray;
+      border: 3px solid var(--border-color);
       font-weight: 600;
       width: 200px;
+      color: var(--text-primary);
 
       @include mobile-styles {
         width: 100%;

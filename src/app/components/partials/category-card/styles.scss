@@ -9,14 +9,15 @@
   }
 
   .container {
-    background: $color-brand-gray;
+    background: var(--surface-elevated);
     height: 145px;
     border-radius: 6px;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    color: $text-dark-deep-gray;
+    color: var(--text-secondary);
+    border: 1px solid var(--border-color);
   }
 
   h3 {

@@ -7,12 +7,17 @@ $standard-shadow: 0px 17px 80px rgba(0, 0, 0, 0.07), 0px 3.8px 17.9px rgba(0, 0,
   0px 1.13px 5.32px rgba(0, 0, 0, 0.028);
 
 /** Text Specific Colors **/
-$text-dark-black: #000;
-$text-dark-darkest: #060606;
-$text-dark-very-dark: #151515;
-$text-dark-darker: #222222;
-$text-dark-deep-gray: #353535;
-$text-dark-gray: #6a6a6a;
+/* The dark text variants are now aliases of the semantic theme text tokens so
+   every hardcoded `color: $text-dark-*` on a themed surface adapts to dark
+   mode (they were previously fixed dark hex values that produced dark-on-dark
+   text under `[data-theme=dark]`). Dark surfaces keep their light text via the
+   untouched `$text-light-*` aliases below. */
+$text-dark-black: var(--text-primary);
+$text-dark-darkest: var(--text-primary);
+$text-dark-very-dark: var(--text-secondary);
+$text-dark-darker: var(--text-secondary);
+$text-dark-deep-gray: var(--text-secondary);
+$text-dark-gray: var(--text-muted);
 
 $text-light-lightest: #f3f3f3;
 $text-light-lighter: #ececec;
@@ -21,15 +26,18 @@ $text-light-gray: #cacaca;
 $text-light-grayer: #9b9b9b;
 $text-light-white: #fff;
 
-$text-gray-dark: #585858;
-$text-gray-darker: #757575;
+$text-gray-dark: var(--text-muted);
+$text-gray-darker: var(--text-muted);
 
 /** General Colors **/
 $color-brand-black: #000;
 $color-brand-white: #fff;
 $color-gold: #ffc700;
-$color-brand-gray: #dfdfdf;
-$color-lighter-gray: #f1f1f1;
+/* Light-gray surfaces (hover states, subtle backgrounds, thumbnail
+   placeholders, sidebar borders) adapt to the theme so they are not
+   light-on-dark in dark mode. */
+$color-brand-gray: var(--border-color);
+$color-lighter-gray: var(--surface-subtle);
 
 /** Badge Colors **/
 $badge-blue: #2f69ff;
@@ -37,11 +45,11 @@ $badge-purple: #a32fff;
 
 /** Button Colors **/
 $button-dark-gray: #474747;
-$button-lighter-gray: #f2f2f2;
-$button-gray: #e4e4e4;
-$button-white: white;
-$button-very-gray: #e8e8e8;
-$button-very-dark: #0b0b0b;
+$button-lighter-gray: var(--surface-subtle);
+$button-gray: var(--surface-input);
+$button-white: var(--surface-elevated);
+$button-very-gray: var(--surface-input);
+$button-very-dark: var(--button-primary-bg);
 
 /* ==========================================================================
    Semantic marketplace tokens
@@ -50,43 +58,132 @@ $button-very-dark: #0b0b0b;
    these aliases over hardcoded colors.
    ========================================================================== */
 
+/* Runtime theme palette. Every page stylesheet imports variables.scss (via the
+   shared layout/component chain), so the `:root` light defaults and the
+   `[data-theme="dark"]` overrides are emitted in each compiled page CSS. The
+   site header applies `data-theme` on <html> before paint (see head.eta) and
+   offers a System/Light/Dark selector; no server render varies by theme. */
+:root {
+  color-scheme: light;
+
+  --surface-page: #efefef;
+  --surface-card: #ffffff;
+  --surface-elevated: #ffffff;
+  --surface-input: #f1f1f1;
+  --surface-subtle: #f1f1f1;
+  --surface-overlay: rgba(0, 0, 0, 0.55);
+  --surface-inverse: #000000;
+
+  --text-primary: #060606;
+  --text-secondary: #222222;
+  --text-muted: #585858;
+  --text-faint: #757575;
+  --text-on-inverse: #ffffff;
+  --text-on-inverse-muted: #cacaca;
+
+  --border-color: #dfdfdf;
+  --border-color-strong: #c9c9c9;
+
+  --link-color: #2081db;
+  --link-color-hover: #1a6cb8;
+  --focus-ring-color: #2081db;
+
+  --button-primary-bg: #0b0b0b;
+  --button-primary-hover: #262626;
+  --button-primary-text: #ffffff;
+
+  --color-success: #1a8f4c;
+  --color-warning: #c77b1b;
+  --color-danger: #c0392b;
+  --color-danger-bg: #fdecea;
+  --color-info: #2f69ff;
+
+  --accent: #ffc700;
+  --accent-strong: #f5b400;
+
+  --badge-blue: #2f69ff;
+  --badge-purple: #a32fff;
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+
+  --surface-page: #141518;
+  --surface-card: #1e2024;
+  --surface-elevated: #26292e;
+  --surface-input: #2a2d33;
+  --surface-subtle: #2a2d33;
+  --surface-overlay: rgba(0, 0, 0, 0.72);
+  --surface-inverse: #000000;
+
+  --text-primary: #ececec;
+  --text-secondary: #d3d3d3;
+  --text-muted: #a7a7a7;
+  --text-faint: #8f8f8f;
+  --text-on-inverse: #ffffff;
+  --text-on-inverse-muted: #cacaca;
+
+  --border-color: #34363c;
+  --border-color-strong: #4a4d54;
+
+  --link-color: #6fb1ff;
+  --link-color-hover: #8cc2ff;
+  --focus-ring-color: #6fb1ff;
+
+  --button-primary-bg: #3a3e45;
+  --button-primary-hover: #4a5058;
+  --button-primary-text: #f4f4f4;
+
+  --color-success: #35b36f;
+  --color-warning: #e0a348;
+  --color-danger: #ef6a5a;
+  --color-danger-bg: #3a2220;
+  --color-info: #7aa2ff;
+
+  --accent: #ffc700;
+  --accent-strong: #ffd233;
+
+  --badge-blue: #4d7cff;
+  --badge-purple: #b96bff;
+}
+
 /** Surfaces **/
-$surface-page: $background;
-$surface-card: $color-brand-white;
-$surface-elevated: $color-brand-white;
-$surface-overlay: rgba(0, 0, 0, 0.55);
-$surface-inverse: $color-brand-black;
+$surface-page: var(--surface-page);
+$surface-card: var(--surface-card);
+$surface-elevated: var(--surface-elevated);
+$surface-overlay: var(--surface-overlay);
+$surface-inverse: var(--surface-inverse);
 
 /** Text hierarchy **/
-$text-primary: $text-dark-darkest;
-$text-secondary: $text-dark-darker;
-$text-muted: $text-gray-dark;
-$text-faint: $text-gray-darker;
-$text-on-inverse: $text-light-white;
-$text-on-inverse-muted: $text-light-gray;
+$text-primary: var(--text-primary);
+$text-secondary: var(--text-secondary);
+$text-muted: var(--text-muted);
+$text-faint: var(--text-faint);
+$text-on-inverse: var(--text-on-inverse);
+$text-on-inverse-muted: var(--text-on-inverse-muted);
 
 /** Brand / links / accents **/
-$link-color: #2081db;
-$link-color-hover: #1a6cb8;
-$accent: $color-gold;
-$accent-strong: #f5b400;
+$link-color: var(--link-color);
+$link-color-hover: var(--link-color-hover);
+$accent: var(--accent);
+$accent-strong: var(--accent-strong);
 
 /** Status **/
-$color-success: #1a8f4c;
-$color-warning: #c77b1b;
-$color-danger: #c0392b;
-$color-danger-bg: #fdecea;
-$color-info: $badge-blue;
+$color-success: var(--color-success);
+$color-warning: var(--color-warning);
+$color-danger: var(--color-danger);
+$color-danger-bg: var(--color-danger-bg);
+$color-info: var(--color-info);
 
 /** Borders **/
-$border-color: $color-brand-gray;
-$border-color-strong: #c9c9c9;
+$border-color: var(--border-color);
+$border-color-strong: var(--border-color-strong);
 $border-radius-sm: 3px;
 $border-radius-md: 6px;
 $border-radius-lg: 10px;
 
 /** Focus **/
-$focus-ring-color: $link-color;
+$focus-ring-color: var(--focus-ring-color);
 $focus-ring-width: 2px;
 
 /** Spacing scale (8-based) **/

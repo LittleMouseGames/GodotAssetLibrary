@@ -42,10 +42,10 @@
     @include inter-like-font();
     grid-column: 1 / -1;
     padding: 16px;
-    background: $color-brand-white;
+    background: var(--surface-card);
     border-radius: 6px;
-    color: $text-gray-darker;
-    border: 1px solid #dbdbdb;
+    color: var(--text-muted);
+    border: 1px solid var(--border-color);
   }
 }
 
@@ -75,8 +75,8 @@
 .page-guide {
   .guide-content {
     max-width: 860px;
-    background: $color-brand-white;
-    border: 1px solid #dbdbdb;
+    background: var(--surface-card);
+    border: 1px solid var(--border-color);
     border-radius: 3px;
     padding: 20px 32px;
 
@@ -99,7 +99,7 @@
       font-family: "DM Sans";
       font-size: 15px;
       line-height: 1.65;
-      color: $text-dark-darker;
+      color: var(--text-secondary);
     }
 
     p {
@@ -126,12 +126,12 @@
 
     strong {
       font-weight: 600;
-      color: $text-dark-darker;
+      color: var(--text-primary);
     }
 
     blockquote {
       border-left: 4px solid $accent;
-      background: $color-lighter-gray;
+      background: var(--surface-subtle);
       margin: 0 0 16px;
       padding: 12px 16px;
       border-radius: 0 $border-radius-md $border-radius-md 0;
@@ -150,8 +150,8 @@
     }
 
     pre {
-      background: $button-very-dark;
-      color: $text-light-lightest;
+      background: var(--surface-subtle);
+      color: var(--text-primary);
       border-radius: $border-radius-md;
       padding: 16px;
       overflow-x: auto;

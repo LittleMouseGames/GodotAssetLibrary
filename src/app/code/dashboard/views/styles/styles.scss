@@ -142,8 +142,8 @@
 
     .review-row {
       @include inter-like-font();
-      background: $color-brand-white;
-      border: 1px solid $border-color;
+      background: var(--surface-card);
+      border: 1px solid var(--border-color);
       border-radius: $border-radius-md;
       padding: $space-4;
 

@@ -13,8 +13,8 @@
   .message {
     padding: 12px 16px;
     border-radius: $border-radius-md;
-    background: $text-dark-darkest;
-    color: $text-on-inverse;
+    background: var(--surface-inverse);
+    color: var(--text-on-inverse);
     box-shadow: $shadow-lg;
     font-family: "Inter", sans-serif;
     font-size: 14px;

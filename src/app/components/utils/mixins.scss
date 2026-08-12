@@ -77,7 +77,7 @@
   cursor: pointer;
   font-size: 11px;
   background: $button-white;
-  color: $text-dark-darker;
+  color: var(--text-primary);
 }
 
 @mixin card-rating-styles {

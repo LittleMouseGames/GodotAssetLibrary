@@ -108,14 +108,14 @@
       font-size: 13px;
       font-weight: 600;
       border-radius: $border-radius-md;
-      background: #fff;
+      background: var(--surface-card);
       border: 1px solid $border-color-strong;
-      color: $text-dark-darkest;
+      color: var(--text-primary);
       cursor: pointer;
       white-space: nowrap;
 
       &:hover {
-        background: $color-lighter-gray;
+        background: var(--surface-subtle);
       }
     }
   }
@@ -175,13 +175,13 @@
         font-size: 13px;
         font-weight: 600;
         border-radius: $border-radius-md;
-        background: #fff;
+        background: var(--surface-card);
         border: 1px solid $border-color-strong;
-        color: $text-dark-darkest;
+        color: var(--text-primary);
         cursor: pointer;
 
         &:hover {
-          background: $color-lighter-gray;
+          background: var(--surface-subtle);
         }
       }
     }
