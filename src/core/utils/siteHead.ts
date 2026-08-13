@@ -1,7 +1,7 @@
 import { GetSiteHead } from 'app/code/admin/models/GET/GetSiteHead'
 
 /**
- * Admin-managed HTML fragment injected into the <head> of every public page.
+ * Admin-managed HTML fragment injected into the <head> of every page.
  * Admins configure arbitrary markup (extra meta tags, analytics scripts,
  * schema.org JSON-LD) from /admin; it is stored in the `info` collection as
  * `{ type: 'site_head', content }`. The cache maps to that single content

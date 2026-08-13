@@ -258,10 +258,13 @@ class RouterServer extends Server {
       res.locals.buildString = buildString
 
       // Admin-configured HTML fragment injected into the <head> of every page
-      // (e.g. extra meta tags, analytics scripts). Read through the short-TTL
-      // siteHead cache, which awaits a refresh when stale so an admin save is
-      // reflected immediately instead of after the TTL.
-      res.locals.siteHead = await getSiteHead()
+      // (e.g. extra meta tags, analytics scripts). Only page-rendering GET
+      // routes need it, so skip the cache lookup (which can trigger a refresh
+      // against the database) on API and non-GET requests that never render
+      // an Eta page.
+      res.locals.siteHead = req.method === 'GET' && !req.path.startsWith('/api/')
+        ? await getSiteHead()
+        : ''
 
       next()
     })

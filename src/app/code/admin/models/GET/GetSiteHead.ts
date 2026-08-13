@@ -2,7 +2,7 @@ import { MongoHelper } from 'core/MongoHelper'
 
 /**
  * Fetch the admin-configured HTML fragment that is injected into the <head>
- * of every public page (e.g. extra <meta> tags, analytics scripts, schema.org
+ * of every page (e.g. extra <meta> tags, analytics scripts, schema.org
  * JSON-LD). Returns an empty string when nothing is configured.
  */
 export async function GetSiteHead (): Promise<string> {

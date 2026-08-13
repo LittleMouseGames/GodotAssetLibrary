@@ -222,8 +222,8 @@ export class AdminService {
       throw new Error('Promobar message too long, must be less than 150 characters')
     }
 
-    // Admin-configured HTML fragment injected into the <head> of every public
-    // page. Stored and injected as-is — this is trusted site-operator markup
+    // Admin-configured HTML fragment injected into the <head> of every page.
+    // Stored and injected as-is — this is trusted site-operator markup
     // (meta/link/script/schema.org), so no sanitization strips script tags.
     const siteHead = String(req.body.site_head ?? '').trim()
     if (siteHead.length > 20_000) {

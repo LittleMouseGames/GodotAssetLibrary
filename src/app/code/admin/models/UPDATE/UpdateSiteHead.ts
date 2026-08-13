@@ -2,7 +2,7 @@ import { MongoHelper } from 'core/MongoHelper'
 
 /**
  * Upsert the admin-configured HTML fragment that is injected into the <head>
- * of every public page. Stored as a single `info` document with
+ * of every page. Stored as a single `info` document with
  * `{ type: 'site_head', content }`. Pass an empty string to clear it.
  */
 export async function UpdateSiteHead (content: string): Promise<void> {
