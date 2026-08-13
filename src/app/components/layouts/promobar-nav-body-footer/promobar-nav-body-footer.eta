@@ -33,6 +33,13 @@
     <%~ it?._locals?.functions?.safeJsonLd(it?.meta?.jsonLdItemList) %>
   </script>
   <% } %>
+  <% if(it?._locals?.customHeadElements?.length) { %>
+  <%# Elements are stored and validated by the admin service (tag allowlist +
+      structural-injection checks). Raw emission here is intentional — the
+      admin-only authorization and server-side validation are the security
+      controls for this feature. %>
+  <%~ it._locals.customHeadElements.join('\n  ') %>
+  <% } %>
   <script type="application/ld+json">
     {
     "@context": "http://schema.org",
