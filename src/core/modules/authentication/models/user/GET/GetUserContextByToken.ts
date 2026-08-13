@@ -41,10 +41,15 @@ async function loadUserContext (hashedToken: string): Promise<UserContext> {
  * only outlive a revocation by at most the TTL.
  */
 export async function GetUserContextByToken (hashedToken: string): Promise<UserContext> {
+  // The login context is security-sensitive: never extend it into a stale
+  // window. It is cached only for its short TTL and invalidated on logout and
+  // account deletion.
   const cached = await cacheGetOrLoad<UserContext>(
     buildUserContextCacheKey(hashedToken),
     USER_CONTEXT_CACHE_TTL_SECONDS,
-    async () => await loadUserContext(hashedToken)
+    async () => await loadUserContext(hashedToken),
+    undefined,
+    { staleTtlSeconds: 0 }
   )
   return cached.value
 }
