@@ -239,7 +239,7 @@ window.godotLibrary = {
       event.preventDefault()
 
       fetch(route, {
-        method: 'get'
+        method: 'post'
       }).then(response => {
         if (!response.ok) {
           response.json().then(data => {
@@ -690,6 +690,286 @@ window.godotLibrary = {
       const dropdown = document.querySelector('.docs .dropdown')
       if (dropdown !== null) window.godotLibrary.dropdown.close(dropdown)
     }
+  },
+  heroCarousel: {
+    instances: [],
+
+    prefersReducedMotion: function () {
+      return typeof window.matchMedia === 'function' &&
+        window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    },
+
+    initAll: function () {
+      const self = this
+      this.instances = []
+      document.querySelectorAll('[data-hero-carousel]').forEach(function (root) {
+        self.instances.push(self.create(root))
+      })
+
+      // Pause rotation whenever the whole document becomes hidden.
+      document.addEventListener('visibilitychange', function () {
+        for (const instance of self.instances) {
+          instance.documentHidden = document.hidden === true
+          self.syncAutoplay(instance)
+        }
+      })
+
+      // Respect reduced-motion at runtime (not just at load).
+      if (typeof window.matchMedia === 'function') {
+        const query = window.matchMedia('(prefers-reduced-motion: reduce)')
+        const listener = function () {
+          for (const instance of self.instances) self.syncAutoplay(instance)
+        }
+        if (typeof query.addEventListener === 'function') query.addEventListener('change', listener)
+        else if (typeof query.addListener === 'function') query.addListener(listener)
+      }
+    },
+
+    create: function (root) {
+      const self = this
+      const slides = Array.from(root.querySelectorAll('[data-hero-slide]'))
+      const instance = {
+        root: root,
+        slides: slides,
+        dots: Array.from(root.querySelectorAll('[data-hero-dot]')),
+        status: root.querySelector('[data-hero-status]'),
+        index: 0,
+        timer: null,
+        autoplayMs: Number(root.getAttribute('data-hero-autoplay')) || 7000,
+        documentHidden: false,
+        hovered: false,
+        focused: false,
+        inView: true,
+        userPaused: false
+      }
+
+      if (instance.slides.length < 2) return instance
+
+      // JavaScript is running: remove the server-side `hidden` markers so all
+      // slides stack and the active one can crossfade (opacity/visibility).
+      slides.forEach(function (slide) { slide.removeAttribute('hidden') })
+
+      this.wireControls(instance)
+      this.wireKeyboard(instance)
+      this.wireSwipe(instance)
+
+      root.addEventListener('mouseenter', function () { instance.hovered = true; self.syncAutoplay(instance) })
+      root.addEventListener('mouseleave', function () { instance.hovered = false; self.syncAutoplay(instance) })
+      root.addEventListener('focusin', function () { instance.focused = true; self.syncAutoplay(instance) })
+      root.addEventListener('focusout', function () { instance.focused = false; self.syncAutoplay(instance) })
+
+      if (typeof IntersectionObserver === 'function') {
+        instance.observer = new IntersectionObserver(function (entries) {
+          const entry = entries[0]
+          instance.inView = entry === undefined ? true : entry.isIntersecting
+          self.syncAutoplay(instance)
+        })
+        instance.observer.observe(root)
+      }
+
+      // Start rotation only when every pause condition is clear (reduced
+      // motion, hidden document, off-screen, hover/focus or explicit pause).
+      this.syncAutoplay(instance)
+      return instance
+    },
+
+    wireControls: function (instance) {
+      const self = this
+      const prev = instance.root.querySelector('[data-hero-prev]')
+      const next = instance.root.querySelector('[data-hero-next]')
+      const play = instance.root.querySelector('[data-hero-play]')
+
+      prev?.addEventListener('click', function () {
+        self.move(instance, -1, 'manual')
+      })
+      next?.addEventListener('click', function () {
+        self.move(instance, 1, 'manual')
+      })
+
+      instance.dots.forEach(function (dot) {
+        dot.addEventListener('click', function () {
+          self.show(instance, Number(dot.getAttribute('data-hero-dot')), 'manual')
+        })
+      })
+
+      play?.addEventListener('click', function (event) {
+        // The pause control must never leak its click to anything else (a link
+        // or a slide advance), even if a cached/older layout overlapped it.
+        event.preventDefault()
+        event.stopPropagation()
+        instance.userPaused = !instance.userPaused
+        self.syncAutoplay(instance)
+        const paused = instance.userPaused
+        play.setAttribute('aria-pressed', paused ? 'false' : 'true')
+        play.setAttribute('aria-label', paused ? 'Play automatic rotation' : 'Pause automatic rotation')
+        // Swap the icon so pausing/playing has clear visual feedback (Iconify
+        // observes the data-icon attribute change and re-renders the glyph).
+        const icon = play.querySelector('.iconify')
+        if (icon !== null) {
+          icon.setAttribute('data-icon', paused ? 'akar-icons:play' : 'akar-icons:pause')
+        }
+      })
+    },
+
+    wireKeyboard: function (instance) {
+      const self = this
+      instance.root.addEventListener('keydown', function (event) {
+        // Never hijack keys while the user is typing in a form control.
+        const target = event.target
+        if (target instanceof Element && target.closest('input, textarea, select')) return
+        const key = event.key
+        if (key === 'ArrowLeft') {
+          event.preventDefault()
+          self.move(instance, -1, 'manual')
+        } else if (key === 'ArrowRight') {
+          event.preventDefault()
+          self.move(instance, 1, 'manual')
+        } else if (key === 'Home') {
+          event.preventDefault()
+          self.show(instance, 0, 'manual')
+        } else if (key === 'End') {
+          event.preventDefault()
+          self.show(instance, instance.slides.length - 1, 'manual')
+        }
+      })
+    },
+
+    wireSwipe: function (instance) {
+      const root = instance.root
+      let startX = 0
+      let startY = 0
+      let tracking = false
+
+      root.addEventListener('touchstart', function (event) {
+        const touch = event.changedTouches?.[0]
+        if (touch === undefined) return
+        startX = touch.clientX
+        startY = touch.clientY
+        tracking = true
+      }, { passive: true })
+
+      root.addEventListener('touchend', function (event) {
+        if (!tracking) return
+        tracking = false
+        const touch = event.changedTouches?.[0]
+        if (touch === undefined) return
+        const deltaX = touch.clientX - startX
+        const deltaY = touch.clientY - startY
+        // Only horizontal swipes navigate; keep vertical scrolling intact.
+        if (Math.abs(deltaX) > 48 && Math.abs(deltaX) > Math.abs(deltaY) * 1.5) {
+          window.godotLibrary.heroCarousel.move(instance, deltaX < 0 ? 1 : -1, 'manual')
+        }
+      }, { passive: true })
+    },
+
+    show: function (instance, index, reason) {
+      const total = instance.slides.length
+      if (total === 0) return
+      const next = ((index % total) + total) % total
+      instance.index = next
+
+      instance.slides.forEach(function (slide, i) {
+        slide.classList.toggle('active', i === next)
+      })
+      instance.dots.forEach(function (dot, i) {
+        const active = i === next
+        dot.classList.toggle('active', active)
+        if (active) dot.setAttribute('aria-current', 'true')
+        else dot.removeAttribute('aria-current')
+      })
+
+      // Manual navigation announces the current slide; autoplay stays silent
+      // so screen readers are not spammed every few seconds.
+      if (reason === 'manual') {
+        const title = instance.slides[next]?.querySelector('.hero-title')?.textContent?.trim() ?? ''
+        if (instance.status !== null) {
+          instance.status.textContent =
+            'Slide ' + (next + 1) + ' of ' + total + (title !== '' ? ': ' + title : '')
+        }
+      }
+
+      // Let lazysizes load the newly visible slide's imagery.
+      if (typeof window.lazySizes !== 'undefined' && typeof window.lazySizes.updateAll === 'function') {
+        window.lazySizes.updateAll()
+      } else {
+        window.dispatchEvent(new Event('resize'))
+      }
+
+      this.restart(instance)
+    },
+
+    move: function (instance, direction, reason) {
+      this.show(instance, instance.index + direction, reason)
+    },
+
+    syncAutoplay: function (instance) {
+      if (instance.slides.length < 2) {
+        this.stop(instance)
+        return
+      }
+      const shouldRun = !this.prefersReducedMotion() &&
+        !instance.documentHidden &&
+        !instance.userPaused &&
+        !instance.hovered &&
+        !instance.focused &&
+        instance.inView
+      if (shouldRun) this.start(instance)
+      else this.stop(instance)
+    },
+
+    start: function (instance) {
+      if (instance.timer !== null) return
+      const self = this
+      instance.timer = setInterval(function () {
+        self.move(instance, 1, 'autoplay')
+      }, instance.autoplayMs)
+    },
+
+    stop: function (instance) {
+      if (instance.timer !== null) {
+        clearInterval(instance.timer)
+        instance.timer = null
+      }
+    },
+
+    restart: function (instance) {
+      this.stop(instance)
+      this.syncAutoplay(instance)
+    }
+  },
+  featuredAssets: {
+    /** Move a hero-management row up (-1) or down (+1); DOM order is the order. */
+    move: function (button, offset) {
+      const row = button.closest('[data-hero-row]')
+      const list = button.closest('[data-hero-rows]')
+      if (row === null || list === null) return
+      const rows = Array.from(list.querySelectorAll('[data-hero-row]'))
+      const index = rows.indexOf(row)
+      const target = index + offset
+      if (target < 0 || target >= rows.length) return
+      if (offset < 0) {
+        list.insertBefore(row, rows[target])
+      } else {
+        list.insertBefore(row, rows[target].nextSibling)
+      }
+      this.syncButtons()
+    },
+    remove: function (button) {
+      const row = button.closest('[data-hero-row]')
+      if (row !== null) row.remove()
+      this.syncButtons()
+    },
+    syncButtons: function () {
+      document.querySelectorAll('[data-hero-rows]').forEach(function (list) {
+        const rows = Array.from(list.querySelectorAll('[data-hero-row]'))
+        rows.forEach(function (row, index) {
+          const up = row.querySelector('[data-hero-up]')
+          const down = row.querySelector('[data-hero-down]')
+          if (up !== null) up.disabled = index === 0
+          if (down !== null) down.disabled = index === rows.length - 1
+        })
+      })
+    }
   }
 }
 
@@ -1043,6 +1323,8 @@ function closeAllModals () {
 document.addEventListener('DOMContentLoaded', function (_event) {
   window.godotLibrary.theme.init()
   window.godotLibrary.media.init()
+  window.godotLibrary.heroCarousel.initAll()
+  window.godotLibrary.featuredAssets.syncButtons()
 
   document.querySelectorAll('.accordion').forEach(accordion => {
     const trigger = accordion.querySelector('.accordion-trigger')
