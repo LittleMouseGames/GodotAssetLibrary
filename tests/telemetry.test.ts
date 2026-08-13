@@ -10,6 +10,9 @@ import {
   recordCacheMiss,
   recordCacheBypass,
   recordCacheError,
+  recordStaticRequest,
+  setClusterSnapshot,
+  aggregateSnapshots,
   prometheusText,
   reset
 } from '../src/core/utils/telemetry'
@@ -104,5 +107,62 @@ describe('telemetry', () => {
     assert.match(text, /http_request_duration_p95_ms 5/)
     assert.match(text, /mongo_wait_queue_timeouts_total 0/)
     assert.match(text, /cache_hits_total 0/)
+  })
+
+  it('tracks per-route-class traffic and latency', () => {
+    reset()
+    requestStart('homepage')
+    requestEnd(10, 200, 'homepage')
+    requestStart('search')
+    requestEnd(250, 200, 'search')
+    const s = snapshot()
+    assert.equal(s.routes.homepage.count, 1)
+    assert.equal(s.routes.homepage.durationSumMs, 10)
+    assert.equal(s.routes.search.count, 1)
+    assert.equal(s.routes.search.durationSumMs, 250)
+    // The no-arg default bucket is 'other'.
+    assert.equal(s.routes.other.count, 0)
+  })
+
+  it('counts static file serves', () => {
+    reset()
+    recordStaticRequest()
+    recordStaticRequest()
+    assert.equal(snapshot().staticRequests, 2)
+  })
+
+  it('aggregates worker snapshots into a cluster view', () => {
+    reset()
+    requestStart('homepage')
+    requestEnd(10, 200, 'homepage')
+    const a = snapshot()
+    reset()
+    requestStart('search')
+    requestEnd(20, 404, 'search')
+    const b = snapshot()
+    const cluster = aggregateSnapshots([a, b])
+    assert.equal(cluster.totalRequests, 2)
+    assert.equal(cluster.routes.homepage.count, 1)
+    assert.equal(cluster.routes.search.count, 1)
+    assert.equal(cluster.status2xx, 1)
+    assert.equal(cluster.status4xx, 1)
+  })
+
+  it('renders route-class, static and cluster metrics in Prometheus text', () => {
+    reset()
+    requestStart('homepage')
+    requestEnd(5, 200, 'homepage')
+    recordStaticRequest()
+    const perProcess = prometheusText()
+    assert.match(perProcess, /http_requests_homepage_total 1/)
+    assert.match(perProcess, /http_static_requests_total 1/)
+    assert.match(perProcess, /http_active_sockets/)
+    assert.match(perProcess, /http_event_loop_lag_ms/)
+    // The cluster block appears once a cluster snapshot is stored.
+    setClusterSnapshot(aggregateSnapshots([snapshot()]))
+    const withCluster = prometheusText()
+    assert.match(withCluster, /http_cluster_requests_total 1/)
+    assert.match(withCluster, /http_cluster_2xx_total 1/)
+    reset()
   })
 })
