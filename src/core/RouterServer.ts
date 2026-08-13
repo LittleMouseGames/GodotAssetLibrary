@@ -11,6 +11,7 @@ import { GetUserContextByToken } from 'core/modules/authentication/models/user/G
 import { GetPromobarMessage } from 'app/code/admin/models/GET/GetPromobarMesasge'
 import { StatusCodes } from 'http-status-codes'
 import { getSiteFileContent } from 'core/utils/siteFiles'
+import { getSiteHead } from 'core/utils/siteHead'
 import { classifyCacheControl } from 'core/utils/httpCachePolicy'
 import { getReleaseId } from 'core/utils/releaseId'
 import { generateProxyUrl } from 'core/utils/generateProxyUrl'
@@ -255,6 +256,12 @@ class RouterServer extends Server {
       }
 
       res.locals.buildString = buildString
+
+      // Admin-configured HTML fragment injected into the <head> of every page
+      // (e.g. extra meta tags, analytics scripts). Read through the short-TTL
+      // siteHead cache, which awaits a refresh when stale so an admin save is
+      // reflected immediately instead of after the TTL.
+      res.locals.siteHead = await getSiteHead()
 
       next()
     })

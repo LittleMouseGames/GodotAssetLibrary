@@ -61,3 +61,9 @@
 <link rel="manifest" href="/site.webmanifest">
 <!-- SCRIPTS -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/lazysizes/5.3.2/lazysizes.min.js" defer></script>
+<!-- ADMIN CONFIGURED HEAD ELEMENTS (e.g. extra meta tags, analytics scripts).
+     Raw admin-managed markup, rendered unescaped so arbitrary head elements
+     (meta/link/script/schema.org) work. -->
+<% if (it?._locals?.siteHead) { %>
+<%~ it?._locals?.siteHead %>
+<% } %>
