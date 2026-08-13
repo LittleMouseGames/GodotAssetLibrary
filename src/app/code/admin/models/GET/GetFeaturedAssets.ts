@@ -1,6 +1,11 @@
 import { MongoHelper } from 'core/MongoHelper'
 
-export async function GetFeaturedAssets (): Promise<[string]> {
+/**
+ * The ordered list of homepage-hero project ids, stored as the existing
+ * `featured_assets` info document. Empty-safe: an absent document (fresh
+ * install, never-curated) is an empty list, not an error.
+ */
+export async function GetFeaturedAssets (): Promise<string[]> {
   const mongo = MongoHelper.getDatabase()
   const operationObject = await mongo.collection('info').findOne({
     type: 'featured_assets'
@@ -11,8 +16,9 @@ export async function GetFeaturedAssets (): Promise<[string]> {
   })
 
   if (operationObject === null || operationObject === undefined) {
-    throw new Error('Unable to find featured assets')
+    return []
   }
 
-  return operationObject.featured_assets
+  const list = operationObject.featured_assets
+  return Array.isArray(list) ? list.map(String) : []
 }

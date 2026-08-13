@@ -5,21 +5,24 @@ import striptags from 'striptags'
 import fromNow from 'fromnow'
 import { GetAllCategoriesAndTheirAssetCount } from '../models/GET/GetAllCategoriesAndTheirAssetCount'
 import { GetCategoryCountsByMajor } from '../models/GET/GetCategoryCountsByMajor'
-import { GetFourAssetsForHomepage } from '../models/GET/GetFeaturedAssetsForHomepage'
+import { GetHomepageHeroAssets } from '../models/GET/GetHomepageHeroAssets'
 import { GetLastModifiedAssets } from '../models/GET/GetLastModifiedAssets'
 import { GetTrendingAssets } from '../models/GET/GetTrendingAssets'
+import { GetFeaturedAssets } from 'app/code/admin/models/GET/GetFeaturedAssets'
+import { HomepageHeroAsset } from 'core/utils/homepageHero'
 import { getAllGuides } from 'app/code/guides/models/guide'
 import { attachCardExtras } from 'core/utils/cardView'
-import { cacheGetOrLoad } from 'core/utils/dragonfly'
 import {
-  GODOT_VERSION_PREFERENCE_COOKIE,
-  godotMajorCacheSuffix
-} from 'core/utils/godotVersionPreference'
+  buildHomepageCacheKey,
+  cacheGetOrLoad,
+  getHomepageEpoch
+} from 'core/utils/dragonfly'
+import { GODOT_VERSION_PREFERENCE_COOKIE } from 'core/utils/godotVersionPreference'
 import { resolveBrowsingMajor } from 'core/utils/godotMajorAvailability'
 
 interface HomepageSnapshot {
   trendingAssets: any[]
-  featuredAssets: any[]
+  heroAssets: HomepageHeroAsset[]
   lastModifiedAssets: any[]
   categoriesObject: any
 }
@@ -37,18 +40,23 @@ async function loadHomepageSnapshot (major: number | undefined): Promise<Homepag
   // partial homepage is never cached as "fresh": the stale-capable cache
   // serves the previous complete snapshot instead, and a cold start surfaces
   // the error rather than caching empty sections.
-  const [trending, featured, lastModified, categories] = await Promise.all([
+  const [trending, curatedIds, lastModified, categories] = await Promise.all([
     GetTrendingAssets(major),
-    GetFourAssetsForHomepage(major),
+    GetFeaturedAssets(),
     GetLastModifiedAssets(major),
     major === undefined
       ? GetAllCategoriesAndTheirAssetCount()
       : GetCategoryCountsByMajor(major)
   ])
 
+  // The hero is the admin-curated, ordered project list resolved to the best
+  // public display variant for the pinned major (pure resolver in
+  // core/utils/homepageHero).
+  const heroAssets = await GetHomepageHeroAssets(curatedIds, major)
+
   return {
     trendingAssets: trending,
-    featuredAssets: featured,
+    heroAssets,
     lastModifiedAssets: lastModified,
     categoriesObject: categories
   }
@@ -63,22 +71,25 @@ export class HomepageService {
     // 2.x/3.x/4.x/All visitor never receives another visitor's section data.
     // An explicit cookie choice is honored strictly; the implicit 4.x default
     // falls back to all when the catalog has no 4.x assets so the homepage
-    // never renders empty.
+    // never renders empty. The homepage epoch fences the load so an admin
+    // feature/order mutation can never be overwritten by an in-flight fill.
     const major = await resolveBrowsingMajor(req.cookies[GODOT_VERSION_PREFERENCE_COOKIE])
 
     const cached = await cacheGetOrLoad(
-      `gda:v2:homepage:${godotMajorCacheSuffix(major)}`,
+      buildHomepageCacheKey(major),
       HOMEPAGE_CACHE_TTL_SECONDS,
       async () => await loadHomepageSnapshot(major),
-      10_000
+      10_000,
+      { epoch: async () => await getHomepageEpoch() }
     )
     // Card decoration and saved-state are request-specific mutations. Clone
     // the shared cached value so one request can never alter another.
     const snapshot = JSON.parse(JSON.stringify(cached.value)) as HomepageSnapshot
-    const { trendingAssets, featuredAssets, lastModifiedAssets, categoriesObject } = snapshot
+    const { trendingAssets, heroAssets, lastModifiedAssets, categoriesObject } = snapshot
 
+    // Hero slides are render-ready DTOs (not asset cards), so they are not
+    // passed through attachCardExtras or annotated with saved-state.
     attachCardExtras(trendingAssets)
-    attachCardExtras(featuredAssets)
     attachCardExtras(lastModifiedAssets)
 
     for (const asset of lastModifiedAssets) {
@@ -102,7 +113,7 @@ export class HomepageService {
 
       try {
         const userSaved = await GetUserSavedAssets(hashedToken)
-        const assetPointers = [trendingAssets, featuredAssets, lastModifiedAssets]
+        const assetPointers = [trendingAssets, lastModifiedAssets]
 
         assetPointers.forEach((element) => {
           element.forEach(asset => {
@@ -120,7 +131,7 @@ export class HomepageService {
 
     return res.render('templates/pages/homepage/index', {
       trendingAssets,
-      featuredAssets,
+      heroAssets,
       lastModifiedAssets,
       categoriesObject,
       guides: homepageGuides
