@@ -103,6 +103,29 @@ function isUsableHeroImage (url: unknown): url is string {
 }
 
 /**
+ * Collect the unique canonical group ids from a set of seed documents (docs
+ * matched by a configured id). A configured id may be a VARIANT id rather
+ * than the group root, so callers use this to expand their fetch to every
+ * variant of each discovered group — otherwise a pinned-major fallback to an
+ * eligible sibling/root would silently not work for old/legacy curation. An
+ * empty-string group id is treated as absent so the asset id is used.
+ */
+export function collectGroupIds (
+  seedDocs: Array<{ asset_id?: string, group_id?: string }>
+): string[] {
+  const ids = new Set<string>()
+  for (const doc of seedDocs) {
+    const groupId = doc?.group_id
+    const assetId = doc?.asset_id
+    const id = typeof groupId === 'string' && groupId.trim() !== ''
+      ? groupId
+      : (typeof assetId === 'string' ? assetId : '')
+    if (id.trim() !== '') ids.add(id)
+  }
+  return [...ids]
+}
+
+/**
  * Canonicalize a configured list of project ids to their group roots,
  * preserving first-seen order and dropping duplicates. Configured ids that
  * resolve to no asset document are reported separately so callers can surface

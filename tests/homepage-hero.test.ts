@@ -2,6 +2,7 @@ import { describe, it } from 'node:test'
 import assert from 'node:assert/strict'
 import {
   HERO_MAX_SLIDES,
+  collectGroupIds,
   resolveCuratedProjects,
   resolveCuratedHeroAssets,
   resolveFeaturedAdminRows,
@@ -64,6 +65,27 @@ function storeDoc (id: string, overrides: Doc = {}): Doc {
     ...overrides
   }
 }
+
+describe('collectGroupIds', () => {
+  it('returns the unique canonical group ids from seed docs', () => {
+    assert.deepEqual(
+      collectGroupIds([
+        { asset_id: 'store1', group_id: 'legacy1' },
+        { asset_id: 'legacy1', group_id: 'legacy1' },
+        { asset_id: 'store2', group_id: 'legacy2' }
+      ]),
+      ['legacy1', 'legacy2']
+    )
+  })
+
+  it('falls back to the asset id when a group id is absent', () => {
+    assert.deepEqual(collectGroupIds([{ asset_id: 'solo' }]), ['solo'])
+  })
+
+  it('ignores blank ids', () => {
+    assert.deepEqual(collectGroupIds([{ asset_id: '' }, { asset_id: 'x', group_id: '' }]), ['x'])
+  })
+})
 
 describe('resolveCuratedProjects', () => {
   it('preserves curator order and deduplicates configured ids', () => {
