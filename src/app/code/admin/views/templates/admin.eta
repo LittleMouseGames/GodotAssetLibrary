@@ -75,6 +75,17 @@
       </template>
       <button type="button" id="site-file-add" class="site-file-add"
         onclick="window.godotLibrary.siteFiles.addRow()">Add file</button>
+      <h2>Custom Head Elements</h2>
+      <p class="site-file-hint">
+        Inject arbitrary markup into the <code>&lt;head&gt;</code> of every page, for example
+        extra <code>&lt;meta&gt;</code> tags, analytics or tracking scripts, or schema.org
+        JSON-LD. Saved exactly as written — this is trusted admin input, so nothing is
+        stripped or escaped. Leave it empty to remove.
+      </p>
+      <div class="input-container">
+        <textarea class="input" id="site-head" name="site_head" rows="8" placeholder=" "><%= it?.siteHead ?? '' %></textarea>
+        <label for="site-head" class="placeholder">Custom &lt;head&gt; elements</label>
+      </div>
       <div class="disclaimer">
         By submitting this form you agree to our
         <a href="/terms/privacy-policy">Privacy Policy</a> and

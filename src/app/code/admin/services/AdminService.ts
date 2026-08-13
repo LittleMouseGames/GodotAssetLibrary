@@ -6,13 +6,16 @@ import { GetReviewReportList } from '../models/GET/GetReviewReportList'
 import { GetFeaturedAssets } from '../models/GET/GetFeaturedAssets'
 import { GetSiteRestrictions } from '../models/GET/GetSiteRestrictions'
 import { GetSiteFiles, SiteFileEntry } from '../models/GET/GetSiteFiles'
+import { GetSiteHead } from '../models/GET/GetSiteHead'
 import { UpdateAssetSetFeatured } from '../models/UPDATE/UpdateAssetSetFeatured'
 import { UpdateFeaturedAssetsAdd } from '../models/UPDATE/UpdateFeaturedAssetsAdd'
 import { UpdateFeaturedAssetsRemove } from '../models/UPDATE/UpdateFeaturedAssetsRemove'
 import { UpdatePromobarMessage } from '../models/UPDATE/UpdatePromobarMessage'
 import { UpdateSiteRestrictions } from '../models/UPDATE/UpdateSiteRestrictions'
 import { UpdateSiteFiles } from '../models/UPDATE/UpdateSiteFiles'
+import { UpdateSiteHead } from '../models/UPDATE/UpdateSiteHead'
 import { invalidateSiteFileCache } from 'core/utils/siteFiles'
+import { invalidateSiteHeadCache } from 'core/utils/siteHead'
 import { invalidateAssetCache } from 'core/utils/dragonfly'
 import { GetReviewsByIdList } from '../models/GET/GetReviewsByIdList'
 import { UpdateReportIgnoreById } from '../models/UPDATE/UpdateReportIgnoreById'
@@ -45,10 +48,18 @@ export class AdminService {
       // ignore
     }
 
+    let siteHead = ''
+    try {
+      siteHead = await GetSiteHead()
+    } catch (e) {
+      // ignore
+    }
+
     return res.render('templates/pages/admin/admin', {
       pageBanner: pageBanner,
       siteRestrictions: siteRestrictions,
-      siteFiles: siteFiles
+      siteFiles: siteFiles,
+      siteHead: siteHead
     })
   }
 
@@ -211,13 +222,24 @@ export class AdminService {
       throw new Error('Promobar message too long, must be less than 150 characters')
     }
 
+    // Admin-configured HTML fragment injected into the <head> of every page.
+    // Stored and injected as-is — this is trusted site-operator markup
+    // (meta/link/script/schema.org), so no sanitization strips script tags.
+    const siteHead = String(req.body.site_head ?? '').trim()
+    if (siteHead.length > 20_000) {
+      throw new Error('Custom head elements too long, must be less than 20000 characters')
+    }
+
     await UpdatePromobarMessage(message)
     await UpdateSiteRestrictions(disableNewAccounts, disableNewComments)
     await UpdateSiteFiles(siteFiles)
+    await UpdateSiteHead(siteHead)
 
-    // Drop the in-memory cache so the public routes pick up the new content
-    // immediately instead of waiting out the TTL.
+    // Drop the in-memory caches so the public routes pick up the new content
+    // immediately instead of waiting out the TTL (and broadcast so every
+    // worker invalidates, not just the one that handled the request).
     invalidateSiteFileCache()
+    invalidateSiteHeadCache()
 
     res.send()
   }

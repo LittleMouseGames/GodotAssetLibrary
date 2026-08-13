@@ -11,6 +11,7 @@ import { GetUserContextByToken } from 'core/modules/authentication/models/user/G
 import { GetPromobarMessage } from 'app/code/admin/models/GET/GetPromobarMesasge'
 import { StatusCodes } from 'http-status-codes'
 import { getSiteFileContent } from 'core/utils/siteFiles'
+import { getSiteHead } from 'core/utils/siteHead'
 import { classifyCacheControl } from 'core/utils/httpCachePolicy'
 import { getReleaseId } from 'core/utils/releaseId'
 import { generateProxyUrl } from 'core/utils/generateProxyUrl'
@@ -255,6 +256,15 @@ class RouterServer extends Server {
       }
 
       res.locals.buildString = buildString
+
+      // Admin-configured HTML fragment injected into the <head> of every page
+      // (e.g. extra meta tags, analytics scripts). Only page-rendering GET
+      // routes need it, so skip the cache lookup (which can trigger a refresh
+      // against the database) on API and non-GET requests that never render
+      // an Eta page.
+      res.locals.siteHead = req.method === 'GET' && !req.path.startsWith('/api/')
+        ? await getSiteHead()
+        : ''
 
       next()
     })

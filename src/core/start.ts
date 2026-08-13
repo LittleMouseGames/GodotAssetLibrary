@@ -10,6 +10,7 @@ import { runMigrations } from 'core/migrations'
 import { runGenerateSitemap } from 'app/utilities/sitemapGenerator/jobs/generateSitemap'
 import { getWorkerCount } from 'core/utils/clusterConfig'
 import { invalidateSiteFileCacheLocally, primeSiteFilesCache } from 'core/utils/siteFiles'
+import { invalidateSiteHeadCacheLocally, primeSiteHeadCache } from 'core/utils/siteHead'
 import { disconnectDragonfly } from 'core/utils/dragonfly'
 
 process.on('uncaughtException', (err) => {
@@ -132,7 +133,11 @@ if (cluster.isPrimary) {
         snapshot?: telemetry.TelemetrySnapshot
         aggregate?: telemetry.TelemetrySnapshot
       } | null
-      if (msg?.type === 'invalidate-site-files') {
+      if (msg?.type === 'invalidate-site-head') {
+        for (const id of Object.keys(cluster.workers ?? {})) {
+          cluster.workers?.[id]?.send({ type: 'invalidate-site-head' })
+        }
+      } else if (msg?.type === 'invalidate-site-files') {
         for (const id of Object.keys(cluster.workers ?? {})) {
           cluster.workers?.[id]?.send({ type: 'invalidate-site-files' })
         }
@@ -206,7 +211,9 @@ if (cluster.isPrimary) {
       type?: string
       aggregate?: telemetry.TelemetrySnapshot
     } | null
-    if (msg?.type === 'invalidate-site-files') {
+    if (msg?.type === 'invalidate-site-head') {
+      invalidateSiteHeadCacheLocally()
+    } else if (msg?.type === 'invalidate-site-files') {
       invalidateSiteFileCacheLocally()
     } else if (msg?.type === 'telemetry-cluster' && msg.aggregate !== undefined) {
       telemetry.setClusterSnapshot(msg.aggregate)
@@ -270,9 +277,11 @@ if (cluster.isPrimary) {
     logger.log('info', `Worker ${process.pid} ready at ${startTime}`)
     const router: RouterServer = new RouterServer()
     httpServer = router.start(3000)
-    // Warm the site-files cache now that Mongo is connected so the first
-    // public request serves immediately instead of 404ing on an empty cache.
+    // Warm the site-files and site-head caches now that Mongo is connected so
+    // the first public request serves immediately instead of 404ing on an
+    // empty cache or rendering stale <head> markup.
     primeSiteFilesCache()
+    primeSiteHeadCache()
   }).catch(error => {
     logger.log('error', `Error during worker ${process.pid} startup`, error)
     process.exit(1)
