@@ -3,6 +3,13 @@ import os from 'os'
 const MAX_WORKERS = 16
 
 /**
+ * Worst-case TOTAL MongoDB connection budget across every process in the
+ * cluster (HTTP workers + primary). Per-process ceilings are derived from this
+ * budget so the aggregate can never exceed it, no matter how many workers run.
+ */
+export const DEFAULT_TOTAL_POOL_BUDGET = 1500
+
+/**
  * How many HTTP worker processes the cluster should run.
  *
  * Set WORKER_COUNT explicitly (e.g. to your container's CPU allocation); the
@@ -20,18 +27,27 @@ export function getWorkerCount (): number {
 }
 
 /**
- * Default per-process MongoDB pool ceiling.
+ * Default per-process MongoDB pool ceiling for HTTP workers.
  *
- * Every cluster worker AND the primary owns its own MongoClient (the primary
- * connects for bootstrap and cron), so this sizes each pool so the TOTAL
- * worst-case connections stay bounded regardless of cluster size (~1500 across
- * the whole cluster): 1 worker -> 750 each (worker + primary), 4 workers ->
- * 300 each (4 workers + primary), etc. This keeps MongoDB from being hit with
- * `processes x pool` connections by accident. An explicit MONGO_MAX_POOL env
- * override always wins.
+ * Every cluster worker AND the primary owns its own MongoClient, so the
+ * per-worker ceiling is the total budget divided by the process count (workers
+ * + primary) using floor() so the aggregate NEVER exceeds the budget — even at
+ * 16 workers (~88/process) instead of the old 200-per-process floor that
+ * allowed up to ~3400 total connections. The pool is lazy (a ceiling, not a
+ * target), and an explicit MONGO_MAX_POOL env override always wins.
  */
 export function getDefaultMongoPool (): number {
   const workerCount = getWorkerCount()
-  // +1 includes the primary process, which also connects to MongoDB.
-  return Math.max(200, Math.round(1500 / (workerCount + 1)))
+  return Math.max(64, Math.floor(DEFAULT_TOTAL_POOL_BUDGET / (workerCount + 1)))
+}
+
+/**
+ * Mongo pool ceiling for the cluster PRIMARY (bootstrap + cron only, no HTTP).
+ * It never serves requests, so it needs far fewer connections than a worker;
+ * keeping it small leaves more of the budget for the workers that actually
+ * handle traffic.
+ */
+export function getPrimaryMongoPool (): number {
+  const workerCount = getWorkerCount()
+  return Math.max(16, Math.floor(DEFAULT_TOTAL_POOL_BUDGET / (workerCount + 1) / 4))
 }

@@ -1,6 +1,11 @@
 import { describe, it } from 'node:test'
 import assert from 'node:assert/strict'
-import { getWorkerCount, getDefaultMongoPool } from '../src/core/utils/clusterConfig'
+import {
+  getWorkerCount,
+  getDefaultMongoPool,
+  getPrimaryMongoPool,
+  DEFAULT_TOTAL_POOL_BUDGET
+} from '../src/core/utils/clusterConfig'
 
 /**
  * Run a check with a specific WORKER_COUNT and restore the previous value
@@ -54,17 +59,36 @@ describe('clusterConfig', () => {
 
   it('scales the default Mongo pool per process to keep the total bounded', () => {
     withWorkerCount('4', () => {
-      // 1500 / (4 workers + 1 primary) = 300 per process, so the whole cluster
-      // (workers + primary) stays ~1500 worst-case.
+      // 1500 / (4 workers + 1 primary) = 300 per process.
       assert.equal(getDefaultMongoPool(), 300)
     })
     withWorkerCount('2', () => {
       // 1500 / (2 workers + 1 primary) = 500 per process.
       assert.equal(getDefaultMongoPool(), 500)
     })
-    // Never below the 200 floor, even with many workers.
+    // No 200-per-process floor: 16 workers -> 1500/17 = 88 per process, so the
+    // aggregate (workers + primary) never exceeds the total budget.
     withWorkerCount('16', () => {
-      assert.equal(getDefaultMongoPool(), 200)
+      assert.equal(getDefaultMongoPool(), 88)
+    })
+  })
+
+  it('never lets the aggregate worker+primary pool exceed the total budget', () => {
+    for (const count of ['1', '2', '3', '4', '6', '7', '8', '12', '16']) {
+      withWorkerCount(count, () => {
+        const workers = getWorkerCount()
+        const total = (workers + 1) * getDefaultMongoPool()
+        assert.ok(total <= DEFAULT_TOTAL_POOL_BUDGET, `workers=${workers} total=${total}`)
+      })
+    }
+  })
+
+  it('sizes the primary (job-only) pool much smaller than workers', () => {
+    withWorkerCount('4', () => {
+      assert.equal(getPrimaryMongoPool(), 75)
+    })
+    withWorkerCount('16', () => {
+      assert.equal(getPrimaryMongoPool(), 22)
     })
   })
 })

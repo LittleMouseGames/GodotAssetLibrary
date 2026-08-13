@@ -1,6 +1,7 @@
 import { MongoClient, Db } from 'mongodb'
+import cluster from 'cluster'
 import { logger } from 'core/utils/logger'
-import { getDefaultMongoPool } from 'core/utils/clusterConfig'
+import { getDefaultMongoPool, getPrimaryMongoPool } from 'core/utils/clusterConfig'
 
 export class MongoHelper {
   private static instance: MongoHelper
@@ -68,7 +69,11 @@ export class MongoHelper {
       // MONGO_MAX_IDLE_MS, so steady state stays low. The 5s wait-queue
       // timeout stays as a fail-fast backstop for genuine overload.
       const parsedMax = Number.parseInt(process.env.MONGO_MAX_POOL ?? '', 10)
-      const maxPoolSize = Number.isFinite(parsedMax) && parsedMax > 0 ? parsedMax : getDefaultMongoPool()
+      // The primary only runs bootstrap + cron, so it gets a smaller pool and
+      // leaves more of the total budget to the workers that serve traffic.
+      const maxPoolSize = Number.isFinite(parsedMax) && parsedMax > 0
+        ? parsedMax
+        : (cluster.isPrimary ? getPrimaryMongoPool() : getDefaultMongoPool())
 
       // 0 = no pre-warmed connections; each one is established on first use.
       const parsedMin = Number.parseInt(process.env.MONGO_MIN_POOL ?? '', 10)
