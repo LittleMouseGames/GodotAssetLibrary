@@ -76,6 +76,12 @@
     display: inline-block;
     margin-right: 10px;
     cursor: pointer;
+    // Keep badge labels on a single line even when the card grid is narrow;
+    // otherwise flex-shrink squishes the pills and the text wraps internally.
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-width: 0;
   }
 
   .head {

@@ -41,9 +41,9 @@ var ratingDetail = total > 0
       <a class="badge badge-purple" href="<%= it?._locals?.functions?.buildEnginePath(it?.info?.godot_version) %>"
         title="See assets for this engine version"><%= it?.info?.godot_version ?? 'ERR' %></a>
       <% if (it?.info?.provider === 'godot_store') { %>
-      <a class="badge badge-store" href="/search/?source=godot_store" title="See Godot Asset Store assets">Godot Asset Store</a>
+      <a class="badge badge-store" href="/search/?source=godot_store" title="See Godot Asset Store assets">Store</a>
       <% } else if (it?.info?.provider === 'godot_asset_library') { %>
-      <a class="badge badge-legacy" href="/search/?source=godot_asset_library" title="See Legacy Asset Library assets">Asset Library</a>
+      <a class="badge badge-legacy" href="/search/?source=godot_asset_library" title="See Legacy Asset Library assets">Library</a>
       <% } %>
       <% if (it?._locals?.loggedIn === true) { %>
       <div class="dropdown no-text-select" onclick="window.godotLibrary.dropdown.showContent(event, this)">
