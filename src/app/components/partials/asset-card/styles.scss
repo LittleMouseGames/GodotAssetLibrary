@@ -338,6 +338,17 @@
     }
   }
 
+  .store-score {
+    color: $badge-store;
+    font-weight: 600;
+
+    .store-score-asterisk {
+      font-size: 12px;
+      vertical-align: super;
+      margin-left: 1px;
+    }
+  }
+
   /* Make the whole card a click target for the asset detail page. The overlay
      sits above the static body/footer content but below the interactive head
      (category/engine badges, the "..." menu and the banner link), so those

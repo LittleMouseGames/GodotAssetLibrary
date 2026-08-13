@@ -19,9 +19,18 @@ var upvotes = Number(it?.info?.upvotes) || 0
 var downvotes = Number(it?.info?.downvotes) || 0
 var total = upvotes + downvotes
 var approval = total > 0 ? Math.round((upvotes / total) * 100) : 0
+// Store assets carry an upstream net-vote score. Surface it on cards only
+// when there are no LOCAL ratings, and always mark it so it can't be confused
+// with a review on this site.
+var storeScore = it?.info?.provider === 'godot_store' && it?.info?.source_rating?.score != null
+  ? Number(it.info.source_rating.score)
+  : null
+var storeScoreDisplay = storeScore !== null ? `${storeScore >= 0 ? '+' : ''}${storeScore}` : ''
 var ratingDetail = total > 0
   ? `${approval}% approval (${upvotes} positive, ${downvotes} negative)`
-  : 'No ratings yet'
+  : (storeScore !== null
+      ? `No local ratings yet; Godot Asset Store score ${storeScoreDisplay}`
+      : 'No ratings yet')
 %>
 
 <article class="asset-card <%= it?.featured ? 'featured' : 'normal' %>" id="asset-<%= assetId %>">
@@ -114,6 +123,10 @@ var ratingDetail = total > 0
         <% if (total > 0) { %>
         <span class="iconify" data-icon="bi:hand-thumbs-up-fill" aria-hidden="true"></span>
         <%= `${approval}% approval · ${total} rating${total === 1 ? '' : 's'}` %>
+        <% } else if (storeScore !== null) { %>
+        <span class="store-score" title="No local ratings yet · score from the Godot Asset Store">
+          Store score <%= storeScoreDisplay %><span class="store-score-asterisk" aria-hidden="true">*</span>
+        </span>
         <% } else { %>
         No ratings yet
         <% } %>
