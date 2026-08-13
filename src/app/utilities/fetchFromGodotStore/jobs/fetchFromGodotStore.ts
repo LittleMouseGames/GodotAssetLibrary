@@ -163,6 +163,52 @@ async function fetchDetailAndReleases (client: StoreApiClient, publisherSlug: st
   }
 }
 
+export interface StoreUpsertPayload {
+  set: Record<string, unknown>
+  setOnInsert: Record<string, unknown>
+}
+
+/**
+ * Build the atomic upsert payload for a Store record.
+ *
+ * `added_date` (the asset's Store creation date) is carried by `normalized`,
+ * so it must NOT also appear in `$setOnInsert` — MongoDB rejects a path that
+ * exists in both `$set` and `$setOnInsert` ("Updating the path 'added_date'
+ * would create a conflict"). On insert `$setOnInsert.added_date` wins; on
+ * update the existing value is preserved. Pure so the no-overlap invariant is
+ * unit-testable.
+ */
+export function buildStoreUpsertPayload (
+  normalized: NormalizedStoreAsset,
+  fingerprint: string,
+  assetId: string,
+  now: Date = new Date()
+): StoreUpsertPayload {
+  const { added_date: _normalizedAddedDate, ...normalizedForUpdate } = normalized
+  return {
+    set: {
+      ...normalizedForUpdate,
+      store_listing_fingerprint: fingerprint,
+      source_last_seen_at: now,
+      source_last_synced_at: now,
+      source_status: 'active',
+      is_public: normalized.searchable === 'true'
+    },
+    setOnInsert: {
+      asset_id: assetId,
+      group_id: assetId,
+      group_preferred: true,
+      is_group_root: true,
+      link_status: 'none',
+      added_date: now,
+      upvotes: 0,
+      downvotes: 0,
+      rating_score: 0,
+      featured: false
+    }
+  }
+}
+
 async function upsertStoreAsset (
   db: Db,
   normalized: NormalizedStoreAsset,
@@ -175,52 +221,19 @@ async function upsertStoreAsset (
     { projection: { asset_id: 1 } }
   )
   if (existing !== null) {
+    const { set } = buildStoreUpsertPayload(normalized, fingerprint, existing.asset_id)
     await assets.updateOne(
       { provider: GODOT_STORE_PROVIDER, source_asset_id: normalized.source_asset_id },
-      {
-        $set: {
-          ...normalized,
-          store_listing_fingerprint: fingerprint,
-          source_last_seen_at: new Date(),
-          source_last_synced_at: new Date(),
-          source_status: 'active',
-          is_public: normalized.searchable === 'true'
-        }
-      }
+      { $set: set }
     )
     return { inserted: false, assetId: existing.asset_id }
   }
 
   const assetId = nanoid()
-  // `normalized` already carries `added_date` (the asset's Store creation
-  // date), so it must NOT also appear in `$setOnInsert` — MongoDB rejects a
-  // path that exists in both `$set` and `$setOnInsert`.
-  const { added_date: _normalizedAddedDate, ...normalizedForUpdate } = normalized
+  const { set, setOnInsert } = buildStoreUpsertPayload(normalized, fingerprint, assetId)
   await assets.updateOne(
     { provider: GODOT_STORE_PROVIDER, source_asset_id: normalized.source_asset_id },
-    {
-      $set: {
-        ...normalizedForUpdate,
-        store_listing_fingerprint: fingerprint,
-        source_last_seen_at: new Date(),
-        source_last_synced_at: new Date(),
-        source_status: 'active',
-        source_missing_runs: 0,
-        is_public: normalized.searchable === 'true'
-      },
-      $setOnInsert: {
-        asset_id: assetId,
-        group_id: assetId,
-        group_preferred: true,
-        is_group_root: true,
-        link_status: 'none',
-        added_date: new Date(),
-        upvotes: 0,
-        downvotes: 0,
-        rating_score: 0,
-        featured: false
-      }
-    },
+    { $set: set, $setOnInsert: setOnInsert },
     { upsert: true }
   )
   return { inserted: true, assetId }
