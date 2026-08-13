@@ -40,6 +40,10 @@ export interface StoreReleaseInput {
   min_godot_version?: string | null
   max_godot_version?: string | null
   created?: string | null
+  /** Size in MB (Store returns a number despite the OpenAPI boolean type). */
+  size?: number | boolean | null
+  /** Release notes. */
+  notes?: string
 }
 
 const MAJOR_SCALE = 1_000_000

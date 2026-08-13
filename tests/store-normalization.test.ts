@@ -57,6 +57,14 @@ describe('normalizeStoreAsset', () => {
     assert.equal(normalized.version_string, 'v1.1.6')
     assert.equal(normalized.compatibility_ranges.length, 2)
 
+    // Release summaries carry size + notes metadata (regression: size/notes
+    // were dropped by the lossy raw mapping before this was fixed).
+    assert.equal(normalized.releases.length, 2)
+    assert.equal(normalized.releases[0].release_id, 1204)
+    assert.equal(normalized.releases[0].version, 'v1.1.6')
+    assert.equal(normalized.releases[0].stable, true)
+    assert.equal(normalized.releases[0].size_mb, 43.8218)
+
     // Price / license
     assert.equal(normalized.price_cent, 0)
     assert.equal(normalized.is_free, true)

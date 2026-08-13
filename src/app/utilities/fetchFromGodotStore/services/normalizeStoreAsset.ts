@@ -198,7 +198,9 @@ function mapReleases (releases: StoreReleaseData[] | undefined): { ranges: Godot
       max_godot_version: typeof release?.max_godot_version === 'string' && release.max_godot_version !== ''
         ? release.max_godot_version
         : null,
-      created: typeof release?.created === 'string' ? release.created : null
+      created: typeof release?.created === 'string' ? release.created : null,
+      size: typeof release?.size === 'number' && Number.isFinite(release.size) ? release.size : null,
+      notes: typeof release?.notes === 'string' ? release.notes : ''
     }))
     : []
 
@@ -209,12 +211,12 @@ function mapReleases (releases: StoreReleaseData[] | undefined): { ranges: Godot
   for (const release of orderedRaw) {
     const id = Number(release.id)
     if (!Number.isSafeInteger(id) || id <= 0) continue
-    const size = typeof (release as any).size === 'number' && Number.isFinite((release as any).size)
-      ? Math.abs((release as any).size)
+    const size = typeof release.size === 'number' && Number.isFinite(release.size)
+      ? Math.abs(release.size)
       : null
     const createdRaw = typeof release.created === 'string' ? release.created : null
     const createdAt = parseUtcDate(createdRaw)
-    const notesRaw = typeof (release as any).notes === 'string' ? (release as any).notes : ''
+    const notesRaw = typeof release.notes === 'string' ? release.notes : ''
     const notes = Buffer.byteLength(notesRaw, 'utf8') > MAX_RELEASE_NOTES_BYTES
       ? notesRaw.slice(0, MAX_RELEASE_NOTES_BYTES)
       : notesRaw

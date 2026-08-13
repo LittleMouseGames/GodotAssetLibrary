@@ -55,7 +55,13 @@ export function normalizeRepositoryUrl (value: unknown): string | null {
   const host = HOST_ALIASES[parsed.hostname.toLowerCase()] ?? parsed.hostname.toLowerCase()
   if (!KNOWN_GIT_HOSTS.has(host)) return null
 
-  let segments = parsed.pathname.split('/').filter(Boolean).map(segment => decodeURIComponent(segment))
+  let segments: string[]
+  try {
+    segments = parsed.pathname.split('/').filter(Boolean).map(segment => decodeURIComponent(segment))
+  } catch {
+    // Malformed percent-encoding in the path is not a recognizable repository.
+    return null
+  }
 
   // Strip a trailing ".git" from the final segment (a repository path marker).
   if (segments.length > 0) {

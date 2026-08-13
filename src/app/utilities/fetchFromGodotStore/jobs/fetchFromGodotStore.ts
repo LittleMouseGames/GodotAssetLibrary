@@ -171,12 +171,12 @@ export interface StoreUpsertPayload {
 /**
  * Build the atomic upsert payload for a Store record.
  *
- * `added_date` (the asset's Store creation date) is carried by `normalized`,
- * so it must NOT also appear in `$setOnInsert` — MongoDB rejects a path that
- * exists in both `$set` and `$setOnInsert` ("Updating the path 'added_date'
- * would create a conflict"). On insert `$setOnInsert.added_date` wins; on
- * update the existing value is preserved. Pure so the no-overlap invariant is
- * unit-testable.
+ * `added_date` is treated as the local catalog insert timestamp (consistent
+ * with the legacy importer) and is therefore insert-only. MongoDB rejects a
+ * path that exists in both `$set` and `$setOnInsert`, so `normalized.added_date`
+ * is intentionally excluded from `$set`, and `$setOnInsert.added_date` is set
+ * at insert time. On updates the existing value is preserved. Pure so the
+ * no-overlap invariant is unit-testable.
  */
 export function buildStoreUpsertPayload (
   normalized: NormalizedStoreAsset,

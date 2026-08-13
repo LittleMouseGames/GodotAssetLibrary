@@ -12,8 +12,8 @@
  *   event-handler/inline-style attributes.
  * - Keep a conservative documentation set (headings, paragraphs, lists,
  *   tables, code, blockquote, links, images).
- * - Only http(s) links/images survive; external links get
- *   rel="noopener noreferrer nofollow".
+ * - Only safe http(s) URLs (plus mailto:, fragments, and root-relative links)
+ *   survive; external links get rel="noopener noreferrer nofollow".
  * - Output is byte-bounded; oversized input yields an empty string.
  */
 
