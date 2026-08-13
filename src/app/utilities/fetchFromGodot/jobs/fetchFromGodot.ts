@@ -140,6 +140,10 @@ function normalizeAssetForSync (asset: any, isNew: boolean): void {
   asset.source_last_seen_at = new Date()
   asset.source_last_synced_at = new Date()
   asset.source_status = 'active'
+  // Denormalized public-catalog flag (migration 0006 + markSourceStatus keep
+  // it current). source_status is 'active' here, so only the upstream
+  // `searchable` flag decides visibility.
+  asset.is_public = asset.searchable !== 'false'
   if (isNew) {
     asset.source_missing_runs = 0
   }
@@ -170,6 +174,17 @@ async function markSourceStatus (seenIDs: Set<string>, syncedAt: Date): Promise<
     }
   )
 
+  // Keep the denormalized is_public flag current for still-listed assets:
+  // active + searchable -> public, active + non-searchable -> hidden.
+  await assets.updateMany(
+    { legacy_asset_id: { $in: seen }, searchable: { $ne: 'false' } },
+    { $set: { is_public: true } }
+  )
+  await assets.updateMany(
+    { legacy_asset_id: { $in: seen }, searchable: 'false' },
+    { $set: { is_public: false } }
+  )
+
   await assets.updateMany(
     { legacy_asset_id: { $nin: seen }, source_status: { $ne: 'unavailable' } },
     { $inc: { source_missing_runs: 1 } }
@@ -177,7 +192,7 @@ async function markSourceStatus (seenIDs: Set<string>, syncedAt: Date): Promise<
 
   await assets.updateMany(
     { legacy_asset_id: { $nin: seen }, source_missing_runs: { $gte: 3 } },
-    { $set: { source_status: 'unavailable' } }
+    { $set: { source_status: 'unavailable', is_public: false } }
   )
 }
 

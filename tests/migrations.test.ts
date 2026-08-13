@@ -35,8 +35,8 @@ describe('runMigrations', () => {
   it('records every migration when all succeed', async () => {
     const { db, recorded } = makeFakeDb()
     const migrations: Migration[] = [
-      { id: 'a', description: 'A', run: async () => {} },
-      { id: 'b', description: 'B', run: async () => {} }
+      { id: 'a', description: 'A', run: async () => { } },
+      { id: 'b', description: 'B', run: async () => { } }
     ]
 
     await runMigrations(db, migrations)

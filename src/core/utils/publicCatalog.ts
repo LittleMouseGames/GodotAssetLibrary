@@ -4,13 +4,13 @@
  * counts, facets, homepage sections, related assets, the sitemap and the
  * detail-page robots policy so they always agree.
  *
- * Mirrors the previous sitemap-only exclusions:
- * - `source_status === 'unavailable'` assets are tombstones for assets removed
- *   upstream and must never surface in discovery or receive internal links.
- * - `searchable === 'false'` assets were excluded by the upstream catalog and
- *   should not be advertised.
+ * Uses the denormalized `is_public` boolean (equality) instead of negative
+ * `$ne` predicates so discovery queries can use normal/partial index
+ * semantics. The flag is derived from the legacy predicate — an asset is
+ * public when `source_status !== 'unavailable'` (upstream tombstones) AND
+ * `searchable !== 'false'` (excluded by the upstream catalog). Migration
+ * `0006` backfills existing documents and the importer keeps it current.
  */
 export const PUBLIC_ASSET_FILTER: Record<string, unknown> = {
-  source_status: { $ne: 'unavailable' },
-  searchable: { $ne: 'false' }
+  is_public: true
 }

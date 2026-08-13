@@ -5,6 +5,7 @@ import { backfillRatingScore } from './0002-backfill-rating-score'
 import { backfillModifyDate } from './0003-backfill-modify-date'
 import { dedupeReviewsAndIndex } from './0004-dedupe-reviews'
 import { backfillGodotMajor } from './0005-backfill-godot-major'
+import { backfillIsPublic } from './0006-backfill-is-public'
 
 export interface Migration {
   id: string
@@ -37,6 +38,11 @@ const MIGRATIONS: Migration[] = [
     id: '0005-backfill-godot-major',
     description: 'Backfill the numeric godot_major used by major-line browsing filters',
     run: backfillGodotMajor
+  },
+  {
+    id: '0006-backfill-is-public',
+    description: 'Backfill the denormalized is_public flag used by the public-catalog filter',
+    run: backfillIsPublic
   }
 ]
 
