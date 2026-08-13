@@ -1,4 +1,5 @@
-FROM node:18-alpine
+# --- Builder stage: native deps (argon2) + webpack/template/SCSS build ---
+FROM node:18-alpine AS builder
 
 WORKDIR /app
 
@@ -9,11 +10,29 @@ RUN apk add --no-cache python3 make g++ \
 	&& npm ci
 
 COPY . .
-RUN npm run build
 
-# Express enables its compiled view cache in production. Set this only after
-# the build so npm ci still installs TypeScript/Webpack dev dependencies.
+# Build, then drop dev-only packages so the runtime image is slim. The build
+# must run before pruning because it needs TypeScript/Webpack/Sass.
+RUN npm run build \
+	&& npm prune --omit=dev
+
+# --- Runtime stage: minimal, non-root ---
+FROM node:18-alpine
+
 ENV NODE_ENV=production
+WORKDIR /app
+
+# Only the compiled app and its production dependencies; the native argon2
+# binary was compiled in the builder against the same Alpine base.
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/dist ./dist
+
+# Run as an unprivileged user. Sitemap generation writes
+# dist/public/sitemap.xml at runtime, so that directory stays writable.
+RUN mkdir -p /app/dist/public \
+	&& chown -R node:node /app
+
+USER node
 
 EXPOSE 3000
 

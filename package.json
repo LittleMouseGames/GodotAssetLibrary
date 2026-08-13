@@ -3,7 +3,11 @@
   "version": "1.0.0",
   "description": "An Open Source (AGPLv3) Godot Asset Library",
   "main": "none",
+  "engines": {
+    "node": ">=18"
+  },
   "dependencies": {
+    "@overnightjs/core": "^1.7.6",
     "adm-zip": "^0.5.9",
     "argon2": "^0.27.2",
     "body-parser": "^1.19.1",
@@ -53,7 +57,6 @@
     "winston": "^3.4.0"
   },
   "devDependencies": {
-    "@overnightjs/core": "^1.7.6",
     "@types/adm-zip": "^0.5.0",
     "@types/compression": "^1.7.2",
     "@types/cookie-parser": "^1.4.2",
@@ -78,6 +81,8 @@
     "lint:check": "eslint . --ext .js,.ts",
     "typecheck": "tsc --noEmit",
     "audit:catalog": "ts-node --transpile-only -r tsconfig-paths/register src/core/maintenance/runCatalogAudit.ts",
+    "audit:queries": "ts-node --transpile-only -r tsconfig-paths/register src/core/maintenance/runQueryAudit.ts",
+    "loadtest": "node scripts/loadtest.js",
     "reconcile:ratings": "ts-node --transpile-only -r tsconfig-paths/register src/core/maintenance/runReconcileRatings.ts",
     "migrate": "ts-node --transpile-only -r tsconfig-paths/register src/core/migrations/runMigrations.ts",
     "test:build": "tsc -p tsconfig.test.json",

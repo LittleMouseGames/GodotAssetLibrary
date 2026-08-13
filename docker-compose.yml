@@ -6,6 +6,8 @@ services:
     image: nodejs
     container_name: gda_nodejs
     restart: always
+    init: true
+    stop_grace_period: 25s
     env_file: .env
     environment:
       - NODE_ENV=production
@@ -21,13 +23,21 @@ services:
       - DRAGONFLY_URL=redis://dragonfly:6379
     depends_on:
       db:
-        condition: service_started
-      dragonfly:
         condition: service_healthy
+      # Dragonfly is an optimization, never a hard dependency: the application
+      # is fail-open, so only require the container to have started, not to be
+      # healthy. A cache outage must not block the origin from serving.
+      dragonfly:
+        condition: service_started
     ports:
       - "8080:3000"
     networks:
       - app-network
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
     healthcheck:
       test: ["CMD", "wget", "--spider", "-q", "http://localhost:3000/health"]
       interval: 30s
@@ -41,7 +51,7 @@ services:
     restart: unless-stopped
     command:
       - --cache_mode=true
-      - --maxmemory=512mb
+      - --maxmemory=1gb
       - --proactor_threads=1
       - --primary_port_http_enabled=false
       - --version_check=false
@@ -72,6 +82,12 @@ services:
       - dbdata:/data/db
     networks:
       - app-network
+    healthcheck:
+      test: ["CMD", "mongo", "--quiet", "--eval", "db.adminCommand({ ping: 1 }).ok"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 20s
 
 networks:
   app-network:
