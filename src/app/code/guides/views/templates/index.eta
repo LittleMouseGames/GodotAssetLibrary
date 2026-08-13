@@ -4,7 +4,7 @@
     description: 'Learn how to install Godot assets, use shaders, choose compatible plugins and get more out of the Godot Asset Library with free guides.',
     url: 'https://godotassetlibrary.com/guides',
     moduleName: 'guides',
-    image: 'https://godotassetlibrary.com/images/logo-image.png',
+    image: 'https://godotassetlibrary.com/images/logo-image.png?cache=' + (it?._locals?.buildString ?? ''),
     jsonLd: {
       "@context": "https://schema.org/",
       "@type": "CollectionPage",

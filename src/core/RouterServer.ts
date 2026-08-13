@@ -1,6 +1,7 @@
 import * as controllers from 'core/controllers.index'
 import { Server } from '@overnightjs/core'
 import express, { NextFunction, Request, Response } from 'express'
+import { Server as HttpServer } from 'http'
 import { logger } from 'core/utils/logger'
 import compression from 'compression'
 import path from 'path'
@@ -10,6 +11,8 @@ import { GetUserContextByToken } from 'core/modules/authentication/models/user/G
 import { GetPromobarMessage } from 'app/code/admin/models/GET/GetPromobarMesasge'
 import { StatusCodes } from 'http-status-codes'
 import { getSiteFileContent } from 'core/utils/siteFiles'
+import { classifyCacheControl } from 'core/utils/httpCachePolicy'
+import { getReleaseId } from 'core/utils/releaseId'
 import { generateProxyUrl } from 'core/utils/generateProxyUrl'
 import { buildAssetUrl, buildAssetUrlWithReturn } from 'core/utils/assetUrl'
 import { buildCategoryPath, buildEnginePath } from 'core/utils/taxonomyUrl'
@@ -21,6 +24,7 @@ import {
   normalizeGodotVersionPreference
 } from 'core/utils/godotVersionPreference'
 import * as telemetry from 'core/utils/telemetry'
+import { classifyRouteClass } from 'core/utils/routeClass'
 require('express-async-errors')
 
 let promoCachedMessage: string | null = null
@@ -30,6 +34,12 @@ const PROMO_TTL_MS = 60_000
 
 const parsedTelemetryInterval = Number.parseInt(process.env.TELEMETRY_LOG_INTERVAL_MS ?? '', 10)
 const TELEMETRY_LOG_INTERVAL_MS = Number.isFinite(parsedTelemetryInterval) && parsedTelemetryInterval > 0 ? parsedTelemetryInterval : 60_000
+
+/** Read a positive integer from an env var, falling back when unset/invalid. */
+function parsePositiveIntEnv (name: string, fallback: number): number {
+  const parsed = Number.parseInt(process.env[name] ?? '', 10)
+  return Number.isFinite(parsed) && parsed > 0 ? parsed : fallback
+}
 
 function refreshPromoMessage (): void {
   if (promoRefresh !== null) {
@@ -78,21 +88,29 @@ class RouterServer extends Server {
   constructor () {
     super(true)
 
-    const buildString = new Date().getTime().toString()
+    // Deployment-wide release id shared by every worker and refork, so static
+    // cache busters (?cache=<id>) converge instead of differing per worker.
+    const buildString = getReleaseId()
 
     this.app.disable('x-powered-by')
     this.app.set('view engine', 'eta')
     this.app.set('views', path.join(__dirname, '/'))
     this.app.set('trust proxy', 1)
     this.app.use(compression())
-    // Static assets are cache-busted with ?cache=<buildString>, so a long
-    // max-age is safe: after a redeploy the new HTML references a new URL.
-    // Non-asset files (robots.txt, sitemap.xml) stay short-lived.
+    // Static assets are cache-busted with ?cache=<buildString> (a stable,
+    // deployment-wide id), so a one-year immutable policy is safe: after a
+    // redeploy the new HTML references a new URL and old entries are simply
+    // never requested again. Mutable text files (robots.txt, sitemap.xml) stay
+    // short-lived.
     this.app.use(express.static(path.join(__dirname, 'public'), {
-      maxAge: '30d',
       setHeaders: (res: Response, filePath: string) => {
+        // Count every static file actually served so /metrics can separate
+        // static (disk/cache) traffic from dynamic SSR traffic.
+        telemetry.recordStaticRequest()
         if (/\.(html?|xml|txt|json)$/.test(filePath)) {
           res.setHeader('Cache-Control', 'public, max-age=300')
+        } else {
+          res.setHeader('Cache-Control', 'public, max-age=31536000, immutable')
         }
       }
     }))
@@ -165,19 +183,21 @@ class RouterServer extends Server {
     })
 
     // Track every dynamic request for telemetry (active/peak gauges plus
-    // duration/status stats) without rejecting anything. There is deliberately
-    // no in-flight request cap: cached reads are cheap, and uncached work
-    // either completes or trips MongoDB's fail-fast timeouts and surfaces as a
-    // real error instead of a synthetic 503. Watch http_active_requests and
-    // http_request_duration_p99_ms on /metrics during bursts.
-    this.app.use((_req: Request, res: Response, next: NextFunction) => {
-      telemetry.requestStart()
+    // duration/status/route-class stats) without rejecting anything. There is
+    // deliberately no in-flight request cap: cached reads are cheap, and
+    // uncached work either completes or trips MongoDB's fail-fast timeouts and
+    // surfaces as a real error instead of a synthetic 503. Watch
+    // http_active_requests and http_request_duration_p99_ms on /metrics during
+    // bursts.
+    this.app.use((req: Request, res: Response, next: NextFunction) => {
+      const routeClass = classifyRouteClass(req.method, req.path, req.query)
+      telemetry.requestStart(routeClass)
       let released = false
       const startedAt = Date.now()
       const release = (): void => {
         if (!released) {
           released = true
-          telemetry.requestEnd(Date.now() - startedAt, res.statusCode)
+          telemetry.requestEnd(Date.now() - startedAt, res.statusCode, routeClass)
         }
       }
       res.once('finish', release)
@@ -250,25 +270,20 @@ class RouterServer extends Server {
       next()
     })
 
-    // Public anonymous pages can be cached briefly for crawlers and repeat
-    // visitors; authenticated responses are always revalidated. Never clobber
-    // an existing Cache-Control (e.g. the no-store set above for
-    // /dashboard, /api/, /admin and /register).
-    //
-    // Responses whose HTML varies by the version-preference cookie must stay
-    // private: a shared proxy/CDN must never serve one visitor's 2.x/3.x/All
-    // markup to another. The default (no cookie) is deterministic 4.x and
-    // stays publicly cacheable.
+    // Centralized cache policy (see core/utils/httpCachePolicy.ts). Anonymous
+    // canonical public views get an aggressive shared policy (5-minute s-maxage
+    // + stale-while-revalidate + 24h stale-if-error) so Cloudflare/edge caches
+    // absorb nearly all repeat traffic; authenticated, version-cookie,
+    // arbitrary-query and high-cardinality responses are never shared-cacheable.
+    // Never clobber a Cache-Control set by an earlier middleware (e.g. the
+    // no-store for /dashboard, /api/, /admin and /register above). Handlers that
+    // produce an error/404 override this with no-store themselves.
     this.app.use((req: Request, res: Response, next: NextFunction) => {
-      const versionCookie = req.cookies?.[GODOT_VERSION_PREFERENCE_COOKIE]
-      const hasNonDefaultVersion = versionCookie !== undefined && versionCookie !== ''
-      if (req.method === 'GET' && req.cookies?.['auth-token'] === undefined &&
-          !hasNonDefaultVersion &&
-          res.getHeader('Cache-Control') === undefined) {
-        res.set('Cache-Control', 'public, max-age=120')
-      } else if (req.method === 'GET' && hasNonDefaultVersion &&
-          res.getHeader('Cache-Control') === undefined) {
-        res.set('Cache-Control', 'private, max-age=120')
+      if (res.getHeader('Cache-Control') === undefined) {
+        const decision = classifyCacheControl(req)
+        if (decision !== null) {
+          res.set('Cache-Control', decision)
+        }
       }
       next()
     })
@@ -339,8 +354,9 @@ class RouterServer extends Server {
    * Start the express server
    *
    * @param port {Number} declare the server port
+   * @returns the underlying http.Server so the caller can drain it on shutdown
    */
-  public start (port: number): void {
+  public start (port: number): HttpServer {
     this.app.get('*', (_req: Request, res: Response) => {
       // Unmatched routes are real 404s, not redirects, so crawlers and users
       // see the correct status. The /lost page renders inside the normal shell.
@@ -355,10 +371,43 @@ class RouterServer extends Server {
       })
     })
 
-    this.app.listen(port, () => {
+    const server = this.app.listen(port, () => {
       telemetry.startPeriodicLogging(TELEMETRY_LOG_INTERVAL_MS)
+      telemetry.startEventLoopLagMonitor()
       logger.log('info', `Running on port: ${port}`)
     })
+
+    // Count open keep-alive sockets so overload shows up as socket pressure
+    // before requests queue.
+    telemetry.trackServerSockets(server)
+
+    // Explicit, environment-tunable socket/session timeouts so slow or broken
+    // clients (or a traffic flood) can't pin worker sockets forever. The
+    // defaults reflect the Cloudflare->origin pattern: long-lived keep-alive
+    // connections, bounded requests per socket, and a hard request deadline.
+    // requestTimeout/headersTimeout/maxRequestsPerSocket are newer Node
+    // properties not present in this project's @types/node, hence the cast.
+    const tune = server as HttpServer & {
+      requestTimeout?: number
+      headersTimeout?: number
+      maxRequestsPerSocket?: number
+    }
+    tune.requestTimeout = parsePositiveIntEnv('HTTP_REQUEST_TIMEOUT_MS', 60_000)
+    tune.headersTimeout = parsePositiveIntEnv('HTTP_HEADERS_TIMEOUT_MS', 60_000)
+    tune.maxRequestsPerSocket = parsePositiveIntEnv('HTTP_MAX_REQUESTS_PER_SOCKET', 1000)
+    server.keepAliveTimeout = parsePositiveIntEnv('HTTP_KEEPALIVE_TIMEOUT_MS', 5_000)
+
+    server.on('error', (error: NodeJS.ErrnoException) => {
+      logger.log('error', `HTTP server error: ${error.message}`, [error])
+      // A fatal listen failure (e.g. port already taken after a race) is
+      // unrecoverable: exit so the cluster primary auto-refork is triggered.
+      if (!server.listening && (error.code === 'EADDRINUSE' || error.code === 'EACCES')) {
+        logger.log('error', `Fatal listen error (${error.code}); exiting for cluster refork`)
+        process.exit(1)
+      }
+    })
+
+    return server
   }
 }
 
