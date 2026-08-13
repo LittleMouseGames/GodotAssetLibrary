@@ -42,6 +42,8 @@ $color-lighter-gray: var(--surface-subtle);
 /** Badge Colors **/
 $badge-blue: #2f69ff;
 $badge-purple: #a32fff;
+$badge-store: #128a7a;
+$badge-legacy: #64748b;
 
 /** Button Colors **/
 $button-dark-gray: #474747;
@@ -103,6 +105,8 @@ $button-very-dark: var(--button-primary-bg);
 
   --badge-blue: #2f69ff;
   --badge-purple: #a32fff;
+  --badge-store: #128a7a;
+  --badge-legacy: #64748b;
 }
 
 :root[data-theme="dark"] {
@@ -145,6 +149,8 @@ $button-very-dark: var(--button-primary-bg);
 
   --badge-blue: #4d7cff;
   --badge-purple: #b96bff;
+  --badge-store: #35b8a4;
+  --badge-legacy: #8b95a5;
 }
 
 /** Surfaces **/

@@ -1,7 +1,7 @@
 import { Document, WithId } from 'mongodb'
 import { MongoHelper } from 'core/MongoHelper'
 import { assetGridSchema } from 'app/components/partials/catalog-grid/asset-grd-schema'
-import { PUBLIC_ASSET_FILTER } from 'core/utils/publicCatalog'
+import { UNIFIED_DISCOVERY_FILTER } from 'core/utils/publicCatalog'
 import { godotMajorFilter } from 'core/utils/godotVersionPreference'
 
 interface ReturnedAssets extends WithId<Document>, assetGridSchema {}
@@ -29,11 +29,13 @@ export async function GetRelatedAssets (
 ): Promise<ReturnedAssets[]> {
   const mongo = MongoHelper.getDatabase()
 
+  // Exclude the whole project group (the caller passes the group root id), so
+  // a linked Store+legacy project never reappears through its sibling variant.
   const pool = await mongo.collection('assets').find(
     {
-      ...PUBLIC_ASSET_FILTER,
+      ...UNIFIED_DISCOVERY_FILTER,
       ...godotMajorFilter(major),
-      asset_id: { $ne: excludeAssetId },
+      group_id: { $ne: excludeAssetId },
       category_lowercase: categoryLowercase
     },
     {
@@ -43,6 +45,15 @@ export async function GetRelatedAssets (
         category: 1,
         godot_version: 1,
         godot_major: 1,
+        godot_majors: 1,
+        provider: 1,
+        group_id: 1,
+        store_url: 1,
+        license_type: 1,
+        price_cent: 1,
+        is_free: 1,
+        source_rating: 1,
+        compatibility_label: 1,
         author: 1,
         title: 1,
         quick_description: 1,

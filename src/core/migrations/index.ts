@@ -6,6 +6,7 @@ import { backfillModifyDate } from './0003-backfill-modify-date'
 import { dedupeReviewsAndIndex } from './0004-dedupe-reviews'
 import { backfillGodotMajor } from './0005-backfill-godot-major'
 import { backfillIsPublic } from './0006-backfill-is-public'
+import { backfillProviderIdentity } from './0007-provider-identity'
 
 export interface Migration {
   id: string
@@ -43,6 +44,11 @@ const MIGRATIONS: Migration[] = [
     id: '0006-backfill-is-public',
     description: 'Backfill the denormalized is_public flag used by the public-catalog filter',
     run: backfillIsPublic
+  },
+  {
+    id: '0007-provider-identity',
+    description: 'Backfill provider-qualified identity (provider, source_asset_id, group fields, godot_majors) and create the unique source index',
+    run: backfillProviderIdentity
   }
 ]
 

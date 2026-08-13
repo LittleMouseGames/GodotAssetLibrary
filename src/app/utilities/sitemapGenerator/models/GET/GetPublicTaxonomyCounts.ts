@@ -1,5 +1,5 @@
 import { MongoHelper } from 'core/MongoHelper'
-import { PUBLIC_ASSET_FILTER } from 'core/utils/publicCatalog'
+import { UNIFIED_DISCOVERY_FILTER } from 'core/utils/publicCatalog'
 
 export interface TaxonomyCount {
   key: string
@@ -15,7 +15,7 @@ export interface TaxonomyCount {
 export async function GetPublicCategoryCounts (): Promise<TaxonomyCount[]> {
   const mongo = MongoHelper.getDatabase()
   const results = await mongo.collection('assets').aggregate([
-    { $match: PUBLIC_ASSET_FILTER },
+    { $match: UNIFIED_DISCOVERY_FILTER },
     { $group: { _id: '$category_lowercase', count: { $sum: 1 } } },
     { $sort: { count: -1 } }
   ]).maxTimeMS(5000).toArray()
@@ -26,7 +26,7 @@ export async function GetPublicCategoryCounts (): Promise<TaxonomyCount[]> {
 export async function GetPublicEngineCounts (): Promise<TaxonomyCount[]> {
   const mongo = MongoHelper.getDatabase()
   const results = await mongo.collection('assets').aggregate([
-    { $match: PUBLIC_ASSET_FILTER },
+    { $match: UNIFIED_DISCOVERY_FILTER },
     { $group: { _id: '$godot_version', count: { $sum: 1 } } },
     { $sort: { _id: 1 } }
   ]).maxTimeMS(5000).toArray()

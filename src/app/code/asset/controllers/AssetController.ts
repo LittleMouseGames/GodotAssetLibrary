@@ -79,7 +79,10 @@ export class AssetController {
       })
     }
 
-    const canonicalUrl = buildAssetUrl(assetId, assetInfo.title)
+    // Linked siblings (non-root variants) always resolve to the canonical
+    // project URL, so old/direct ids never 301 to a redirecting page.
+    const canonicalId = assetInfo.group_id ?? assetId
+    const canonicalUrl = buildAssetUrl(canonicalId, assetInfo.title)
     const query = new URLSearchParams()
     if (isValidBackLink) query.set('from', fromParam)
     const target = canonicalUrl + (query.toString() !== '' ? `?${query.toString()}` : '')

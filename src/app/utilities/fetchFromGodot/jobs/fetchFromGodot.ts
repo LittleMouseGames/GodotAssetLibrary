@@ -5,6 +5,8 @@ import { customAlphabet } from 'nanoid/non-secure'
 import { MongoHelper } from 'core/MongoHelper'
 import { Db } from 'mongodb'
 import { assetSchema } from '../schema/assets'
+import { GODOT_ASSET_LIBRARY_PROVIDER } from 'core/utils/assetProvider'
+import { normalizeRepositoryUrl } from 'core/utils/repositoryNormalization'
 import { FetchReadme } from 'app/utilities/fetchReadme/services/FetchReadme'
 import { parseGodotMajor } from 'core/utils/godotVersionPreference'
 
@@ -137,6 +139,18 @@ async function fetchAssetListings (): Promise<{ newAssetIDs: string[], updateAss
 
 /** Record freshness/source-status fields on an asset before persisting it. */
 function normalizeAssetForSync (asset: any, isNew: boolean): void {
+  // Source-qualified identity: every record belongs to exactly one provider
+  // and carries a provider-scoped source identity so the Store importer can
+  // never be reconciled away by the legacy job (and vice versa).
+  asset.provider = GODOT_ASSET_LIBRARY_PROVIDER
+  asset.source_asset_id = asset.legacy_asset_id
+  asset.normalized_repository = normalizeRepositoryUrl(asset.browse_url) ?? undefined
+  // Backward-compatible array projection used by unified major-line browsing.
+  const major = parseGodotMajor(asset.godot_version)
+  if (major !== undefined) {
+    asset.godot_major = major
+  }
+  asset.godot_majors = major !== undefined ? [major] : []
   asset.source_last_seen_at = new Date()
   asset.source_last_synced_at = new Date()
   asset.source_status = 'active'
@@ -151,10 +165,6 @@ function normalizeAssetForSync (asset: any, isNew: boolean): void {
   if (!isNaN(modifyDate.getTime())) {
     asset.modify_date_at = modifyDate
   }
-  const major = parseGodotMajor(asset.godot_version)
-  if (major !== undefined) {
-    asset.godot_major = major
-  }
 }
 
 /**
@@ -166,8 +176,13 @@ async function markSourceStatus (seenIDs: Set<string>, syncedAt: Date): Promise<
   const assets = mongo.collection('assets')
   const seen = Array.from(seenIDs)
 
+  // Every query is provider-scoped: a complete legacy import only ever marks
+  // legacy records, and a complete Store import only marks Store records, so
+  // one source can never tombstone the other's healthy records.
+  const provider = { provider: GODOT_ASSET_LIBRARY_PROVIDER }
+
   await assets.updateMany(
-    { legacy_asset_id: { $in: seen } },
+    { ...provider, legacy_asset_id: { $in: seen } },
     {
       $set: { source_status: 'active', source_last_seen_at: syncedAt, source_last_synced_at: syncedAt },
       $unset: { source_missing_runs: '' }
@@ -177,21 +192,21 @@ async function markSourceStatus (seenIDs: Set<string>, syncedAt: Date): Promise<
   // Keep the denormalized is_public flag current for still-listed assets:
   // active + searchable -> public, active + non-searchable -> hidden.
   await assets.updateMany(
-    { legacy_asset_id: { $in: seen }, searchable: { $ne: 'false' } },
+    { ...provider, legacy_asset_id: { $in: seen }, searchable: { $ne: 'false' } },
     { $set: { is_public: true } }
   )
   await assets.updateMany(
-    { legacy_asset_id: { $in: seen }, searchable: 'false' },
+    { ...provider, legacy_asset_id: { $in: seen }, searchable: 'false' },
     { $set: { is_public: false } }
   )
 
   await assets.updateMany(
-    { legacy_asset_id: { $nin: seen }, source_status: { $ne: 'unavailable' } },
+    { ...provider, legacy_asset_id: { $nin: seen }, source_status: { $ne: 'unavailable' } },
     { $inc: { source_missing_runs: 1 } }
   )
 
   await assets.updateMany(
-    { legacy_asset_id: { $nin: seen }, source_missing_runs: { $gte: 3 } },
+    { ...provider, legacy_asset_id: { $nin: seen }, source_missing_runs: { $gte: 3 } },
     { $set: { source_status: 'unavailable', is_public: false } }
   )
 }
@@ -273,6 +288,7 @@ async function fetchAssetInformationAndUpdate (assetIDs: any[]): Promise<void> {
 async function modelDoesAssetAlreadyExist (legacyAssetID: string): Promise<boolean> {
   const mongo: Db = MongoHelper.getDatabase()
   const operationObject = await mongo.collection('assets').findOne({
+    provider: GODOT_ASSET_LIBRARY_PROVIDER,
     legacy_asset_id: legacyAssetID
   }, {
     projection: {
@@ -290,6 +306,7 @@ async function modelDoesAssetAlreadyExist (legacyAssetID: string): Promise<boole
 async function modelGetAssetModifiedDate (legacyAssetID: string): Promise<string> {
   const mongo: Db = MongoHelper.getDatabase()
   const operationObject = await mongo.collection('assets').findOne({
+    provider: GODOT_ASSET_LIBRARY_PROVIDER,
     legacy_asset_id: legacyAssetID
   }, {
     projection: {
@@ -317,6 +334,7 @@ async function updateCategoryCountInfoObject (name: string, increment: number = 
 async function modelUpdateAssetObject (assetId: string, assetObject: object): Promise<void> {
   const mongo: Db = MongoHelper.getDatabase()
   await mongo.collection('assets').updateOne({
+    provider: GODOT_ASSET_LIBRARY_PROVIDER,
     legacy_asset_id: assetId
   }, {
     $set: assetObject
@@ -330,6 +348,13 @@ async function modelInsertAsset (asset: assetSchema): Promise<any> {
   // TODO: Move out of model
   asset.legacy_asset_id = asset.asset_id
   asset.asset_id = nanoid()
+  // Source-qualified identity for a brand-new legacy record. Updates never
+  // reset these (group_preferred/link state is owned by the linking service).
+  asset.provider = GODOT_ASSET_LIBRARY_PROVIDER
+  asset.source_asset_id = asset.legacy_asset_id
+  asset.group_id = asset.asset_id
+  asset.group_preferred = true
+  asset.is_group_root = true
   asset.quick_description = asset.description.trim().replace(/(\r\n|\n|\r|\t)/gm, '')
   asset.upvotes = 0
   asset.downvotes = 0
@@ -353,6 +378,7 @@ async function modelInsertAsset (asset: assetSchema): Promise<any> {
 async function modelGetAssetInformation (legacyAssetID: string): Promise<any> {
   const mongo: Db = MongoHelper.getDatabase()
   return await mongo.collection('assets').findOne({
+    provider: GODOT_ASSET_LIBRARY_PROVIDER,
     legacy_asset_id: legacyAssetID
   }, {
     projection: {

@@ -1,5 +1,5 @@
 import { MongoHelper } from 'core/MongoHelper'
-import { PUBLIC_ASSET_FILTER } from 'core/utils/publicCatalog'
+import { UNIFIED_DISCOVERY_FILTER } from 'core/utils/publicCatalog'
 import { godotMajorFilter } from 'core/utils/godotVersionPreference'
 
 /**
@@ -18,7 +18,7 @@ export async function GetCategoryCountsByMajor (
 ): Promise<Record<string, number>> {
   const mongo = MongoHelper.getDatabase()
   const results = await mongo.collection('assets').aggregate([
-    { $match: { ...PUBLIC_ASSET_FILTER, ...godotMajorFilter(major) } },
+    { $match: { ...UNIFIED_DISCOVERY_FILTER, ...godotMajorFilter(major) } },
     { $group: { _id: '$category_lowercase', count: { $sum: 1 } } }
   ]).maxTimeMS(5000).toArray()
 

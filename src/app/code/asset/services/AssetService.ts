@@ -2,6 +2,8 @@ import { NextFunction, Request, Response } from 'express'
 import { StatusCodes } from 'http-status-codes'
 import { logger } from 'core/utils/logger'
 import { GetAssetDisplayInformation } from '../models/GET/GetAssetDisplayInformation'
+import { GetGroupVariants } from '../models/GET/GetGroupVariants'
+import { isKnownProvider, providerLabel } from 'core/utils/assetProvider'
 import { GetDoesPostExistById } from '../models/GET/GetDoesPostExistById'
 import { GetHasUserReviewedAsset } from '../models/GET/GetHasUserReviewedAsset'
 import { UpdatePositiveVotesAddOne } from '../models/UPDATE/UpdatePositiveVotesAddOne'
@@ -49,24 +51,74 @@ interface AssetPageData {
   comments: Awaited<ReturnType<typeof GetAssetReviewsById>>
   reviewCount: number
   relatedAssets: Awaited<ReturnType<typeof GetRelatedAssets>>
+  /** All variants in the project group (root + linked siblings). */
+  variants: Awaited<ReturnType<typeof GetGroupVariants>>
+  /** When the requested asset_id is a non-root variant, the canonical root URL. */
+  redirectUrl?: string
+  /** Resolved requested source for this bundle (undefined = preferred default). */
+  requestedSource?: string
 }
 
 /**
- * Load the shared data behind a public asset page: the asset document, the
+ * Merge the selected variant's presentation content with the project root's
+ * identity fields (URL/reviews/saves/featured state live on the root).
+ */
+function mergeProjectIdentity (root: any, variant: any): any {
+  return {
+    ...variant,
+    asset_id: root.asset_id,
+    group_id: root.group_id ?? root.asset_id,
+    upvotes: root.upvotes,
+    downvotes: root.downvotes,
+    rating_score: root.rating_score,
+    featured: root.featured,
+    // Precomputed sanitized Store body for unescaped render in view.eta.
+    store_body: variant?.body?.sanitized_html ?? ''
+  }
+}
+
+/**
+ * Load the shared data behind a public asset page: the project's preferred (or
+ * requested-source) variant content merged with the project root identity, the
  * requested page of reviews, the persisted review count and related assets.
- * The four MongoDB operations are consolidated so a Dragonfly cache hit serves
- * the whole page from memory. Mutations that change any of these (reviews,
- * admin review deletion) invalidate the cache keys.
+ * The MongoDB operations are consolidated so a Dragonfly cache hit serves the
+ * whole page from memory. Mutations that change any of these (reviews, admin
+ * review deletion) invalidate the cache keys.
  *
  * `major` is the visitor's pinned Godot major and constrains the related-asset
- * cards bundled into the cached page.
+ * cards bundled into the cached page. `source` selects a specific provider
+ * variant (source-switched views bypass the shared cache).
  */
-async function loadAssetPageData (assetId: string, reviewsPage = 0, major?: number, strict = false): Promise<AssetPageData> {
-  const assetInfo = await GetAssetDisplayInformation(assetId)
+async function loadAssetPageData (assetId: string, reviewsPage = 0, major?: number, strict = false, source?: string): Promise<AssetPageData> {
+  const root = await GetAssetDisplayInformation(assetId)
 
-  if (assetInfo === null) {
-    return { assetInfo: null, comments: [], reviewCount: 0, relatedAssets: [] }
+  if (root === null) {
+    return { assetInfo: null, comments: [], reviewCount: 0, relatedAssets: [], variants: [] }
   }
+
+  // A non-root variant (a linked sibling reached directly) permanently
+  // redirects to the canonical project URL rather than rendering a duplicate
+  // page under a second asset_id.
+  if (root.group_id !== undefined && root.group_id !== null && root.group_id !== root.asset_id) {
+    return {
+      assetInfo: null,
+      comments: [],
+      reviewCount: 0,
+      relatedAssets: [],
+      variants: [],
+      redirectUrl: buildAssetUrl(root.group_id ?? root.asset_id, root.title)
+    }
+  }
+
+  const variants = root.group_id !== undefined && root.group_id !== null && root.group_id !== ''
+    ? await GetGroupVariants(root.group_id)
+    : [root]
+  const preferred = variants.find(v => v.group_preferred === true) ?? root
+  const selected = source !== undefined
+    ? (variants.find(v => v.provider === source) ?? preferred)
+    : preferred
+
+  const assetInfo = mergeProjectIdentity(root, selected)
 
   // Imported asset data is untrusted. Only http(s) URLs may be rendered as
   // links, otherwise non-HTTP schemes (javascript:, data:, ...) would reach
@@ -80,10 +132,10 @@ async function loadAssetPageData (assetId: string, reviewsPage = 0, major?: numb
     GetAssetReviewsById(assetId, REVIEWS_PER_PAGE, reviewsPage * REVIEWS_PER_PAGE),
     GetAssetReviewCount(assetId),
     GetRelatedAssets(
-      assetInfo.category_lowercase ?? String(assetInfo.category ?? '').toLowerCase(),
-      assetInfo.godot_version,
-      assetInfo.type,
-      assetInfo.asset_id,
+      selected.category_lowercase ?? String(selected.category ?? '').toLowerCase(),
+      selected.godot_version,
+      selected.type,
+      root.group_id ?? root.asset_id,
       major
     )
   ])
@@ -103,7 +155,9 @@ async function loadAssetPageData (assetId: string, reviewsPage = 0, major?: numb
     reviewCount: reviewCountResult.status === 'fulfilled'
       ? reviewCountResult.value
       : (commentsResult.status === 'fulfilled' ? commentsResult.value.length : 0),
-    relatedAssets: relatedAssetsResult.status === 'fulfilled' ? relatedAssetsResult.value : []
+    relatedAssets: relatedAssetsResult.status === 'fulfilled' ? relatedAssetsResult.value : [],
+    variants,
+    requestedSource: source
   }
 }
 
@@ -137,16 +191,23 @@ export class AssetService {
         ? 0
         : Math.max(0, Math.min(100, parsedReviewsPage))
 
+      // Optional explicit provider selection (?source=godot_store|...). The
+      // default (no param) renders the group's preferred variant (store-first
+      // for linked projects). Source-switched views bypass the shared cache.
+      const rawSource = striptags(String(req.query.source ?? ''))
+      const requestedSource = isKnownProvider(rawSource) ? rawSource : undefined
+
       // Related cards bundled into the anonymous cached page follow the
       // visitor's pinned major (asset pages have no exact engine selection).
       const relatedMajor = await resolveBrowsingMajor(req.cookies[GODOT_VERSION_PREFERENCE_COOKIE])
 
-      // The public asset page is expensive (~4 Mongo ops). Cache the shared
-      // anonymous default view (page 0) in Dragonfly; authenticated requests,
-      // paginated review views and a shared-cache outage fall back to a direct
+      // The public asset page is expensive (asset + group + reviews + count +
+      // related). Cache the shared anonymous default view (page 0, preferred
+      // variant) in Dragonfly; authenticated requests, paginated review views,
+      // source-switched views and a shared-cache outage fall back to a direct
       // load. Entries are invalidated after review/admin writes so fresh
       // reviews and ratings appear immediately.
-      const cacheable = authToken === '' && reviewsPage === 0
+      const cacheable = authToken === '' && reviewsPage === 0 && requestedSource === undefined
       let bundle: AssetPageData
       if (cacheable) {
         const cached = await cacheGetOrLoad<AssetPageData>(
@@ -160,11 +221,22 @@ export class AssetService {
         // readme render) never leak into the shared cache entry.
         bundle = JSON.parse(JSON.stringify(cached.value)) as AssetPageData
       } else {
-        // Paginated or authenticated views bypass the cache and must load the
-        // requested reviews page (the cached bundle is always page 0).
-        bundle = await loadAssetPageData(assetId, reviewsPage, relatedMajor, false)
+        // Paginated/authenticated/source views bypass the cache and must load
+        // the requested reviews page + source variant (the cached bundle is
+        // always page 0 and the preferred variant).
+        bundle = await loadAssetPageData(assetId, reviewsPage, relatedMajor, false, requestedSource)
       }
-      const { assetInfo, comments, reviewCount, relatedAssets } = bundle
+
+      // A linked sibling reached directly: 301 to the canonical project URL.
+      if (bundle.redirectUrl !== undefined) {
+        const redirectQuery = new URLSearchParams()
+        if (backToResults !== '') redirectQuery.set('from', backToResults)
+        const redirectTarget = bundle.redirectUrl +
+          (redirectQuery.toString() !== '' ? `?${redirectQuery.toString()}` : '')
+        return res.redirect(StatusCodes.MOVED_PERMANENTLY, redirectTarget)
+      }
+
+      const { assetInfo, comments, reviewCount, relatedAssets, variants, requestedSource: resolvedSource } = bundle
 
       if (assetInfo === null) {
         res.set('Cache-Control', 'no-store')
@@ -248,11 +320,39 @@ export class AssetService {
       const galleryMedia = mediaItems.filter(item => item.type !== 'external')
       const fallbackImage = getFallbackImage(assetInfo)
 
+      // Source switcher ("Available from"): the variants of this project group
+      // with their availability and current/preferred state.
+      const preferredProvider = variants.find(v => v.group_preferred === true)?.provider ?? assetInfo.provider
+      const sourceVariants = variants
+        .filter((v): v is typeof v & { provider: string } =>
+          v.provider !== undefined && v.provider !== null)
+        .map(v => ({
+          provider: v.provider,
+          label: providerLabel(v.provider),
+          active: v.is_public === true && v.source_status !== 'unavailable',
+          preferred: v.group_preferred === true,
+          current: (resolvedSource ?? preferredProvider) === v.provider
+        }))
+        .sort((a, b) => a.provider.localeCompare(b.provider))
+
       const reviewsHasMore = (reviewsPage * REVIEWS_PER_PAGE) + comments.length < reviewCount
       const reviewsNextPage = reviewsPage + 1
       const nextReviewsQuery = new URLSearchParams()
       nextReviewsQuery.set('reviews_page', String(reviewsNextPage))
       if (backToResults !== '') nextReviewsQuery.set('from', backToResults)
+
+      // A source-switched view duplicates the default page's content under a
+      // query variant, so it is excluded from the index (the canonical URL
+      // stays the preferred-variant default).
+      const noindex = resolvedSource !== undefined ||
+        assetInfo.source_status === 'unavailable' ||
+        assetInfo.searchable === 'false'
+
+      // Stable base path for the source switcher: always the project root with
+      // the PREFERRED variant's title slug, so switching source never causes a
+      // redirect that would drop the ?source param.
+      const preferredVariant = variants.find(v => v.group_preferred === true) ?? assetInfo
+      const sourceSwitchBaseUrl = buildAssetUrl(assetId, preferredVariant.title ?? assetInfo.title)
 
       return res.render('templates/pages/asset/view', {
         info: assetInfo,
@@ -269,8 +369,11 @@ export class AssetService {
         pageBanner: pageBanner,
         mediaItems: galleryMedia,
         primaryMedia: galleryMedia[0] ?? null,
-        noindex: assetInfo.source_status === 'unavailable' || assetInfo.searchable === 'false',
-        fallbackImage: fallbackImage
+        noindex,
+        fallbackImage: fallbackImage,
+        sourceVariants,
+        sourceSwitchBaseUrl,
+        requestedSource: resolvedSource ?? ''
       })
     } catch (e: any) {
       logger.log('error', `Failed to load asset page: ${assetId}, ${e?.message}`, [e])

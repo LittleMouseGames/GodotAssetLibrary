@@ -1,4 +1,5 @@
 import { MongoHelper } from 'core/MongoHelper'
+import { providerLabel } from 'core/utils/assetProvider'
 import { buildSearchFilter, SearchFilterOptions } from './buildSearchFilter'
 
 export interface FacetGroup {
@@ -14,14 +15,18 @@ export interface SearchFacets {
   engines: FacetGroup[]
   types: FacetGroup[]
   supports: FacetGroup[]
+  /** Provider dimension: counts over the unified (group-collapsed) view. */
+  sources: FacetGroup[]
 }
+
+type FacetDimension = 'categories' | 'engines' | 'types' | 'supports' | 'sources'
 
 interface FacetSpec {
   key: keyof SearchFacets
   groupBy: string
   labelBy?: Record<string, unknown>
   /** Dimension to omit from this facet's own filter so counts stay self-excluding. */
-  omit: 'categories' | 'engines' | 'types' | 'supports'
+  omit: FacetDimension
 }
 
 const FACET_SPECS: FacetSpec[] = [
@@ -33,18 +38,22 @@ const FACET_SPECS: FacetSpec[] = [
   },
   { key: 'engines', groupBy: '$godot_version', omit: 'engines' },
   { key: 'types', groupBy: '$type', omit: 'types' },
-  { key: 'supports', groupBy: '$support_level', omit: 'supports' }
+  { key: 'supports', groupBy: '$support_level', omit: 'supports' },
+  { key: 'sources', groupBy: '$provider', omit: 'sources' }
 ]
 
-const DIMENSION_KEYS: Array<FacetSpec['omit']> = ['categories', 'engines', 'types', 'supports']
+const DIMENSION_KEYS: FacetDimension[] = ['categories', 'engines', 'types', 'supports', 'sources']
 
 /** Filter for one facet with only its own dimension omitted (self-excluding). */
-function facetFilterFor (query: string, options: SearchFilterOptions, omit: FacetSpec['omit']): Record<string, any> {
+function facetFilterFor (query: string, options: SearchFilterOptions, omit: FacetDimension): Record<string, any> {
   return buildSearchFilter(query, {
     categories: omit === 'categories' ? undefined : options.categories,
     engines: omit === 'engines' ? undefined : options.engines,
     types: omit === 'types' ? undefined : options.types,
     supports: omit === 'supports' ? undefined : options.supports,
+    // The source facet is always computed over the unified (no-source) view so
+    // its options stay stable while one source is selected.
+    source: omit === 'sources' ? undefined : options.source,
     featured: options.featured,
     // The major pin stays on even when self-excluding the exact-engine
     // dimension: it constrains which exact versions appear in the sidebar.
@@ -62,7 +71,7 @@ function groupStageFor (spec: FacetSpec): Record<string, any> {
 
 /** Normalize raw facet rows ({_id, count, label?}) into FacetGroup arrays. */
 function buildFacets (output: Record<string, any[]>): SearchFacets {
-  const facets: SearchFacets = { categories: [], engines: [], types: [], supports: [] }
+  const facets: SearchFacets = { categories: [], engines: [], types: [], supports: [], sources: [] }
 
   for (const spec of FACET_SPECS) {
     const rows = output[spec.key] ?? []
@@ -72,7 +81,7 @@ function buildFacets (output: Record<string, any[]>): SearchFacets {
       if (value === '') continue
       facets[spec.key].push({
         value,
-        label: (item.label as string | undefined) ?? value,
+        label: spec.key === 'sources' ? providerLabel(value) : ((item.label as string | undefined) ?? value),
         count: item.count as number
       })
     }
@@ -110,7 +119,11 @@ export async function GetSearchFacets (
   const mongo = MongoHelper.getDatabase()
   const assets = mongo.collection('assets')
 
-  const hasDimensionFilters = DIMENSION_KEYS.some(dim => (options[dim] ?? []).length > 0)
+  const hasDimensionFilters = DIMENSION_KEYS.some(dim =>
+    dim === 'sources'
+      ? (options.source ?? '') !== ''
+      : (options[dim] ?? []).length > 0
+  )
 
   if (!hasDimensionFilters) {
     // All four facet filters are identical, so share one $match.

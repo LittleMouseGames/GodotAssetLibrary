@@ -174,4 +174,122 @@
       color: inherit;
     }
   }
+
+  &.source-linking {
+    .source-search {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      margin-bottom: 20px;
+
+      input[type="search"] {
+        flex: 1;
+      }
+
+      .apply-filters {
+        @include form-button;
+      }
+
+      .clear-section {
+        font-size: 13px;
+      }
+    }
+
+    .source-list {
+      display: grid;
+      gap: 15px;
+    }
+
+    .source-card {
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      padding: 15px;
+      background: var(--surface-card);
+
+      .source-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        gap: 10px;
+      }
+
+      .source-meta {
+        @include inter-like-font();
+        display: block;
+        font-size: 12px;
+        color: var(--text-muted);
+        margin-top: 2px;
+      }
+
+      .source-status {
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+        padding: 3px 8px;
+        border-radius: 3px;
+        background: var(--surface-subtle);
+        color: var(--text-muted);
+
+        &.status-suggested {
+          background: $badge-store;
+          color: #fff;
+        }
+
+        &.status-linked {
+          background: $badge-blue;
+          color: #fff;
+        }
+      }
+
+      .source-suggestion {
+        @include inter-like-font();
+        margin-top: 10px;
+        font-size: 13px;
+        color: var(--text-secondary);
+
+        code {
+          background: var(--surface-subtle);
+          border-radius: 3px;
+          padding: 1px 4px;
+          font-size: 12px;
+        }
+      }
+
+      .source-actions {
+        display: flex;
+        gap: 10px;
+        margin-top: 12px;
+
+        form {
+          margin: 0;
+        }
+
+        button {
+          @include form-button;
+          margin-top: 0;
+
+          &:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+          }
+        }
+
+        .action-link {
+          background: $badge-store;
+        }
+
+        .action-unlink {
+          background: #c0392b;
+        }
+
+        .action-ignore {
+          background: $button-dark-gray;
+        }
+      }
+    }
+
+    .empty-state {
+      color: var(--text-muted);
+    }
+  }
 }

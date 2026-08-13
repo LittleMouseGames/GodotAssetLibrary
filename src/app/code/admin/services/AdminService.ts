@@ -26,6 +26,16 @@ import { GetReviewById } from '../models/GET/GetReviewById'
 import { UpdatePositiveVotesRemoveOne } from 'app/code/asset/models/UPDATE/UpdatePositiveVotesRemoveOne'
 import { UpdateNegativeVotesRemoveOne } from 'app/code/asset/models/UPDATE/UpdateNegativeVotesRemoveOne'
 import { parsePagination } from 'core/utils/pagination'
+import { MongoHelper } from 'core/MongoHelper'
+import { isKnownProvider } from 'core/utils/assetProvider'
+import {
+  linkStoreToLegacy,
+  rejectStoreLinkSuggestion,
+  setPreferredVariant,
+  unlinkStoreFromLegacy
+} from 'app/utilities/fetchFromGodotStore/services/linkStoreToLegacy'
+import { GetStoreLinkQueue, GetAssetAdminView } from '../models/GET/GetStoreLinkQueue'
+import { normalizeRepositoryUrl } from 'core/utils/repositoryNormalization'
 
 export class AdminService {
   public async render (_req: Request, res: Response): Promise<void> {
@@ -270,6 +280,99 @@ export class AdminService {
       await UpdateAssetSetFeatured(asset, true)
     }
 
+    res.send()
+  }
+
+  public async renderSourceLinking (req: Request, res: Response): Promise<void> {
+    const query = striptags(String(req.query.q ?? ''))
+    const storeAssets = await GetStoreLinkQueue(query)
+
+    const pageBanner = {
+      title: 'Source Linking',
+      info: 'Review and link Godot Asset Store records with their Legacy Asset Library counterparts'
+    }
+
+    return res.render('templates/pages/admin/source-linking', {
+      pageBanner: pageBanner,
+      storeAssets: storeAssets,
+      query: query
+    })
+  }
+
+  /** POST: link a Store asset to a Legacy project (grouped as one project). */
+  public async linkStoreAsset (req: Request, res: Response): Promise<void> {
+    const storeAssetId = striptags(req.body.storeAssetId ?? '')
+    const legacyAssetId = striptags(req.body.legacyAssetId ?? '')
+
+    if (storeAssetId === '' || legacyAssetId === '') {
+      throw new Error('Missing store asset or legacy asset id')
+    }
+
+    const [storeAsset, legacyAsset] = await Promise.all([
+      GetAssetAdminView(storeAssetId),
+      GetAssetAdminView(legacyAssetId)
+    ])
+    if (storeAsset === null || legacyAsset === null) {
+      throw new Error('Store or legacy asset not found')
+    }
+    if (storeAsset.provider !== 'godot_store' || legacyAsset.provider !== 'godot_asset_library') {
+      throw new Error('Link requires a Store source asset and a Legacy target asset')
+    }
+
+    const normalizedRepo = normalizeRepositoryUrl(legacyAsset.browse_url ?? '') ??
+      normalizeRepositoryUrl(storeAsset.browse_url ?? '') ??
+      (storeAsset.link_suggestion?.normalized_repository ?? '')
+
+    await linkStoreToLegacy(
+      MongoHelper.getDatabase(),
+      storeAssetId,
+      legacyAssetId,
+      storeAsset.title,
+      legacyAsset.title,
+      normalizedRepo,
+      'admin'
+    )
+
+    // Invalidate the group's cached pages across workers.
+    await invalidateAssetCache(legacyAssetId)
+    await invalidateAssetCache(storeAssetId)
+    res.send()
+  }
+
+  /** POST: unlink a Store asset from its project group. */
+  public async unlinkStoreAsset (req: Request, res: Response): Promise<void> {
+    const storeAssetId = striptags(req.body.storeAssetId ?? '')
+    if (storeAssetId === '') throw new Error('Missing store asset id')
+
+    const storeAsset = await GetAssetAdminView(storeAssetId)
+    if (storeAsset === null) throw new Error('Store asset not found')
+
+    const groupId = storeAsset.group_id ?? storeAssetId
+    await unlinkStoreFromLegacy(MongoHelper.getDatabase(), storeAssetId)
+    await invalidateAssetCache(groupId)
+    await invalidateAssetCache(storeAssetId)
+    res.send()
+  }
+
+  /** POST: set which provider variant in a group is discovery-preferred. */
+  public async setPreferredSource (req: Request, res: Response): Promise<void> {
+    const groupId = striptags(req.body.groupId ?? '')
+    const provider = striptags(req.body.provider ?? '')
+    if (groupId === '' || !isKnownProvider(provider)) {
+      throw new Error('Missing or invalid group id / provider')
+    }
+
+    await setPreferredVariant(MongoHelper.getDatabase(), groupId, provider)
+    await invalidateAssetCache(groupId)
+    res.send()
+  }
+
+  /** POST: dismiss a suggested Store link so the importer stops proposing it. */
+  public async rejectStoreSuggestion (req: Request, res: Response): Promise<void> {
+    const storeAssetId = striptags(req.body.storeAssetId ?? '')
+    if (storeAssetId === '') throw new Error('Missing store asset id')
+
+    await rejectStoreLinkSuggestion(MongoHelper.getDatabase(), storeAssetId)
     res.send()
   }
 }

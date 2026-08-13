@@ -39,7 +39,7 @@
 
   it.meta = {
     title: `${it?.info?.title ?? 'Asset'} | Godot Asset Library`,
-    description: it?.info?.quick_description ??  `Find out more about the FREE ${it?.info?.title} godot asset on Godot Asset Library.`,
+    description: it?.info?.quick_description ??  `Find out more about the ${it?.info?.title ?? ''} Godot asset on Godot Asset Library.`,
     url: assetUrl,
     moduleName: 'asset',
     noindex: it?.noindex === true,
@@ -50,12 +50,28 @@
       "description": it?.info?.quick_description,
       "image": it?.info?.card_banner ?? it?.info?.icon_url,
       "url": assetUrl,
-      "author": { "@type": "Person", "name": it?.info?.author },
+      "author": { "@type": it?.info?.provider === 'godot_store' ? 'Organization' : 'Person', "name": it?.info?.author },
       "softwareVersion": it?.info?.version_string,
       "applicationCategory": appCategory,
-      "softwareRequirements": `Godot ${it?.info?.godot_version}`
+      "softwareRequirements": `Godot ${it?.info?.compatibility_label ?? it?.info?.godot_version ?? ''}`.replace('Godot Godot', 'Godot')
     },
     image: generateProxyUrl(it.info.card_banner ?? it.info.icon_url),
+  }
+
+  // Store assets carry real license + price facts that Schema.org can express.
+  if (it?.info?.provider === 'godot_store') {
+    var storeOffer = {
+      "@type": "Offer",
+      "price": it?.info?.is_free === true ? '0' : (String(it?.info?.cost ?? '0').replace(/[^\d.,]/g, '') || '0'),
+      "priceCurrency": it?.info?.price_currency ?? 'EUR',
+      "url": it?.info?.store_url ?? assetUrl
+    }
+    it.meta.jsonLd.offers = storeOffer
+    if (it?.info?.license_url) {
+      it.meta.jsonLd.license = it.info.license_url
+    } else if (it?.info?.license_type) {
+      it.meta.jsonLd.license = it.info.license_type
+    }
   }
 
   // dateModified and BreadcrumbList are only valid when we have the data.
@@ -193,6 +209,9 @@
           <% } %>
           <div class="description <%= it.info.readme ? '' : 'active' %> markdown-body" id="asset-description-panel">
             <p class="plain-description"><%= it?.info?.description ?? '' %></p>
+            <% if (typeof it?.info?.store_body === 'string' && it.info.store_body !== '') { %>
+            <div class="store-body"><%~ it.info.store_body %></div>
+            <% } %>
           </div>
         </div>
 

@@ -1,7 +1,7 @@
 import { Document, WithId } from 'mongodb'
 import { MongoHelper } from 'core/MongoHelper'
 import { assetGridSchema } from 'app/utilities/fetchFromGodot/schema/assets-grid'
-import { PUBLIC_ASSET_FILTER } from 'core/utils/publicCatalog'
+import { UNIFIED_DISCOVERY_FILTER } from 'core/utils/publicCatalog'
 import { godotMajorFilter } from 'core/utils/godotVersionPreference'
 
 interface ReturnedAssets extends WithId<Document>, assetGridSchema {}
@@ -13,7 +13,7 @@ export async function GetFourAssetsForHomepage (major?: number): Promise<Returne
   // pinned major before sorting/limiting so the section stays in-generation.
   const operationObject = await mongo.collection('assets').aggregate([{
     $match: {
-      ...PUBLIC_ASSET_FILTER,
+      ...UNIFIED_DISCOVERY_FILTER,
       ...godotMajorFilter(major),
       featured: true
     }
@@ -30,6 +30,15 @@ export async function GetFourAssetsForHomepage (major?: number): Promise<Returne
       category: 1,
       godot_version: 1,
       godot_major: 1,
+      godot_majors: 1,
+      provider: 1,
+      group_id: 1,
+      store_url: 1,
+      license_type: 1,
+      price_cent: 1,
+      is_free: 1,
+      source_rating: 1,
+      compatibility_label: 1,
       author: 1,
       title: 1,
       quick_description: 1,

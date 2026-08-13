@@ -76,6 +76,12 @@
     display: inline-block;
     margin-right: 10px;
     cursor: pointer;
+    // Keep badge labels on a single line even when the card grid is narrow;
+    // otherwise flex-shrink squishes the pills and the text wraps internally.
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-width: 0;
   }
 
   .head {
@@ -98,6 +104,14 @@
 
   .badge-purple {
     background: $badge-purple;
+  }
+
+  .badge-store {
+    background: $badge-store;
+  }
+
+  .badge-legacy {
+    background: $badge-legacy;
   }
 
   .body {
@@ -327,6 +341,17 @@
       color: $color-gold;
       font-size: 14px;
       flex-shrink: 0;
+    }
+  }
+
+  .store-score {
+    color: $badge-store;
+    font-weight: 600;
+
+    .store-score-asterisk {
+      font-size: 12px;
+      vertical-align: super;
+      margin-left: 1px;
     }
   }
 

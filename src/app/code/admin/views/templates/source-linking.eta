@@ -1,0 +1,85 @@
+<% it.meta = {
+  title: 'Source Linking | Godot Asset Library',
+  description: 'Manage Godot Asset Library settings',
+  url: 'https://godotassetlibrary.com/admin/sources',
+  moduleName: 'admin'
+} %>
+<% layout('templates/components/layouts/promobar-nav-body-footer/promobar-nav-body-footer.eta') %>
+
+<section class="page-admin source-linking">
+  <div class="column">
+    <div class="sidebar">
+      <div class="item"><a href="/admin">Site Settings</a></div>
+      <div class="item"><a href="/admin/featured/">Featured Assets</a></div>
+      <div class="item"><a href="/admin/reports/">View Reports</a></div>
+      <div class="item active"><a href="/admin/sources/">Source Linking</a></div>
+    </div>
+  </div>
+  <div class="column">
+    <form method="GET" action="/admin/sources/" class="source-search">
+      <input type="search" name="q" value="<%= it?.query ?? '' %>"
+        placeholder="Search Store assets by title or id...">
+      <button type="submit" class="apply-filters">Search</button>
+      <% if (it?.query != null && it.query !== '') { %>
+      <a class="clear-section" href="/admin/sources/">Clear search</a>
+      <% } %>
+    </form>
+
+    <% if (it?.storeAssets == null || it.storeAssets.length === 0) { %>
+    <p class="empty-state">No Store assets awaiting review. <a href="/admin/sources/?q=">Search all Store assets</a> to link manually.</p>
+    <% } else { %>
+    <div class="source-list">
+      <% for (const asset of it.storeAssets) { %>
+      <div class="source-card">
+        <div class="source-head">
+          <div>
+            <strong><%= asset.title ?? 'Untitled' %></strong>
+            <span class="source-meta"><%= asset.author ?? '' %> &middot; <%= asset.source_asset_id ?? asset.asset_id %></span>
+          </div>
+          <span class="source-status status-<%= asset.link_status ?? 'none' %>"><%= asset.link_status ?? 'none' %></span>
+        </div>
+        <% if (asset?.link_suggestion != null) { %>
+        <div class="source-suggestion">
+          Suggested match: <strong><%= asset.link_suggestion.legacy_title %></strong>
+          (<code><%= asset.link_suggestion.legacy_asset_id %></code>) &middot; repo
+          <code><%= asset.link_suggestion.normalized_repository %></code>
+        </div>
+        <% } %>
+        <% if (asset?.link_info != null && asset.link_status === 'linked') { %>
+        <div class="source-suggestion">
+          Linked to <strong><%= asset.link_info.evidence.legacy_title %></strong>
+          (<code><%= asset.group_id %></code>) via <%= asset.link_info.method %>
+          <% if (asset.group_preferred === true) { %>&middot; <em>preferred</em><% } %>
+        </div>
+        <% } %>
+        <div class="source-actions">
+          <form method="POST" action="/admin/sources/link"
+            onsubmit="window.godotLibrary.formTools.sendFormAjax(event, this)">
+            <input type="hidden" name="storeAssetId" value="<%= asset.asset_id %>">
+            <input type="hidden" name="legacyAssetId"
+              value="<%= asset?.link_suggestion?.legacy_asset_id ?? '' %>">
+            <button type="submit" class="action-link"
+              <%= asset?.link_suggestion?.legacy_asset_id == null ? 'disabled' : '' %>
+              title="Group this Store asset with its Legacy counterpart">Link</button>
+          </form>
+          <% if (asset?.link_status === 'linked' && asset?.group_id != null) { %>
+          <form method="POST" action="/admin/sources/unlink"
+            onsubmit="window.godotLibrary.formTools.sendFormAjax(event, this)">
+            <input type="hidden" name="storeAssetId" value="<%= asset.asset_id %>">
+            <button type="submit" class="action-unlink" title="Remove this Store asset from its project group">Unlink</button>
+          </form>
+          <% } %>
+          <% if (asset?.link_status === 'suggested') { %>
+          <form method="POST" action="/admin/sources/reject"
+            onsubmit="window.godotLibrary.formTools.sendFormAjax(event, this)">
+            <input type="hidden" name="storeAssetId" value="<%= asset.asset_id %>">
+            <button type="submit" class="action-ignore" title="Dismiss this suggestion">Ignore</button>
+          </form>
+          <% } %>
+        </div>
+      </div>
+      <% } %>
+    </div>
+    <% } %>
+  </div>
+</section>

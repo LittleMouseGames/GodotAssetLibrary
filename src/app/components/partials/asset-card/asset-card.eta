@@ -7,18 +7,30 @@ if (typeof cardImage !== 'string' || /(?:youtube\.com|youtu\.be|\.(?:mp4|webm|mo
 }
 
 var assetId = it?.info?.asset_id ?? ''
+// Linked projects share a group: cards link to the canonical project URL (the
+// group root) so a Store/legacy variant never points at a redirect.
+var linkId = it?.info?.group_id != null && it?.info?.group_id !== '' ? it?.info?.group_id : assetId
 var buildAssetUrlWithReturn = it?._locals?.functions?.buildAssetUrlWithReturn
 var assetHref = typeof buildAssetUrlWithReturn === 'function'
-  ? buildAssetUrlWithReturn(assetId, String(it?.info?.title ?? ''), it?.sourceUrl ?? '')
-  : `/asset/${assetId}`
+  ? buildAssetUrlWithReturn(linkId, String(it?.info?.title ?? ''), it?.sourceUrl ?? '')
+  : `/asset/${linkId}`
 
 var upvotes = Number(it?.info?.upvotes) || 0
 var downvotes = Number(it?.info?.downvotes) || 0
 var total = upvotes + downvotes
 var approval = total > 0 ? Math.round((upvotes / total) * 100) : 0
+// Store assets carry an upstream net-vote score. Surface it on cards only
+// when there are no LOCAL ratings, and always mark it so it can't be confused
+// with a review on this site.
+var storeScore = it?.info?.provider === 'godot_store' && it?.info?.source_rating?.score != null
+  ? Number(it.info.source_rating.score)
+  : null
+var storeScoreDisplay = storeScore !== null ? `${storeScore >= 0 ? '+' : ''}${storeScore}` : ''
 var ratingDetail = total > 0
   ? `${approval}% approval (${upvotes} positive, ${downvotes} negative)`
-  : 'No ratings yet'
+  : (storeScore !== null
+      ? `No local ratings yet; Godot Asset Store score ${storeScoreDisplay}`
+      : 'No ratings yet')
 %>
 
 <article class="asset-card <%= it?.featured ? 'featured' : 'normal' %>" id="asset-<%= assetId %>">
@@ -28,23 +40,28 @@ var ratingDetail = total > 0
         title="See assets in this category"><%= it?.info?.category ?? 'ERR' %></a>
       <a class="badge badge-purple" href="<%= it?._locals?.functions?.buildEnginePath(it?.info?.godot_version) %>"
         title="See assets for this engine version"><%= it?.info?.godot_version ?? 'ERR' %></a>
+      <% if (it?.info?.provider === 'godot_store') { %>
+      <a class="badge badge-store" href="/search/?source=godot_store" title="See Godot Asset Store assets">Store</a>
+      <% } else if (it?.info?.provider === 'godot_asset_library') { %>
+      <a class="badge badge-legacy" href="/search/?source=godot_asset_library" title="See Legacy Asset Library assets">Library</a>
+      <% } %>
       <% if (it?._locals?.loggedIn === true) { %>
       <div class="dropdown no-text-select" onclick="window.godotLibrary.dropdown.showContent(event, this)">
         <span class="iconify" data-icon="akar-icons:more-horizontal" aria-hidden="true"></span>
         <div class="options">
           <% if (it?.info?.saved === true) { %>
-          <a href="#" data-save-asset="<%= assetId %>" data-saved="true" title="Unsave asset">Unsave</a>
+          <a href="#" data-save-asset="<%= linkId %>" data-saved="true" title="Unsave asset">Unsave</a>
           <% } else { %>
-          <a href="#" data-save-asset="<%= assetId %>" data-saved="false" title="Save asset">Save</a>
+          <a href="#" data-save-asset="<%= linkId %>" data-saved="false" title="Save asset">Save</a>
           <% } %>
           <% if (it?._locals?.role === 'admin') { %>
           <% if (it?.info?.featured === true) { %>
-          <a href="/admin/feature-post/<%= assetId %>"
-            onclick="window.godotLibrary.dropdown.callRouteAjax(event, '/admin/feature-post/<%= assetId %>', 'Post successfully featured')"
+          <a href="/admin/feature-post/<%= linkId %>"
+            onclick="window.godotLibrary.dropdown.callRouteAjax(event, '/admin/feature-post/<%= linkId %>', 'Post successfully featured')"
             title="Remove from 'Assets We Love' on homepage">Unfeature</a>
           <% } else { %>
-          <a href="/admin/feature-post/<%= assetId %>"
-            onclick="window.godotLibrary.dropdown.callRouteAjax(event, '/admin/feature-post/<%= assetId %>', 'Post successfully featured')"
+          <a href="/admin/feature-post/<%= linkId %>"
+            onclick="window.godotLibrary.dropdown.callRouteAjax(event, '/admin/feature-post/<%= linkId %>', 'Post successfully featured')"
             title="Add to 'Assets We Love' on homepage">Feature</a>
           <% } %>
           <% } %>
@@ -106,6 +123,10 @@ var ratingDetail = total > 0
         <% if (total > 0) { %>
         <span class="iconify" data-icon="bi:hand-thumbs-up-fill" aria-hidden="true"></span>
         <%= `${approval}% approval · ${total} rating${total === 1 ? '' : 's'}` %>
+        <% } else if (storeScore !== null) { %>
+        <span class="store-score" title="No local ratings yet · score from the Godot Asset Store">
+          Store score <%= storeScoreDisplay %><span class="store-score-asterisk" aria-hidden="true">*</span>
+        </span>
         <% } else { %>
         No ratings yet
         <% } %>
