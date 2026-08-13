@@ -270,6 +270,20 @@ describe('setPreferredVariant', () => {
       /No godot_store variant found/
     )
   })
+
+  it('does not clear the current preferred flag when the requested provider is missing', async () => {
+    const legacy = legacyDoc('legacy1', { group_preferred: true })
+    const { db, docs } = makeFakeDb([legacy])
+    await assert.rejects(
+      async () => { await setPreferredVariant(db, 'legacy1', GODOT_STORE_PROVIDER) },
+      /No godot_store variant found/
+    )
+    // The failed request must leave the existing preferred variant intact
+    // (the group must never be left with NO preferred variant).
+    const legacyAfter = docs.find(d => d.asset_id === 'legacy1')
+    assert.ok(legacyAfter !== undefined)
+    assert.equal(legacyAfter.group_preferred, true)
+  })
 })
 
 describe('rejectStoreLinkSuggestion', () => {

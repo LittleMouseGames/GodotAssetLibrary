@@ -4,6 +4,7 @@ import {
   classifyCacheControl,
   isPubliclyCacheablePath,
   buildPublicCacheControl,
+  buildHomepageCacheControl,
   PUBLIC_CACHE_POLICY
 } from '../src/core/utils/httpCachePolicy'
 
@@ -59,9 +60,18 @@ describe('isPubliclyCacheablePath', () => {
 
 describe('classifyCacheControl', () => {
   it('applies the aggressive public policy to eligible anonymous requests', () => {
-    assert.equal(classifyCacheControl(req('GET', '/', {})), buildPublicCacheControl())
     assert.equal(classifyCacheControl(req('GET', '/asset/abc-123/my-slug', {})), buildPublicCacheControl())
     assert.equal(classifyCacheControl(req('GET', '/search/', { page: '2' })), buildPublicCacheControl())
+  })
+
+  it('always revalidates the homepage so curated feature changes appear on refresh', () => {
+    const control = classifyCacheControl(req('GET', '/', {}))
+    assert.equal(control, buildHomepageCacheControl())
+    assert.ok(control?.includes('max-age=0'), control ?? '')
+    assert.ok(control?.includes('must-revalidate'), control ?? '')
+    assert.ok(control?.includes('s-maxage=300'), control ?? '')
+    // No stale-while-revalidate: the browser must never serve stale HTML.
+    assert.ok(!control?.includes('stale-while-revalidate'), control ?? '')
   })
 
   it('keeps version-cookie requests browser-only, not shared', () => {

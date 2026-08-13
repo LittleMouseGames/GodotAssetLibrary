@@ -113,4 +113,403 @@
       }
     }
   }
+
+  // --- Homepage hero carousel (curated featured assets) -------------------
+  // Steam-style split panel: large artwork on the left, a fixed dark details
+  // panel on the right. Slides stack absolutely so only the active one paints;
+  // the first slide works with JavaScript disabled (inactive slides carry the
+  // `hidden` attribute, which JS removes on init so it can crossfade).
+  .home-hero {
+    position: relative;
+    margin-top: 0;
+    border-radius: 6px;
+    overflow: hidden;
+    box-shadow: $standard-shadow;
+    background: var(--hero-bg);
+    color: var(--text-on-inverse);
+
+    .hero-viewport {
+      position: relative;
+      height: 400px;
+
+      @include small-desktop-styles {
+        height: 420px;
+      }
+
+      @include mobile-styles {
+        height: 480px;
+      }
+    }
+
+    .hero-slide {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      grid-template-columns: minmax(0, 5fr) minmax(0, 4fr);
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity $duration-slow $ease-standard, visibility $duration-slow $ease-standard;
+      background: var(--hero-bg);
+
+      &.active {
+        opacity: 1;
+        visibility: visible;
+        z-index: 1;
+      }
+
+      // Server/no-JS state: only the first slide is visible.
+      &[hidden] {
+        display: none;
+      }
+
+      @include mobile-styles {
+        grid-template-columns: 1fr;
+        grid-template-rows: minmax(200px, 42%) 1fr;
+      }
+    }
+
+    .hero-art {
+      position: relative;
+      min-width: 0;
+
+      img {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+      }
+
+      @include mobile-styles {
+        min-height: 0;
+      }
+    }
+
+    .hero-info {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 10px;
+      // Extra right padding keeps the info text clear of the large side
+      // arrow that sits on the hero's right edge (Steam-style carousel).
+      padding: 28px 64px 28px 32px;
+      min-width: 0;
+      overflow-y: auto;
+
+      @include mobile-styles {
+        padding: 16px 18px;
+      }
+    }
+
+    .hero-eyebrow {
+      @include inter-like-font();
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text-on-inverse-muted);
+    }
+
+    .hero-title {
+      @include inter-like-font();
+      margin: 0;
+      font-size: 26px;
+      font-weight: 700;
+      line-height: 1.2;
+
+      a {
+        color: var(--text-on-inverse);
+        text-decoration: none;
+
+        &:hover {
+          text-decoration: underline;
+        }
+      }
+
+      @include mobile-styles {
+        font-size: 20px;
+      }
+    }
+
+    .hero-author {
+      @include inter-like-font();
+      font-size: 13px;
+      color: var(--text-on-inverse-muted);
+    }
+
+    .hero-description {
+      @include inter-like-font();
+      margin: 0;
+      font-size: 14px;
+      line-height: 1.5;
+      color: var(--text-on-inverse);
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .hero-meta {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 6px;
+      margin-top: 2px;
+    }
+
+    .hero-badge,
+    .hero-rating {
+      @include inter-like-font();
+      display: inline-flex;
+      align-items: center;
+      height: 25px;
+      padding: 0 10px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 600;
+      white-space: nowrap;
+      text-decoration: none;
+    }
+
+    .hero-badge-category {
+      background: #2081db;
+      color: #ffffff;
+    }
+
+    .hero-badge-version {
+      background: #8e44ad;
+      color: #ffffff;
+    }
+
+    .hero-badge-store {
+      background: #1f9d8f;
+      color: #ffffff;
+    }
+
+    .hero-badge-legacy {
+      background: #475569;
+      color: #ffffff;
+    }
+
+    .hero-rating {
+      background: var(--surface-subtle);
+      color: var(--text-primary);
+    }
+
+    .hero-cta {
+      @include inter-like-font();
+      align-self: flex-start;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      height: 38px;
+      padding: 0 22px;
+      border-radius: 6px;
+      // The hero panel is black in BOTH themes, so a fixed brand-blue button
+      // reads clearly on light and dark without the near-black primary button
+      // color blending into the panel on the light theme.
+      background: #2081db;
+      color: #ffffff;
+      font-size: 14px;
+      font-weight: 600;
+      text-decoration: none;
+      margin-top: 6px;
+
+      &:hover {
+        filter: brightness(1.1);
+      }
+    }
+
+    // Carousel controls.
+    .hero-arrow,
+    .hero-play {
+      @include inter-like-font();
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+      margin: 0;
+      min-width: 0;
+      // The global button rule sets min-height: 44px; reset it so the
+      // carousel controls keep their explicit sizes (dots would otherwise
+      // render as tall pills).
+      min-height: 0;
+      border: 1px solid rgba(255, 255, 255, 0.35);
+      background: rgba(0, 0, 0, 0.45);
+      color: #ffffff;
+      line-height: 1;
+      cursor: pointer;
+
+      &:hover {
+        background: rgba(255, 255, 255, 0.2);
+      }
+
+      &:focus-visible {
+        outline: 2px solid #ffffff;
+        outline-offset: 2px;
+      }
+    }
+
+    // Large side arrows, vertically centered over the hero edges (Steam-style
+    // carousel). The info panel's right padding keeps text clear of the next
+    // arrow; on mobile they sit over the artwork instead of the details panel.
+    .hero-arrow {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 3;
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      font-size: 24px;
+    }
+
+    .hero-prev {
+      left: 12px;
+    }
+
+    .hero-next {
+      right: 12px;
+    }
+
+    @include mobile-styles {
+      .hero-arrow {
+        // On the stacked layout the artwork occupies the top ~42%, so center
+        // the arrows over the artwork instead of over the details panel.
+        top: 21%;
+        width: 40px;
+        height: 40px;
+        font-size: 18px;
+      }
+
+      .hero-prev {
+        left: 8px;
+      }
+
+      .hero-next {
+        right: 8px;
+      }
+    }
+
+    // Bottom bar: centered dots + the pause/play control.
+    .hero-controls {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 18px;
+      z-index: 2;
+      background: linear-gradient(to top, rgba(0, 0, 0, 0.55), rgba(0, 0, 0, 0));
+      // The gradient bar itself must never intercept a pointer; only the dots
+      // and the pause/play button are interactive (defence-in-depth so a click
+      // near the controls can never fall through to a slide link).
+      pointer-events: none;
+
+      .hero-dots,
+      .hero-play {
+        pointer-events: auto;
+      }
+
+      @include mobile-styles {
+        padding: 12px 14px;
+      }
+    }
+
+    .hero-dots {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .hero-dot {
+      padding: 0;
+      margin: 0;
+      min-width: 0;
+      min-height: 0;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      border: 1px solid rgba(255, 255, 255, 0.6);
+      background: rgba(255, 255, 255, 0.3);
+      cursor: pointer;
+
+      &.active {
+        background: #ffffff;
+        border-color: #ffffff;
+      }
+
+      &:focus-visible {
+        outline: 2px solid #ffffff;
+        outline-offset: 2px;
+      }
+    }
+
+    .hero-play {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      font-size: 16px;
+
+      // Clear pressed-state feedback: the JS swaps the pause/play icon and
+      // this brightens the control while rotation is paused.
+      &[aria-pressed="false"] {
+        background: rgba(255, 255, 255, 0.28);
+        border-color: rgba(255, 255, 255, 0.6);
+      }
+    }
+
+    .hero-status {
+      @include inter-like-font();
+      position: absolute;
+      right: 16px;
+      top: 12px;
+      z-index: 2;
+      font-size: 12px;
+      color: var(--text-on-inverse);
+      text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
+    }
+
+    // Zero-slide fallback hero (no curated assets).
+    .hero-fallback {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      justify-content: center;
+      gap: 12px;
+      min-height: 300px;
+      padding: 40px 48px;
+      background: var(--hero-bg);
+
+      @include mobile-styles {
+        padding: 28px 22px;
+        min-height: 240px;
+      }
+    }
+
+    .hero-fallback-title {
+      @include inter-like-font();
+      margin: 0;
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--text-on-inverse);
+
+      @include mobile-styles {
+        font-size: 22px;
+      }
+    }
+
+    .hero-fallback-text {
+      @include inter-like-font();
+      margin: 0;
+      font-size: 15px;
+      color: var(--text-on-inverse-muted);
+    }
+  }
 }

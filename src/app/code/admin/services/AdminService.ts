@@ -1,22 +1,23 @@
 import { Request, Response } from 'express'
-import { GetDoesPostExistById } from 'app/code/asset/models/GET/GetDoesPostExistById'
 import striptags from 'striptags'
-import { GetAssetsByIdList } from '../models/GET/GetAssetsByIdList'
 import { GetReviewReportList } from '../models/GET/GetReviewReportList'
 import { GetFeaturedAssets } from '../models/GET/GetFeaturedAssets'
+import { GetFeaturedAssetDocs } from '../models/GET/GetFeaturedAssetDocs'
 import { GetSiteRestrictions } from '../models/GET/GetSiteRestrictions'
 import { GetSiteFiles, SiteFileEntry } from '../models/GET/GetSiteFiles'
 import { GetSiteHead } from '../models/GET/GetSiteHead'
 import { UpdateAssetSetFeatured } from '../models/UPDATE/UpdateAssetSetFeatured'
 import { UpdateFeaturedAssetsAdd } from '../models/UPDATE/UpdateFeaturedAssetsAdd'
 import { UpdateFeaturedAssetsRemove } from '../models/UPDATE/UpdateFeaturedAssetsRemove'
+import { UpdateFeaturedAssetsOrder } from '../models/UPDATE/UpdateFeaturedAssetsOrder'
 import { UpdatePromobarMessage } from '../models/UPDATE/UpdatePromobarMessage'
 import { UpdateSiteRestrictions } from '../models/UPDATE/UpdateSiteRestrictions'
 import { UpdateSiteFiles } from '../models/UPDATE/UpdateSiteFiles'
 import { UpdateSiteHead } from '../models/UPDATE/UpdateSiteHead'
 import { invalidateSiteFileCache } from 'core/utils/siteFiles'
 import { invalidateSiteHeadCache } from 'core/utils/siteHead'
-import { invalidateAssetCache } from 'core/utils/dragonfly'
+import { invalidateAssetCache, invalidateHomepageCache } from 'core/utils/dragonfly'
+import { resolveCuratedProjects, resolveFeaturedAdminRows, HERO_MAX_SLIDES } from 'core/utils/homepageHero'
 import { GetReviewsByIdList } from '../models/GET/GetReviewsByIdList'
 import { UpdateReportIgnoreById } from '../models/UPDATE/UpdateReportIgnoreById'
 import { GetReportById } from '../models/GET/GetReportById'
@@ -73,29 +74,25 @@ export class AdminService {
     })
   }
 
-  public async renderFeatured (req: Request, res: Response): Promise<void> {
-    const { limit, skip } = parsePagination(req.query.limit, req.query.page)
-    const sort = striptags(String(req.query.sort ?? 'relevance'))
-    const sortMap: {[key: string]: any} = {
-      relevance: {},
-      asset_rating: { upvotes: -1 },
-      newest: { added_date: -1 },
-      last_modified: { modify_date: -1 }
-    }
-
-    if (sort !== 'undefined' && !(sort in sortMap)) {
-      throw new Error('Invalid sort parameter, expeting nothing, `relevance`, `rating`, `newest`, or `last_modified`')
-    }
-
-    const featuredAssetList = await GetFeaturedAssets() ?? []
-    const assets = await GetAssetsByIdList(featuredAssetList, limit, skip, sortMap[sort])
+  public async renderFeatured (_req: Request, res: Response): Promise<void> {
+    // The Homepage Hero is an ordered, group-aware curation list — not a
+    // paginated catalog. Load every curated project (all variants) and resolve
+    // the ordered admin rows so curators can see position, provider and any
+    // missing/unavailable projects.
+    const featuredAssetList = await GetFeaturedAssets()
+    const docs = await GetFeaturedAssetDocs(featuredAssetList)
+    const rows = resolveFeaturedAdminRows(featuredAssetList, docs)
 
     const pageBanner = {
-      title: 'Featured Assets',
-      info: 'View all featured assets on the site'
+      title: 'Homepage Hero',
+      info: 'Curate the featured assets shown in the homepage hero carousel (up to 8)'
     }
 
-    return res.render('templates/pages/admin/featured', { grid: assets, params: req.originalUrl, pageBanner: pageBanner })
+    return res.render('templates/pages/admin/featured', {
+      rows: rows,
+      heroMax: HERO_MAX_SLIDES,
+      pageBanner: pageBanner
+    })
   }
 
   public async renderReports (req: Request, res: Response): Promise<void> {
@@ -255,30 +252,60 @@ export class AdminService {
   }
 
   public async featureAsset (req: Request, res: Response): Promise<void> {
-    const asset = striptags(req.params.id ?? '')
+    const rawId = striptags(req.params.id ?? '')
 
-    if (asset === '') {
+    if (rawId === '') {
       throw new Error('Missing asset id')
     }
 
-    if (!(await GetDoesPostExistById(asset))) {
+    // Resolve whatever id the card/PDP sent (variant id or root id) to the
+    // canonical project group so linked variants stay curated as ONE project.
+    const doc = await GetAssetAdminView(rawId)
+    if (doc === null) {
       throw new Error('Asset not found')
     }
 
-    try {
-      const featuredAssets = await GetFeaturedAssets()
+    const groupId = String(doc.group_id ?? doc.asset_id ?? rawId)
+    const featuredAssets = await GetFeaturedAssets()
 
-      if (featuredAssets?.includes(asset)) {
-        await UpdateFeaturedAssetsRemove(asset)
-        await UpdateAssetSetFeatured(asset, false)
-      } else {
-        await UpdateFeaturedAssetsAdd(asset)
-        await UpdateAssetSetFeatured(asset, true)
-      }
-    } catch (e) {
-      await UpdateFeaturedAssetsAdd(asset)
-      await UpdateAssetSetFeatured(asset, true)
+    if (featuredAssets.includes(groupId)) {
+      await UpdateFeaturedAssetsRemove(groupId)
+      await UpdateAssetSetFeatured(groupId, false)
+    } else {
+      await UpdateFeaturedAssetsAdd(groupId)
+      await UpdateAssetSetFeatured(groupId, true)
     }
+
+    // The homepage hero and the `?featured=true` search filter changed; drop
+    // every cached homepage variant across the cluster so the change is
+    // reflected immediately (the epoch fence prevents a stale in-flight fill).
+    await invalidateHomepageCache()
+
+    res.send()
+  }
+
+  /** POST: save the full Homepage Hero order (DOM order defines slide order). */
+  public async updateFeaturedOrder (req: Request, res: Response): Promise<void> {
+    const raw = req.body.featured_group_id
+    const submitted = (Array.isArray(raw) ? raw : (raw === undefined ? [] : [raw]))
+      .map((value: unknown) => striptags(String(value ?? '')).trim())
+      .filter((value: string) => value !== '')
+
+    if (submitted.length > HERO_MAX_SLIDES) {
+      throw new Error(`Homepage hero supports at most ${HERO_MAX_SLIDES} projects`)
+    }
+
+    // Canonicalize every submitted id to its group root and reject unknown ids
+    // (they would otherwise be silently dropped, hiding a broken curation).
+    const docs = await GetFeaturedAssetDocs(submitted)
+    const { refs, missingIds } = resolveCuratedProjects(submitted, docs)
+    if (missingIds.length > 0) {
+      throw new Error(`Unknown project id(s): ${missingIds.join(', ')}`)
+    }
+
+    const orderedIds = refs.map(ref => ref.groupId)
+    await UpdateFeaturedAssetsOrder(orderedIds)
+    await invalidateHomepageCache()
 
     res.send()
   }
@@ -333,9 +360,12 @@ export class AdminService {
       'admin'
     )
 
-    // Invalidate the group's cached pages across workers.
+    // Invalidate the group's cached pages across workers. Linking can change
+    // a project's display variant, title, artwork and version compatibility,
+    // so the homepage hero must be dropped too.
     await invalidateAssetCache(legacyAssetId)
     await invalidateAssetCache(storeAssetId)
+    await invalidateHomepageCache()
     res.send()
   }
 
@@ -351,6 +381,8 @@ export class AdminService {
     await unlinkStoreFromLegacy(MongoHelper.getDatabase(), storeAssetId)
     await invalidateAssetCache(groupId)
     await invalidateAssetCache(storeAssetId)
+    // Unlinking can split/restore a project group; refresh the homepage hero.
+    await invalidateHomepageCache()
     res.send()
   }
 
@@ -364,6 +396,8 @@ export class AdminService {
 
     await setPreferredVariant(MongoHelper.getDatabase(), groupId, provider)
     await invalidateAssetCache(groupId)
+    // The preferred variant drives a hero slide's title/artwork/compatibility.
+    await invalidateHomepageCache()
     res.send()
   }
 

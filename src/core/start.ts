@@ -11,7 +11,7 @@ import { runGenerateSitemap } from 'app/utilities/sitemapGenerator/jobs/generate
 import { getWorkerCount } from 'core/utils/clusterConfig'
 import { invalidateSiteFileCacheLocally, primeSiteFilesCache } from 'core/utils/siteFiles'
 import { invalidateSiteHeadCacheLocally, primeSiteHeadCache } from 'core/utils/siteHead'
-import { disconnectDragonfly } from 'core/utils/dragonfly'
+import { disconnectDragonfly, invalidateHomepageCacheLocally } from 'core/utils/dragonfly'
 
 process.on('uncaughtException', (err) => {
   console.error('Uncaught Exception:', err)
@@ -141,6 +141,10 @@ if (cluster.isPrimary) {
         for (const id of Object.keys(cluster.workers ?? {})) {
           cluster.workers?.[id]?.send({ type: 'invalidate-site-files' })
         }
+      } else if (msg?.type === 'invalidate-homepage-cache') {
+        for (const id of Object.keys(cluster.workers ?? {})) {
+          cluster.workers?.[id]?.send({ type: 'invalidate-homepage-cache' })
+        }
       } else if (msg?.type === 'telemetry-snapshot' && msg.snapshot !== undefined) {
         telemetrySnapshots.set(worker.id, msg.snapshot)
         const aggregate = telemetry.aggregateSnapshots([...telemetrySnapshots.values()])
@@ -215,6 +219,8 @@ if (cluster.isPrimary) {
       invalidateSiteHeadCacheLocally()
     } else if (msg?.type === 'invalidate-site-files') {
       invalidateSiteFileCacheLocally()
+    } else if (msg?.type === 'invalidate-homepage-cache') {
+      invalidateHomepageCacheLocally()
     } else if (msg?.type === 'telemetry-cluster' && msg.aggregate !== undefined) {
       telemetry.setClusterSnapshot(msg.aggregate)
     }

@@ -1,12 +1,13 @@
 import { MongoHelper } from 'core/MongoHelper'
 
-export async function UpdateFeaturedAssetsRemove (assetId: string): Promise<void> {
+/** Remove a project (by canonical group id) from the homepage-hero list. */
+export async function UpdateFeaturedAssetsRemove (groupId: string): Promise<void> {
   const mongo = MongoHelper.getDatabase()
   const operationObject = await mongo.collection('info').updateOne({
     type: 'featured_assets'
   }, {
     $pull: {
-      featured_assets: assetId
+      featured_assets: groupId
     }
   })
 

@@ -209,6 +209,13 @@ export async function unlinkStoreFromLegacy (db: Db, storeAssetId: string): Prom
 /** Set which provider's variant in a group is the discovery-preferred one. */
 export async function setPreferredVariant (db: Db, groupId: string, provider: string): Promise<void> {
   const assets = db.collection('assets')
+  // Verify the requested provider variant actually exists BEFORE clearing any
+  // preferred flags, so a bad request can never leave the group with no
+  // preferred variant at all.
+  const target = await assets.findOne({ group_id: groupId, provider }, { projection: { _id: 1 } })
+  if (target == null) {
+    throw new Error(`No ${provider} variant found in group ${groupId}`)
+  }
   await assets.updateMany(
     { group_id: groupId },
     { $set: { group_preferred: false } }

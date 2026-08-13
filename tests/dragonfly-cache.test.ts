@@ -4,6 +4,11 @@ import {
   cacheGetOrLoad,
   buildAssetCacheKey,
   buildAllAssetCacheKeys,
+  buildHomepageCacheKey,
+  buildAllHomepageCacheKeys,
+  buildHomepageEpochKey,
+  getHomepageEpoch,
+  invalidateHomepageCache,
   buildUserContextCacheKey,
   buildAssetEpochKey,
   buildEnvelope,
@@ -63,6 +68,49 @@ describe('Dragonfly cache', () => {
   it('builds a stable user context cache key', () => {
     assert.equal(buildUserContextCacheKey('tok-1'), 'gda:v1:userctx:tok-1')
     assert.equal(buildUserContextCacheKey('tok-1'), buildUserContextCacheKey('tok-1'))
+  })
+
+  it('builds major-partitioned homepage cache keys', () => {
+    assert.equal(buildHomepageCacheKey(4), 'gda:v2:homepage:4')
+    assert.equal(buildHomepageCacheKey(undefined), 'gda:v2:homepage:all')
+    assert.equal(buildHomepageCacheKey(4), buildHomepageCacheKey(4))
+    assert.notEqual(buildHomepageCacheKey(4), buildHomepageCacheKey(3))
+  })
+
+  it('returns every homepage cache variant exactly once for invalidation', () => {
+    const variants = buildAllHomepageCacheKeys()
+    assert.equal(variants.length, 4)
+    assert.deepEqual(
+      [...variants].sort(),
+      [
+        'gda:v2:homepage:2',
+        'gda:v2:homepage:3',
+        'gda:v2:homepage:4',
+        'gda:v2:homepage:all'
+      ].sort()
+    )
+  })
+
+  it('builds a stable global homepage epoch key', () => {
+    assert.equal(buildHomepageEpochKey(), 'gda:v2:homepageepoch:global')
+    assert.equal(buildHomepageEpochKey(), buildHomepageEpochKey())
+  })
+
+  it('homepage epoch and invalidation fail open while the cache is disabled', async () => {
+    const previous = process.env.CACHE_ENABLED
+    process.env.CACHE_ENABLED = 'false'
+    try {
+      assert.equal(await getHomepageEpoch(), null)
+      // Must not throw even though Dragonfly is unavailable.
+      await invalidateHomepageCache()
+      assert.equal(await getHomepageEpoch(), null)
+    } finally {
+      if (previous === undefined) {
+        delete process.env.CACHE_ENABLED
+      } else {
+        process.env.CACHE_ENABLED = previous
+      }
+    }
   })
 })
 

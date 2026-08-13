@@ -5,9 +5,12 @@
   moduleName: 'homepage',
   image: 'https://godotassetlibrary.com/images/logo-image.png?cache=' + (it?._locals?.buildString ?? '')
 } %>
+<% it.hidePageBanner = true %>
 <% layout('templates/components/layouts/promobar-nav-body-footer/promobar-nav-body-footer.eta') %>
 
 <section class="page-home">
+  <%~ includeFile('templates/pages/homepage/components/hero-carousel.eta', { heroAssets: it?.heroAssets ?? [], _locals: it?._locals }) %>
+
   <section>
     <div class="section-head">
       <h2>Recently Updated</h2>
@@ -21,22 +24,6 @@
       <% } else { %>
       <p class="section-empty">No recently updated assets right now. <a href="/search/?sort=asset_rating">See popular
           assets</a></p>
-      <% } %>
-    </div>
-  </section>
-
-  <section>
-    <div class="section-head">
-      <h2>Assets we Love</h2>
-      <a class="view-all" href="/search/" title="Browse all assets">View all</a>
-    </div>
-    <div class="container three-wide">
-      <% if (it.featuredAssets?.length > 0) { %>
-      <% it.featuredAssets.forEach(info => { %>
-      <%~ includeFile('templates/components/partials/asset-card/asset-card.eta', { info: info, _locals: it?._locals, featured: true }) %>
-      <% }) %>
-      <% } else { %>
-      <p class="section-empty">No curated assets yet. <a href="/search/?sort=asset_rating">See popular assets</a></p>
       <% } %>
     </div>
   </section>
