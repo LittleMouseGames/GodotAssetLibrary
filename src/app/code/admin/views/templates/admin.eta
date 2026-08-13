@@ -75,38 +75,6 @@
       </template>
       <button type="button" id="site-file-add" class="site-file-add"
         onclick="window.godotLibrary.siteFiles.addRow()">Add file</button>
-      <h2>Custom Head Elements</h2>
-      <p class="site-file-hint">
-        Inject raw HTML elements into the document <code>&lt;head&gt;</code> on every page.
-        Each entry is one element. Allowed tags:
-        <code>meta</code>, <code>link</code>, <code>script</code>, <code>noscript</code>,
-        <code>style</code>, <code>base</code>, <code>title</code>.
-        Elements are saved and served in the order entered. Saving replaces the whole set.
-      </p>
-      <div id="custom-head-elements">
-        <% it?.customHeadElements?.forEach(el => { %>
-        <div class="custom-head-element-row">
-          <div class="input-container">
-            <textarea class="input" name="custom_head_element[]" rows="3" placeholder=" "><%= el ?? '' %></textarea>
-            <label class="placeholder">Element HTML</label>
-          </div>
-          <button type="button" class="site-file-remove"
-            onclick="this.closest('.custom-head-element-row').remove()" aria-label="Remove this element">Remove</button>
-        </div>
-        <% }) %>
-      </div>
-      <template id="custom-head-element-row-template">
-        <div class="custom-head-element-row">
-          <div class="input-container">
-            <textarea class="input" name="custom_head_element[]" rows="3" placeholder=" "></textarea>
-            <label class="placeholder">Element HTML</label>
-          </div>
-          <button type="button" class="site-file-remove"
-            onclick="this.closest('.custom-head-element-row').remove()" aria-label="Remove this element">Remove</button>
-        </div>
-      </template>
-      <button type="button" id="custom-head-element-add" class="site-file-add"
-        onclick="window.godotLibrary.customHeadElements.addRow()">Add element</button>
       <div class="disclaimer">
         By submitting this form you agree to our
         <a href="/terms/privacy-policy">Privacy Policy</a> and
