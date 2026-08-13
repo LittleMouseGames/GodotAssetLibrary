@@ -1,0 +1,98 @@
+<%
+var generateProxyUrl = it?._locals?.functions?.generateProxyUrl
+var buildAssetUrl = it?._locals?.functions?.buildAssetUrl
+var buildCategoryPath = it?._locals?.functions?.buildCategoryPath
+var buildEnginePath = it?._locals?.functions?.buildEnginePath
+var heroAssets = it?.heroAssets ?? []
+var slideCount = heroAssets.length
+%>
+
+<section class="home-hero"
+  <% if (slideCount > 0) { %>role="region" aria-roledescription="carousel" aria-label="Featured Godot assets" data-hero-carousel<% } %>
+  <% if (slideCount > 1) { %>data-hero-autoplay="7000"<% } %>>
+  <h1 class="visually-hidden">Featured Godot assets</h1>
+
+  <% if (slideCount === 0) { %>
+  <div class="hero-fallback">
+    <h2 class="hero-fallback-title">Discover Godot assets for your next project</h2>
+    <p class="hero-fallback-text">Browse free and community-made assets from the Godot community.</p>
+    <a class="hero-cta" href="/search/" title="Browse all assets">Browse assets</a>
+  </div>
+  <% } else { %>
+  <div class="hero-viewport" data-hero-viewport>
+    <% heroAssets.forEach((slide, index) => { %>
+    <%
+    var active = index === 0
+    var heroHref = typeof buildAssetUrl === 'function'
+      ? buildAssetUrl(slide.groupId, slide.canonicalTitle)
+      : ('/asset/' + slide.groupId)
+    %>
+    <div class="hero-slide<% if (active) { %> active<% } %>" role="group"
+      aria-roledescription="slide" aria-label="<%= index + 1 %> of <%= slideCount %>"
+      data-hero-slide="<%= index %>"<% if (!active) { %> hidden<% } %>>
+      <div class="hero-art">
+        <% if (active) { %>
+        <img src="<%= generateProxyUrl(slide.image, 960, 540) %>"
+          srcset="<%= generateProxyUrl(slide.image, 480, 270) %> 480w, <%= generateProxyUrl(slide.image, 640, 360) %> 640w, <%= generateProxyUrl(slide.image, 960, 540) %> 960w, <%= generateProxyUrl(slide.image, 1280, 720) %> 1280w"
+          sizes="(min-width: 768px) 55vw, 100vw"
+          data-fallback-image="<%= slide.fallbackImage %>" alt="" width="960" height="540"
+          fetchpriority="high" decoding="async">
+        <% } else { %>
+        <img src="<%= generateProxyUrl(slide.image, 40, 23) %>"
+          data-src="<%= generateProxyUrl(slide.image, 960, 540) %>"
+          data-srcset="<%= generateProxyUrl(slide.image, 480, 270) %> 480w, <%= generateProxyUrl(slide.image, 640, 360) %> 640w, <%= generateProxyUrl(slide.image, 960, 540) %> 960w, <%= generateProxyUrl(slide.image, 1280, 720) %> 1280w"
+          data-sizes="auto"
+          data-fallback-image="<%= slide.fallbackImage %>" alt="" width="960" height="540"
+          class="lazyload" decoding="async">
+        <% } %>
+      </div>
+      <div class="hero-info">
+        <span class="hero-eyebrow">Featured</span>
+        <h2 class="hero-title"><a href="<%= heroHref %>" title="View <%= slide.title %>"><%= slide.title %></a></h2>
+        <span class="hero-author">by <%= slide.author %></span>
+        <p class="hero-description"><%= slide.description %></p>
+        <div class="hero-meta">
+          <% if (slide.category) { %>
+          <a class="hero-badge hero-badge-category" href="<%= buildCategoryPath(slide.category) %>"
+            title="See assets in this category"><%= slide.category %></a>
+          <% } %>
+          <% if (slide.godotVersion) { %>
+          <a class="hero-badge hero-badge-version" href="<%= buildEnginePath(slide.godotVersion) %>"
+            title="See assets for this engine version"><%= slide.godotVersion %></a>
+          <% } %>
+          <% if (slide.provider === 'godot_store') { %>
+          <span class="hero-badge hero-badge-store" title="Godot Asset Store asset">Store</span>
+          <% } else if (slide.provider === 'godot_asset_library') { %>
+          <span class="hero-badge hero-badge-legacy" title="Legacy Asset Library asset">Library</span>
+          <% } %>
+          <% if (slide.ratingTotal > 0) { %>
+          <span class="hero-rating"
+            title="<%= slide.ratingApproval %>% approval (<%= slide.ratingTotal %> ratings)"><%= slide.ratingApproval %>% approval</span>
+          <% } %>
+        </div>
+        <a class="hero-cta" href="<%= heroHref %>" title="Open <%= slide.title %> details">View asset</a>
+      </div>
+    </div>
+    <% }) %>
+  </div>
+
+  <% if (slideCount > 1) { %>
+  <button type="button" class="hero-arrow hero-prev" data-hero-prev
+    aria-label="Previous featured asset"><span aria-hidden="true">&#8249;</span></button>
+  <button type="button" class="hero-arrow hero-next" data-hero-next
+    aria-label="Next featured asset"><span aria-hidden="true">&#8250;</span></button>
+  <div class="hero-controls">
+    <div class="hero-dots" data-hero-dots>
+      <% heroAssets.forEach((slide, index) => { %>
+      <button type="button" class="hero-dot<% if (index === 0) { %> active<% } %>"
+        data-hero-dot="<%= index %>" aria-label="Go to slide <%= index + 1 %>"
+        <% if (index === 0) { %>aria-current="true"<% } %>></button>
+      <% }) %>
+    </div>
+    <button type="button" class="hero-play" data-hero-play aria-pressed="true"
+      aria-label="Pause automatic rotation"><span class="iconify" data-icon="akar-icons:pause" aria-hidden="true"></span></button>
+  </div>
+  <div class="hero-status" data-hero-status aria-live="polite" role="status"></div>
+  <% } %>
+  <% } %>
+</section>
