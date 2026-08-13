@@ -57,11 +57,11 @@ var ratingDetail = total > 0
           <% if (it?._locals?.role === 'admin') { %>
           <% if (it?.info?.featured === true) { %>
           <a href="/admin/feature-post/<%= linkId %>"
-            onclick="window.godotLibrary.dropdown.callRouteAjax(event, '/admin/feature-post/<%= linkId %>', 'Removed from homepage hero')"
+            onclick="window.godotLibrary.dropdown.callRouteAjax(event, '/admin/feature-post/<%= linkId %>', 'Removed from homepage hero', undefined, 'post')"
             title="Remove from 'Homepage Hero' featured carousel">Unfeature</a>
           <% } else { %>
           <a href="/admin/feature-post/<%= linkId %>"
-            onclick="window.godotLibrary.dropdown.callRouteAjax(event, '/admin/feature-post/<%= linkId %>', 'Featured in homepage hero')"
+            onclick="window.godotLibrary.dropdown.callRouteAjax(event, '/admin/feature-post/<%= linkId %>', 'Featured in homepage hero', undefined, 'post')"
             title="Add to 'Homepage Hero' featured carousel">Feature</a>
           <% } %>
           <% } %>

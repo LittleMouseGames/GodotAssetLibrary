@@ -235,11 +235,11 @@ window.godotLibrary = {
       if (options !== null) options.style.display = 'none'
       trigger?.setAttribute('aria-expanded', 'false')
     },
-    callRouteAjax: function (event, route, message, removeOnSuccess) {
+    callRouteAjax: function (event, route, message, removeOnSuccess, method = 'get') {
       event.preventDefault()
 
       fetch(route, {
-        method: 'post'
+        method: method
       }).then(response => {
         if (!response.ok) {
           response.json().then(data => {
