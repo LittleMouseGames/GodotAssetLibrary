@@ -41,6 +41,17 @@ export function buildPublicCacheControl (policy: CachePolicy = PUBLIC_CACHE_POLI
     `stale-while-revalidate=${policy.staleWhileRevalidate}, stale-if-error=${policy.staleIfError}`
 }
 
+/**
+ * The homepage is a frequently changing, admin-curated surface (featured hero
+ * carousel), so browsers must ALWAYS revalidate on refresh — otherwise a just-
+ * featured asset can be hidden by the browser's HTTP cache (and its
+ * stale-while-revalidate window) for up to five minutes. Shared caches still
+ * get a five-minute lifetime, and stale content is only served on origin error.
+ */
+export function buildHomepageCacheControl (): string {
+  return 'public, max-age=0, must-revalidate, s-maxage=300, stale-if-error=86400'
+}
+
 export interface CacheRequestLike {
   method: string
   path: string
@@ -115,7 +126,11 @@ export function classifyCacheControl (req: CacheRequestLike): string | null {
   }
 
   // Anonymous canonical views get the aggressive shared policy; every other
-  // anonymous GET is browser-cacheable but not shared-cacheable.
+  // anonymous GET is browser-cacheable but not shared-cacheable. The homepage
+  // gets its own always-revalidate policy so curated changes appear instantly.
+  if (req.path === '/' && hasNoQuery(req.query)) {
+    return buildHomepageCacheControl()
+  }
   if (isPubliclyCacheablePath(req.method, req.path, req.query)) {
     return buildPublicCacheControl()
   }
