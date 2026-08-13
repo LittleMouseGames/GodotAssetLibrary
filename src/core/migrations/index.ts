@@ -43,20 +43,40 @@ const MIGRATIONS: Migration[] = [
 /**
  * Apply each unapplied migration in order, recording completion in the
  * `migrations` collection so the process is idempotent.
+ *
+ * Each migration runs independently: a failure in one is logged but never
+ * aborts the remaining migrations, so a single bad script cannot knock out
+ * the rest. A failed migration is NOT recorded as applied, so it is retried
+ * on the next run. If any migration failed, an Error naming the failures is
+ * thrown after the loop — standalone `npm run migrate` then exits non-zero,
+ * while startup (which wraps this call) logs it and still proceeds to
+ * `ensureIndexes()` as the safety net.
+ *
+ * `migrations` is injectable for tests and defaults to the real registry.
  */
-export async function runMigrations (db: Db): Promise<void> {
+export async function runMigrations (db: Db, migrations: Migration[] = MIGRATIONS): Promise<void> {
   const migrationCollection = db.collection('migrations')
+  const failures: string[] = []
 
-  for (const migration of MIGRATIONS) {
-    const applied = await migrationCollection.findOne({ id: migration.id })
-    if (applied !== null) {
-      logger.log('info', `Migration ${migration.id} already applied`)
-      continue
+  for (const migration of migrations) {
+    try {
+      const applied = await migrationCollection.findOne({ id: migration.id })
+      if (applied !== null) {
+        logger.log('info', `Migration ${migration.id} already applied`)
+        continue
+      }
+
+      logger.log('info', `Applying migration ${migration.id}: ${migration.description}`)
+      await migration.run(db)
+      await migrationCollection.insertOne({ id: migration.id, applied_at: new Date() })
+      logger.log('info', `Applied migration ${migration.id}`)
+    } catch (error: any) {
+      failures.push(migration.id)
+      logger.log('error', `Migration ${migration.id} failed (continuing with remaining migrations): ${error?.message ?? error}`, [error])
     }
+  }
 
-    logger.log('info', `Applying migration ${migration.id}: ${migration.description}`)
-    await migration.run(db)
-    await migrationCollection.insertOne({ id: migration.id, applied_at: new Date() })
-    logger.log('info', `Applied migration ${migration.id}`)
+  if (failures.length > 0) {
+    throw new Error(`Migration(s) failed: ${failures.join(', ')}`)
   }
 }
