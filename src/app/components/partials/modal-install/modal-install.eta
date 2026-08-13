@@ -15,16 +15,39 @@
       <h2 id="install-dialog-title">Install <span class="asset-name"><%= assetTitle %></span></h2>
       <button type="button" class="close" data-dialog-close aria-label="Close installation help">&times;</button>
     </div>
+    <% const isStoreAsset = it?.info?.provider === 'godot_store' %>
+    <% const storeUrl = it?.info?.store_url ?? '' %>
     <% if (it?.info?.godot_version || it?.info?.version_string) { %>
     <p class="compat">
-      Godot <strong><%= it?.info?.godot_version ?? 'unknown' %></strong><% if (it?.info?.version_string) { %>
+      Godot <strong><%= it?.info?.compatibility_label ?? it?.info?.godot_version ?? 'unknown' %></strong><% if (it?.info?.version_string) { %>
       &middot; version v<%= it?.info?.version_string %><% } %>
+      <% if (isStoreAsset) { %>
+      &middot; <%= it?.info?.is_free === true ? 'Free' : (it?.info?.cost ?? 'Free') %>
+      <% if (it?.info?.license_type) { %>&middot; <%= it?.info?.license_type %><% } %>
+      <% } else { %>
       <% const cost = String(it?.info?.cost ?? '0') %>
       &middot; <%= cost === '' || cost === '0' ? 'Free' : cost %>
       &middot; <%= it?.info?.support_level ? (it.info.support_level + ' support') : 'community support' %>
+      <% } %>
     </p>
     <% } %>
 
+    <% if (isStoreAsset) { %>
+    <div class="install-quick">
+      <span class="install-quick-icon" aria-hidden="true">
+        <span class="iconify" data-icon="mdi:storefront-outline"></span>
+      </span>
+      <div class="install-quick-body">
+        <h3>Distributed through the official Godot Asset Store</h3>
+        <p>Open <strong><%= assetTitle %></strong> on the Godot Asset Store, choose a
+          release, and press Download there. The Store manages versions and updates.</p>
+      </div>
+      <% if (typeof storeUrl === 'string' && /^https?:\/\//i.test(storeUrl)) { %>
+      <a class="copy-btn" href="<%= storeUrl %>" target="_blank" rel="noopener noreferrer"
+        title="Open on the Godot Asset Store">View on Store</a>
+      <% } %>
+    </div>
+    <% } else { %>
     <div class="install-quick">
       <span class="install-quick-icon" aria-hidden="true">
         <span class="iconify" data-icon="mdi:rocket-launch-outline"></span>
@@ -36,11 +59,25 @@
       </div>
       <button type="button" class="copy-btn" data-copy-text="<%= assetTitle %>">Copy name</button>
     </div>
+    <% } %>
 
     <div class="install-steps">
       <div class="install-step">
         <span class="step-number" aria-hidden="true">1</span>
         <div class="step-body">
+          <% if (isStoreAsset) { %>
+          <h3>Download from the Store</h3>
+          <% if (typeof storeUrl === 'string' && /^https?:\/\//i.test(storeUrl)) { %>
+          <a class="download" href="<%= storeUrl %>" target="_blank" rel="noopener noreferrer"
+            title="Open on the Godot Asset Store">
+            <span class="iconify" data-icon="mdi:download" aria-hidden="true"></span>
+            View on Godot Asset Store
+            <span class="hint">(opens in a new tab)</span>
+          </a>
+          <% } else { %>
+          <p class="no-download">This asset has no direct download link available right now.</p>
+          <% } %>
+          <% } else { %>
           <h3>Download the ZIP archive</h3>
           <% if (typeof downloadUrl === 'string' && downloadUrl !== '') { %>
           <a class="download" href="<%= downloadUrl %>" target="_blank" rel="noopener noreferrer"
@@ -51,6 +88,7 @@
           </a>
           <% } else { %>
           <p class="no-download">No download link is available for this asset right now.</p>
+          <% } %>
           <% } %>
         </div>
       </div>

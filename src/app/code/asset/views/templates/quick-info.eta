@@ -4,6 +4,20 @@ var generateProxyUrl = it?._locals?.functions?.generateProxyUrl
 
 <div class="quick-info">
   <h2>Quick Information</h2>
+  <% if (it?.sourceVariants != null && it.sourceVariants.length > 1) { %>
+  <div class="source-switcher">
+    <div class="property">Available from</div>
+    <div class="source-options">
+      <% for (const variant of it.sourceVariants) { %>
+      <% var variantHref = variant.current && it?.requestedSource === '' ? it?.sourceSwitchBaseUrl : `${it?.sourceSwitchBaseUrl}?source=${variant.provider}` %>
+      <a class="source-option<%= variant.current ? ' current' : '' %>" href="<%= variantHref %>"
+        title="Show this project from <%= variant.label %>">
+        <%= variant.label %><% if (variant.preferred) { %> <span class="source-preferred">preferred</span><% } %>
+      </a>
+      <% } %>
+    </div>
+  </div>
+  <% } %>
   <%~ includeFile('templates/components/partials/stars/stars.eta', it) %>
   <div class="card">
     <div class="banner">
@@ -79,16 +93,40 @@ var generateProxyUrl = it?._locals?.functions?.generateProxyUrl
       <div class="specs">
         <div class="row">
           <div class="property">Supported Engine Version</div>
-          <div class="value"><%= it?.info?.godot_version ?? 'Unknown' %></div>
+          <div class="value"><%= it?.info?.compatibility_label ?? it?.info?.godot_version ?? 'Unknown' %></div>
         </div>
         <div class="row">
           <div class="property">Version String</div>
           <div class="value"><%= it?.info?.version_string ?? 'Unknown' %></div>
         </div>
+        <% if (it?.info?.provider === 'godot_store') { %>
+        <% if (it?.info?.license_type) { %>
+        <div class="row">
+          <div class="property">License</div>
+          <div class="value">
+            <% const licenseUrl = it?.info?.license_url ?? '' %>
+            <% if (typeof licenseUrl === 'string' && /^https?:\/\//i.test(licenseUrl)) { %>
+            <a href="<%= licenseUrl %>" target="_blank" rel="noopener noreferrer" title="Open license terms"><%= it.info.license_type %></a>
+            <% } else { %><%= it.info.license_type %><% } %>
+          </div>
+        </div>
+        <% } %>
+        <div class="row">
+          <div class="property">Price</div>
+          <div class="value"><%= it?.info?.is_free === true ? 'Free' : (it?.info?.cost ?? 'Free') %></div>
+        </div>
+        <% if (it?.info?.source_rating?.score != null) { %>
+        <div class="row">
+          <div class="property">Store Score</div>
+          <div class="value"><%= it.info.source_rating.score >= 0 ? '+' : '' %><%= it.info.source_rating.score %> <span class="store-score-note">(net Store votes)</span></div>
+        </div>
+        <% } %>
+        <% } else { %>
         <div class="row">
           <div class="property">Support Level</div>
           <div class="value"><%= it?.info?.support_level ?? 'Unknown' %></div>
         </div>
+        <% } %>
         <div class="row">
           <div class="property">Modified Date</div>
           <div class="value" title="<%= it?.info?.modify_date ?? 'Unknown' %>">
@@ -98,9 +136,9 @@ var generateProxyUrl = it?._locals?.functions?.generateProxyUrl
         <% const issuesUrl = it?.info?.issues_url ?? '' %>
         <% if (typeof browseUrl === 'string' && /^https?:\/\//i.test(browseUrl)) { %>
         <div class="row">
-          <div class="property">Git URL</div>
+          <div class="property">Source</div>
           <div class="value"><a href="<%= browseUrl %>" target="_blank" rel="noopener noreferrer"
-              title="Open asset Git repository">Link to Git URL</a></div>
+              title="Open the asset source repository">View Source</a></div>
         </div>
         <% } %>
         <% if (typeof issuesUrl === 'string' && /^https?:\/\//i.test(issuesUrl)) { %>
@@ -112,8 +150,14 @@ var generateProxyUrl = it?._locals?.functions?.generateProxyUrl
         <% } %>
       </div>
       <% const downloadUrl = it?.info?.download_url ?? '' %>
+      <% const storeUrl = it?.info?.store_url ?? '' %>
       <div class="actions">
-        <% if (typeof downloadUrl === 'string' && downloadUrl !== '') { %>
+        <% if (it?.info?.provider === 'godot_store') { %>
+        <% if (typeof storeUrl === 'string' && /^https?:\/\//i.test(storeUrl)) { %>
+        <a class="action primary" href="<%= storeUrl %>" target="_blank" rel="noopener noreferrer"
+          title="Open this asset on the official Godot Asset Store">View on Godot Asset Store</a>
+        <% } %>
+        <% } else if (typeof downloadUrl === 'string' && downloadUrl !== '') { %>
         <a class="action primary" href="<%= downloadUrl %>" target="_blank" rel="noopener noreferrer"
           title="Download the asset ZIP archive">Download ZIP</a>
         <% } %>
