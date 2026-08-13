@@ -75,10 +75,16 @@ export class AdminController {
     return await this.AdminService.updateSiteSettings(req, res)
   }
 
-  @Get('feature-post/:id')
+  @Post('feature-post/:id')
   @Middleware(featureAssetRateLimit)
   private async updateFeaturedAssets (req: Request, res: Response): Promise<void> {
     return await this.AdminService.featureAsset(req, res)
+  }
+
+  @Post('featured/order')
+  @Middleware(siteActionRateLimit)
+  private async updateFeaturedOrder (req: Request, res: Response): Promise<void> {
+    return await this.AdminService.updateFeaturedOrder(req, res)
   }
 
   @Get('sources')

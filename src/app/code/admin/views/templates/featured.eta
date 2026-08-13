@@ -1,20 +1,65 @@
 <% it.meta = {
-  title: 'Featured Posts | Godot Asset Library',
+  title: 'Homepage Hero | Godot Asset Library',
   description: 'Manage Godot Asset Library settings',
   url: 'https://godotassetlibrary.com/admin/featured',
   moduleName: 'admin'
 } %>
 <% layout('templates/components/layouts/promobar-nav-body-footer/promobar-nav-body-footer.eta') %>
 
-<section class="page-admin featured">
+<section class="page-admin featured-hero">
   <div class="column">
     <div class="sidebar">
       <div class="item"><a href="/admin">Site Settings</a></div>
-      <div class="item active"><a href="/admin/featured/">Featured Assets</a></div>
+      <div class="item active"><a href="/admin/featured/">Homepage Hero</a></div>
       <div class="item"><a href="/admin/reports/">View Reports</a></div>
+      <div class="item"><a href="/admin/sources/">Source Linking</a></div>
     </div>
   </div>
   <div class="column">
-    <%~ includeFile('templates/components/partials/catalog-grid/catalog-grid.eta', it) %>
+    <h2>Homepage Hero</h2>
+    <p class="hero-hint">
+      Choose up to <%= it?.heroMax ?? 8 %> projects for the homepage hero carousel.
+      Order defines slide order — feature/unfeature any asset from its card or asset page, then use the arrows to reorder.
+    </p>
+
+    <form method="POST" action="/admin/featured/order"
+      onsubmit="window.godotLibrary.formTools.sendFormAjax(event, this)">
+      <div class="hero-rows" data-hero-rows>
+        <% if (it?.rows == null || it.rows.length === 0) { %>
+        <p class="empty-state">No projects curated yet. Feature an asset from any asset card or asset page to add it here.</p>
+        <% } else { %>
+        <% it.rows.forEach((row, index) => { %>
+        <div class="hero-row" data-hero-row>
+          <span class="hero-position" aria-hidden="true"><%= index + 1 %></span>
+          <span class="hero-thumb">
+            <img src="<%= it?._locals?.functions?.generateProxyUrl(row.image, 80, 45) %>"
+              data-fallback-image="<%= row.image %>" alt="" width="80" height="45" loading="lazy">
+          </span>
+          <span class="hero-detail">
+            <strong><%= row.title %></strong>
+            <span class="hero-sub">
+              <% if (row.isMissing) { %>Missing project<% } else { %>by <%= row.author %><% } %>
+              <% if (row.provider === 'godot_store') { %> &middot; Store<% } else if (row.provider === 'godot_asset_library') { %> &middot; Library<% } %>
+              <% if (!row.isPublic && !row.isMissing) { %> &middot; <em class="hero-warning">not public</em><% } %>
+            </span>
+            <code><%= row.groupId %></code>
+          </span>
+          <span class="hero-actions">
+            <button type="button" data-hero-up onclick="window.godotLibrary.featuredAssets.move(this, -1)"
+              aria-label="Move <%= row.title %> up" title="Move up">&#8593;</button>
+            <button type="button" data-hero-down onclick="window.godotLibrary.featuredAssets.move(this, 1)"
+              aria-label="Move <%= row.title %> down" title="Move down">&#8595;</button>
+            <button type="button" class="hero-remove" onclick="window.godotLibrary.featuredAssets.remove(this)"
+              aria-label="Remove <%= row.title %> from hero" title="Remove from hero">Remove</button>
+          </span>
+          <input type="hidden" name="featured_group_id[]" value="<%= row.groupId %>">
+        </div>
+        <% }) %>
+        <% } %>
+      </div>
+      <div class="hero-save">
+        <button type="submit" class="apply-filters">Save order</button>
+      </div>
+    </form>
   </div>
 </section>

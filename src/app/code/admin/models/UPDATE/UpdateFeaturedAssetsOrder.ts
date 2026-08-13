@@ -1,19 +1,19 @@
 import { MongoHelper } from 'core/MongoHelper'
 
-/** Append a project to the homepage-hero list without creating duplicates. */
-export async function UpdateFeaturedAssetsAdd (groupId: string): Promise<void> {
+/** Atomically replace the whole homepage-hero project list (curator order). */
+export async function UpdateFeaturedAssetsOrder (orderedGroupIds: string[]): Promise<void> {
   const mongo = MongoHelper.getDatabase()
   const operationObject = await mongo.collection('info').updateOne({
     type: 'featured_assets'
   }, {
-    $addToSet: {
-      featured_assets: groupId
+    $set: {
+      featured_assets: orderedGroupIds
     }
   }, {
     upsert: true
   })
 
   if (operationObject === null || operationObject === undefined) {
-    throw new Error('Failed to update (or upsert) featured assets')
+    throw new Error('Failed to update featured assets order')
   }
 }

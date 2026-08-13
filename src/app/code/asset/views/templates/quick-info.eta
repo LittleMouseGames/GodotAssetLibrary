@@ -49,14 +49,14 @@ var generateProxyUrl = it?._locals?.functions?.generateProxyUrl
             <% if(it?._locals?.role === 'admin') { %>
             <% if(it?.info?.featured === true) { %>
             <a href="/admin/feature-post/<%= it?.info?.asset_id %>"
-              onclick="window.godotLibrary.dropdown.callRouteAjax(event, '/admin/feature-post/<%= it?.info?.asset_id %>', 'Asset unfeatured')"
-              title="Remove from 'Assets We Love' on homepage">
+              onclick="window.godotLibrary.dropdown.callRouteAjax(event, '/admin/feature-post/<%= it?.info?.asset_id %>', 'Removed from homepage hero')"
+              title="Remove from 'Homepage Hero' featured carousel">
               Unfeature
             </a>
             <% } else { %>
             <a href="/admin/feature-post/<%= it?.info?.asset_id %>"
-              onclick="window.godotLibrary.dropdown.callRouteAjax(event, '/admin/feature-post/<%= it?.info?.asset_id %>', 'Asset featured')"
-              title="Add to 'Assets We Love' on homepage">
+              onclick="window.godotLibrary.dropdown.callRouteAjax(event, '/admin/feature-post/<%= it?.info?.asset_id %>', 'Featured in homepage hero')"
+              title="Add to 'Homepage Hero' featured carousel">
               Feature
             </a>
             <% } %>
