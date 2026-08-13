@@ -8,7 +8,7 @@ import { SitemapStream } from 'sitemap'
 import path from 'path'
 import { buildAssetUrl } from 'core/utils/assetUrl'
 import { buildCategoryPath, buildEnginePath } from 'core/utils/taxonomyUrl'
-import { PUBLIC_ASSET_FILTER } from 'core/utils/publicCatalog'
+import { UNIFIED_DISCOVERY_FILTER } from 'core/utils/publicCatalog'
 import { GetPublicCategoryCounts, GetPublicEngineCounts } from '../models/GET/GetPublicTaxonomyCounts'
 import { getAllGuides } from 'app/code/guides/models/guide'
 
@@ -52,10 +52,11 @@ async function generateSitemap (): Promise<void> {
     pipelineError = error.message
   })
 
-  // Exclude assets that are no longer available upstream or were marked
-  // non-searchable, so crawlers don't index stale/tombstoned pages.
-  const cursor = mongo.collection('assets').find(PUBLIC_ASSET_FILTER, {
-    projection: { asset_id: 1, title: 1, modify_date: 1, modify_date_at: 1 }
+  // The unified filter emits one canonical URL per PROJECT (the preferred
+  // variant), so a Store+legacy linked project never appears twice. URLs use
+  // the group root id so every sitemap entry points at the canonical page.
+  const cursor = mongo.collection('assets').find(UNIFIED_DISCOVERY_FILTER, {
+    projection: { asset_id: 1, group_id: 1, title: 1, modify_date: 1, modify_date_at: 1 }
   })
 
   let completed = false
@@ -96,8 +97,9 @@ async function generateSitemap (): Promise<void> {
 
     for await (const asset of cursor) {
       const lastmod = asset.modify_date_at ?? asset.modify_date
+      const projectId = asset.group_id ?? asset.asset_id
       await writeEntry({
-        url: buildAssetUrl(asset.asset_id, asset.title),
+        url: buildAssetUrl(projectId, asset.title),
         changefreq: 'monthly',
         lastmod
       })

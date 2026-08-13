@@ -52,6 +52,7 @@ function searchCacheKey (
     engines: [...(options.engines ?? [])].sort(),
     types: [...(options.types ?? [])].sort(),
     supports: [...(options.supports ?? [])].sort(),
+    source: options.source ?? '',
     featured: options.featured === true,
     major: godotMajorCacheSuffix(options.godotMajor)
   })
@@ -83,6 +84,7 @@ export class SearchService {
       engines: parsed.engines,
       types: parsed.types,
       supports: parsed.supports,
+      source: parsed.source,
       featured: parsed.featured,
       godotMajor: resultMajor
     }
@@ -118,7 +120,7 @@ export class SearchService {
           String(assets[0].category ?? '').toLowerCase(),
           assets[0].godot_version,
           assets[0].type,
-          assets[0].asset_id,
+          assets[0].group_id ?? assets[0].asset_id,
           relatedMajor
         )
         attachCardExtras(relatedForSearch)
@@ -137,6 +139,7 @@ export class SearchService {
         engines: parsed.engines,
         types: parsed.types,
         supports: parsed.supports,
+        source: parsed.source,
         featured: parsed.featured,
         sort: parsed.sort,
         limit: parsed.limit,

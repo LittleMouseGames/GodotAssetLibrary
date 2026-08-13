@@ -54,6 +54,38 @@
       <input type="hidden" name="sort" value="<%= it.search.currentSort %>">
       <input type="hidden" name="limit" value="<%= it.search.currentLimit %>">
 
+      <div class="filter accordion" id="filter-sources">
+        <div class="accordion-trigger no-text-select">
+          <h2>
+            Source
+            <span class="iconify icon-close" data-icon="bxs:chevron-up"></span>
+            <span class="iconify icon-expand" data-icon="bxs:chevron-down"></span>
+          </h2>
+        </div>
+        <div class="options accordion-content">
+          <ul>
+            <li>
+              <label>
+                <input type="radio" name="source" value="" <%= it.search.source === '' ? 'checked' : '' %>>
+                All sources
+              </label>
+            </li>
+            <% for (const source of it.search.sources) { %>
+            <li>
+              <label>
+                <input type="radio" name="source" value="<%= source.value %>"
+                  <%= source.checked ? 'checked' : '' %>>
+                <%= source.label %> (<%= source.count %>)
+              </label>
+            </li>
+            <% } %>
+          </ul>
+          <% if (it.search.source !== '') { %>
+          <a class="clear-section" href="<%= it.search.sourceClearUrl %>" title="Clear source filter">Clear section</a>
+          <% } %>
+        </div>
+      </div>
+
       <div class="filter accordion" id="filter-categories">
         <div class="accordion-trigger no-text-select">
           <h2>

@@ -2,6 +2,7 @@ import { Request } from 'express'
 import striptags from 'striptags'
 import { parsePagination } from 'core/utils/pagination'
 import { normalizeTaxonomyKey } from 'core/utils/taxonomyUrl'
+import { isKnownProvider } from 'core/utils/assetProvider'
 
 const QUERY_MAX_LENGTH = 100
 const MAX_FILTERS = 20
@@ -13,6 +14,8 @@ export interface ParsedSearchRequest {
   engines: string[]
   types: string[]
   supports: string[]
+  /** Single provider dimension: 'godot_store' | 'godot_asset_library' | '' (unified). */
+  source: string
   featured: boolean
   requestedSort: string
   /** Resolved sort key, context-aware (never "relevance" for an empty query). */
@@ -68,6 +71,8 @@ export function parseSearchRequest (req: Request): ParsedSearchRequest {
   const types = normalizeList(req.query.type)
   const supports = normalizeList(req.query.support)
   const featured = String(req.query.featured ?? '') === 'true'
+  const rawSource = striptags(String(req.query.source ?? ''))
+  const source = isKnownProvider(rawSource) ? rawSource : ''
 
   const routeCategory = req?.params?.category != null
     ? normalizeTaxonomyKey(striptags(String(req.params.category)))
@@ -94,6 +99,7 @@ export function parseSearchRequest (req: Request): ParsedSearchRequest {
     engines,
     types,
     supports,
+    source,
     featured,
     requestedSort,
     sort,

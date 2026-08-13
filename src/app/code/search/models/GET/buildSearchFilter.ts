@@ -1,4 +1,4 @@
-import { PUBLIC_ASSET_FILTER } from 'core/utils/publicCatalog'
+import { PUBLIC_ASSET_FILTER, UNIFIED_DISCOVERY_FILTER } from 'core/utils/publicCatalog'
 import { godotMajorFilter } from 'core/utils/godotVersionPreference'
 
 export interface SearchFilterOptions {
@@ -7,6 +7,13 @@ export interface SearchFilterOptions {
   types?: string[]
   supports?: string[]
   featured?: boolean
+  /**
+   * Single provider dimension. When set, only that provider's variants are
+   * returned (each project has at most one variant per provider, so no group
+   * collapse is needed). When unset/empty the unified view applies the
+   * group-preferred collapse so a project appears once.
+   */
+  source?: string
   /**
    * Numeric Godot major line to restrict discovery to (e.g. 4 for "4.x").
    * Only set while the visitor has no explicit exact-engine selection so the
@@ -23,8 +30,14 @@ export interface SearchFilterOptions {
  * counts or facets (matching the sitemap).
  */
 export function buildSearchFilter (query: string, options: SearchFilterOptions = {}): Record<string, any> {
-  const { categories, engines, types, supports, featured, godotMajor } = options
-  const filter: Record<string, any> = { ...PUBLIC_ASSET_FILTER }
+  const { categories, engines, types, supports, featured, godotMajor, source } = options
+
+  // Source dimension: a specific provider lifts the group collapse (one
+  // variant per provider per project); the unified view keeps only the
+  // group-preferred variant so linked projects appear once.
+  const filter: Record<string, any> = (source !== undefined && source !== '')
+    ? { ...PUBLIC_ASSET_FILTER, provider: source }
+    : { ...UNIFIED_DISCOVERY_FILTER }
 
   if (categories !== undefined && categories.length > 0) {
     filter.category_lowercase = { $in: categories }

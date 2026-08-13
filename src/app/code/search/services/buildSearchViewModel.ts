@@ -20,12 +20,16 @@ export interface SearchViewModel {
   engines: FacetOption[]
   types: FacetOption[]
   supports: FacetOption[]
+  sources: FacetOption[]
+  /** Selected provider value ('godot_store' | 'godot_asset_library' | ''). */
+  source: string
   featured: boolean
   clearAllUrl: string
   categoryClearUrl: string
   engineClearUrl: string
   typeClearUrl: string
   supportClearUrl: string
+  sourceClearUrl: string
   hasFilters: boolean
   activeFilterCount: number
   /** <title> tag content, computed per route. */
@@ -59,6 +63,7 @@ interface UrlStateInternal {
   engines: string[]
   types: string[]
   supports: string[]
+  source: string
   featured: boolean
   sort: string
   limit: number
@@ -103,6 +108,7 @@ function buildUrlFor (parsed: ParsedSearchRequest, state: UrlState): string {
     for (const engine of extraEngines) params.append('engine', engine)
     for (const type of state.types) params.append('type', type)
     for (const support of state.supports) params.append('support', support)
+    if (state.source !== '') params.set('source', state.source)
     if (state.featured) params.set('featured', 'true')
     // Same context-aware default sort as buildSearchUrl: "relevance" only has
     // meaning with a query; "last_modified" is the default for an empty query.
@@ -124,6 +130,7 @@ export function buildSearchUrl (state: UrlState): string {
   for (const engine of state.engines) params.append('engine', engine)
   for (const type of state.types) params.append('type', type)
   for (const support of state.supports) params.append('support', support)
+  if (state.source !== '') params.set('source', state.source)
   if (state.featured) params.set('featured', 'true')
   // Omit the context-aware default sort: "relevance" (query mode) or
   // "last_modified" with an empty query (browse mode), so default views keep
@@ -150,14 +157,14 @@ export function buildSearchViewModel (
   total: number,
   facets: SearchFacets
 ): SearchViewModel {
-  const { query, categories, engines, types, supports, featured, sort, limit, page } = parsed
+  const { query, categories, engines, types, supports, source, featured, sort, limit, page } = parsed
   const totalPages = Math.max(1, Math.ceil(total / limit))
   const currentPage = Math.min(page, totalPages - 1)
   const displayPage = currentPage + 1
   const rangeStart = total === 0 ? 0 : (currentPage * limit) + 1
   const rangeEnd = Math.min(total, (currentPage + 1) * limit)
 
-  const base: UrlState = { query, categories, engines, types, supports, featured, sort, limit, page: currentPage }
+  const base: UrlState = { query, categories, engines, types, supports, source, featured, sort, limit, page: currentPage }
 
   // "Relevance" only means something with a text query, so it is hidden (not
   // just relabelled) when browsing with an empty query.
@@ -180,17 +187,19 @@ export function buildSearchViewModel (
   const enginesOptions = toFacetOptions(facets.engines, engines).sort((a, b) => compareVersions(b.value, a.value))
   const typesOptions = toFacetOptions(facets.types, types)
   const supportsOptions = toFacetOptions(facets.supports, supports)
+  const sourcesOptions = toFacetOptions(facets.sources, source !== '' ? [source] : [])
 
   // Per-group "clear" links (empty just that dimension, keep everything else).
   const categoryClearUrl = buildUrlFor(parsed, { ...base, categories: [], page: 0 })
   const engineClearUrl = buildUrlFor(parsed, { ...base, engines: [], page: 0 })
   const typeClearUrl = buildUrlFor(parsed, { ...base, types: [], page: 0 })
   const supportClearUrl = buildUrlFor(parsed, { ...base, supports: [], page: 0 })
+  const sourceClearUrl = buildUrlFor(parsed, { ...base, source: '', page: 0 })
 
   const hasFilters = categories.length > 0 || engines.length > 0 || types.length > 0 ||
-    supports.length > 0 || featured
+    supports.length > 0 || source !== '' || featured
   const activeFilterCount = categories.length + engines.length + types.length +
-    supports.length + (featured ? 1 : 0)
+    supports.length + (source !== '' ? 1 : 0) + (featured ? 1 : 0)
 
   const pages: PageItem[] = []
   const windowStart = Math.max(0, currentPage - Math.floor(PAGE_WINDOW / 2))
@@ -212,7 +221,7 @@ export function buildSearchViewModel (
     ? engines.filter(e => e !== routeEngine)
     : engines
   const hasExtraFilters = extraCategories.length > 0 || extraEngines.length > 0 ||
-    types.length > 0 || supports.length > 0 || featured
+    types.length > 0 || supports.length > 0 || source !== '' || featured
   const defaultSort = 'last_modified'
 
   let noindex: boolean
@@ -277,6 +286,8 @@ export function buildSearchViewModel (
     engines: enginesOptions,
     types: typesOptions,
     supports: supportsOptions,
+    sources: sourcesOptions,
+    source,
     featured,
     clearAllUrl: buildUrlFor(parsed, {
       ...base,
@@ -284,6 +295,7 @@ export function buildSearchViewModel (
       engines: [],
       types: [],
       supports: [],
+      source: '',
       featured: false,
       page: 0
     }),
@@ -291,6 +303,7 @@ export function buildSearchViewModel (
     engineClearUrl,
     typeClearUrl,
     supportClearUrl,
+    sourceClearUrl,
     hasFilters,
     activeFilterCount,
     title,
