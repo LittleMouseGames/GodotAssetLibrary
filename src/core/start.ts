@@ -8,6 +8,7 @@ import { runMigrations } from 'core/migrations'
 import { runGenerateSitemap } from 'app/utilities/sitemapGenerator/jobs/generateSitemap'
 import { getWorkerCount } from 'core/utils/clusterConfig'
 import { invalidateSiteFileCacheLocally, primeSiteFilesCache } from 'core/utils/siteFiles'
+import { invalidateCustomHeadElementsCacheLocally, primeCustomHeadElementsCache } from 'core/utils/customHeadElements'
 import { disconnectDragonfly } from 'core/utils/dragonfly'
 
 process.on('uncaughtException', (err) => {
@@ -94,6 +95,11 @@ if (cluster.isPrimary) {
           cluster.workers?.[id]?.send({ type: 'invalidate-site-files' })
         }
       }
+      if (msg?.type === 'invalidate-custom-head-elements') {
+        for (const id of Object.keys(cluster.workers ?? {})) {
+          cluster.workers?.[id]?.send({ type: 'invalidate-custom-head-elements' })
+        }
+      }
     })
 
     // Let Docker/systemd stop the cluster cleanly. Idempotent so a SIGTERM and
@@ -128,6 +134,9 @@ if (cluster.isPrimary) {
     if (msg?.type === 'invalidate-site-files') {
       invalidateSiteFileCacheLocally()
     }
+    if (msg?.type === 'invalidate-custom-head-elements') {
+      invalidateCustomHeadElementsCacheLocally()
+    }
   })
 
   const shutdownWorker = (): void => {
@@ -144,6 +153,7 @@ if (cluster.isPrimary) {
     // Warm the site-files cache now that Mongo is connected so the first
     // public request serves immediately instead of 404ing on an empty cache.
     primeSiteFilesCache()
+    primeCustomHeadElementsCache()
   }).catch(error => {
     logger.log('error', `Error during worker ${process.pid} startup`, error)
     process.exit(1)

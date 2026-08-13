@@ -10,6 +10,7 @@ import { GetUserContextByToken } from 'core/modules/authentication/models/user/G
 import { GetPromobarMessage } from 'app/code/admin/models/GET/GetPromobarMesasge'
 import { StatusCodes } from 'http-status-codes'
 import { getSiteFileContent } from 'core/utils/siteFiles'
+import { getCustomHeadElements } from 'core/utils/customHeadElements'
 import { generateProxyUrl } from 'core/utils/generateProxyUrl'
 import { buildAssetUrl, buildAssetUrlWithReturn } from 'core/utils/assetUrl'
 import { buildCategoryPath, buildEnginePath } from 'core/utils/taxonomyUrl'
@@ -213,6 +214,8 @@ class RouterServer extends Server {
         refreshPromoMessage()
         res.locals.promobarMessage = promoCachedMessage
       }
+
+      res.locals.customHeadElements = await getCustomHeadElements().catch(() => [] as string[])
 
       res.locals.functions = {
         generateProxyUrl: generateProxyUrl,

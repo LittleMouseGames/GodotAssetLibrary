@@ -179,6 +179,16 @@ window.godotLibrary = {
       rows[rows.length - 1]?.querySelector('input')?.focus()
     }
   },
+  customHeadElements: {
+    addRow: function () {
+      const container = document.getElementById('custom-head-elements')
+      const template = document.getElementById('custom-head-element-row-template')
+      if (container === null || template === null) return
+      container.appendChild(template.content.cloneNode(true))
+      const rows = container.querySelectorAll('.custom-head-element-row')
+      rows[rows.length - 1]?.querySelector('textarea')?.focus()
+    }
+  },
   clipboard: {
     copyText: function (text) {
       if (navigator.clipboard && window.isSecureContext) {

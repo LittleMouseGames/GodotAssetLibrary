@@ -13,6 +13,9 @@ import { UpdatePromobarMessage } from '../models/UPDATE/UpdatePromobarMessage'
 import { UpdateSiteRestrictions } from '../models/UPDATE/UpdateSiteRestrictions'
 import { UpdateSiteFiles } from '../models/UPDATE/UpdateSiteFiles'
 import { invalidateSiteFileCache } from 'core/utils/siteFiles'
+import { validateCustomHeadElements, invalidateCustomHeadElementsCache } from 'core/utils/customHeadElements'
+import { GetCustomHeadElements } from '../models/GET/GetCustomHeadElements'
+import { UpdateCustomHeadElements } from '../models/UPDATE/UpdateCustomHeadElements'
 import { buildAllAssetCacheKeys, cacheDelete } from 'core/utils/dragonfly'
 import { GetReviewsByIdList } from '../models/GET/GetReviewsByIdList'
 import { UpdateReportIgnoreById } from '../models/UPDATE/UpdateReportIgnoreById'
@@ -45,10 +48,18 @@ export class AdminService {
       // ignore
     }
 
+    let customHeadElements: string[] = []
+    try {
+      customHeadElements = await GetCustomHeadElements()
+    } catch (e) {
+      // ignore
+    }
+
     return res.render('templates/pages/admin/admin', {
       pageBanner: pageBanner,
       siteRestrictions: siteRestrictions,
-      siteFiles: siteFiles
+      siteFiles: siteFiles,
+      customHeadElements: customHeadElements
     })
   }
 
@@ -217,6 +228,20 @@ export class AdminService {
     // Drop the in-memory cache so the public routes pick up the new content
     // immediately instead of waiting out the TTL.
     invalidateSiteFileCache()
+
+    // Custom head elements: each textarea value is one raw HTML element.
+    const rawHeadElements = req.body.custom_head_element
+    const headElements: string[] = (
+      Array.isArray(rawHeadElements)
+        ? rawHeadElements
+        : (rawHeadElements === undefined ? [] : [rawHeadElements])
+    )
+      .map((el: unknown) => String(el ?? '').trim())
+      .filter((el: string) => el.length > 0)
+
+    validateCustomHeadElements(headElements)
+    await UpdateCustomHeadElements(headElements)
+    invalidateCustomHeadElementsCache()
 
     res.send()
   }
