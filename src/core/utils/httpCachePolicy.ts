@@ -83,8 +83,10 @@ export function isPubliclyCacheablePath (
   if (/^\/category\/[^/]+$/.test(path)) return hasOnlyPageParam(query)
   if (/^\/engine\/[^/]+$/.test(path)) return hasOnlyPageParam(query)
   // Canonical asset detail page: only the anonymous first review page with no
-  // request-specific params (no `from`, no `reviews_page`).
-  if (/^\/asset\/[^/]+\/[^/]+/.test(path)) return hasNoQuery(query)
+  // request-specific params (no `from`, no `reviews_page`). End-anchored so
+  // deeper non-canonical variants (which 301 to the canonical slug) are never
+  // shared-cached.
+  if (/^\/asset\/[^/]+\/[^/]+\/?$/.test(path)) return hasNoQuery(query)
   if (/^\/guides(?:\/[^/]+)?\/?$/.test(path)) return hasNoQuery(query)
   return false
 }

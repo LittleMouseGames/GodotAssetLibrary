@@ -94,12 +94,24 @@ if (cluster.isPrimary) {
     }
     logger.log('info', `Forked ${workerCount} worker(s)`)
 
+    // Cluster-wide telemetry: workers ship their snapshots to the primary, which
+    // sums them and broadcasts a cluster view so ANY worker's /metrics reports
+    // the whole cluster. Entries are keyed by worker.id and removed on exit so
+    // a crashed/reforked worker can never inflate the aggregate.
+    const telemetrySnapshots = new Map<number, telemetry.TelemetrySnapshot>()
+
     // Auto-heal: replace a worker that crashed or was killed. A short delay
     // avoids a tight refork loop if something is wrong at boot, and reforking
     // is suppressed during an intentional shutdown so we never spin up workers
-    // that were just SIGTERM'd.
+    // that were just SIGTERM'd. Also drop the dead worker's telemetry snapshot
+    // and re-broadcast so cluster metrics never count exits/reforks twice.
     let shuttingDown = false
     cluster.on('exit', (worker, code, signal) => {
+      telemetrySnapshots.delete(worker.id)
+      const aggregate = telemetry.aggregateSnapshots([...telemetrySnapshots.values()])
+      for (const id of Object.keys(cluster.workers ?? {})) {
+        cluster.workers?.[id]?.send({ type: 'telemetry-cluster', aggregate })
+      }
       if (shuttingDown) {
         return
       }
@@ -111,13 +123,9 @@ if (cluster.isPrimary) {
       }, 1000)
     })
 
-    // Relay cache-invalidation broadcasts from any worker to all workers, so
-    // an admin site-file save made on one worker is reflected everywhere
-    // immediately (each worker keeps its own process-local site-files cache).
-    // Workers also ship their telemetry snapshots here; the primary sums them
-    // into a cluster-wide view and broadcasts it back so ANY worker's /metrics
-    // reports the whole cluster instead of just that one process.
-    const telemetrySnapshots = new Map<string, telemetry.TelemetrySnapshot>()
+    // Relay worker messages: admin site-file cache-invalidation (an admin save
+    // on one worker is reflected everywhere) and telemetry snapshots (summed
+    // above and broadcast back to every worker).
     cluster.on('message', (worker, message) => {
       const msg = message as {
         type?: string
@@ -129,7 +137,7 @@ if (cluster.isPrimary) {
           cluster.workers?.[id]?.send({ type: 'invalidate-site-files' })
         }
       } else if (msg?.type === 'telemetry-snapshot' && msg.snapshot !== undefined) {
-        telemetrySnapshots.set(String(worker.process?.pid ?? 'unknown'), msg.snapshot)
+        telemetrySnapshots.set(worker.id, msg.snapshot)
         const aggregate = telemetry.aggregateSnapshots([...telemetrySnapshots.values()])
         for (const id of Object.keys(cluster.workers ?? {})) {
           cluster.workers?.[id]?.send({ type: 'telemetry-cluster', aggregate })

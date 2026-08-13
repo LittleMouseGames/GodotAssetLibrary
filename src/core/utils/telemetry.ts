@@ -267,9 +267,10 @@ export function getClusterSnapshot (): TelemetrySnapshot | null {
 }
 
 /**
- * Sum per-worker snapshots into a cluster-wide view for /metrics. Counters are
- * summed, active/peak gauges take the max, and duration percentiles are
- * intentionally omitted (they are per-process; each process exposes its own).
+ * Sum per-worker snapshots into a cluster-wide view for /metrics. Counters and
+ * the active-request gauge are summed (cluster aggregate load), peak gauges
+ * take the max, and duration percentiles are intentionally omitted (they are
+ * per-process; each process exposes its own).
  */
 export function aggregateSnapshots (snapshots: TelemetrySnapshot[]): TelemetrySnapshot {
   const aggregatedRoutes = Object.fromEntries(
@@ -309,7 +310,7 @@ export function aggregateSnapshots (snapshots: TelemetrySnapshot[]): TelemetrySn
     eventLoopLagMaxMs: 0
   }
   for (const s of snapshots) {
-    result.activeRequests = Math.max(result.activeRequests, s.activeRequests)
+    result.activeRequests += s.activeRequests
     result.peakActiveRequests = Math.max(result.peakActiveRequests, s.peakActiveRequests)
     result.totalRequests += s.totalRequests
     result.mongoWaitQueueTimeouts += s.mongoWaitQueueTimeouts
@@ -424,7 +425,7 @@ export function prometheusText (): string {
   emit('counter', 'mongo_wait_queue_timeouts_total', 'MongoDB connection checkout (wait-queue) timeouts', s.mongoWaitQueueTimeouts)
   emit('counter', 'mongo_server_selection_errors_total', 'MongoDB server-selection errors', s.mongoServerSelectionErrors)
   emit('counter', 'cache_hits_total', 'Shared Dragonfly cache hits', s.cacheHits)
-  emit('counter', 'cache_misses_total', 'Shared Dragonfly cache misses filled from the source', s.cacheMisses)
+  emit('counter', 'cache_misses_total', 'Cache loads that fell through to the source (misses, or bypasses while the shared cache is disabled/unavailable)', s.cacheMisses)
   emit('counter', 'cache_bypasses_total', 'Operations bypassing the shared cache while disabled or unavailable', s.cacheBypasses)
   emit('counter', 'cache_errors_total', 'Shared Dragonfly cache command or payload errors', s.cacheErrors)
   emit('counter', 'cache_l1_hits_total', 'Per-worker L1 cache hits', s.cacheL1Hits)

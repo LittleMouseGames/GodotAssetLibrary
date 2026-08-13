@@ -148,6 +148,19 @@ describe('telemetry', () => {
     assert.equal(cluster.status4xx, 1)
   })
 
+  it('sums the active-request gauge across workers', () => {
+    reset()
+    requestStart('homepage')
+    requestStart('asset')
+    const a = snapshot()
+    reset()
+    requestStart('search')
+    const b = snapshot()
+    const cluster = aggregateSnapshots([a, b])
+    assert.equal(cluster.activeRequests, 3)
+    reset()
+  })
+
   it('renders route-class, static and cluster metrics in Prometheus text', () => {
     reset()
     requestStart('homepage')
