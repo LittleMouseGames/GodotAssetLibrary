@@ -192,11 +192,15 @@ async function upsertStoreAsset (
   }
 
   const assetId = nanoid()
+  // `normalized` already carries `added_date` (the asset's Store creation
+  // date), so it must NOT also appear in `$setOnInsert` — MongoDB rejects a
+  // path that exists in both `$set` and `$setOnInsert`.
+  const { added_date: _normalizedAddedDate, ...normalizedForUpdate } = normalized
   await assets.updateOne(
     { provider: GODOT_STORE_PROVIDER, source_asset_id: normalized.source_asset_id },
     {
       $set: {
-        ...normalized,
+        ...normalizedForUpdate,
         store_listing_fingerprint: fingerprint,
         source_last_seen_at: new Date(),
         source_last_synced_at: new Date(),

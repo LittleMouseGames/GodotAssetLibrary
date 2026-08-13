@@ -82,6 +82,7 @@
     "typecheck": "tsc --noEmit",
     "audit:catalog": "ts-node --transpile-only -r tsconfig-paths/register src/core/maintenance/runCatalogAudit.ts",
     "audit:queries": "ts-node --transpile-only -r tsconfig-paths/register src/core/maintenance/runQueryAudit.ts",
+    "import:store": "ts-node --transpile-only -r tsconfig-paths/register src/core/maintenance/runStoreImport.ts",
     "loadtest": "node scripts/loadtest.js",
     "reconcile:ratings": "ts-node --transpile-only -r tsconfig-paths/register src/core/maintenance/runReconcileRatings.ts",
     "migrate": "ts-node --transpile-only -r tsconfig-paths/register src/core/migrations/runMigrations.ts",
