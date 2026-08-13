@@ -1,41 +1,41 @@
 # Godot Asset Library
 
-![](example.png)
+An open source (AGPLv3) catalog of Godot assets — mirrored from the legacy Godot
+Asset Library and the official Godot Asset Store into one searchable site.
 
-**What is this:**
-An Open Source (AGPLv3) Godot Asset Library
+## Features
 
-Features:
-* Asset mirroring from the default library
-* Asset review and rating system
-* User accounts with bookmarking
-* Open Source 😎
-  
+* Mirrors assets from both the legacy Asset Library and the Godot Asset Store
+* Search with category, engine-version, type and source filters
+* Asset pages with media, compatibility, license, price and install help
+* Reviews & ratings, user accounts and bookmarks
+* Light/dark themes and a Godot version pin
+* Open source 😎
+
 ## Running
-### Docker based envrionment
-Run:
+
+### Docker
+
 ```
 docker compose up -d --build
 ```
 
 For local development with source watching:
+
 ```
 docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d --build
 ```
 
 To tail nodejs:
+
 ```
 docker logs nodejs -f
 ```
 
-### Non docker based development:
+### Without Docker
+
 ```
 npm run devel
-```
-
-For linting:
-```
-npm run lint:check
 ```
 
 ### Verification
@@ -46,132 +46,21 @@ npm test               # Compiles and runs the node:test suite (host Node 18+)
 npm run build          # Webpack bundle + per-page Sass
 ```
 
-### Indexes & migrations
-Search relies on MongoDB text search and several derived fields. Migrations
-are applied with a single command (they record completion in the `migrations`
-collection, so they are idempotent):
-```
-npm run migrate
-```
-Migrations create/verify:
-* `0001` — the weighted text index (`title` 10, `quick_description` 7, `author` 7, `description` 1). MongoDB only allows one text index per collection, so a conflicting legacy index must be dropped manually first.
-* `0002` — backfills the confidence-adjusted `rating_score` (95% Wilson lower bound) used by "Highest rated" sorting.
-* `0003` — backfills the normalized `modify_date_at` used by "Recently updated" sorting.
-* `0004` — deduplicates reviews by `(user_id, asset_id)` and creates the unique index.
-* `0005` — backfills the numeric `godot_major` used by major-line browsing filters.
-* `0006` — backfills the denormalized `is_public` flag used by the public-catalog filter (the importer keeps it current afterwards).
-* `0007` — backfills provider-qualified identity (`provider`, `source_asset_id`, `group_id`, `group_preferred`, `is_group_root`, `godot_majors`, `normalized_repository`) and creates the unique `{ provider, source_asset_id }` index.
+### Godot Asset Store integration
 
-### Godot Asset Store (second source)
-The catalog mirrors the official **Godot Asset Store** (`store.godotengine.org`)
-through its documented public read-only API (the same `/api/v1` contract the
-Godot editor uses) as a second, source-qualified provider alongside the legacy
-Asset Library.
+The catalog mirrors the official Godot Asset Store (`store.godotengine.org`)
+through its public API as a second source alongside the legacy Asset Library:
 
-- **Ingestion**: `fetchAssetsFromGodotStore` runs daily at 01:30 UTC (after the
-  legacy 01:00 job). It walks the `/assets/` inventory, fetches details +
-  releases for new/changed records (bounded concurrency), normalizes them, and
-  atomically upserts by `(provider, source_asset_id)`. Ephemeral signed
-  `download_url` values are NEVER persisted; releases are stored as metadata
-  only and acquisition links out to the official Store page.
-- **Source identity**: every asset carries `provider`
-  (`godot_asset_library` | `godot_store`) and a provider-scoped
-  `source_asset_id`. Availability reconciliation is provider-scoped, so one
-  source can never tombstone the other's healthy records, and a partial
-  inventory never advances missing-run counters.
-- **Grouping linked projects**: a Store record is auto-linked to a legacy
-  record only on high-confidence evidence (unique normalized Git repository +
-  strict normalized title + compatible type). Linked projects share a
-  `group_id` and surface once in unified discovery (store-first preferred
-  variant); the project URL/reviews/saves/featured state stay on the legacy
-  root. Ambiguous matches land in the **admin Source Linking** queue
-  (`/admin/sources`) for manual link/unlink/preferred-source decisions.
-- **Discovery**: search gains a single "Source" dimension (`All sources`,
-  `Godot Asset Store`, `Legacy Asset Library`). The unified view shows one
-  preferred variant per project; cards carry a source badge. The homepage,
-  related assets, taxonomy counts and the sitemap all use the same group
-  collapse so linked projects never double-count.
-- **Asset page**: linked projects render a "Available from" source switcher.
-  Store variants show license, price, compatibility range, Store score (kept
-  separate from local reviews), release metadata and a "View on Godot Asset
-  Store" CTA. Store body HTML is sanitized before rendering.
-- **Policy note**: the Store terms and API docs do not expressly license bulk
-  republication of publisher descriptions/media, though the public API is
-  clearly intended for ordinary clients (the official editor uses it). We
-  ingest via the documented API, never mirror packages, and link users to the
-  official Store for downloads. Contact `store@godotengine.org` before
-  relying on heavy commercial republication.
-
-Operational maintenance (run against a snapshot first):
-```
-npm run reconcile:ratings   # Recompute vote counters + rating_score from reviews
-npm run audit:catalog       # Read-only catalog health audit
-npm run audit:queries       # explain("executionStats") baseline for the hot query shapes (capture before/after index changes)
-```
-
-Load / failure testing (against a running instance):
-```
-npm run loadtest -- --url http://localhost:8080 --paths '/,/search/' --concurrency 50 --duration 15
-# Warm hits, cold unique paths, and random-abuse-URL profiles all use the same harness.
-```
-
-### Monitoring & runbook
-`GET /metrics` (bearer-protected via `METRICS_TOKEN`) exposes Prometheus text.
-Per-process metrics are available immediately; a cluster-wide block
-(`http_cluster_*`) is aggregated by the primary over IPC and appears on every
-worker within a few seconds (`TELEMETRY_AGGREGATE_INTERVAL_MS`, default 10s).
-Route-class metrics (`http_requests_{homepage,browse,search,asset,...}_total`)
-let you tell crawler-vs-bot-vs-user load apart without high-cardinality labels.
-
-Suggested alert thresholds (per worker unless noted):
-- `http_request_duration_p99_ms` > 2000ms sustained — origin slowing under load.
-- `http_event_loop_lag_max_ms` climbing (or > 500ms) — CPU-bound blocking.
-- `mongo_wait_queue_timeouts_total` / `mongo_server_selection_errors_total` rising — MongoDB saturated; expected when uncached overload is allowed to run into fail-fast timeouts.
-- `http_5xx_total` rate rising — upstream errors; check Mongo + cache error counters.
-- `cache_stale_hits_total` rising — public snapshots being served stale; expected and healthy during origin/dependency trouble, worth watching if sustained.
-- `http_static_requests_total` vs `http_requests_total` — the static/dynamic split; a large static share means the edge/CDN is absorbing traffic.
-
-Failure drills to run before relying on edge caching:
-1. Stop Dragonfly while serving warm traffic → expect stale/L1 serving, no Mongo stampede.
-2. Stop MongoDB while stale snapshots exist → expect stale public pages, no cached 4xx/5xx.
-3. Restart one worker during load → auto-heal + graceful drain, no dropped requests.
-4. Deploy while requests are active → readiness drops, connections drain, no 503s.
-5. Confirm authenticated/mutation traffic never receives cached anonymous HTML.
-
-## Folder Structure
-```
- src
-  └───backend             # Backend / dynamic 
-    │   RouterServer.ts   # Start our router
-    │   MongoHelper.ts    # Our MongoDB helper
-    │   start.ts          # App entry point
-    └───components        # Reusuable eta.js templates
-    └───modules           # Each site module (ex, admin area, blog area, etc) 
-      └─── ModuleName     # Module Example
-        │───controllers   # Module controllers
-        │───jobs          # Cron / scheduled jobs
-        │───models        # Database models
-        │───services      # All the business logic
-        │───views         # Store the Views for the module (eta.js templates)
-    └───utility           # All our utility classes, like loggers
-  └───frontend            # Frontend assets (ex pre-compiled or static)
-
-```
-
-**Controllers**
-Controllers do not handle business logic. They interpret routes, call our services and return the data
-
-**Services**
-Services handle all our buisness logic
-
-**Models**
-Our DB models
-
-**Jobs**
-Spot to put cron jobs or other scheduled jobs
-
-**Views**
-Our ETA templates and relevant SCSS for the page
+* Assets are ingested daily (and on demand with `npm run import:store`), keyed
+  by source so one source can never hide the other's records.
+* Projects listed in both sources are grouped into a single card — the Store
+  variant is shown by default, with a source switcher on the asset page.
+* Search has a **Source** filter (All / Godot Asset Store / Legacy Asset Library)
+  and cards show which source an asset came from.
+* Store assets link out to the official Store page for downloads; packages and
+  expiring download URLs are never mirrored.
+* Cards show the Store's own score (marked `*`) when there are no local ratings.
+* `/admin/sources` reviews and links Store records to their legacy counterparts.
 
 ## Style guide
 All functions will have a `DocBlock` to describe its purpose
