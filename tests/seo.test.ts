@@ -13,7 +13,7 @@ import { safeJsonLd } from '../src/core/utils/jsonLd'
 import { PUBLIC_ASSET_FILTER } from '../src/core/utils/publicCatalog'
 
 function emptyFacets (): SearchFacets {
-  return { categories: [], engines: [], types: [], supports: [] }
+  return { categories: [], engines: [], types: [], supports: [], sources: [] }
 }
 
 function categoryFacets (): SearchFacets {
@@ -21,7 +21,8 @@ function categoryFacets (): SearchFacets {
     categories: [{ value: '2d tools', label: '2D Tools', count: 47 }],
     engines: [],
     types: [],
-    supports: []
+    supports: [],
+    sources: []
   }
 }
 
@@ -32,6 +33,7 @@ function makeParsed (overrides: Partial<ParsedSearchRequest> = {}): ParsedSearch
     engines: [],
     types: [],
     supports: [],
+    source: '',
     featured: false,
     requestedSort: '',
     sort: 'last_modified',
@@ -106,6 +108,7 @@ describe('buildSearchUrl', () => {
       engines: [],
       types: [],
       supports: [],
+      source: '',
       featured: false,
       sort: 'last_modified',
       limit: 12,
@@ -120,6 +123,7 @@ describe('buildSearchUrl', () => {
       engines: ['4.2'],
       types: [],
       supports: [],
+      source: '',
       featured: false,
       sort: 'relevance',
       limit: 24,

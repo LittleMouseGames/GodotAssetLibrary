@@ -23,7 +23,7 @@ function makeRequest (
 }
 
 function emptyFacets (): SearchFacets {
-  return { categories: [], engines: [], types: [], supports: [] }
+  return { categories: [], engines: [], types: [], supports: [], sources: [] }
 }
 
 function makeParsed (overrides: Partial<ParsedSearchRequest> = {}): ParsedSearchRequest {
@@ -33,6 +33,7 @@ function makeParsed (overrides: Partial<ParsedSearchRequest> = {}): ParsedSearch
     engines: [],
     types: [],
     supports: [],
+    source: '',
     featured: false,
     requestedSort: '',
     sort: 'last_modified',
@@ -146,6 +147,7 @@ describe('buildSearchUrl', () => {
     engines: [] as string[],
     types: [] as string[],
     supports: [] as string[],
+    source: '',
     featured: false,
     sort: 'relevance',
     limit: 12,
@@ -201,7 +203,8 @@ describe('buildSearchViewModel', () => {
       categories: [{ value: '2d tools', label: '2D Tools', count: 10 }],
       engines: [],
       types: [{ value: 'Plugin', label: 'Plugin', count: 4 }],
-      supports: [{ value: 'Community', label: 'Community', count: 7 }]
+      supports: [{ value: 'Community', label: 'Community', count: 7 }],
+      sources: []
     }
     const model = buildSearchViewModel(parsed, 100, facets)
     assert.equal(model.categories[0]?.checked, true)

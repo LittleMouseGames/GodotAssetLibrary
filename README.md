@@ -60,6 +60,47 @@ Migrations create/verify:
 * `0004` — deduplicates reviews by `(user_id, asset_id)` and creates the unique index.
 * `0005` — backfills the numeric `godot_major` used by major-line browsing filters.
 * `0006` — backfills the denormalized `is_public` flag used by the public-catalog filter (the importer keeps it current afterwards).
+* `0007` — backfills provider-qualified identity (`provider`, `source_asset_id`, `group_id`, `group_preferred`, `is_group_root`, `godot_majors`, `normalized_repository`) and creates the unique `{ provider, source_asset_id }` index.
+
+### Godot Asset Store (second source)
+The catalog mirrors the official **Godot Asset Store** (`store.godotengine.org`)
+through its documented public read-only API (the same `/api/v1` contract the
+Godot editor uses) as a second, source-qualified provider alongside the legacy
+Asset Library.
+
+- **Ingestion**: `fetchAssetsFromGodotStore` runs daily at 01:30 UTC (after the
+  legacy 01:00 job). It walks the `/assets/` inventory, fetches details +
+  releases for new/changed records (bounded concurrency), normalizes them, and
+  atomically upserts by `(provider, source_asset_id)`. Ephemeral signed
+  `download_url` values are NEVER persisted; releases are stored as metadata
+  only and acquisition links out to the official Store page.
+- **Source identity**: every asset carries `provider`
+  (`godot_asset_library` | `godot_store`) and a provider-scoped
+  `source_asset_id`. Availability reconciliation is provider-scoped, so one
+  source can never tombstone the other's healthy records, and a partial
+  inventory never advances missing-run counters.
+- **Grouping linked projects**: a Store record is auto-linked to a legacy
+  record only on high-confidence evidence (unique normalized Git repository +
+  strict normalized title + compatible type). Linked projects share a
+  `group_id` and surface once in unified discovery (store-first preferred
+  variant); the project URL/reviews/saves/featured state stay on the legacy
+  root. Ambiguous matches land in the **admin Source Linking** queue
+  (`/admin/sources`) for manual link/unlink/preferred-source decisions.
+- **Discovery**: search gains a single "Source" dimension (`All sources`,
+  `Godot Asset Store`, `Legacy Asset Library`). The unified view shows one
+  preferred variant per project; cards carry a source badge. The homepage,
+  related assets, taxonomy counts and the sitemap all use the same group
+  collapse so linked projects never double-count.
+- **Asset page**: linked projects render a "Available from" source switcher.
+  Store variants show license, price, compatibility range, Store score (kept
+  separate from local reviews), release metadata and a "View on Godot Asset
+  Store" CTA. Store body HTML is sanitized before rendering.
+- **Policy note**: the Store terms and API docs do not expressly license bulk
+  republication of publisher descriptions/media, though the public API is
+  clearly intended for ordinary clients (the official editor uses it). We
+  ingest via the documented API, never mirror packages, and link users to the
+  official Store for downloads. Contact `store@godotengine.org` before
+  relying on heavy commercial republication.
 
 Operational maintenance (run against a snapshot first):
 ```
