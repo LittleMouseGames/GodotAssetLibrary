@@ -20,6 +20,8 @@ export class GuidesService {
   public renderGuide (req: Request, res: Response): void {
     const guide = getGuideBySlug(req.params.slug ?? '')
     if (guide === undefined) {
+      res.set('Cache-Control', 'no-store')
+      res.set('X-Robots-Tag', 'noindex, nofollow')
       return res.status(StatusCodes.NOT_FOUND).render('templates/pages/lost/not-found', {
         pageBanner: {
           title: 'Guide not found',

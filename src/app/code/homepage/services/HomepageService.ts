@@ -27,15 +27,17 @@ interface HomepageSnapshot {
 const parsedHomepageTtl = Number.parseInt(process.env.CACHE_HOMEPAGE_TTL_SECONDS ?? '', 10)
 const HOMEPAGE_CACHE_TTL_SECONDS = Number.isFinite(parsedHomepageTtl) && parsedHomepageTtl > 0
   ? parsedHomepageTtl
-  : 60
+  : 300
 
 async function loadHomepageSnapshot (major: number | undefined): Promise<HomepageSnapshot> {
-  // Fetch sections concurrently and degrade per-section instead of failing the
-  // whole homepage when one query hiccups. Every listing query is filtered to
-  // the pinned major BEFORE sorting/limiting so each section stays full. The
-  // global denormalized category counts span every imported version, so pinned
-  // views compute version-aware counts from the public catalog instead.
-  const [trending, featured, lastModified, categories] = await Promise.allSettled([
+  // Fetch sections concurrently. Every listing query is filtered to the pinned
+  // major BEFORE sorting/limiting so each section stays full; pinned views
+  // compute version-aware counts from the public catalog instead of the global
+  // denormalized counts. A section failure rejects the whole snapshot so a
+  // partial homepage is never cached as "fresh": the stale-capable cache
+  // serves the previous complete snapshot instead, and a cold start surfaces
+  // the error rather than caching empty sections.
+  const [trending, featured, lastModified, categories] = await Promise.all([
     GetTrendingAssets(major),
     GetFourAssetsForHomepage(major),
     GetLastModifiedAssets(major),
@@ -45,10 +47,10 @@ async function loadHomepageSnapshot (major: number | undefined): Promise<Homepag
   ])
 
   return {
-    trendingAssets: trending.status === 'fulfilled' ? trending.value : [],
-    featuredAssets: featured.status === 'fulfilled' ? featured.value : [],
-    lastModifiedAssets: lastModified.status === 'fulfilled' ? lastModified.value : [],
-    categoriesObject: categories.status === 'fulfilled' ? categories.value : {}
+    trendingAssets: trending,
+    featuredAssets: featured,
+    lastModifiedAssets: lastModified,
+    categoriesObject: categories
   }
 }
 

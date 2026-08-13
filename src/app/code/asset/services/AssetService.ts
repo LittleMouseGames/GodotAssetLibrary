@@ -1,4 +1,4 @@
-import { Request, Response } from 'express'
+import { NextFunction, Request, Response } from 'express'
 import { StatusCodes } from 'http-status-codes'
 import { logger } from 'core/utils/logger'
 import { GetAssetDisplayInformation } from '../models/GET/GetAssetDisplayInformation'
@@ -33,7 +33,7 @@ import { buildAssetUrl } from 'core/utils/assetUrl'
 import { buildCategoryPath } from 'core/utils/taxonomyUrl'
 import { BadRequestError } from 'core/utils/httpError'
 import { attachCardExtras } from 'core/utils/cardView'
-import { buildAllAssetCacheKeys, buildAssetCacheKey, cacheDelete, cacheGetOrLoad } from 'core/utils/dragonfly'
+import { buildAssetCacheKey, cacheGetOrLoad, getAssetEpoch, invalidateAssetCache } from 'core/utils/dragonfly'
 import { GODOT_VERSION_PREFERENCE_COOKIE } from 'core/utils/godotVersionPreference'
 import { resolveBrowsingMajor } from 'core/utils/godotMajorAvailability'
 
@@ -42,7 +42,7 @@ const REVIEWS_PER_PAGE = 10
 const parsedAssetTtl = Number.parseInt(process.env.CACHE_ASSET_TTL_SECONDS ?? '', 10)
 const ASSET_CACHE_TTL_SECONDS = Number.isFinite(parsedAssetTtl) && parsedAssetTtl > 0
   ? parsedAssetTtl
-  : 30
+  : 300
 
 interface AssetPageData {
   assetInfo: Awaited<ReturnType<typeof GetAssetDisplayInformation>>
@@ -61,7 +61,7 @@ interface AssetPageData {
  * `major` is the visitor's pinned Godot major and constrains the related-asset
  * cards bundled into the cached page.
  */
-async function loadAssetPageData (assetId: string, reviewsPage = 0, major?: number): Promise<AssetPageData> {
+async function loadAssetPageData (assetId: string, reviewsPage = 0, major?: number, strict = false): Promise<AssetPageData> {
   const assetInfo = await GetAssetDisplayInformation(assetId)
 
   if (assetInfo === null) {
@@ -79,8 +79,23 @@ async function loadAssetPageData (assetId: string, reviewsPage = 0, major?: numb
   const [commentsResult, reviewCountResult, relatedAssetsResult] = await Promise.allSettled([
     GetAssetReviewsById(assetId, REVIEWS_PER_PAGE, reviewsPage * REVIEWS_PER_PAGE),
     GetAssetReviewCount(assetId),
-    GetRelatedAssets(assetInfo.category, assetInfo.godot_version, assetInfo.type, assetInfo.asset_id, major)
+    GetRelatedAssets(
+      assetInfo.category_lowercase ?? String(assetInfo.category ?? '').toLowerCase(),
+      assetInfo.godot_version,
+      assetInfo.type,
+      assetInfo.asset_id,
+      major
+    )
   ])
+
+  // A cached snapshot must be complete: never write a partial page to the
+  // cache as "fresh". The stale-capable cache serves the previous complete
+  // snapshot on refresh failure instead; a cold start surfaces the error.
+  if (strict && (commentsResult.status === 'rejected' ||
+      reviewCountResult.status === 'rejected' ||
+      relatedAssetsResult.status === 'rejected')) {
+    throw new Error('Refusing to cache an incomplete asset page')
+  }
 
   return {
     assetInfo,
@@ -100,7 +115,7 @@ export class AssetService {
    * @param {Response} res
    * @returns
    */
-  public async render (req: Request, res: Response): Promise<any> {
+  public async render (req: Request, res: Response, next: NextFunction): Promise<any> {
     const assetId = striptags(req.params.id ?? '')
     const authToken = striptags(req.cookies['auth-token'] ?? '')
 
@@ -137,8 +152,9 @@ export class AssetService {
         const cached = await cacheGetOrLoad<AssetPageData>(
           buildAssetCacheKey(assetId, relatedMajor),
           ASSET_CACHE_TTL_SECONDS,
-          async () => await loadAssetPageData(assetId, 0, relatedMajor),
-          10_000
+          async () => await loadAssetPageData(assetId, 0, relatedMajor, true),
+          10_000,
+          { epoch: async () => await getAssetEpoch(assetId) }
         )
         // Defensive clone so per-request mutations (saved state, card extras,
         // readme render) never leak into the shared cache entry.
@@ -146,11 +162,13 @@ export class AssetService {
       } else {
         // Paginated or authenticated views bypass the cache and must load the
         // requested reviews page (the cached bundle is always page 0).
-        bundle = await loadAssetPageData(assetId, reviewsPage, relatedMajor)
+        bundle = await loadAssetPageData(assetId, reviewsPage, relatedMajor, false)
       }
       const { assetInfo, comments, reviewCount, relatedAssets } = bundle
 
       if (assetInfo === null) {
+        res.set('Cache-Control', 'no-store')
+        res.set('X-Robots-Tag', 'noindex, nofollow')
         return res.status(StatusCodes.NOT_FOUND).render('templates/pages/lost/not-found', {
           pageBanner: {
             title: 'Asset not found',
@@ -256,12 +274,10 @@ export class AssetService {
       })
     } catch (e: any) {
       logger.log('error', `Failed to load asset page: ${assetId}, ${e?.message}`, [e])
-      return res.status(StatusCodes.INTERNAL_SERVER_ERROR).render('templates/pages/lost/server-error', {
-        pageBanner: {
-          title: 'Something went wrong',
-          info: 'Sorry, we\'re having issues loading this page right now'
-        }
-      })
+      // Forward to the central error middleware so the response gets a
+      // no-store/noindex policy and MongoDB errors are classified for
+      // telemetry, instead of rendering directly and keeping a public header.
+      return next(e)
     }
   }
 
@@ -365,9 +381,10 @@ export class AssetService {
     // the confidence-adjusted rating_score always match what cards display.
     await RefreshAssetRating(assetId)
 
-    // The public asset page is cached briefly; drop every major variant so the
-    // review and its rating change are reflected immediately.
-    void cacheDelete(...buildAllAssetCacheKeys(assetId))
+    // The public asset page is cached briefly; invalidate every major variant
+    // (and bump the asset epoch to fence any in-flight loader) so the review
+    // and its rating change are reflected immediately.
+    await invalidateAssetCache(assetId)
 
     res.send()
   }

@@ -12,12 +12,16 @@ interface ReturnedAssets extends WithId<Document>, assetGridSchema {}
  * asset: exact Godot version first, then same major version, then same type,
  * then by confidence-adjusted rating and recency.
  *
+ * `categoryLowercase` is the canonical lowercase category key
+ * (`category_lowercase`), so the query matches the indexed field used by every
+ * other discovery query instead of the display-case `category`.
+ *
  * When a major pin is active (the caller passes `major`), the pool is strictly
  * constrained to that major line before ranking, so related cards never show
  * assets from another engine generation.
  */
 export async function GetRelatedAssets (
-  category: string,
+  categoryLowercase: string,
   godotVersion: string | undefined,
   assetType: string | undefined,
   excludeAssetId: string,
@@ -30,7 +34,7 @@ export async function GetRelatedAssets (
       ...PUBLIC_ASSET_FILTER,
       ...godotMajorFilter(major),
       asset_id: { $ne: excludeAssetId },
-      category: category
+      category_lowercase: categoryLowercase
     },
     {
       limit: 12,

@@ -239,8 +239,7 @@ describe('buildSearchFilter with the version pin', () => {
     assert.equal(filter.godot_major, 4)
     assert.equal(filter.godot_version, undefined)
     // PUBLIC_ASSET_FILTER always stays applied.
-    assert.deepEqual(filter.source_status, { $ne: 'unavailable' })
-    assert.deepEqual(filter.searchable, { $ne: 'false' })
+    assert.equal(filter.is_public, true)
   })
 
   it('drops the major when an exact engine selection is present', () => {
@@ -253,6 +252,6 @@ describe('buildSearchFilter with the version pin', () => {
     const filter = buildSearchFilter('shader', { godotMajor: 3 })
     assert.equal(filter.godot_major, 3)
     assert.deepEqual(filter.$text, { $search: 'shader', $caseSensitive: false })
-    assert.deepEqual(filter.source_status, PUBLIC_ASSET_FILTER.source_status)
+    assert.equal(filter.is_public, PUBLIC_ASSET_FILTER.is_public)
   })
 })

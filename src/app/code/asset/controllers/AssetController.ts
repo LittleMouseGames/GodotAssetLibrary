@@ -1,5 +1,5 @@
 import { Controller, Get, Middleware, Post, Patch } from '@overnightjs/core'
-import { Request, Response } from 'express'
+import { NextFunction, Request, Response } from 'express'
 import { StatusCodes } from 'http-status-codes'
 import rateLimit from 'express-rate-limit'
 import { CheckIfUserExistAndSendError } from 'core/modules/authentication/middleware/CheckIfUserExistAndSendError'
@@ -46,8 +46,8 @@ export class AssetController {
    */
   @Get(':id/*')
   @Middleware(renderAssetRateLimit)
-  private async index (req: Request, res: Response): Promise<void> {
-    return await this.AssetService.render(req, res)
+  private async index (req: Request, res: Response, next: NextFunction): Promise<void> {
+    return await this.AssetService.render(req, res, next)
   }
 
   /**
@@ -69,6 +69,8 @@ export class AssetController {
 
     const assetInfo = await GetAssetDisplayInformation(assetId)
     if (assetInfo === null) {
+      res.set('Cache-Control', 'no-store')
+      res.set('X-Robots-Tag', 'noindex, nofollow')
       return res.status(StatusCodes.NOT_FOUND).render('templates/pages/lost/not-found', {
         pageBanner: {
           title: 'Asset not found',

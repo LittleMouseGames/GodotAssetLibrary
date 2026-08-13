@@ -85,22 +85,23 @@ function buildFacets (output: Record<string, any[]>): SearchFacets {
  * Disjunctive (self-excluding) facets, consolidated to cut Mongo fan-out.
  *
  * Each facet omits only its own dimension so counts stay self-excluding (a
- * selected category does not collapse the category facet). Three shapes, in
- * order of preference, to minimise round trips:
+ * selected category does not collapse the category facet). Two shapes, in
+ * order of preference:
  *
  * 1. No dimension filter selected (categories/engines/types/supports all
  *    empty) -> every facet filter is identical, so ONE outer `$match` (which
- *    keeps `$text` legal as the first stage) feeds four `$group`
- *    sub-pipelines in a single `$facet`.
- * 2. Browsing (no `$text`) with filters selected -> the self-excluding
- *    `$match` can live inside each `$facet` sub-pipeline, so all four facets
- *    still run in one aggregation.
- * 3. Text search with filters selected -> `$text` cannot appear inside `$facet`
- *    sub-pipelines (it must be the first stage of its own pipeline), so each
- *    facet runs as a separate aggregation.
+ *    keeps `$text` legal as the first stage and CAN use an index) feeds four
+ *    `$group` sub-pipelines in a single `$facet`.
+ * 2. Filters selected -> each facet runs as its OWN `$match`-first
+ *    aggregation (in parallel). A first-stage `$facet` cannot use an index:
+ *    it feeds the ENTIRE collection to every sub-pipeline in memory, so every
+ *    filtered page would scan the whole collection. Separate `$match`-first
+ *    pipelines keep every facet indexable. This also covers text search,
+ *    where `$text` must be the first stage and cannot appear inside a `$facet`
+ *    sub-pipeline at all.
  *
- * Result: 4 aggregations -> 1 for browse and for plain text searches (the
- * common crawl/user paths), staying at 4 only for search + selected filters.
+ * Result: 4 aggregations -> 1 for un-filtered browse/text (the common crawl
+ * and user paths), staying at 4 only for filtered views.
  */
 export async function GetSearchFacets (
   query: string,
@@ -112,7 +113,7 @@ export async function GetSearchFacets (
   const hasDimensionFilters = DIMENSION_KEYS.some(dim => (options[dim] ?? []).length > 0)
 
   if (!hasDimensionFilters) {
-    // Strategy 1: all four facet filters are identical, so share one $match.
+    // All four facet filters are identical, so share one $match.
     const filter = buildSearchFilter(query, options)
     const facetStages: Record<string, any[]> = {}
     for (const spec of FACET_SPECS) {
@@ -125,29 +126,14 @@ export async function GetSearchFacets (
     return buildFacets(doc ?? {})
   }
 
-  if (query === '') {
-    // Strategy 2: browse with filters; each sub-pipeline has its own $match.
-    const facetStages: Record<string, any[]> = {}
-    for (const spec of FACET_SPECS) {
-      facetStages[spec.key] = [
-        { $match: facetFilterFor(query, options, spec.omit) },
-        groupStageFor(spec)
-      ]
-    }
-    const [doc] = await assets.aggregate([
-      { $facet: facetStages }
-    ]).maxTimeMS(5000).toArray()
-    return buildFacets(doc ?? {})
-  }
-
-  // Strategy 3: text search with filters selected -> separate aggregations.
+  // Filters selected: separate $match-first aggregations per facet (see doc
+  // comment above for why a first-stage $facet would scan the whole catalog).
   const results = await Promise.all(FACET_SPECS.map(async spec => {
     const filter = facetFilterFor(query, options, spec.omit)
-    const pipeline: any[] = [
+    return await assets.aggregate([
       { $match: filter },
       groupStageFor(spec)
-    ]
-    return await assets.aggregate(pipeline).maxTimeMS(5000).toArray()
+    ]).maxTimeMS(5000).toArray()
   }))
 
   const doc: Record<string, any[]> = {}

@@ -26,6 +26,8 @@ export interface assetSchema {
   'issues_url': string
   'icon_url': string
   'searchable': string
+  /** Denormalized public-catalog flag: `source_status !== 'unavailable' && searchable !== 'false'`. */
+  'is_public'?: boolean
   'modify_date': string
   'added_date': Date
   'download_url': string

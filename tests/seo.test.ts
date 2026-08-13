@@ -93,11 +93,8 @@ describe('safeJsonLd', () => {
 })
 
 describe('PUBLIC_ASSET_FILTER', () => {
-  it('excludes unavailable and non-searchable assets', () => {
-    assert.deepEqual(PUBLIC_ASSET_FILTER, {
-      source_status: { $ne: 'unavailable' },
-      searchable: { $ne: 'false' }
-    })
+  it('selects only denormalized public assets via an indexed equality', () => {
+    assert.deepEqual(PUBLIC_ASSET_FILTER, { is_public: true })
   })
 })
 

@@ -1,4 +1,5 @@
 import { Request, Response } from 'express'
+import crypto from 'crypto'
 import { TokenServices } from 'core/modules/authentication/services/TokenServices'
 import { GetUserSavedAssets } from 'app/code/dashboard/models/GET/GetUserSavedAssets'
 import striptags from 'striptags'
@@ -29,7 +30,7 @@ interface CachedSearchData {
 const parsedSearchTtl = Number.parseInt(process.env.CACHE_SEARCH_TTL_SECONDS ?? '', 10)
 const SEARCH_CACHE_TTL_SECONDS = Number.isFinite(parsedSearchTtl) && parsedSearchTtl > 0
   ? parsedSearchTtl
-  : 60
+  : 300
 
 function searchCacheKey (
   query: string,
@@ -38,9 +39,11 @@ function searchCacheKey (
   sort: string,
   options: SearchFilterOptions
 ): string {
-  // Parsing already deduplicates/caps filters. Sort copies here so equivalent
-  // parameter orderings share one key and cannot inflate cache cardinality.
-  return `gda:v1:search:${Buffer.from(JSON.stringify({
+  // Parsing already deduplicates/caps filters. Normalize to a canonical JSON
+  // payload (equivalent orderings share one key) and hash it to a fixed-size
+  // digest so one-time bot queries can never create oversized keys or balloon
+  // the key space.
+  const canonical = JSON.stringify({
     query,
     limit,
     skip,
@@ -51,7 +54,8 @@ function searchCacheKey (
     supports: [...(options.supports ?? [])].sort(),
     featured: options.featured === true,
     major: godotMajorCacheSuffix(options.godotMajor)
-  })).toString('base64url')}`
+  })
+  return `gda:v2:search:${crypto.createHash('sha256').update(canonical).digest('hex')}`
 }
 
 export class SearchService {
@@ -111,7 +115,7 @@ export class SearchService {
     if (parsed.query !== '' && assets.length === 1) {
       try {
         relatedForSearch = await GetRelatedAssets(
-          assets[0].category,
+          String(assets[0].category ?? '').toLowerCase(),
           assets[0].godot_version,
           assets[0].type,
           assets[0].asset_id,

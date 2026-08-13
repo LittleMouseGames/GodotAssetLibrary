@@ -3,7 +3,7 @@
   description: 'Kickstart your development with the best FREE Godot assets for your next game or project',
   url: 'https://godotassetlibrary.com',
   moduleName: 'homepage',
-  image: 'https://godotassetlibrary.com/images/logo-image.png'
+  image: 'https://godotassetlibrary.com/images/logo-image.png?cache=' + (it?._locals?.buildString ?? '')
 } %>
 <% layout('templates/components/layouts/promobar-nav-body-footer/promobar-nav-body-footer.eta') %>
 

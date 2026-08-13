@@ -13,7 +13,7 @@ import { UpdatePromobarMessage } from '../models/UPDATE/UpdatePromobarMessage'
 import { UpdateSiteRestrictions } from '../models/UPDATE/UpdateSiteRestrictions'
 import { UpdateSiteFiles } from '../models/UPDATE/UpdateSiteFiles'
 import { invalidateSiteFileCache } from 'core/utils/siteFiles'
-import { buildAllAssetCacheKeys, cacheDelete } from 'core/utils/dragonfly'
+import { invalidateAssetCache } from 'core/utils/dragonfly'
 import { GetReviewsByIdList } from '../models/GET/GetReviewsByIdList'
 import { UpdateReportIgnoreById } from '../models/UPDATE/UpdateReportIgnoreById'
 import { GetReportById } from '../models/GET/GetReportById'
@@ -163,8 +163,9 @@ export class AdminService {
     await UpdateReportApproveById(reportId)
     await DeleteReviewById(reportInfo.review_id)
     // The deleted review and adjusted counters are cached on the public asset
-    // page; drop every major variant so the moderation is reflected immediately.
-    void cacheDelete(...buildAllAssetCacheKeys(reviewInfo.asset_id))
+    // page; invalidate every major variant (and bump the asset epoch to fence
+    // any in-flight loader) so the moderation is reflected immediately.
+    await invalidateAssetCache(reviewInfo.asset_id)
     res.send()
   }
 
