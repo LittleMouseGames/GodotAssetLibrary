@@ -479,10 +479,63 @@ export function buildUserContextCacheKey (hashedToken: string): string {
 }
 
 const ASSET_EPOCH_PREFIX = 'gda:v2:assetepoch:'
+const HOMEPAGE_PREFIX = 'gda:v2:homepage:'
+const HOMEPAGE_EPOCH_PREFIX = 'gda:v2:homepageepoch:'
 
 /** Per-asset mutation generation key used to fence in-flight cache fills. */
 export function buildAssetEpochKey (assetId: string): string {
   return `${ASSET_EPOCH_PREFIX}${assetId}`
+}
+
+/**
+ * Homepage snapshot cache key, partitioned by the pinned Godot major (the
+ * hero + sections are major-filtered, so visitors must never share section
+ * data across majors).
+ */
+export function buildHomepageCacheKey (major: number | undefined): string {
+  return `${HOMEPAGE_PREFIX}${godotMajorCacheSuffix(major)}`
+}
+
+/** Every homepage cache variant, used to invalidate all majors at once. */
+export function buildAllHomepageCacheKeys (): string[] {
+  return GODOT_MAJOR_CACHE_VARIANTS.map(major => buildHomepageCacheKey(major))
+}
+
+/** Global homepage mutation-generation key (fences in-flight snapshot loads). */
+export function buildHomepageEpochKey (): string {
+  return `${HOMEPAGE_EPOCH_PREFIX}global`
+}
+
+/**
+ * Read the current homepage mutation generation. Returns null when no
+ * mutation has ever occurred or the cache is unavailable (fail-open).
+ */
+export async function getHomepageEpoch (): Promise<string | null> {
+  return await cacheCommand(async connected => await connected.get(buildHomepageEpochKey()))
+}
+
+/** Drop every homepage variant from this worker's L1 only (no broadcast). */
+export function invalidateHomepageCacheLocally (): void {
+  for (const key of buildAllHomepageCacheKeys()) l1Delete(key)
+}
+
+/**
+ * Invalidate every homepage cache variant and bump the homepage epoch first,
+ * so an older in-flight snapshot load that started before this mutation
+ * cannot repopulate the cache with stale curation (the fence skips its write
+ * because the epoch changed under it). Fails open when Dragonfly is down; the
+ * bounded TTL bounds residual staleness. Used after feature/order/source
+ * mutations that change hero slides.
+ */
+export async function invalidateHomepageCache (): Promise<void> {
+  await cacheCommand(async connected => await connected.incr(buildHomepageEpochKey()))
+  invalidateHomepageCacheLocally()
+  await cacheDelete(...buildAllHomepageCacheKeys())
+  // Tell the primary to broadcast the local invalidation to every worker so
+  // their L1 caches drop too (each worker's L1 is independent).
+  if (process.send !== undefined) {
+    process.send({ type: 'invalidate-homepage-cache' })
+  }
 }
 
 /**
