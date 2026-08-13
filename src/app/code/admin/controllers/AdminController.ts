@@ -80,4 +80,34 @@ export class AdminController {
   private async updateFeaturedAssets (req: Request, res: Response): Promise<void> {
     return await this.AdminService.featureAsset(req, res)
   }
+
+  @Get('sources')
+  @Middleware(viewReportsRateLimit)
+  private async sourceLinking (req: Request, res: Response): Promise<void> {
+    return await this.AdminService.renderSourceLinking(req, res)
+  }
+
+  @Post('sources/link')
+  @Middleware(siteActionRateLimit)
+  private async linkSource (req: Request, res: Response): Promise<void> {
+    return await this.AdminService.linkStoreAsset(req, res)
+  }
+
+  @Post('sources/unlink')
+  @Middleware(siteActionRateLimit)
+  private async unlinkSource (req: Request, res: Response): Promise<void> {
+    return await this.AdminService.unlinkStoreAsset(req, res)
+  }
+
+  @Post('sources/preferred')
+  @Middleware(siteActionRateLimit)
+  private async preferredSource (req: Request, res: Response): Promise<void> {
+    return await this.AdminService.setPreferredSource(req, res)
+  }
+
+  @Post('sources/reject')
+  @Middleware(siteActionRateLimit)
+  private async rejectSource (req: Request, res: Response): Promise<void> {
+    return await this.AdminService.rejectStoreSuggestion(req, res)
+  }
 }
